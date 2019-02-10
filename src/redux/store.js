@@ -1,10 +1,12 @@
 import {applyMiddleware, compose, createStore} from 'redux';
 import {createLogger} from 'redux-logger';
-import requestMiddleware from './redux/middleware/request';
-import reducers from './redux/reducers';
+import requestMiddleware from './middleware/request';
+import reducers from './reducers';
 
 const logger = createLogger();
-const initialState = {};
+const initialState = {
+    countries: []
+};
 
 /* eslint-disable no-underscore-dangle */
 const composeEnhancers =

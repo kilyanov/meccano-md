@@ -1,13 +1,28 @@
 import React, {Component} from 'react';
+import {connect} from 'react-redux';
 import './login-page.scss';
+import {getCountries} from "../../../redux/actions/country";
+import store from '../../../redux/store';
 
-export default class LoginPage extends Component {
+class LoginPage extends Component {
+    componentDidMount() {
+        store.dispatch(getCountries());
+    }
+
     render() {
         const classes = new Bem('login-page');
 
         return (
             <div {...classes('', '', 'page')}>
+                <h1>Login</h1>
+
                 <form {...classes('form')}>
+                    <select {...classes('country-list')} placeholder='select a country'>
+                        {this.props.countries.map(country =>
+                            <option {...classes('country-item')} key={country.code}>{country.country}</option>
+                        )}
+                    </select>
+
                     <input
                         {...classes('input')}
                         type='text'
@@ -28,3 +43,5 @@ export default class LoginPage extends Component {
         );
     }
 }
+
+export default connect(({countries}) => ({countries}))(LoginPage);
