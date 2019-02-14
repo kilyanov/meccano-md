@@ -52,7 +52,7 @@ module.exports = (env, argv) => {
             extensions: ['*', '.js', '.jsx']
         },
         output: {
-            path: __dirname + `${isProduction ? '/../dist' : '/dist'}`,
+            path: __dirname + `${isProduction ? '/../web/assets' : '/dist'}`,
             publicPath: '/',
             filename: 'bundle.js'
         },
