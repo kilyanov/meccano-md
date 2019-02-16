@@ -1,8 +1,8 @@
 const config = {
-    development: {
+    production: {
         apiURL: 'https://api.meccano.mel-meccano.ru/v1'
     },
-    production: {
+    development: {
         apiURL: 'https://api.meccano.test/v1'
     }
 };
