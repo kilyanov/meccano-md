@@ -5,8 +5,6 @@ const CleanWebpackPlugin = require('clean-webpack-plugin');
 // const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 module.exports = (env, argv) => {
-    const isProduction = argv.mode === 'production';
-
     return {
         entry: './src/index.js',
         module: {
@@ -78,8 +76,9 @@ module.exports = (env, argv) => {
         devServer: {
             headers: {'Access-Control-Allow-Origin': '*'},
             contentBase: './web',
-                hot: true,
-                port: 5001
+            hot: true,
+            port: 5001,
+            historyApiFallback: true
         }
     }
 };

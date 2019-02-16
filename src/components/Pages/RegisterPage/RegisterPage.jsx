@@ -1,37 +1,31 @@
 import React, {Component} from 'react';
-import {connect} from 'react-redux';
-import {Link} from 'react-router-dom';
+import {Link} from "react-router-dom";
+import './register-page.scss';
 import AuthService from "../../../services/AuthService";
-import store from '../../../redux/store';
-import {getCountries} from "../../../redux/actions/country";
 import Form from "../../Form/Form/Form";
 import FormInputText from "../../Form/FormInputText/FormInputText";
 import Button from "../../Shared/Button/Button";
 
-import './login-page.scss';
-
-class LoginPage extends Component {
+export default class RegisterPage extends Component {
     state = {
-        login: '',
+        username: '',
         password: '',
+        email: '',
         inProgress: false
     };
-
-    componentDidMount() {
-        store.dispatch(getCountries());
-    }
 
     handleChangeField = (value, type) => {
         this.setState({[type]: value});
     };
 
     handleSubmitForm = () => {
-        const {login, password} = this.state;
+        const {username, password, email} = this.state;
+        const form = {username, password, email};
 
-        if (login && password) {
+        if (form) {
             this.setState({inProgress: true}, () => {
                 AuthService
-                    .login({login, password})
+                    .create(form)
                     .then(response => {
                         console.log(response);
                         this.setState({inProgress: false});
@@ -42,22 +36,30 @@ class LoginPage extends Component {
     };
 
     render() {
-        const classes = new Bem('login-page');
-        const {login, password} = this.state;
+        const classes = new Bem('register-page');
+        const {username, password, email} = this.state;
 
         return (
             <div {...classes('', '', 'page')}>
-                <h1>Авторизация</h1>
+                <h1>Регистрация</h1>
 
                 <Form
                     {...classes('form')}
                     onSubmit={this.handleSubmitForm}
                 >
                     <FormInputText
-                        placeholder='Логин'
+                        placeholder='Имя пользователя'
                         {...classes('input')}
-                        value={login}
+                        value={username}
                         onChange={value => this.handleChangeField(value, 'login')}
+                    />
+
+                    <FormInputText
+                        placeholder='Почта'
+                        {...classes('input')}
+                        type='email'
+                        value={email}
+                        onChange={value => this.handleChangeField(value, 'email')}
                     />
 
                     <FormInputText
@@ -71,15 +73,13 @@ class LoginPage extends Component {
                     <Button
                         {...classes('button', 'submit')}
                         disabled={password.length < 3}
-                        text='Авторизоваться'
+                        text='Зарегистрироваться'
                         type='submit'
                     />
                 </Form>
 
-                <Link to='/registration'>Нет аккаунта?</Link>
+                <Link to='/'>Есть аккаунт?</Link>
             </div>
         );
     }
 }
-
-export default connect(({countries}) => ({countries}))(LoginPage);
