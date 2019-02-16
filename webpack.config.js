@@ -52,12 +52,12 @@ module.exports = (env, argv) => {
             extensions: ['*', '.js', '.jsx']
         },
         output: {
-            path: __dirname + `${isProduction ? '/../dist' : '/dist'}`,
+            path: __dirname + '/web',
             publicPath: '/',
             filename: 'bundle.js'
         },
         plugins: [
-            new CleanWebpackPlugin('dist', {}),
+            new CleanWebpackPlugin('web', {}),
             new webpack.HotModuleReplacementPlugin(),
             new MiniCssExtractPlugin({filename: 'styles.css'}),
             new webpack.DefinePlugin({'process.env.NODE_ENV': JSON.stringify(argv.mode)}),
@@ -77,7 +77,7 @@ module.exports = (env, argv) => {
         ],
         devServer: {
             headers: {'Access-Control-Allow-Origin': '*'},
-            contentBase: './dist',
+            contentBase: './web',
                 hot: true,
                 port: 5001
         }
