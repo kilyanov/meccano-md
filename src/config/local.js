@@ -1,3 +1,3 @@
 export default {
-    apiURL: 'https://api.meccano.mel-meccano.ru/v1'
+    apiURL: 'https://api.meccano.test/v1'
 };
