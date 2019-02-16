@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import {Redirect} from 'react-router-dom';
 import EventEmitter from '../helpers/EventEmitter';
+import {NotificationContainer} from 'react-notifications';
 import '../assets/styles/main.scss';
 
 export default class App extends Component {
@@ -35,7 +36,10 @@ export default class App extends Component {
         return redirect ? (
             <Redirect push to={redirect}/>
         ) : (
-            <div className='app'>{children}</div>
+            <div className='app'>
+                {children}
+                <NotificationContainer/>
+            </div>
         );
     }
 }

@@ -18,6 +18,7 @@
     "react": "^16.8.1",
     "react-bem-helper": "^1.4.1",
     "react-dom": "^16.8.1",
+    "react-notifications": "^1.4.3",
     "react-redux": "^6.0.0",
     "react-router-dom": "^4.3.1",
     "redux": "^4.0.1",
