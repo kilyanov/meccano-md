@@ -12,7 +12,7 @@ import './login-page.scss';
 
 class LoginPage extends Component {
     state = {
-        login: '',
+        username: '',
         password: '',
         inProgress: false
     };
@@ -26,12 +26,12 @@ class LoginPage extends Component {
     };
 
     handleSubmitForm = () => {
-        const {login, password} = this.state;
+        const {username, password} = this.state;
 
-        if (login && password) {
+        if (username && password) {
             this.setState({inProgress: true}, () => {
                 AuthService
-                    .login({login, password})
+                    .login({username, password})
                     .then(response => {
                         console.log(response);
                         this.setState({inProgress: false});
@@ -43,7 +43,7 @@ class LoginPage extends Component {
 
     render() {
         const classes = new Bem('login-page');
-        const {login, password} = this.state;
+        const {username, password} = this.state;
 
         return (
             <div {...classes('', '', 'page')}>
@@ -56,8 +56,8 @@ class LoginPage extends Component {
                     <FormInputText
                         placeholder='Логин'
                         {...classes('input')}
-                        value={login}
-                        onChange={value => this.handleChangeField(value, 'login')}
+                        value={username}
+                        onChange={value => this.handleChangeField(value, 'username')}
                     />
 
                     <FormInputText
