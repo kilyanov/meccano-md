@@ -52,7 +52,7 @@ module.exports = (env, argv) => {
             ]
         },
         resolve: {
-            extensions: ['*', '.js', '.jsx']
+            extensions: ['.js', '.jsx']
         },
         output: {
             path: __dirname + '/web',

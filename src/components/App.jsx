@@ -1,8 +1,9 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
-import {Redirect} from 'react-router-dom';
-import EventEmitter from '../helpers/EventEmitter';
+import {AuthService, StorageService} from "../services";
+import {EventEmitter} from "../helpers";
 import {NotificationContainer} from 'react-notifications';
+import {Redirect} from 'react-router-dom';
 import '../assets/styles/main.scss';
 
 export default class App extends Component {
@@ -16,6 +17,7 @@ export default class App extends Component {
 
     componentDidMount() {
         const self = this;
+        const localUtcOffset = moment().utcOffset();
 
         EventEmitter.setMaxListeners(0);
         EventEmitter.on('redirect', (url, callback) => {
@@ -23,6 +25,9 @@ export default class App extends Component {
                 self.setState({redirect: false}, callback);
             });
         });
+
+        StorageService.set('local-utc-offset', localUtcOffset);
+        AuthService.checkAuthorization();
     }
 
     componentWillUnmount() {

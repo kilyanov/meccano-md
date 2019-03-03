@@ -1,13 +1,12 @@
 import React, {Component} from 'react';
 import {connect} from 'react-redux';
-import AuthService from "../../../services/AuthService";
-import store from '../../../redux/store';
-import {getCountries} from "../../../redux/actions/country";
+import {AuthService, StorageService} from "../../../services";
 import Form from "../../Form/Form/Form";
 import FormInputText from "../../Form/FormInputText/FormInputText";
 import Button from "../../Shared/Button/Button";
 
-import './login-page.scss';
+import './style.scss';
+import {EventEmitter} from "../../../helpers";
 
 class LoginPage extends Component {
     state = {
@@ -15,10 +14,6 @@ class LoginPage extends Component {
         password: '',
         inProgress: false
     };
-
-    componentDidMount() {
-        store.dispatch(getCountries());
-    }
 
     handleChangeField = (value, type) => {
         this.setState({[type]: value});
@@ -32,8 +27,14 @@ class LoginPage extends Component {
                 AuthService
                     .login({username, password})
                     .then(response => {
-                        console.log(response);
-                        this.setState({inProgress: false});
+                        if (response.data.token) {
+                            const lastPathName = StorageService.get('last-pathname');
+
+                            StorageService.set('token', response.data.token);
+                            StorageService.set('token-expired', response.data.expired);
+
+                            EventEmitter.emit('redirect', lastPathName || '/');
+                        }
                     })
                     .catch(() => this.setState({inProgress: false}));
             });
@@ -67,7 +68,7 @@ class LoginPage extends Component {
                         name='password'
                         {...classes('input', 'password')}
                         type='password'
-                        onValidate={value => value.length >= 6}
+                        onValidate={value => value.length >= 3}
                         validateErrorMessage='Пароль не может быть меньше 6-ти симоволов'
                         value={password}
                         onChange={value => this.handleChangeField(value, 'password')}

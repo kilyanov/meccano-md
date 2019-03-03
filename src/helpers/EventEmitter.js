@@ -5,3 +5,5 @@ const emitter = new EventEmitter();
 emitter.off = emitter.removeListener;
 
 export default emitter;
+
+export {emitter as EventEmitter};
