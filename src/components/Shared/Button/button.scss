@@ -1,3 +1,37 @@
-.button {
+@import "../../../assets/styles/variables";
 
+.button {
+  border: 1px solid $blackColor;
+  border-radius: 100px;
+  padding: 4px 30px;
+  font-size: 15px;
+  font-weight: 500;
+  color: $blackColor;
+  line-height: 24px;
+  text-align: center;
+
+  &--green {
+    background-color: $greenColor;
+    border-color: $greenColor;
+    color: #fff;
+  }
+
+  &--inline {
+    padding: 0;
+    border: none;
+    color: $linkColor;
+  }
+
+  &--disabled {
+    background-color: #F2F2F2;
+    border-color: #D9D9D9;
+    color: $fontGrey;
+    cursor: not-allowed;
+    pointer-events: none;
+    box-shadow: none;
+  }
+
+  &:hover {
+    opacity: .8;
+  }
 }
