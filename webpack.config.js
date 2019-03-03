@@ -3,6 +3,11 @@ const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
 // const CopyWebpackPlugin = require('copy-webpack-plugin');
+const AssetsPlugin = require('assets-webpack-plugin');
+const assetsPluginInstance = new AssetsPlugin({
+    filename: './web/assets.json',
+    fullPath: false
+});
 
 module.exports = (env, argv) => {
     return {
@@ -52,12 +57,12 @@ module.exports = (env, argv) => {
         output: {
             path: __dirname + '/web',
             publicPath: '/',
-            filename: 'bundle.js'
+            filename: `bundle${argv.mode === 'production' ? '-[hash]' : ''}.js`
         },
         plugins: [
-            new CleanWebpackPlugin('web', {}),
+            new CleanWebpackPlugin('web', {exclude: 'index.php'}),
             new webpack.HotModuleReplacementPlugin(),
-            new MiniCssExtractPlugin({filename: 'styles.css'}),
+            new MiniCssExtractPlugin({filename: `styles${argv.mode === 'production' ? '-[hash]' : ''}.css`}),
             new webpack.DefinePlugin({'process.env.NODE_ENV': JSON.stringify(argv.mode)}),
             new HtmlWebpackPlugin({
                 inject: false,
@@ -71,7 +76,8 @@ module.exports = (env, argv) => {
                 'window.moment': 'moment',
                 moment: 'moment',
                 Bem: 'react-bem-helper'
-            })
+            }),
+            assetsPluginInstance
         ],
         devServer: {
             headers: {'Access-Control-Allow-Origin': '*'},
