@@ -1,0 +1,55 @@
+@import "../../../../assets/styles/variables";
+
+.project-list {
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  &__item {
+    height: 64px;
+    border-bottom: 1px solid $gray;
+
+    &:hover {
+      background-color: $greenColor;
+
+      .project-list__earth-icon {
+        fill: white;
+      }
+      .project-list__item-link {
+        color: white;
+      }
+      .project-list__arrow-icon {
+        fill: white;
+      }
+    }
+  }
+
+  &__item-link {
+    display: flex;
+    height: 100%;
+    align-items: center;
+    color: $blackColor;
+
+    &:hover {
+      text-decoration: none;
+    }
+  }
+
+  &__item-title {
+    font-size: 15px;
+    line-height: 24px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  &__earth-icon {
+    fill: $greenColor;
+    margin: 20px;
+  }
+
+  &__arrow-icon {
+    fill: $gray;
+    margin: 20px 20px 20px auto;
+  }
+}

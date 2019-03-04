@@ -2,4 +2,15 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-direction: column;
+
+  &__title {
+    font-size: 32px;
+    line-height: 40px;
+  }
+
+  &__sub-title {
+    font-size: 15px;
+    font-weight: normal;
+  }
 }
