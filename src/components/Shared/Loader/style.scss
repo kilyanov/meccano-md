@@ -1,0 +1,49 @@
+@import "../../../assets/styles/variables";
+
+.loader {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background-color: rgba(255, 255, 255, .5);
+
+  z-index: 1000;
+
+  svg {
+    animation: rotate 2s linear infinite;
+
+    & .path {
+      stroke: $greenColor;
+      stroke-linecap: round;
+      animation: dash 2s ease-in-out infinite;
+    }
+  }
+}
+
+
+@keyframes rotate {
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes dash {
+  0% {
+    stroke-dasharray: 1, 150;
+    stroke-dashoffset: 0;
+  }
+  50% {
+    stroke-dasharray: 90, 150;
+    stroke-dashoffset: -35;
+  }
+  100% {
+    stroke-dasharray: 90, 150;
+    stroke-dashoffset: -124;
+  }
+}

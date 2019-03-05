@@ -1,8 +1,21 @@
 import React, {Component} from 'react';
 import './style.scss';
 import ProjectList from './ProjectList/ProjectList';
+import {ProjectService} from '../../../services';
 
 class HomePage extends Component {
+    state = {
+        projects: []
+    };
+
+    componentDidMount() {
+        this.getProjects();
+    }
+
+    getProjects = () => {
+        ProjectService.get().then(response => this.setState({projects: response.data}));
+    };
+
     projects = [{name: 'd_Mars_sources'}, {name: 'd_Mars_sources'}, {name: 'd_Mincomsvyasy'}];
 
     render() {

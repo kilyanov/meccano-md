@@ -7,6 +7,7 @@ import Button from "../../Shared/Button/Button";
 
 import './style.scss';
 import {EventEmitter} from "../../../helpers";
+import Loader from '../../Shared/Loader/Loader';
 
 class LoginPage extends Component {
     state = {
@@ -28,7 +29,9 @@ class LoginPage extends Component {
                     .login({username, password})
                     .then(response => {
                         if (response.data.token) {
-                            const lastPathName = StorageService.get('last-pathname');
+                            let lastPathName = StorageService.get('last-pathname');
+
+                            if (lastPathName && lastPathName === '/login') lastPathName = '/';
 
                             StorageService.set('token', response.data.token);
                             StorageService.set('token-expired', response.data.expired);
@@ -43,7 +46,7 @@ class LoginPage extends Component {
 
     render() {
         const classes = new Bem('login-page');
-        const {username, password} = this.state;
+        const {username, password, inProgress} = this.state;
 
         return (
             <div {...classes('', '', 'container page')}>
@@ -88,6 +91,8 @@ class LoginPage extends Component {
                     to='/registration'
                     style='inline'
                 />
+
+                {inProgress && <Loader/>}
             </div>
         );
     }

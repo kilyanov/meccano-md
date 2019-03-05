@@ -3,5 +3,6 @@ export default {
         login: '/auth/login',
         create: '/auth/create'
     },
+    project: '/project',
     country: '/country'
 };

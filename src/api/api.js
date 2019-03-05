@@ -1,6 +1,7 @@
 import axios from 'axios';
 import config from '../config/';
 import {AuthService, StorageService} from "../services";
+import {Notify} from '../helpers';
 
 const token = StorageService.get('token');
 const httpService = axios.create({
@@ -15,9 +16,13 @@ const httpService = axios.create({
 httpService.interceptors.response.use(
     response => response,
     error => {
-        if (error.response.status === 401) {
+        if (error.response && error.response.status === 401) {
             console.error('unauthorized, logging out ...');
             AuthService.logOut();
+        }
+
+        if (error.message) {
+            Notify.error(error.message, 'Ошибка', 50000);
         }
 
         return Promise.reject(error.response);
