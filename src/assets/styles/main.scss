@@ -36,11 +36,6 @@ body {
     }
 }
 
-h1 {
-    font-size: 32px;
-    line-height: 40px;
-}
-
 h1, h2, h3, h4, h5, h6 {
     margin-top: 0;
     font-weight: bold;
@@ -48,6 +43,17 @@ h1, h2, h3, h4, h5, h6 {
     color: $blackColor;
 }
 
+h1 {
+    font-size: 32px;
+    line-height: 40px;
+}
+
+h4 {
+    margin-bottom: 16px;
+    font-size: 18px;
+    font-weight: normal;
+    line-height: 24px;
+}
 
 a,
 button {

@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import './style.scss';
+import './home-page.scss';
 import ProjectList from './ProjectList/ProjectList';
 import {ProjectService} from '../../../services';
 
@@ -11,6 +11,18 @@ class HomePage extends Component {
     componentDidMount() {
         this.getProjects();
     }
+
+    handleClick = (name) => {
+        if (window.DialogModal) {
+            window.DialogModal
+                .open({
+                    title: 'Диалоговое окно',
+                    content: `Много диалоговых окон не бывает ${name}`
+                })
+                .then(param => console.log('onSubmit', param))
+                .catch(param => console.log('onClose', param));
+        }
+    };
 
     getProjects = () => {
         ProjectService.get().then(response => this.setState({projects: response.data}));
@@ -30,7 +42,7 @@ class HomePage extends Component {
 
                 <div {...classes('row', '', ['row', 'row--align-h-center'])}>
                     <div {...classes('column', '', 'col-lg-6')}>
-                        <ProjectList list={this.projects}/>
+                        <ProjectList list={this.projects} onClick={this.handleClick}/>
                     </div>
                 </div>
             </div>

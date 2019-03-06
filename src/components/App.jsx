@@ -5,6 +5,7 @@ import {EventEmitter} from "../helpers";
 import {NotificationContainer} from 'react-notifications';
 import {Redirect} from 'react-router-dom';
 import '../assets/styles/main.scss';
+import PromiseDialogModal from './Shared/PromiseDialogModal/PromiseDialogModal';
 
 export default class App extends Component {
     static propTypes = {
@@ -20,6 +21,7 @@ export default class App extends Component {
         const localUtcOffset = moment().utcOffset();
 
         EventEmitter.setMaxListeners(0);
+        window.DialogModal = this.dialogModal;
         EventEmitter.on('redirect', (url, callback) => {
             self.setState({redirect: url}, () => {
                 self.setState({redirect: false}, callback);
@@ -44,6 +46,7 @@ export default class App extends Component {
             <div className='app'>
                 {children}
                 <NotificationContainer/>
+                <PromiseDialogModal ref={node => this.dialogModal = node}/>
             </div>
         );
     }

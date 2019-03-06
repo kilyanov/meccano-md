@@ -5,7 +5,7 @@ import Form from "../../Form/Form/Form";
 import FormInputText from "../../Form/FormInputText/FormInputText";
 import Button from "../../Shared/Button/Button";
 
-import './style.scss';
+import './login-page.scss';
 import {EventEmitter} from "../../../helpers";
 import Loader from '../../Shared/Loader/Loader';
 

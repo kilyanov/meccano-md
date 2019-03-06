@@ -27,7 +27,7 @@ Button.propTypes = {
     className: PropTypes.string,
     disabled: PropTypes.bool,
     to: PropTypes.string,
-    style: PropTypes.oneOf(['default', 'success', 'inline']),
+    style: PropTypes.oneOf(['default', 'success', 'error', 'info', 'inline']),
     text: PropTypes.string.isRequired,
     onClick: PropTypes.func,
     type: PropTypes.string

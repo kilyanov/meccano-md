@@ -1,5 +1,5 @@
 import React from 'react';
-import './style.scss';
+import './not-found-page.scss';
 
 const NotFoundPage = () => {
     const classes = new Bem('not-found-page');

@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import './style.scss';
+import './loader.scss';
 
 const classes = new Bem('loader');
 const Loader = ({className, fixed, radius = 20, strokeWidth = 5}) => {

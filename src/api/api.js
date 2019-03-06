@@ -22,7 +22,7 @@ httpService.interceptors.response.use(
         }
 
         if (error.message) {
-            Notify.error(error.message, 'Ошибка', 50000);
+            Notify.error(error.message, 'Ошибка');
         }
 
         return Promise.reject(error.response);

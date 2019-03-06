@@ -1,0 +1,50 @@
+@import "../../../assets/styles/variables";
+
+.dialog-modal {
+  position: fixed;
+  top: -100%;
+  left: 0;
+  right: 0;
+  width: 420px;
+  margin: 0 auto;
+  padding: 20px;
+  border-bottom-left-radius: 8px;
+  border-bottom-right-radius: 8px;
+  box-shadow: 0 5px 20px 5px rgba(0, 0, 0, .2);
+  background: #fff;
+  color: $blackColor;
+  transition: top .3s ease;
+
+  &--opened {
+    top: 0;
+  }
+
+  &__title {
+
+  }
+
+  &__sub-title {
+    font-size: 16px;
+    font-weight: normal;
+  }
+
+  &__body {
+    margin-bottom: 32px;
+    font-size: 15px;
+    line-height: 1.6;
+  }
+
+  &__footer {
+    display: flex;
+  }
+
+  &__button {
+    &:first-child {
+      margin-left: auto;
+    }
+
+    & + & {
+      margin-left: 16px;
+    }
+  }
+}

@@ -1,0 +1,85 @@
+@import "../../../assets/styles/variables";
+
+$namespace: '.checkbox';
+
+#{$namespace} {
+  font-size: 15px;
+  line-height: 24px;
+  cursor: pointer;
+  user-select: none;
+  pointer-events: none;
+
+  &:hover {
+    #{$namespace}__box {
+      border-color: $greenColor;
+    }
+  }
+
+  &--checked {
+    #{$namespace}__box{
+      background-color: $greenColor;
+      border-color: $greenColor;
+
+      &:after {
+        opacity: 1;
+        visibility: visible;
+      }
+    }
+  }
+
+  &--disabled {
+    * {
+      cursor: not-allowed;
+    }
+
+    #{$namespace}__label {
+      pointer-events: none;
+      color: $fontGrey;
+    }
+
+    #{$namespace}__box {
+      border-color: $gray;
+    }
+
+    &.checkbox--checked {
+      #{$namespace}__box {
+        background-color: $gray;
+      }
+    }
+  }
+
+  &__box {
+    position: relative;
+    display: inline-flex;
+    margin-right: 20px;
+    background-color: transparent;
+    border: 2px solid #B2B2B2;
+    width: 18px;
+    height: 18px;
+    border-radius: 3px;
+
+    &:after {
+      content: '';
+      position: absolute;
+      top: 2px;
+      left: 1px;
+      width: 12px;
+      height: 10px;
+      opacity: 0;
+      visibility: hidden;
+      background: url(./img/checkbox.svg) no-repeat 0 0;
+      background-size: 12px 10px;
+    }
+  }
+
+
+  &__field {
+    display: none;
+  }
+
+  &__label {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+  }
+}
