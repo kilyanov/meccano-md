@@ -1,8 +1,9 @@
 const webpack = require('webpack');
+const path = require('path');
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
-// const CopyWebpackPlugin = require('copy-webpack-plugin');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
 const AssetsPlugin = require('assets-webpack-plugin');
 const assetsPluginInstance = new AssetsPlugin({
     filename: './web/assets.json',
@@ -55,7 +56,7 @@ module.exports = (env, argv) => {
             extensions: ['.js', '.jsx']
         },
         output: {
-            path: __dirname + '/web',
+            path: path.join(__dirname, 'web'),
             publicPath: '/',
             filename: `bundle${argv.mode === 'production' ? '-[hash]' : ''}.js`
         },
@@ -70,6 +71,9 @@ module.exports = (env, argv) => {
                 template: './src/index.html',
                 filename: 'index.html'
             }),
+            new CopyWebpackPlugin([
+                {from: './src/assets/img/favicons/', to: `${__dirname}/web/favicons/`}
+            ]),
             new webpack.ProvidePlugin({
                 'window._': 'lodash',
                 _: 'lodash',
@@ -81,7 +85,7 @@ module.exports = (env, argv) => {
         ],
         devServer: {
             headers: {'Access-Control-Allow-Origin': '*'},
-            contentBase: './web',
+            contentBase: path.join(__dirname, 'web'),
             hot: true,
             port: 5001,
             historyApiFallback: true

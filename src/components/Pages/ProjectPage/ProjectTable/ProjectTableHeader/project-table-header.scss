@@ -1,0 +1,68 @@
+@import "../../../../../assets/styles/variables";
+@import "../project-table-settings";
+
+.project-table-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 16px;
+
+  &__cell {
+    display: flex;
+    align-items: center;
+    height: 40px;
+    padding-left: 16px;
+    background-color: #fff;
+    border-top: 1px solid $gray;
+    border-bottom: 1px solid $gray;
+    border-left: 1px solid $gray;
+    left: 1px solid $gray;
+    font-size: 15px;
+    font-weight: 500;
+    letter-spacing: .1px;
+    text-align: left;
+    user-select: none;
+    cursor: pointer;
+
+    &--active:not(&--check),
+    &:not(&--check):hover {
+      background-color: $gray-three;
+    }
+
+    &--check {
+      flex: 0 0 $checkboxSection;
+      padding: 0;
+      border: none;
+      justify-content: center;
+
+      .checkbox__box {
+        margin-right: 0;
+      }
+
+      .checkbox__label {
+        justify-content: center;
+      }
+    }
+
+    &--date {
+      flex: 0 0 $dateSection;
+      border-left: none;
+    }
+
+    &--source {
+      flex: 0 0 $sourceSection;
+    }
+
+    &--title {
+      flex: 0 0 $titleSection;
+    }
+
+    &--annotation {
+      flex: 0 0 $annotationSection;
+    }
+  }
+
+  &__sort-arrow {
+    margin-top: -5px;
+    margin-left: 5px;
+  }
+}

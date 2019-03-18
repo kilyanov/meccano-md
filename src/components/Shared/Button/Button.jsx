@@ -6,7 +6,15 @@ import './button.scss';
 
 const classes = new Bem('button');
 
-const Button = ({to, className, disabled, style, onClick = {}, text, type = 'text'}) => {
+const Button = ({
+    to,
+    className,
+    disabled,
+    style,
+    onClick = () => {},
+    text,
+    type = 'button'
+}) => {
     return to ? (
         <Link
             {...classes('', {[style]: !!style}, className)}

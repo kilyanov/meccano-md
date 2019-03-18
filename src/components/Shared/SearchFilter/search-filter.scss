@@ -1,0 +1,18 @@
+.search-filter {
+  display: inline-flex;
+
+  &__label {
+    display: flex;
+    align-items: center;
+  }
+
+  &__icon {
+    margin-right: 13px;
+  }
+
+  &__field {
+    border: none;
+    padding: 0;
+    font-size: 15px;
+  }
+}

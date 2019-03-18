@@ -1,17 +1,26 @@
 import axios from 'axios';
 import config from '../config/';
-import {AuthService, StorageService} from "../services";
+import {AuthService} from "../services";
 import {Notify} from '../helpers';
 
-const token = StorageService.get('token');
-const httpService = axios.create({
+const options = {
     baseURL: config.apiURL,
     headers: {
         'Content-Type': 'application/json',
         'Access-Control-Allow-Origin': '*',
-        'Authorization': `Bearer ${token}`
+        'withCredentials': true
     }
-});
+};
+
+const httpService = axios.create(options);
+
+httpService.setToken = (token) => {
+    httpService.defaults.headers.Authorization = `Bearer ${token}`;
+};
+
+httpService.removeToken = () => {
+    httpService.defaults.headers.Authorization = '';
+};
 
 httpService.interceptors.response.use(
     response => response,

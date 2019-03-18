@@ -1,7 +1,4 @@
-$device-xs: 540px;
-$device-sm: 768px;
-$device-md: 992px;
-$device-lg: 1200px;
+@import "variables";
 
 .container {
   box-sizing: border-box;

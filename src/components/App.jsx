@@ -1,11 +1,10 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
-import {AuthService, StorageService} from "../services";
+import {AuthService} from "../services";
 import {EventEmitter} from "../helpers";
 import {NotificationContainer} from 'react-notifications';
 import {Redirect} from 'react-router-dom';
 import '../assets/styles/main.scss';
-import PromiseDialogModal from './Shared/PromiseDialogModal/PromiseDialogModal';
 
 export default class App extends Component {
     static propTypes = {
@@ -18,18 +17,15 @@ export default class App extends Component {
 
     componentDidMount() {
         const self = this;
-        const localUtcOffset = moment().utcOffset();
+
+        AuthService.checkAuthorization();
 
         EventEmitter.setMaxListeners(0);
-        window.DialogModal = this.dialogModal;
         EventEmitter.on('redirect', (url, callback) => {
             self.setState({redirect: url}, () => {
                 self.setState({redirect: false}, callback);
             });
         });
-
-        StorageService.set('local-utc-offset', localUtcOffset);
-        AuthService.checkAuthorization();
     }
 
     componentWillUnmount() {
@@ -46,7 +42,6 @@ export default class App extends Component {
             <div className='app'>
                 {children}
                 <NotificationContainer/>
-                <PromiseDialogModal ref={node => this.dialogModal = node}/>
             </div>
         );
     }

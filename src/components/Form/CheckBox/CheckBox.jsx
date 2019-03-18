@@ -7,6 +7,7 @@ const CheckBox = ({
     name = '',
     label = '',
     disabled = false,
+    required = false,
     onChange = () => {},
     className
 }) => (
@@ -18,6 +19,7 @@ const CheckBox = ({
                 {...classes('field')}
                 type="checkbox"
                 checked={checked}
+                required={required}
                 name={name}
                 onChange={() => onChange(!checked)}
             />

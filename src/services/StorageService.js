@@ -2,7 +2,14 @@ import store from 'store';
 
 export const StorageService = {
     get: (key) => store.get(key),
-    set: (key, value) => store.set(key, value),
+    set: (key, value) => {
+        console.log('set', key);
+        store.set(key, value);
+        console.log(store.get(key));
+    },
     clear: () => store.clearAll(),
-    remove: (key) => store.remove(key)
+    remove: (key) => {
+        console.log('remove', key);
+        store.remove(key);
+    }
 };

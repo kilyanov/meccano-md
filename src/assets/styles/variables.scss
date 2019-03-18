@@ -1,10 +1,33 @@
+$device-xs: 540px;
+$device-sm: 768px;
+$device-md: 992px;
+$device-lg: 1200px;
+
 $blackColor: #333;
 $greenColor: #00B956;
 $errorColor: #F62434;
 $linkColor: #008bfb;
+$infoColor: #ffa717;
 
 $fontGrey: #999;
 $brownGreyColor: #b2b2b2;
-$gray: #d9d9d9;
 
+/* StyleGuide */
+$black: #333;
+$gray-three: #f2f2f2;
+$gray-four: #fafafa;
+$gray-two: #e5e5e5;
+$gray: #d9d9d9;
+$brown-grey: #999;
+$darkish-purple: #731982;
+$plum-purple: #62096e;
+$vibrant-purple: #b808d4;
 $shamrock: #00b956;
+$emerald: #00985f;
+$green-blue: #00bf78;
+$minty-green: #00ee6f;
+$yellowish-orange: #ffa717;
+$strawberry: #f62434;
+$azure: #008bfb;
+/*End StyleGuide */
+

@@ -3,12 +3,13 @@
 .button {
   border: 1px solid $blackColor;
   border-radius: 100px;
-  padding: 4px 30px;
+  padding: 0 30px;
   font-size: 15px;
   font-weight: 500;
   color: $blackColor;
   line-height: 24px;
   text-align: center;
+  user-select: none;
 
   &--success {
     background-color: $greenColor;

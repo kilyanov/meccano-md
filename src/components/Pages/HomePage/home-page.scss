@@ -1,8 +1,13 @@
 .home-page {
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   flex-direction: column;
+
+  &__logo {
+    margin-top: 72px;
+    margin-bottom: 40px;
+  }
 
   &__title {
     font-size: 32px;

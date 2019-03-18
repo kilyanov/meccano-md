@@ -8,6 +8,7 @@ import Button from "../../Shared/Button/Button";
 import './login-page.scss';
 import {EventEmitter} from "../../../helpers";
 import Loader from '../../Shared/Loader/Loader';
+import Logo from '../../Shared/Logo/Logo';
 
 class LoginPage extends Component {
     state = {
@@ -33,9 +34,6 @@ class LoginPage extends Component {
 
                             if (lastPathName && lastPathName === '/login') lastPathName = '/';
 
-                            StorageService.set('token', response.data.token);
-                            StorageService.set('token-expired', response.data.expired);
-
                             EventEmitter.emit('redirect', lastPathName || '/');
                         }
                     })
@@ -50,13 +48,16 @@ class LoginPage extends Component {
 
         return (
             <div {...classes('', '', 'container page')}>
-                <h1 {...classes('title')}>Авторизация</h1>
+                <div {...classes('logo')}>
+                    <Logo/>
+                </div>
 
                 <Form
                     {...classes('form')}
                     onSubmit={this.handleSubmitForm}
                 >
                     <FormInputText
+                        autoFocus
                         label='Логин'
                         name='login'
                         {...classes('input', 'login')}
@@ -81,16 +82,11 @@ class LoginPage extends Component {
                         {...classes('button', 'submit')}
                         disabled={password.length < 3}
                         onClick={() => {}}
-                        text='Авторизоваться'
+                        text='Войти'
+                        style='success'
                         type='submit'
                     />
                 </Form>
-
-                <Button
-                    text='Нет аккаунта?'
-                    to='/registration'
-                    style='inline'
-                />
 
                 {inProgress && <Loader/>}
             </div>

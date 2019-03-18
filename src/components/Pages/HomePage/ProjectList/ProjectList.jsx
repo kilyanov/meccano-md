@@ -1,29 +1,55 @@
-import React from 'react';
+import React, {PureComponent} from 'react';
 import {Link} from 'react-router-dom';
 import PropTypes from 'prop-types';
-import EarthIcon from './icons/EarthIcon';
-import ArrowIcon from './icons/ArrowIcon';
+import ArrowIcon from '../../../Shared/SvgIcons/ArrowIcon';
 import './project-list.scss';
 
 const classes = new Bem('project-list');
 
-const ProjectList = ({list, onClick = () => {}}) => (
-    <ul {...classes()}>
-        {(list || []).map((item, itemKey) => (
-            <li {...classes('item')} key={itemKey}>
-                <Link to='/' {...classes('item-link')} onClick={() => onClick(item.name)}>
-                    <EarthIcon {...classes('earth-icon')}/>
-                    <span {...classes('item-title')}>{item.name}</span>
-                    <ArrowIcon {...classes('arrow-icon')}/>
-                </Link>
-            </li>
-        ))}
-    </ul>
-);
+export default class ProjectList extends PureComponent {
+    static propTypes = {
+        list: PropTypes.array,
+        onClick: PropTypes.func
+    };
 
-ProjectList.propTypes = {
-    list: PropTypes.array,
-    onClick: PropTypes.func
-};
+    modifyChildren = (child) => {
+        const props = {className: 'project-list__item-icon'};
 
-export default ProjectList;
+        return React.cloneElement(child, props);
+    };
+
+    render() {
+        const {list, onClick} = this.props;
+
+        return (
+            <ul {...classes()}>
+                {(list || []).map((item, itemKey) => (
+                    <li {...classes('item', {open: item.open})} key={itemKey}>
+                        <div
+                            {...classes('item-caption')}
+                            onClick={() => {
+                                item.open = !item.open;
+                                this.forceUpdate();
+                            }}
+                        >
+                            {item.icon && this.modifyChildren(item.icon)}
+                            <span {...classes('item-title')}>{item.name}</span>
+                            {(item.children && !!item.children.length) &&
+                                <ArrowIcon {...classes('arrow-icon')}/>}
+                        </div>
+
+                        <ul {...classes('sub-list')}>
+                            {item.children && item.children.map((child, childIndex) => (
+                                <li {...classes('sub-list-item')} key={childIndex}>
+                                    <Link to={child.link} {...classes('item-link')} onClick={() => onClick(item.name)}>
+                                        <span {...classes('child-title')}>{child.name}</span>
+                                    </Link>
+                                </li>
+                            ))}
+                        </ul>
+                    </li>
+                ))}
+            </ul>
+        );
+    }
+}

@@ -1,0 +1,16 @@
+@import "variables";
+
+@function translate-media-condition($c) {
+  $condMap: (
+          "descktop-large": "only screen and (min-width: #{$device-md}) and (max-width: #{$device-lg - 1px})",
+          "descktop": "only screen and (min-width: #{$device-md}) and (max-width: #{$device-lg - 1px})",
+          "tablet": "only screen and (min-width: #{$device-sm}) and (max-width: #{$device-md - 1px})",
+          "mobile": "only screen and (min-width: #{$device-xs}) and (max-width: #{$device-sm - 1px})",
+  );
+
+  @return map-get( $condMap, $c );
+}
+
+@mixin media($type) {
+  @media #{translate-media-condition($type)}  { @content; }
+}

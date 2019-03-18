@@ -5,31 +5,66 @@
   margin: 0;
   padding: 0;
   list-style: none;
+  border: 1px solid $gray;
+  border-bottom: none;
 
   &__item {
-    height: 64px;
     border-bottom: 1px solid $gray;
 
+    &--open {
+      .project-list__sub-list {
+        max-height: 3000px;
+        transition: max-height 3s linear;
+      }
+
+      .project-list__arrow-icon {
+        transform: rotate(90deg);
+      }
+
+      .project-list__item-caption:hover {
+        color: $blackColor;
+        background-color: white;
+
+        .project-list__arrow-icon {
+          fill: $gray;
+        }
+        .project-list__item-icon {
+          fill: $greenColor;
+        }
+        .project-list__item-link {
+          color: $blackColor;
+        }
+      }
+    }
+  }
+
+  &__item-caption {
+    display: flex;
+    align-items: center;
+    height: 64px;
+    cursor: pointer;
+
     &:hover {
+      color: white;
       background-color: $greenColor;
 
-      .project-list__earth-icon {
+      .project-list__arrow-icon,
+      .project-list__item-icon {
         fill: white;
       }
       .project-list__item-link {
         color: white;
-      }
-      .project-list__arrow-icon {
-        fill: white;
       }
     }
   }
 
   &__item-link {
     display: flex;
+    width: 100%;
     height: 100%;
     align-items: center;
     color: $blackColor;
+    cursor: pointer;
 
     &:hover {
       text-decoration: none;
@@ -43,13 +78,41 @@
     text-overflow: ellipsis;
   }
 
-  &__earth-icon {
+  &__item-icon {
     fill: $greenColor;
-    margin: 20px;
+    margin: 0 20px;
   }
 
   &__arrow-icon {
+    margin-left: auto;
+    margin-right: 20px;
+    transform: rotate(-90deg);
     fill: $gray;
-    margin: 20px 20px 20px auto;
+  }
+
+  &__sub-list {
+    max-height: 0;
+    padding: 0;
+    margin: 0;
+    transition: max-height 1s cubic-bezier(0, 1, 0, 1);
+    overflow: hidden;
+  }
+
+  &__sub-list-item {
+    display: flex;
+    align-items: center;
+    height: 48px;
+
+    .project-list__item-link {
+      padding-left: 64px;
+    }
+
+    &:hover {
+      background-color: $greenColor;
+
+      .project-list__item-link {
+        color: white;
+      }
+    }
   }
 }

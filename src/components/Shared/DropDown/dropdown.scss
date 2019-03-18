@@ -1,0 +1,34 @@
+.dropdown {
+  position: absolute;
+  top: 100%;
+  width: 100%;
+  margin-top: -1px;
+  background-color: #fff;
+  box-shadow: 0 4px 15px 0 rgba(0, 0, 0, .2);
+  overflow: hidden;
+  word-break: break-all;
+  z-index: 1;
+
+  &__list {
+    position: relative;
+    max-height: 200px;
+    overflow: auto;
+    -webkit-overflow-scrolling: touch;
+    will-change: scroll-position;
+  }
+
+  &__list-item {
+    display: flex;
+    align-items: center;
+    height: 48px;
+    padding-left: 16px;
+    font-size: 15px;
+    cursor: pointer;
+    user-select: none;
+
+    &:active,
+    &:hover {
+      background-color: #f2f2f2;
+    }
+  }
+}

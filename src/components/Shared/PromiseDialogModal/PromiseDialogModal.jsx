@@ -1,6 +1,8 @@
-import React, {Fragment, PureComponent} from 'react';
+import React, {PureComponent} from 'react';
 import './dialog-modal.scss';
 import Button from '../Button/Button';
+
+const classes = new Bem('dialog-modal');
 
 export default class PromiseDialogModal extends PureComponent {
     state = {
@@ -15,13 +17,13 @@ export default class PromiseDialogModal extends PureComponent {
             content = '',
             closeOnSubmit = true,
             submitText = 'Ok',
-            cancelText = 'Отмена'
+            cancelText = 'Отмена',
+            style
         } = props;
 
         return new Promise((resolve, reject) => {
-            const classes = new Bem('dialog-modal');
             const modal = (
-                <Fragment>
+                <div {...classes('container', {[style]: !!style})}>
                     <div {...classes('header')}>
                         <h4 {...classes('title')}>{title}</h4>
                         {subTitle && <h6 {...classes('sub-title')}>{subTitle}</h6>}
@@ -33,7 +35,7 @@ export default class PromiseDialogModal extends PureComponent {
 
                     <div {...classes('footer')}>
                         <Button
-                            {...classes('button')}
+                            {...classes('button', 'cancel')}
                             text={cancelText}
                             style='inline'
                             onClick={() => {
@@ -43,7 +45,7 @@ export default class PromiseDialogModal extends PureComponent {
                         />
 
                         <Button
-                            {...classes('button')}
+                            {...classes('button', 'submit')}
                             text={submitText}
                             style='success'
                             onClick={() => {
@@ -52,7 +54,7 @@ export default class PromiseDialogModal extends PureComponent {
                             }}
                         />
                     </div>
-                </Fragment>
+                </div>
             );
 
             this.setState({opened: true, modal});
@@ -60,14 +62,18 @@ export default class PromiseDialogModal extends PureComponent {
     };
 
     close = () => {
-        this.setState({opened: false});
+        this.setState({
+            opened: false,
+            modal: null
+        });
     };
-
-    classes = new Bem('dialog-modal');
 
     render() {
         const {opened, modal} = this.state;
 
-        return <div {...this.classes('', {opened})}>{modal}</div>;
+        return <div {...classes('', {opened})}>
+            {modal}
+            {opened && <div {...classes('overlay')} />}
+        </div>;
     }
 }

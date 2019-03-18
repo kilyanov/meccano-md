@@ -4,12 +4,16 @@
     align-items: center;
     justify-content: center;
 
+    &__logo {
+        margin-bottom: 40px;
+    }
+
     &__form {
         display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: stretch;
-        width: 230px;
+        width: 360px;
         margin-bottom: 20px;
     }
 
@@ -19,5 +23,12 @@
         &--password {
             margin-bottom: 40px;
         }
+    }
+
+    &__button {
+       &--submit {
+           width: 170px;
+           height: 48px;
+       }
     }
 }

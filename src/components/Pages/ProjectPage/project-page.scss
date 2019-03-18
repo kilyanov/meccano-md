@@ -1,0 +1,43 @@
+@import "../../../assets/styles/variables";
+
+.project-page {
+  &__top-bar {
+    margin-bottom: 40px;
+  }
+
+  &__title-wrapper {
+    display: flex;
+    align-items: center;
+    margin-bottom: 18px;
+  }
+
+  &__title {
+    margin-bottom: 0;
+  }
+
+  &__upload-btn {
+    height: 32px;
+    margin-left: 16px;
+  }
+
+  &__filters {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+  }
+
+  &__filter-item {
+
+  }
+
+  &__articles-count {
+    display: inline-flex;
+    font-size: 15px;
+    color: $fontGrey;
+  }
+
+  &__article-add-btn {
+    height: 32px;
+  }
+}

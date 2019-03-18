@@ -7,7 +7,6 @@ $namespace: '.checkbox';
   line-height: 24px;
   cursor: pointer;
   user-select: none;
-  pointer-events: none;
 
   &:hover {
     #{$namespace}__box {

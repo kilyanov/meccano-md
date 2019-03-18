@@ -1,22 +1,44 @@
 @import "../../../assets/styles/variables";
 
 .dialog-modal {
-  position: fixed;
-  top: -100%;
-  left: 0;
-  right: 0;
-  width: 420px;
-  margin: 0 auto;
-  padding: 20px;
-  border-bottom-left-radius: 8px;
-  border-bottom-right-radius: 8px;
-  box-shadow: 0 5px 20px 5px rgba(0, 0, 0, .2);
-  background: #fff;
-  color: $blackColor;
-  transition: top .3s ease;
+  transition: background-color .1s ease;
 
   &--opened {
+    position: fixed;
     top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, .3);
+    z-index: 1000;
+
+    .dialog-modal__container {
+      top: 0;
+    }
+  }
+
+  &__container {
+    position: absolute;
+    top: -100%;
+    left: 0;
+    right: 0;
+    width: 420px;
+    margin: 0 auto;
+    padding: 20px;
+    border-bottom-left-radius: 8px;
+    border-bottom-right-radius: 8px;
+    box-shadow: 0 5px 20px 5px rgba(0, 0, 0, .2);
+    background: #fff;
+    color: $blackColor;
+    transition: top .3s ease;
+
+    &--danger {
+      .dialog-modal__button--submit {
+        background-color: $strawberry;
+        border-color: $strawberry;
+        color: white;
+      }
+    }
   }
 
   &__title {
@@ -39,6 +61,8 @@
   }
 
   &__button {
+    height: 40px;
+
     &:first-child {
       margin-left: auto;
     }
