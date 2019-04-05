@@ -4,5 +4,8 @@ export default {
         create: '/auth/create'
     },
     project: '/project',
-    country: '/country'
+    country: '/country',
+    user: {
+        profile: '/user/profile'
+    }
 };

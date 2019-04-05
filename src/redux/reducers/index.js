@@ -1,8 +1,8 @@
 import {combineReducers} from 'redux';
-import {countries} from "./country";
+import {profile} from "./user";
 
 const reducer = combineReducers({
-    countries
+    profile
 });
 
 export default reducer;

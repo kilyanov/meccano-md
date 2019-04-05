@@ -5,7 +5,7 @@ import reducers from './reducers';
 
 const logger = createLogger();
 const initialState = {
-    countries: []
+    profile: {}
 };
 
 /* eslint-disable no-underscore-dangle */

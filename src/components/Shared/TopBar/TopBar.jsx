@@ -1,5 +1,6 @@
 import React, {PureComponent} from 'react';
 import PropTypes from 'prop-types';
+import {connect} from 'react-redux';
 import './top-bar.scss';
 import Logo from '../Logo/Logo';
 import ProfileIcon from '../SvgIcons/ProfileIcon';
@@ -9,9 +10,10 @@ import {AuthService} from '../../../services';
 
 const classes = new Bem('top-bar');
 
-export default class TopBar extends PureComponent {
+class TopBar extends PureComponent {
     static propTypes = {
-        className: PropTypes.string
+        className: PropTypes.string,
+        profile: PropTypes.object
     };
 
     profileMenuItems = [{
@@ -24,6 +26,7 @@ export default class TopBar extends PureComponent {
     }];
 
     render() {
+        const {profile} = this.props;
         const profileIsOpen = this.dropdown && this.dropdown.isOpen();
 
         return (
@@ -37,8 +40,8 @@ export default class TopBar extends PureComponent {
                         >
                             <ProfileIcon {...classes('profile-icon')}/>
                             <div {...classes('profile-data')}>
-                                <span {...classes('profile-name')}>M_username</span>
-                                <span {...classes('profile-username')}>User Name</span>
+                                <span {...classes('profile-name')}>{profile.username}</span>
+                                <span {...classes('profile-username')}>{profile.email}</span>
                             </div>
                             <ArrowIcon {...classes('drop-arrow')}/>
                         </div>
@@ -56,3 +59,5 @@ export default class TopBar extends PureComponent {
         );
     }
 }
+
+export default connect(({profile}) => ({profile}))(TopBar);

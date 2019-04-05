@@ -1,8 +1,8 @@
 import types from "../../../constants/ActionTypes";
 
-export function countries(state = {}, action) {
+export function profile(state = {}, action) {
     switch (action.type) {
-        case types.country.COUNTRY_LOADED:
+        case types.user.profile.PROFILE_LOADED:
             return action.data;
         default:
             return state;

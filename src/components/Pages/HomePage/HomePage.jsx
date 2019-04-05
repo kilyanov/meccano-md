@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
-import './home-page.scss';
+import {connect} from 'react-redux';
+import PropTypes from 'prop-types';
 import ProjectList from './ProjectList/ProjectList';
 import {ProjectService} from '../../../services';
 import PromiseDialogModal from '../../Shared/PromiseDialogModal/PromiseDialogModal';
@@ -9,7 +10,13 @@ import ProjectsIcon from '../../Shared/SvgIcons/ProjectsIcon';
 import UsersIcon from '../../Shared/SvgIcons/UsersIcon';
 import SettingsIcon from '../../Shared/SvgIcons/SettingsIcon';
 
+import './home-page.scss';
+
 class HomePage extends Component {
+    static propTypes = {
+        profile: PropTypes.object
+    };
+
     state = {
         projects: []
     };
@@ -67,6 +74,7 @@ class HomePage extends Component {
 
     render() {
         const classes = new Bem('home-page');
+        const {profile} = this.props;
 
         return (
             <div {...classes('', '', ['container', 'page'])}>
@@ -74,7 +82,7 @@ class HomePage extends Component {
                     <Logo/>
                 </div>
 
-                <h1 {...classes('title')}>Добро пожаловать, Юзверь!</h1>
+                <h1 {...classes('title')}>Добро пожаловать, {_.get(profile, 'username', '')}!</h1>
                 <h5 {...classes('sub-title')}>
                     Выберите ваш текущий проект, или <a {...classes('link')} role='button'>создайте новый</a>
                 </h5>
@@ -91,4 +99,4 @@ class HomePage extends Component {
     }
 }
 
-export default HomePage;
+export default connect(({profile}) => ({profile}))(HomePage);
