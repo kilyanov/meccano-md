@@ -11,11 +11,9 @@ export default class App extends Component {
         children: PropTypes.node
     };
 
-    state = {
-        redirect: false
-    };
+    constructor() {
+        super();
 
-    componentDidMount() {
         const self = this;
 
         AuthService.checkAuthorization();
@@ -27,6 +25,10 @@ export default class App extends Component {
             });
         });
     }
+
+    state = {
+        redirect: false
+    };
 
     componentWillUnmount() {
         EventEmitter.off('redirect');

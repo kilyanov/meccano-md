@@ -11,6 +11,14 @@ import Loader from '../../Shared/Loader/Loader';
 import Logo from '../../Shared/Logo/Logo';
 
 class LoginPage extends Component {
+    constructor() {
+        super();
+
+        if (AuthService.isAuth()) {
+            EventEmitter.emit('redirect', '/');
+        }
+    }
+
     state = {
         username: '',
         password: '',

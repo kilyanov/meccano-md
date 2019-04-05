@@ -20,6 +20,10 @@ export const AuthService = {
         const token = StorageService.get('token');
         const tokenExpired = StorageService.get('token-expired');
 
+        if (token) {
+            API.setToken(token);
+        }
+
         if (!token || AuthService.isExpired(tokenExpired)) {
             StorageService.set('last-pathname', location.pathname);
             AuthService.logOut();

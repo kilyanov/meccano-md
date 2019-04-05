@@ -79,6 +79,24 @@ export default class ProjectPage extends Component {
         }
     };
 
+    handleDeleteItem = (itemId) => {
+        const {articles} = this.state;
+        const article = articles.find(({id}) => id === itemId);
+
+        if (itemId && article) {
+            this.promiseDialogModal.open({
+                title: 'Удаление статьи',
+                content: `Вы уверены, что хотите удалить статью "${article.title}"?`,
+                submitText: 'Удалить',
+                style: 'danger'
+            }).then(() => {
+                this.setState({
+                    articles: articles.filter(({id}) => id !== itemId)
+                });
+            });
+        }
+    };
+
     render() {
         const {articles, selectedItemIds, filters} = this.state;
         const hasSelectedItems = !!selectedItemIds.length;
@@ -144,6 +162,7 @@ export default class ProjectPage extends Component {
 
                     <ProjectTable
                         onChangeSelected={this.handleChangeSelected}
+                        onDeleteArticle={this.handleDeleteItem}
                         selectedIds={selectedItemIds}
                         articles={articles}
                     />

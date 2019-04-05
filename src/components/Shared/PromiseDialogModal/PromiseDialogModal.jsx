@@ -7,7 +7,13 @@ const classes = new Bem('dialog-modal');
 export default class PromiseDialogModal extends PureComponent {
     state = {
         modal: null,
-        opened: false
+        opened: false,
+        pulse: false
+    };
+
+    handleClick = () => {
+        this.setState({pulse: true});
+        setTimeout(() => this.setState({pulse: false}), 1000);
     };
 
     open = (props) => {
@@ -69,11 +75,14 @@ export default class PromiseDialogModal extends PureComponent {
     };
 
     render() {
-        const {opened, modal} = this.state;
+        const {opened, modal, pulse} = this.state;
 
-        return <div {...classes('', {opened})}>
-            {modal}
-            {opened && <div {...classes('overlay')} />}
-        </div>;
+        return (
+            <div {...classes('', {opened})} onClick={this.handleClick}>
+                <div {...classes('container-wrapper', {pulse})}>
+                    {modal}
+                </div>
+            </div>
+        );
     }
 }

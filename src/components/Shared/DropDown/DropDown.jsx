@@ -22,7 +22,8 @@ export default class DropDown extends PureComponent {
     };
 
     state = {
-        isOpen: false
+        isOpen: false,
+        styles: null
     };
 
     componentDidMount() {
@@ -48,13 +49,13 @@ export default class DropDown extends PureComponent {
         return this.state.isOpen;
     };
 
-    toggle = () => {
+    toggle = (params) => {
         if (this.state.isOpen) this.close();
-        else this.open();
+        else this.open(params);
     };
 
-    open = () => {
-        this.setState({isOpen: true}, this.props.onOpen);
+    open = (params = {style: null}) => {
+        this.setState({isOpen: true, styles: params.style}, this.props.onOpen);
     };
 
     close = () => {
@@ -63,22 +64,30 @@ export default class DropDown extends PureComponent {
 
     render() {
         const {className, items} = this.props;
-        const {isOpen} = this.state;
+        const {isOpen, styles} = this.state;
 
         return isOpen ? (
-            <div {...classes('', '', className)}>
+            <div {...classes('', '', className)} style={styles}>
                 <div {...classes('list')} role='listbox'>
-                    {items.map(({isLink, to, title, disabled, onClick, closeOnClick}, itemIndex) => isLink ? (
+                    {items.map(({
+                        isLink, 
+                        to, 
+                        title, 
+                        disabled, 
+                        onClick, 
+                        closeOnClick,
+                        danger
+                    }, itemIndex) => isLink ? (
                         <Link
                             key={itemIndex}
-                            {...classes('list-item', {disabled})}
+                            {...classes('list-item', {disabled, danger})}
                             to={to}
                             role='option'
                         >{title}</Link>
                     ) : (
                         <div
                             key={itemIndex}
-                            {...classes('list-item', {disabled})}
+                            {...classes('list-item', {disabled, danger})}
                             onClick={() => {
                                 onClick();
 

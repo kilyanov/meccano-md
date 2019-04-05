@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import ProjectTableHeader from './ProjectTableHeader/ProjectTableHeader';
 import {SORT_DIR} from '../../../../constants';
 import CheckBox from '../../../Form/CheckBox/CheckBox';
+import DropDown from '../../../Shared/DropDown/DropDown';
 
 import './project-table.scss';
 import DropDownMenuIcon from '../../../Shared/SvgIcons/DropDownMenuIcon';
@@ -14,7 +15,8 @@ export default class ProjectTable extends Component {
         className: PropTypes.string,
         articles: PropTypes.array,
         selectedIds: PropTypes.array,
-        onChangeSelected: PropTypes.func
+        onChangeSelected: PropTypes.func,
+        onDeleteArticle: PropTypes.func
     };
 
     static defaultProps = {
@@ -66,6 +68,16 @@ export default class ProjectTable extends Component {
         this.props.onChangeSelected(newSelected);
     };
 
+    handleEditArticle = (article) => {
+        console.log('edit article ', article);
+    };
+
+    handleDeleteArticle = (articleId) => {
+        console.log('delete article ', articleId);
+    };
+
+    articleDropDown = {};
+
     defaultSort = {
         type: null,
         dir: null
@@ -73,6 +85,14 @@ export default class ProjectTable extends Component {
 
     renderRow = (article) => {
         const {selectedIds} = this.props;
+        const menuItems = [{
+            title: 'Изменить',
+            onClick: () => this.handleEditArticle(article)
+        }, {
+            danger: true,
+            title: 'Удвлить',
+            onClick: () => this.props.onDeleteArticle(article.id)
+        }];
 
         return (
             <div
@@ -106,8 +126,17 @@ export default class ProjectTable extends Component {
                     </span>
                 </div>
 
-                <button {...classes('menu-button')}>
+                <button 
+                    {...classes('menu-button')} 
+                    onClick={() => {
+                        this.articleDropDown[article.id].toggle({style: {right: 0}});
+                    }}
+                >
                     <DropDownMenuIcon {...classes('menu-button-icon')}/>
+                    <DropDown
+                        items={menuItems}
+                        ref={node => this.articleDropDown[article.id] = node}
+                    /> 
                 </button>
             </div>
         );
