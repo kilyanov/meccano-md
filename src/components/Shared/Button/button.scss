@@ -1,6 +1,7 @@
 @import "../../../assets/styles/variables";
 
 .button {
+  background-color: transparent;
   border: 1px solid $blackColor;
   border-radius: 100px;
   padding: 0 30px;
@@ -21,6 +22,7 @@
     padding: 0;
     border: none;
     color: $linkColor;
+    background-color: transparent;
   }
 
   &--disabled {

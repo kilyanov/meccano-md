@@ -2,13 +2,13 @@ import React, {Component} from 'react';
 import {connect} from 'react-redux';
 import {AuthService, StorageService} from "../../../services";
 import Form from "../../Form/Form/Form";
-import FormInputText from "../../Form/FormInputText/FormInputText";
 import Button from "../../Shared/Button/Button";
 
 import './login-page.scss';
 import {EventEmitter} from "../../../helpers";
 import Loader from '../../Shared/Loader/Loader';
 import Logo from '../../Shared/Logo/Logo';
+import InputText from '../../Form/InputText/InputText';
 
 class LoginPage extends Component {
     constructor() {
@@ -64,7 +64,7 @@ class LoginPage extends Component {
                     {...classes('form')}
                     onSubmit={this.handleSubmitForm}
                 >
-                    <FormInputText
+                    <InputText
                         autoFocus
                         label='Логин'
                         name='login'
@@ -75,7 +75,7 @@ class LoginPage extends Component {
                         onChange={value => this.handleChangeField(value, 'username')}
                     />
 
-                    <FormInputText
+                    <InputText
                         label='Пароль'
                         name='password'
                         {...classes('input', 'password')}

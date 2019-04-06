@@ -39,7 +39,7 @@ class TopBar extends PureComponent {
                             onClick={() => this.dropdown.toggle()}
                         >
                             <ProfileIcon {...classes('profile-icon')}/>
-                            <div {...classes('profile-data')}>
+                            <div {...classes('profile-data', '', 'd-none d-md-flex')}>
                                 <span {...classes('profile-name')}>{profile.username}</span>
                                 <span {...classes('profile-username')}>{profile.email}</span>
                             </div>

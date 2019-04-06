@@ -1,0 +1,98 @@
+@import "../../../assets/styles/variables";
+
+$namespace: '.input-date-picker';
+
+#{$namespace} {
+  position: relative;
+  margin-bottom: 20px;
+
+  &--succeed {
+    #{$namespace}__label-text {
+      font-weight: 500;
+
+      &:before {
+        content: '✔️ ';
+      }
+    }
+  }
+
+  &--error {
+    &:after {
+      content: "";
+      position: absolute;
+      width: 32px;
+      height: 32px;
+      bottom: 8px;
+      right: 8px;
+    }
+
+    #{$namespace}__label-text {
+      color: $errorColor;
+    }
+
+    #{$namespace}__field {
+      color: $errorColor;
+      padding-right: 40px;
+      border-color: $errorColor;
+    }
+  }
+
+  &--link {
+    #{$namespace}__field {
+      padding-right: 50px;
+    }
+  }
+
+  &:placeholder-shown {
+    color: $fontGrey;
+    opacity: 1;
+  }
+
+  &__label {
+    display: flex;
+    flex-direction: column;
+  }
+
+  &__label-text {
+    font-size: 15px;
+    line-height: 24px;
+    margin-bottom: 8px;
+  }
+
+  .react-date-picker__wrapper {
+    width: 100%;
+    height: 48px;
+    padding: 0 11px 0 17px;
+    border: 1px solid $brownGreyColor;
+    font-size: 15px;
+    line-height: 24px;
+    outline: 0;
+  }
+
+  &__clear {
+    position: absolute;
+    width: 32px;
+    height: 32px;
+    background: rgba(255, 255, 255, 0);
+    cursor: pointer;
+    bottom: 8px;
+    right: 8px;
+    z-index: 1;
+  }
+
+  &__message {
+    position: absolute;
+    left: 0;
+    top: 100%;
+    font-size: 12px;
+    line-height: 15px;
+    margin-top: 3px;
+    color: #F62434;
+  }
+
+  &__earth-icon {
+    position: absolute;
+    bottom: 14px;
+    right: 16px;
+  }
+}

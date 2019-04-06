@@ -24,6 +24,8 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
+    width: 100%;
+    flex-wrap: wrap;
     margin-bottom: 16px;
   }
 
@@ -39,5 +41,9 @@
 
   &__article-add-btn {
     height: 32px;
+  }
+
+  &__project-table-wrapper {
+    overflow-x: auto;
   }
 }

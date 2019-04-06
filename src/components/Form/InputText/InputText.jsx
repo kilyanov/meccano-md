@@ -1,9 +1,11 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 
-import './form-input.scss';
+import './input-text.scss';
 
-export default class FormInputText extends Component {
+const classes = new Bem('input-text');
+
+export default class InputText extends Component {
     static propTypes = {
         autoFocus: PropTypes.bool,
         className: PropTypes.string,
@@ -19,7 +21,7 @@ export default class FormInputText extends Component {
         disabled: PropTypes.bool,
         controlled: PropTypes.bool,
         placeholder: PropTypes.string,
-        validateType: PropTypes.oneOf(['notEmpty', 'email']),
+        validateType: PropTypes.oneOf(['notEmpty', 'email', 'link']),
         validateErrorMessage: PropTypes.string,
         onValidate: PropTypes.func
     };
@@ -102,6 +104,8 @@ export default class FormInputText extends Component {
                     return value.length > 0;
                 case 'email':
                     return this.validateEmail(value);
+                case 'link':
+                    return this.validateLink(value);
             }
         }
 
@@ -112,11 +116,16 @@ export default class FormInputText extends Component {
         return this.state.error;
     };
 
-    validateEmail = (email) => {
+    validateEmail = (value) => {
         const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 
-        console.log(re.test(String(email).toLowerCase()));
-        return re.test(String(email).toLowerCase());
+        return re.test(String(value).toLowerCase());
+    };
+
+    validateLink = (value) => {
+        const re = /^(?:http(s)?:\/\/)?[\w.-]+(?:\.[\w\.-]+)+[\w\-\._~:/?#[\]@!\$&'\(\)\*\+,;=.]+$/;
+
+        return re.test(String(value).toLowerCase());
     };
 
     render() {
@@ -129,12 +138,13 @@ export default class FormInputText extends Component {
             controlled,
             type,
             onClick,
+            validateType,
             validateErrorMessage
         } = this.props;
         const {error} = this.state;
-        const classes = new Bem('form-input');
         const isFocused = this.inputRef === document.activeElement;
         const isError = error; // && !isFocused
+        const isLink = validateType === 'link';
         const value = controlled ? this.props.value : this.state.value;
         const isSucceed = !!value && !isError;
 
@@ -143,7 +153,8 @@ export default class FormInputText extends Component {
                 {...classes('', {
                     error: isError,
                     focused: isFocused,
-                    succeed: isSucceed
+                    succeed: isSucceed,
+                    link: isLink
                 }, className)}
             >
                 <label {...classes('label')}>
@@ -160,6 +171,10 @@ export default class FormInputText extends Component {
                         onClick={onClick}
                         ref={node => this.inputRef = node}
                     />
+
+                    {isLink &&
+                        <img {...classes('earth-icon')} src={require('./img/earth-icon.svg')}/>
+                    }
 
                     {isError && (
                         <div

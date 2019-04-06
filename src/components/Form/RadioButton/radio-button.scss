@@ -1,0 +1,67 @@
+@import "../../../assets/styles/variables";
+
+$namespace: '.radio-button';
+
+#{$namespace} {
+  font-size: 15px;
+  line-height: 24px;
+  cursor: pointer;
+  user-select: none;
+
+  &:hover {
+    #{$namespace}__box {
+      border-color: $greenColor;
+    }
+  }
+
+  &--checked {
+    #{$namespace}__box{
+      border-color: $greenColor;
+      border-width: 6px;
+    }
+  }
+
+  &--disabled {
+    * {
+      cursor: not-allowed;
+    }
+
+    #{$namespace}__label {
+      pointer-events: none;
+      color: $fontGrey;
+    }
+
+    #{$namespace}__box {
+      border-color: $gray;
+    }
+
+    &.checkbox--checked {
+      #{$namespace}__box {
+        background-color: $gray;
+      }
+    }
+  }
+
+  &__box {
+    position: relative;
+    display: inline-flex;
+    margin-right: 20px;
+    background-color: transparent;
+    border: 2px solid $brownGreyColor;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    transition: border-width .1s ease;
+  }
+
+
+  &__field {
+    display: none;
+  }
+
+  &__label {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+  }
+}

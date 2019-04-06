@@ -9,6 +9,8 @@ import StarIcon from '../../Shared/SvgIcons/StarIcon';
 import SearchFilter from '../../Shared/SearchFilter/SearchFilter';
 import ProjectTable from './ProjectTable/ProjectTable';
 import PromiseDialogModal from '../../Shared/PromiseDialogModal/PromiseDialogModal';
+import ArticleCreateModal from '../../Article/ArticleCreateModal/ArticleCreateModal';
+import ArticlesUploadModal from '../../Article/ArticlesUploadModal/ArticlesUploadModal';
 
 const classes = new Bem('project-page');
 
@@ -44,7 +46,9 @@ export default class ProjectPage extends Component {
         /* eslint-enable */
         filters: {
             search: ''
-        }
+        },
+        showArticleModal: false,
+        showUploadArticlesModal: false
     };
 
     handleChangeFilter = (filter, value) => {
@@ -61,7 +65,7 @@ export default class ProjectPage extends Component {
         this.setState({selectedItemIds});
     };
 
-    handleDeleteItems = () => {
+    handleDeleteArticles = () => {
         const {selectedItemIds} = this.state;
 
         if (selectedItemIds.length) {
@@ -79,7 +83,7 @@ export default class ProjectPage extends Component {
         }
     };
 
-    handleDeleteItem = (itemId) => {
+    handleDeleteArticle = (itemId) => {
         const {articles} = this.state;
         const article = articles.find(({id}) => id === itemId);
 
@@ -97,8 +101,14 @@ export default class ProjectPage extends Component {
         }
     };
 
+    handleAddArticle = () => {
+        this.setState({
+            showArticleModal: true
+        });
+    };
+
     render() {
-        const {articles, selectedItemIds, filters} = this.state;
+        const {articles, selectedItemIds, filters, showArticleModal, showUploadArticlesModal} = this.state;
         const hasSelectedItems = !!selectedItemIds.length;
 
         return (
@@ -112,6 +122,7 @@ export default class ProjectPage extends Component {
                             text='Выгрузить все'
                             {...classes('upload-btn')}
                             style='success'
+                            onClick={() => this.setState({showUploadArticlesModal: true})}
                         />
                     </section>
 
@@ -121,7 +132,7 @@ export default class ProjectPage extends Component {
                             iconComponent={<TrashIcon/>}
                             text='Удалить'
                             disabled={!hasSelectedItems}
-                            onClick={this.handleDeleteItems}
+                            onClick={this.handleDeleteArticles}
                         />
 
                         <IconButton
@@ -157,15 +168,30 @@ export default class ProjectPage extends Component {
                         <Button
                             {...classes('article-add-btn')}
                             text='Добавить'
+                            onClick={this.handleAddArticle}
                         />
                     </section>
 
-                    <ProjectTable
-                        onChangeSelected={this.handleChangeSelected}
-                        onDeleteArticle={this.handleDeleteItem}
-                        selectedIds={selectedItemIds}
-                        articles={articles}
-                    />
+                    <div {...classes('project-table-wrapper')}>
+                        <ProjectTable
+                            onChangeSelected={this.handleChangeSelected}
+                            onDeleteArticle={this.handleDeleteArticle}
+                            selectedIds={selectedItemIds}
+                            articles={articles}
+                        />
+                    </div>
+
+                    {showArticleModal && (
+                        <ArticleCreateModal
+                            onClose={() => this.setState({showArticleModal: false})}
+                        />
+                    )}
+
+                    {showUploadArticlesModal && (
+                        <ArticlesUploadModal
+                            onClose={() => this.setState({showUploadArticlesModal: false})}
+                        />
+                    )}
 
                     <PromiseDialogModal ref={node => this.promiseDialogModal = node}/>
                 </div>

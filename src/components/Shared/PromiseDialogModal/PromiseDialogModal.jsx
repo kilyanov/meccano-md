@@ -1,6 +1,7 @@
 import React, {PureComponent} from 'react';
 import './dialog-modal.scss';
 import Button from '../Button/Button';
+import { KEY_CODE } from '../../../constants/KeyCode';
 
 const classes = new Bem('dialog-modal');
 
@@ -9,6 +10,20 @@ export default class PromiseDialogModal extends PureComponent {
         modal: null,
         opened: false,
         pulse: false
+    };
+
+    componentDidMount() {
+        document.addEventListener('keydown', this.handleDocumentKeyDown);
+    }
+
+    componentWillUnmount() {
+        document.removeEventListener('keydown', this.handleDocumentKeyDown);
+    }
+
+    handleDocumentKeyDown = (event) => {
+        if (event.keyCode === KEY_CODE.esc) {
+            this.close();
+        }
     };
 
     handleClick = () => {

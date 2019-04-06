@@ -10,12 +10,16 @@
   }
 
   &__title {
+    padding: 0 1em;
     font-size: 32px;
     line-height: 40px;
+    text-align: center;
   }
 
   &__sub-title {
+    padding: 0 1em;
     font-size: 15px;
     font-weight: normal;
+    text-align: center;
   }
 }

@@ -1,0 +1,25 @@
+@import '../../../assets/styles/variables.scss';
+
+.textarea {
+    position: relative;
+    margin-bottom: 20px;
+
+    &__label {
+        display: flex;
+        flex-direction: column;
+    }
+
+    &__label-text {
+        font-size: 15px;
+        line-height: 24px;
+        margin-bottom: 8px;
+    }
+
+    &__field {
+        padding: 17px;
+        border: 1px solid $brownGreyColor;
+        font-size: 15px;
+        line-height: 24px;
+        outline: 0;
+    }
+}

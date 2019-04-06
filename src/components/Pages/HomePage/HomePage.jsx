@@ -1,8 +1,8 @@
-import React, {Component} from 'react';
-import {connect} from 'react-redux';
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import ProjectList from './ProjectList/ProjectList';
-import {ProjectService} from '../../../services';
+import { ProjectService } from '../../../services';
 import PromiseDialogModal from '../../Shared/PromiseDialogModal/PromiseDialogModal';
 import Logo from '../../Shared/Logo/Logo';
 import ArticlesIcon from '../../Shared/SvgIcons/ArticlesIcon';
@@ -11,6 +11,7 @@ import UsersIcon from '../../Shared/SvgIcons/UsersIcon';
 import SettingsIcon from '../../Shared/SvgIcons/SettingsIcon';
 
 import './home-page.scss';
+import ProjectCreateModal from '../../Project/ProjectCreateModal/ProjectCreateModal';
 
 class HomePage extends Component {
     static propTypes = {
@@ -18,7 +19,8 @@ class HomePage extends Component {
     };
 
     state = {
-        projects: []
+        projects: [],
+        showProjectCreateModal: false
     };
 
     componentDidMount() {
@@ -74,7 +76,8 @@ class HomePage extends Component {
 
     render() {
         const classes = new Bem('home-page');
-        const {profile} = this.props;
+        const { profile } = this.props;
+        const { showProjectCreateModal } = this.state;
 
         return (
             <div {...classes('', '', ['container', 'page'])}>
@@ -84,14 +87,26 @@ class HomePage extends Component {
 
                 <h1 {...classes('title')}>Добро пожаловать, {_.get(profile, 'username', '')}!</h1>
                 <h5 {...classes('sub-title')}>
-                    Выберите ваш текущий проект, или <a {...classes('link')} role='button'>создайте новый</a>
+                    Выберите ваш текущий проект, или
+                    {' '}
+                    <a
+                        {...classes('link')}
+                        role='button'
+                        onClick={() => this.setState({ showProjectCreateModal: true })}
+                    >создайте новый</a>
                 </h5>
 
                 <div {...classes('row', '', ['row', 'row--align-h-center'])}>
-                    <div {...classes('column', '', 'col-lg-6')}>
-                        <ProjectList list={this.projects} onClick={this.handleClick}/>
+                    <div {...classes('column', '', 'col-md-6')}>
+                        <ProjectList list={ this.projects } onClick={ this.handleClick }/>
                     </div>
                 </div>
+
+                {showProjectCreateModal && (
+                    <ProjectCreateModal
+                        onClose={() => this.setState({ showProjectCreateModal: false })}
+                    />
+                )}
 
                 <PromiseDialogModal ref={node => this.dialogModal = node}/>
             </div>

@@ -1,11 +1,10 @@
 @import "../../../assets/styles/variables";
 
-$namespace: '.form-input';
+$namespace: '.input-text';
 
 #{$namespace} {
   position: relative;
   margin-bottom: 20px;
-
 
   &--succeed {
     #{$namespace}__label-text {
@@ -39,8 +38,10 @@ $namespace: '.form-input';
     }
   }
 
-  &--focused {
-
+  &--link {
+    #{$namespace}__field {
+      padding-right: 50px;
+    }
   }
 
   &:placeholder-shown {
@@ -87,5 +88,11 @@ $namespace: '.form-input';
     line-height: 15px;
     margin-top: 3px;
     color: #F62434;
+  }
+
+  &__earth-icon {
+    position: absolute;
+    bottom: 14px;
+    right: 16px;
   }
 }

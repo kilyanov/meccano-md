@@ -1,7 +1,20 @@
-$device-xs: 540px;
-$device-sm: 768px;
-$device-md: 992px;
-$device-lg: 1200px;
+/* Breakpoints */
+$device-xs: calc(540px + 2em);
+$device-sm: calc(768px + 2em);
+$device-md: calc(992px + 2em);
+$device-lg: calc(1200px + 2em);
+
+$grid-breakpoints: (
+  xs: 0,
+  sm: 576px,
+  md: 768px,
+  lg: 992px,
+  xl: 1200px
+) !default;
+
+$displays: none, inline, inline-block, block, table, table-row, table-cell, flex, inline-flex !default;
+
+/* Colors */
 
 $blackColor: #333;
 $greenColor: #00B956;
