@@ -71,13 +71,13 @@ class ProjectPage extends Component {
                 submitText: 'Удалить',
                 style: 'danger'
             }).then(() => {
-                const requestStack = selectedItemIds.map(articleId => ArticleService.delete(articleId));
+                // const requestStack = selectedItemIds.map(articleId => ArticleService.delete(articleId));
 
-                new Promise.all(requestStack).then(() => {
-                    NotificationManager.success('Выбранные статьи успешно удалены', 'Успех');
-                    selectedItemIds.forEach(articleId => store.dispatch(deleteArticle(articleId)));
-                    this.setState({selectedItemIds: []});
-                });
+                // new Promise.all(requestStack).then(() => {
+                //     NotificationManager.success('Выбранные статьи успешно удалены', 'Успех');
+                //     selectedItemIds.forEach(articleId => store.dispatch(deleteArticle(articleId)));
+                //     this.setState({selectedItemIds: []});
+                // });
             });
         }
     };

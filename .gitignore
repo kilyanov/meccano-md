@@ -4,4 +4,9 @@ node_modules/
 *.log
 yarn.lock
 package-lock.json
-web/
+web/*.css
+web/*.js
+web/*.json
+web/*.html
+web/assets
+web/favicons
