@@ -81,9 +81,15 @@ export default class ArticleCreateModal extends Component {
 
         if (_.isEmpty(form)) return;
 
+        form.project_id = this.props.projectId;
+
         this.setState({inProgress: true}, () => {
             ArticleService[isUpdate ? 'put' : 'post'](form, form.id).then((response) => {
+                const newArticle = response.data;
+
                 NotificationManager.success('Статья успешно добавлена в проект', 'Успех');
+
+                newArticle.projectId = this.props.projectId;
 
                 if (isUpdate) store.dispatch(updateArticle(response.data));
                 else store.dispatch(addArticle(response.data));
