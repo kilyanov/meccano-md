@@ -1,7 +1,8 @@
 import API from '../api/api';
 import ApiList from '../api/apiList';
-import {StorageService} from "./StorageService";
-import {EventEmitter} from "../helpers";
+import { StorageService } from "./StorageService";
+import { EventEmitter } from "../helpers";
+import { storeMainActions } from '../redux/storeMainActions';
 
 export const AuthService = {
     login: (form) => {
@@ -11,6 +12,7 @@ export const AuthService = {
                 StorageService.set('token', response.data.token);
                 StorageService.set('token-expired', response.data.expired);
                 API.setToken(response.data.token);
+                storeMainActions();
 
                 return response;
             });
