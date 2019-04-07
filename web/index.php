@@ -13,6 +13,6 @@
     </head>
     <body>
         <div id="root"></div>
-        <script src="./<?=assets['main']['js']?>"></script>
+        <script src="./<?=$assets['main']['js']?>"></script>
     </body>
 </html>
