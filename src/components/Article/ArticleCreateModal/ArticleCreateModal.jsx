@@ -97,14 +97,15 @@ export default class ArticleCreateModal extends Component {
     render() {
         const {article, onClose} = this.props;
         const {form, inProgress} = this.state;
+        const isUpdate = !_.isEmpty(article);
 
         return (
             <ConfirmModal
                 {...classes()}
-                title={`${article ? article.title : 'Новая статья'}`}
+                title={_.get(article, 'title', 'Новая статья')}
                 onClose={onClose}
                 onSubmit={() => this.form.submit()}
-                submitText={article ? 'Обновить' : 'Добавить'}
+                submitText={isUpdate ? 'Обновить' : 'Добавить'}
             >
                 <Form onSubmit={this.handleSubmit} ref={node => this.form = node}>
                     <div {...classes('row', '', 'row')}>

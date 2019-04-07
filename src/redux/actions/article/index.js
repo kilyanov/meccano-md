@@ -30,3 +30,8 @@ export const updateArticle = (form) => ({
     id: form.id,
     payload: form
 });
+
+export const deleteArticle = (articleId) => ({
+    type: types.article.DELETE,
+    id: articleId
+});

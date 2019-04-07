@@ -100,7 +100,6 @@ export default class ProjectTable extends Component {
             <div
                 {...classes('row')}
                 key={article.id}
-                onClick={() => this.props.onClickArticle(article)}
             >
                 <div {...classes('cell', 'check')}>
                     <CheckBox
@@ -108,22 +107,22 @@ export default class ProjectTable extends Component {
                         onChange={() => this.handleSelectArticle(article.id)}
                     />
                 </div>
-                <div {...classes('cell', 'date')}>
+                <div {...classes('cell', 'date')} onClick={() => this.props.onClickArticle(article)}>
                     <span {...classes('cell-text')}>
                         {moment(article.date).format('DD.MM.YYYY')}
                     </span>
                 </div>
-                <div {...classes('cell', 'source')}>
+                <div {...classes('cell', 'source')} onClick={() => this.props.onClickArticle(article)}>
                     <span {...classes('cell-text')}>
                         {article.media}
                     </span>
                 </div>
-                <div {...classes('cell', 'title')}>
+                <div {...classes('cell', 'title')} onClick={() => this.props.onClickArticle(article)}>
                     <span {...classes('cell-text')}>
                         {article.title}
                     </span>
                 </div>
-                <div {...classes('cell', 'annotation')}>
+                <div {...classes('cell', 'annotation')} onClick={() => this.props.onClickArticle(article)}>
                     <span {...classes('cell-text')}>
                         {article.annotation}
                     </span>

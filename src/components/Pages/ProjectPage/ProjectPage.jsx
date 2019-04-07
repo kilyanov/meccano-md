@@ -15,7 +15,9 @@ import ArticleCreateModal from '../../Article/ArticleCreateModal/ArticleCreateMo
 import ArticlesUploadModal from '../../Article/ArticlesUploadModal/ArticlesUploadModal';
 import { ProjectService } from '../../../services/ProjectService';
 import store from '../../../redux/store';
-import { getArticlesByProject } from '../../../redux/actions/article';
+import { getArticlesByProject, deleteArticle } from '../../../redux/actions/article';
+import { ArticleService } from '../../../services/ArticleService';
+import { NotificationManager } from 'react-notifications';
 const classes = new Bem('project-page');
 
 class ProjectPage extends Component {
@@ -69,27 +71,31 @@ class ProjectPage extends Component {
                 submitText: 'Удалить',
                 style: 'danger'
             }).then(() => {
-                this.setState({
-                    articles: this.state.articles.filter(({id}) => !selectedItemIds.includes((id))),
-                    selectedItemIds: []
+                const requestStack = selectedItemIds.map(articleId => ArticleService.delete(articleId));
+
+                new Promise.all(requestStack).then(() => {
+                    NotificationManager.success('Выбранные статьи успешно удалены', 'Успех');
+                    selectedItemIds.forEach(articleId => store.dispatch(deleteArticle(articleId)));
+                    this.setState({selectedItemIds: []});
                 });
             });
         }
     };
 
-    handleDeleteArticle = (itemId) => {
-        const {articles} = this.state;
-        const article = articles.find(({id}) => id === itemId);
+    handleDeleteArticle = (articleId) => {
+        const {articles} = this.props;
+        const article = articles.find(({id}) => id === articleId);
 
-        if (itemId && article) {
+        if (articleId && article) {
             this.promiseDialogModal.open({
                 title: 'Удаление статьи',
                 content: `Вы уверены, что хотите удалить статью "${article.title}"?`,
                 submitText: 'Удалить',
                 style: 'danger'
             }).then(() => {
-                this.setState({
-                    articles: articles.filter(({id}) => id !== itemId)
+                ArticleService.delete(articleId).then(() => {
+                    NotificationManager.success('Статья была успешно удалена', 'Успех');
+                    store.dispatch(deleteArticle(articleId));
                 });
             });
         }
@@ -225,7 +231,7 @@ class ProjectPage extends Component {
                         <ArticleCreateModal
                             article={activeArticle || {}}
                             projectId={this.projectId}
-                            onClose={() => this.setState({showArticleModal: false})}
+                            onClose={() => this.setState({activeArticle: null, showArticleModal: false})}
                         />
                     )}
 
