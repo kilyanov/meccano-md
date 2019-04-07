@@ -5,7 +5,7 @@ import {EventEmitter} from "../helpers";
 import {NotificationContainer} from 'react-notifications';
 import {Redirect} from 'react-router-dom';
 import '../assets/styles/main.scss';
-import {getProfile} from '../redux/actions/user';
+import {getProfile, getProjects} from '../redux/actions';
 import store from '../redux/store';
 
 export default class App extends Component {
@@ -35,6 +35,7 @@ export default class App extends Component {
     componentDidMount() {
         if (AuthService.isAuth()) {
             store.dispatch(getProfile());
+            store.dispatch(getProjects());
         }
     }
 

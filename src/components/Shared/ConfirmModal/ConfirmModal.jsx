@@ -25,6 +25,7 @@ export default class ConfirmModal extends PureComponent {
     static defaultProps = {
         buttons: Object.keys(BUTTONS),
         onCancel: () => {},
+        onSubmit: () => {},
         submitText: 'Подтвердить',
         cancelText: 'Отмена'
     };
@@ -75,10 +76,11 @@ export default class ConfirmModal extends PureComponent {
                                 <Button
                                     {...classes('button', 'cancel')}
                                     text={submitText}
+                                    type='submit'
                                     style='success'
                                     onClick={() => {
                                         onSubmit();
-                                        onClose();
+                                        // onClose();
                                     }}
                                 />
                             )}

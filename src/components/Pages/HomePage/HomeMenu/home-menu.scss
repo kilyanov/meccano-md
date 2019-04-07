@@ -1,6 +1,8 @@
 @import "../../../../assets/styles/variables";
 
-.project-list {
+$namespace: '.home-menu';
+
+.home-menu {
   width: 100%;
   margin: 0;
   padding: 0;
@@ -12,26 +14,26 @@
     border-bottom: 1px solid $gray;
 
     &--open {
-      .project-list__sub-list {
+      #{$namespace}__sub-list {
         max-height: 3000px;
         transition: max-height 3s linear;
       }
 
-      .project-list__arrow-icon {
+      #{$namespace}__arrow-icon {
         transform: rotate(90deg);
       }
 
-      .project-list__item-caption:hover {
+      #{$namespace}__item-caption:hover {
         color: $blackColor;
         background-color: white;
 
-        .project-list__arrow-icon {
+        #{$namespace}__arrow-icon {
           fill: $gray;
         }
-        .project-list__item-icon {
+        #{$namespace}__item-icon {
           fill: $greenColor;
         }
-        .project-list__item-link {
+        #{$namespace}__item-link {
           color: $blackColor;
         }
       }
@@ -48,11 +50,11 @@
       color: white;
       background-color: $greenColor;
 
-      .project-list__arrow-icon,
-      .project-list__item-icon {
+      #{$namespace}__arrow-icon,
+      #{$namespace}__item-icon {
         fill: white;
       }
-      .project-list__item-link {
+      #{$namespace}__item-link {
         color: white;
       }
     }
@@ -103,14 +105,14 @@
     align-items: center;
     height: 48px;
 
-    .project-list__item-link {
+    #{$namespace}__item-link {
       padding-left: 64px;
     }
 
     &:hover {
       background-color: $greenColor;
 
-      .project-list__item-link {
+      #{$namespace}__item-link {
         color: white;
       }
     }

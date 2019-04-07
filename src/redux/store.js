@@ -5,7 +5,9 @@ import reducers from './reducers';
 
 const logger = createLogger();
 const initialState = {
-    profile: {}
+    articles: [],
+    profile: {},
+    projects: []
 };
 
 /* eslint-disable no-underscore-dangle */

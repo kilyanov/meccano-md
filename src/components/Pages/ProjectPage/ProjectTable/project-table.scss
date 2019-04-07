@@ -5,6 +5,10 @@
   max-width: 100%;
   min-width: 768px;
 
+  &__body {
+    min-height: 60vh;
+  }
+
   &__row {
     position: relative;
     display: flex;
@@ -83,12 +87,13 @@
   &__menu-button {
     display: none;
     position: absolute;
-    top: 0;
-    bottom: 0;
-    right: -40px;
+    top: 1px;
+    bottom: 1px;
+    right: 0;
     align-items: center;
+    background-color: $gray-three;
     padding-left: 20px;
-    background: none;
+    padding-right: 10px;
     border: none;
   }
 

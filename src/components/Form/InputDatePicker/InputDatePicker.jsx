@@ -10,7 +10,7 @@ const classes = new Bem('input-date-picker');
 export default class InputDatePicker extends Component {
     static propTypes = {
         label: PropTypes.string,
-        value: PropTypes.string,
+        value: PropTypes.instanceOf(Date),
         onChange: PropTypes.func,
         withClearBtn: PropTypes.bool,
         format: PropTypes.string

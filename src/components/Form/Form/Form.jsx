@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
+import InputText from '../InputText/InputText';
 
 export default class Form extends Component {
     static propTypes = {
@@ -9,8 +10,40 @@ export default class Form extends Component {
     };
 
     handleOnSubmit = (event) => {
-        event.preventDefault();
+        if (event) event.preventDefault();
+
+        const {children} = this.props;
+
+        React.Children.forEach(children, child => {
+            this.r(child);
+        });
+
+        console.log(this.inputs);
+        console.log(this.form.checkValidity());
         this.props.onSubmit();
+
+        return false;
+    };
+
+    inputs = [];
+
+    r = (elem) => {
+        const children = _.get(elem, 'props.children', []);
+
+        if (elem.type.prototype instanceof InputText) {
+            this.inputs.push(elem);
+        }
+        if (children.length) {
+            children.forEach(child => {
+                if (child.type.prototype instanceof InputText) {
+                    this.inputs.push(child);
+                } else this.r(child);
+            });
+        } else return;
+    }
+
+    submit = () => {
+        this.handleOnSubmit();
     };
 
     render() {
@@ -18,6 +51,7 @@ export default class Form extends Component {
 
         return (
             <form
+                ref={node => this.form = node}
                 {...classes('', '', this.props.className)}
                 onSubmit={this.handleOnSubmit}
             >

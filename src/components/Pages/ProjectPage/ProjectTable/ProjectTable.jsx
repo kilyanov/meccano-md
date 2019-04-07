@@ -16,13 +16,15 @@ export default class ProjectTable extends Component {
         articles: PropTypes.array,
         selectedIds: PropTypes.array,
         onChangeSelected: PropTypes.func,
-        onDeleteArticle: PropTypes.func
+        onDeleteArticle: PropTypes.func,
+        onClickArticle: PropTypes.func
     };
 
     static defaultProps = {
         articles: [],
         selectedIds: [],
-        onChangeSelected: () => {}
+        onChangeSelected: () => {},
+        onClickArticle: () => {}
     };
 
     state = {
@@ -98,6 +100,7 @@ export default class ProjectTable extends Component {
             <div
                 {...classes('row')}
                 key={article.id}
+                onClick={() => this.props.onClickArticle(article)}
             >
                 <div {...classes('cell', 'check')}>
                     <CheckBox
@@ -112,7 +115,7 @@ export default class ProjectTable extends Component {
                 </div>
                 <div {...classes('cell', 'source')}>
                     <span {...classes('cell-text')}>
-                        {article.source}
+                        {article.media}
                     </span>
                 </div>
                 <div {...classes('cell', 'title')}>
@@ -126,17 +129,17 @@ export default class ProjectTable extends Component {
                     </span>
                 </div>
 
-                <button 
-                    {...classes('menu-button')} 
+                <button
+                    {...classes('menu-button')}
                     onClick={() => {
-                        this.articleDropDown[article.id].toggle({style: {right: 0}});
+                        this.articleDropDown[article.id].toggle({style: {right: '10px'}});
                     }}
                 >
                     <DropDownMenuIcon {...classes('menu-button-icon')}/>
                     <DropDown
                         items={menuItems}
                         ref={node => this.articleDropDown[article.id] = node}
-                    /> 
+                    />
                 </button>
             </div>
         );

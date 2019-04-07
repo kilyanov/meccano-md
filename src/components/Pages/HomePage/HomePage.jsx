@@ -1,8 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import ProjectList from './ProjectList/ProjectList';
-import { ProjectService } from '../../../services';
+import HomeMenu from './HomeMenu/HomeMenu';
 import PromiseDialogModal from '../../Shared/PromiseDialogModal/PromiseDialogModal';
 import Logo from '../../Shared/Logo/Logo';
 import ArticlesIcon from '../../Shared/SvgIcons/ArticlesIcon';
@@ -15,17 +14,15 @@ import ProjectCreateModal from '../../Project/ProjectCreateModal/ProjectCreateMo
 
 class HomePage extends Component {
     static propTypes = {
-        profile: PropTypes.object
+        profile: PropTypes.object,
+        projects: PropTypes.array
     };
 
-    state = {
-        projects: [],
-        showProjectCreateModal: false
+    static defaultProps = {
+        projects: []
     };
 
-    componentDidMount() {
-        this.getProjects();
-    }
+    state = { showProjectCreateModal: false };
 
     handleClick = (name) => {
         if (this.dialogModal) {
@@ -39,45 +36,33 @@ class HomePage extends Component {
         }
     };
 
-    getProjects = () => {
-        ProjectService.get()
-            .then(response => this.setState({projects: response.data}))
-            .catch(err => console.log(err));
-    };
-
-    projects = [{
-        id: 'articles',
-        icon: <ArticlesIcon/>,
-        name: 'Статьи',
-        children: []
-    }, {
-        id: 'projects',
-        icon: <ProjectsIcon/>,
-        name: 'Проекты',
-        children: [{
-            name: 'd_Minkomsvyasy',
-            link: '/project/1'
+    getMenu = () => (
+        [{
+            id: 'articles',
+            icon: <ArticlesIcon/>,
+            name: 'Статьи',
+            children: []
         }, {
-            name: 'd_Project',
-            link: '/project/2'
+            id: 'projects',
+            icon: <ProjectsIcon/>,
+            name: 'Проекты',
+            children: this.props.projects.map(({id, name}) => ({name, link: `/project/${id}`}))
         }, {
-            name: 'd_Project',
-            link: '/project/3'
+            id: 'users',
+            icon: <UsersIcon/>,
+            name: 'Пользователи'
+        }, {
+            id: 'settings',
+            icon: <SettingsIcon/>,
+            name: 'Настройки'
         }]
-    }, {
-        id: 'users',
-        icon: <UsersIcon/>,
-        name: 'Пользователи'
-    }, {
-        id: 'settings',
-        icon: <SettingsIcon/>,
-        name: 'Настройки'
-    }];
+    );
 
     render() {
         const classes = new Bem('home-page');
         const { profile } = this.props;
         const { showProjectCreateModal } = this.state;
+        const menu = this.getMenu();
 
         return (
             <div {...classes('', '', ['container', 'page'])}>
@@ -98,7 +83,7 @@ class HomePage extends Component {
 
                 <div {...classes('row', '', ['row', 'row--align-h-center'])}>
                     <div {...classes('column', '', 'col-md-6')}>
-                        <ProjectList list={ this.projects } onClick={ this.handleClick }/>
+                        <HomeMenu list={ menu } onClick={ this.handleClick }/>
                     </div>
                 </div>
 
@@ -114,4 +99,7 @@ class HomePage extends Component {
     }
 }
 
-export default connect(({profile}) => ({profile}))(HomePage);
+export default connect(({profile, projects}) => ({
+    profile,
+    projects
+}))(HomePage);

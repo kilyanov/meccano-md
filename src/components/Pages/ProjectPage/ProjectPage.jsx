@@ -1,4 +1,6 @@
 import React, {Component} from 'react';
+import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
 import './project-page.scss';
 import TopBar from '../../Shared/TopBar/TopBar';
 import Button from '../../Shared/Button/Button';
@@ -11,45 +13,37 @@ import ProjectTable from './ProjectTable/ProjectTable';
 import PromiseDialogModal from '../../Shared/PromiseDialogModal/PromiseDialogModal';
 import ArticleCreateModal from '../../Article/ArticleCreateModal/ArticleCreateModal';
 import ArticlesUploadModal from '../../Article/ArticlesUploadModal/ArticlesUploadModal';
-
+import { ProjectService } from '../../../services/ProjectService';
+import store from '../../../redux/store';
+import { getArticlesByProject } from '../../../redux/actions/article';
 const classes = new Bem('project-page');
 
-export default class ProjectPage extends Component {
+class ProjectPage extends Component {
+    static propTypes = {
+        articles: PropTypes.array,
+        projects: PropTypes.array
+    };
+
     state = {
+        activeArticle: null,
         selectedItemIds: [],
-        /* eslint-disable */
-        articles: [{
-            id: 1,
-            date: moment().format(),
-            source: 'Finam.ru',
-            title: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce laoreet viverra nibh ac mollis. Suspendisse ligula neque, imperdiet eget quam in, sodales imperdiet mi. Sed vestibulum rhoncus finibus.',
-            annotation: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce laoreet viverra nibh ac mollis. Suspendisse ligula neque, imperdiet eget quam in, sodales imperdiet mi. Sed vestibulum rhoncus finibus.'
-        }, {
-            id: 2,
-            date: moment().format(),
-            source: 'Finam.ru',
-            title: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce laoreet viverra nibh ac mollis. Suspendisse ligula neque, imperdiet eget quam in, sodales imperdiet mi. Sed vestibulum rhoncus finibus.',
-            annotation: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce laoreet viverra nibh ac mollis. Suspendisse ligula neque, imperdiet eget quam in, sodales imperdiet mi. Sed vestibulum rhoncus finibus.'
-        }, {
-            id: 3,
-            date: moment().format(),
-            source: 'Skfo.ru',
-            title: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce laoreet viverra nibh ac mollis. Suspendisse ligula neque, imperdiet eget quam in, sodales imperdiet mi. Sed vestibulum rhoncus finibus.',
-            annotation: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce laoreet viverra nibh ac mollis. Suspendisse ligula neque, imperdiet eget quam in, sodales imperdiet mi. Sed vestibulum rhoncus finibus.'
-        }, {
-            id: 4,
-            date: moment().format(),
-            source: 'Интерфакс',
-            title: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce laoreet viverra nibh ac mollis. Suspendisse ligula neque, imperdiet eget quam in, sodales imperdiet mi. Sed vestibulum rhoncus finibus.',
-            annotation: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce laoreet viverra nibh ac mollis. Suspendisse ligula neque, imperdiet eget quam in, sodales imperdiet mi. Sed vestibulum rhoncus finibus.'
-        }],
-        /* eslint-enable */
+        project: null,
         filters: {
             search: ''
         },
         showArticleModal: false,
-        showUploadArticlesModal: false
+        showUploadArticlesModal: false,
+        inProgress: true
     };
+
+    componentDidMount() {
+        const project = this.props.projects.find(({id}) => id === this.projectId);
+
+        if (project) this.setProject(project);
+        else this.getProject(this.projectId);
+
+        this.getArticles();
+    }
 
     handleChangeFilter = (filter, value) => {
         const newState = this.state;
@@ -101,15 +95,60 @@ export default class ProjectPage extends Component {
         }
     };
 
+    handleClickArticle = (article) => {
+        this.setState({
+            activeArticle: article,
+            showArticleModal: true
+        });
+    };
+
     handleAddArticle = () => {
         this.setState({
             showArticleModal: true
         });
     };
 
+    getArticles = () => {
+        const storeState = store.getState();
+        const articles = storeState.articles.filter(({projectId}) => projectId === this.projectId);
+
+        if (!articles.length) {
+            store.dispatch(getArticlesByProject(this.projectId));
+        }
+    };
+
+    getProject = (projectId) => {
+        ProjectService.get(projectId).then(response => {
+            this.setProject(response.data);
+        });
+    };
+
+    setProject = (project) => {
+        this.setState({
+            project,
+            inProgress: false
+        });
+    };
+
+    projectId = this.props.match.params.id;
+
     render() {
-        const {articles, selectedItemIds, filters, showArticleModal, showUploadArticlesModal} = this.state;
+        const {
+            activeArticle,
+            selectedItemIds,
+            filters,
+            project,
+            showArticleModal,
+            showUploadArticlesModal
+        } = this.state;
         const hasSelectedItems = !!selectedItemIds.length;
+        const articles = _.cloneDeep(this.props.articles)
+            .filter(({projectId}) => projectId === this.projectId)
+            .map(article => {
+                article.date = new Date(article.date);
+
+                return article;
+            });
 
         return (
             <div {...classes('', '', 'page')}>
@@ -117,7 +156,7 @@ export default class ProjectPage extends Component {
 
                 <div {...classes('content', '', 'container')}>
                     <section {...classes('title-wrapper')}>
-                        <h2 {...classes('title')}>Project Name</h2>
+                        <h2 {...classes('title')}>{_.get(project, 'name')}</h2>
                         <Button
                             text='Выгрузить все'
                             {...classes('upload-btn')}
@@ -174,6 +213,7 @@ export default class ProjectPage extends Component {
 
                     <div {...classes('project-table-wrapper')}>
                         <ProjectTable
+                            onClickArticle={this.handleClickArticle}
                             onChangeSelected={this.handleChangeSelected}
                             onDeleteArticle={this.handleDeleteArticle}
                             selectedIds={selectedItemIds}
@@ -183,6 +223,8 @@ export default class ProjectPage extends Component {
 
                     {showArticleModal && (
                         <ArticleCreateModal
+                            article={activeArticle || {}}
+                            projectId={this.projectId}
                             onClose={() => this.setState({showArticleModal: false})}
                         />
                     )}
@@ -199,3 +241,8 @@ export default class ProjectPage extends Component {
         );
     }
 }
+
+export default connect(({projects, articles}) => ({
+    articles,
+    projects
+}))(ProjectPage);

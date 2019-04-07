@@ -2,18 +2,18 @@ import React, {PureComponent} from 'react';
 import {Link} from 'react-router-dom';
 import PropTypes from 'prop-types';
 import ArrowIcon from '../../../Shared/SvgIcons/ArrowIcon';
-import './project-list.scss';
+import './home-menu.scss';
 
-const classes = new Bem('project-list');
+const classes = new Bem('home-menu');
 
-export default class ProjectList extends PureComponent {
+export default class HomeMenu extends PureComponent {
     static propTypes = {
         list: PropTypes.array,
         onClick: PropTypes.func
     };
 
     modifyChildren = (child) => {
-        const props = {className: 'project-list__item-icon'};
+        const props = {className: 'home-menu__item-icon'};
 
         return React.cloneElement(child, props);
     };

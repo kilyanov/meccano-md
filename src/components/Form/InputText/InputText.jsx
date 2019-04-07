@@ -16,20 +16,22 @@ export default class InputText extends Component {
             PropTypes.string,
             PropTypes.number
         ]).isRequired,
-        onChange: PropTypes.func.isRequired,
+        onChange: PropTypes.func,
         onClick: PropTypes.func,
         disabled: PropTypes.bool,
         controlled: PropTypes.bool,
         placeholder: PropTypes.string,
         validateType: PropTypes.oneOf(['notEmpty', 'email', 'link']),
         validateErrorMessage: PropTypes.string,
-        onValidate: PropTypes.func
+        onValidate: PropTypes.func,
+        required: PropTypes.bool
     };
 
     static defaultProps = {
         label: '',
         type: 'text',
         onClick: () => {},
+        onChange: () => {},
         validateErrorMessage: 'Error message'
     };
 
@@ -47,7 +49,7 @@ export default class InputText extends Component {
     }
 
     handleChange = (event) => {
-        const {controlled, validateType, type, onValidate, onChange} = this.props;
+        const {controlled, onChange} = this.props;
         const value = event.target.value.replace(/^\s*/, '');
 
         if (value || value === '') {
@@ -57,9 +59,7 @@ export default class InputText extends Component {
                 this.setValue(value);
             }
 
-            if (validateType || onValidate || type === 'email') {
-                this.setState({error: !this.isValidate(value)});
-            }
+            this.validate();
         }
     };
 
@@ -116,6 +116,15 @@ export default class InputText extends Component {
         return this.state.error;
     };
 
+    validate = () => {
+        const {controlled, validateType, type, onValidate, required} = this.props;
+        const value = controlled ? this.props.value : this.state.value;
+
+        if (validateType || onValidate || type === 'email' || required) {
+            this.setState({error: !this.isValidate(value)});
+        }
+    };
+
     validateEmail = (value) => {
         const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 
@@ -136,6 +145,7 @@ export default class InputText extends Component {
             name,
             placeholder,
             controlled,
+            required,
             type,
             onClick,
             validateType,
@@ -165,10 +175,12 @@ export default class InputText extends Component {
                         autoFocus={autoFocus}
                         placeholder={placeholder}
                         type={type}
+                        required={required}
                         name={name}
                         value={value}
                         onChange={this.handleChange}
                         onClick={onClick}
+                        data-error={isError || (required && !value)}
                         ref={node => this.inputRef = node}
                     />
 
