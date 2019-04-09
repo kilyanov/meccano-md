@@ -1,6 +1,7 @@
 @import '../../../assets/styles/variables.scss';
+$namespace: '.confirm-modal';
 
-.confirm-modal {
+#{$namespace} {
     position: fixed;
     top: 0;
     left: 0;
@@ -12,13 +13,24 @@
     background-color: rgba(0, 0, 0, .5);
     z-index: 100;
 
+    &--wide {
+        #{$namespace}__container {
+            width: 1200px;
+        }
+    }
+
+    &--normal {
+        #{$namespace}__container {
+            width: 793px;
+        }
+    }
+
     &__container {
         position: relative;
         display: flex;
         flex-direction: column;
         max-height: 95vh;
-        width: 1200px;
-        max-width: 80vw;
+        max-width: 90vw;
         background-color: #fff;
         border-radius: 8px;
         padding: 40px 0;

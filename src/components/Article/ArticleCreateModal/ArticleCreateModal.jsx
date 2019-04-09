@@ -1,7 +1,6 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import ConfirmModal from '../../Shared/ConfirmModal/ConfirmModal';
-
 import './article-create-modal.scss';
 import InputText from '../../Form/InputText/InputText';
 import TextArea from '../../Form/TextArea/TextArea';
@@ -12,6 +11,8 @@ import Form from '../../Form/Form/Form';
 import { updateArticle, addArticle } from '../../../redux/actions/article';
 import store from '../../../redux/store';
 import Loader from '../../Shared/Loader/Loader';
+import Select from '../../Form/Select/Select';
+import RichEditor from '../../Form/RichEditor/RichEditor';
 
 const classes = new Bem('article-create-modal');
 
@@ -38,6 +39,7 @@ export default class ArticleCreateModal extends Component {
             annotation: '',
             text: ''
         },
+        selectedMedia: {},
         inProgress: false
     };
 
@@ -100,6 +102,32 @@ export default class ArticleCreateModal extends Component {
         });
     };
 
+    medias = [{
+        name: 'Яндекс',
+        value: 'yandex'
+    }, {
+        name: 'Google',
+        value: 'google'
+    }, {
+        name: 'Mail.ru',
+        value: 'mail.ru'
+    }, {
+        name: 'Lenta.ru',
+        value: 'lenta'
+    }, {
+        name: 'Яндекс',
+        value: 'yandex1'
+    }, {
+        name: 'Google',
+        value: 'google1'
+    }, {
+        name: 'Mail.ru',
+        value: 'mail.ru1'
+    }, {
+        name: 'Lenta.ru',
+        value: 'lenta1'
+    }];
+
     render() {
         const {article, onClose} = this.props;
         const {form, inProgress} = this.state;
@@ -112,13 +140,14 @@ export default class ArticleCreateModal extends Component {
                 onClose={onClose}
                 onSubmit={() => this.form.submit()}
                 submitText={isUpdate ? 'Обновить' : 'Добавить'}
+                width='wide'
             >
                 <Form onSubmit={this.handleSubmit} ref={node => this.form = node}>
                     <div {...classes('row', '', 'row')}>
                         <div {...classes('field', '', 'col-lg-7')}>
                             <InputText
                                 label='Название'
-                                value={form.title}
+                                value={form.title || ''}
                                 onChange={value => this.handleChangeForm(value, 'title')}
                             />
                         </div>
@@ -130,10 +159,12 @@ export default class ArticleCreateModal extends Component {
                             />
                         </div>
                         <div {...classes('field', '', 'col-lg-3')}>
-                            <InputText
+                            <Select
+                                placeholder='Выберите источник...'
                                 label='Источник'
-                                value={form.media || ''}
-                                onChange={value => this.handleChangeForm(value, 'media')}
+                                options={this.medias}
+                                selected={this.state.selectedMedia}
+                                onChange={selectedMedia => this.setState({selectedMedia})}
                             />
                         </div>
                     </div>
@@ -241,14 +272,14 @@ export default class ArticleCreateModal extends Component {
                         <div {...classes('col', '', 'col-lg-6')}>
                             <TextArea
                                 label='Аннотация'
-                                value={form.annotation}
+                                value={form.annotation || ''}
                                 onChange={value => this.handleChangeForm(value, 'annotation')}
                             />
 
-                            <TextArea
+                            <RichEditor
                                 {...classes('field', 'textarea')}
                                 label='Текст статьи'
-                                value={form.text}
+                                content={form.text}
                                 onChange={value => this.handleChangeForm(value, 'text')}
                             />
                         </div>

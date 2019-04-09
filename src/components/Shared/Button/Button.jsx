@@ -17,13 +17,13 @@ const Button = ({
 }) => {
     return to ? (
         <Link
-            {...classes('', {[style]: !!style}, className)}
+            {...classes('', {[style]: !!style, disabled}, className)}
             to={to}
             disabled={disabled}
         >{text}</Link>
     ) : (
         <button
-            {...classes('', {[style]: !!style}, className)}
+            {...classes('', {[style]: !!style, disabled}, className)}
             type={type}
             onClick={onClick}
             disabled={disabled}

@@ -17,13 +17,15 @@ class TopBar extends PureComponent {
     };
 
     profileMenuItems = [{
-        title: 'Профиль',
-        onClick: () => {},
-        closeOnClick: true
-    }, {
         title: 'Выйти',
         onClick: AuthService.logOut
     }];
+
+    // {
+    //     title: 'Профиль',
+    //     onClick: () => {},
+    //     closeOnClick: true
+    // },
 
     render() {
         const {profile} = this.props;

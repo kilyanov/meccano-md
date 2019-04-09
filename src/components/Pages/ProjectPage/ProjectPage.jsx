@@ -18,6 +18,9 @@ import store from '../../../redux/store';
 import { getArticlesByProject, deleteArticle } from '../../../redux/actions/article';
 import { ArticleService } from '../../../services/ArticleService';
 import { NotificationManager } from 'react-notifications';
+import DropDownButton from '../../Shared/DropDownButton/DropDownButton';
+import ArticlesImportModal from '../../Article/ArticlesImportModal/ArticlesImportModal';
+
 const classes = new Bem('project-page');
 
 class ProjectPage extends Component {
@@ -35,6 +38,7 @@ class ProjectPage extends Component {
         },
         showArticleModal: false,
         showUploadArticlesModal: false,
+        showImportArticlesModal: false,
         inProgress: true
     };
 
@@ -45,10 +49,6 @@ class ProjectPage extends Component {
         else this.getProject(this.projectId);
 
         this.getArticles();
-    }
-
-    componentDidUpdate() {
-        console.log('update');
     }
 
     handleChangeFilter = (filter, value) => {
@@ -142,6 +142,14 @@ class ProjectPage extends Component {
 
     projectId = this.props.match.params.id;
 
+    addMenuItems = [{
+        title: 'Добавить новую',
+        onClick: this.handleAddArticle
+    }, {
+        title: 'Импорт статей',
+        onClick: () => this.setState({showImportArticlesModal: true})
+    }];
+
     render() {
         const {
             activeArticle,
@@ -149,7 +157,8 @@ class ProjectPage extends Component {
             filters,
             project,
             showArticleModal,
-            showUploadArticlesModal
+            showUploadArticlesModal,
+            showImportArticlesModal
         } = this.state;
         const hasSelectedItems = !!selectedItemIds.length;
         const articles = _.cloneDeep(this.props.articles)
@@ -214,10 +223,10 @@ class ProjectPage extends Component {
 
                         <span {...classes('articles-count')}>Всего статей: 66</span>
 
-                        <Button
+                        <DropDownButton
                             {...classes('article-add-btn')}
-                            text='Добавить'
-                            onClick={this.handleAddArticle}
+                            buttonText='Добавить'
+                            dropDownItems={this.addMenuItems}
                         />
                     </section>
 
@@ -242,6 +251,13 @@ class ProjectPage extends Component {
                     {showUploadArticlesModal && (
                         <ArticlesUploadModal
                             onClose={() => this.setState({showUploadArticlesModal: false})}
+                        />
+                    )}
+
+                    {showImportArticlesModal && (
+                        <ArticlesImportModal
+                            onClose={() => this.setState({showImportArticlesModal: false})}
+                            projectId={this.projectId}
                         />
                     )}
 

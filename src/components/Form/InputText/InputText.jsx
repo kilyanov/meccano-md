@@ -40,6 +40,10 @@ export default class InputText extends Component {
         error: false
     };
 
+    componentDidMount() {
+        // console.log(this.props.label, this.props.value);
+    }
+
     static getDerivedStateFromProps(nextProps, prevState) {
         if (nextProps.value !== prevState.value) {
             return {value: nextProps.value};

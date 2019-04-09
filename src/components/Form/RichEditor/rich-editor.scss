@@ -1,0 +1,15 @@
+@import '../../../assets/styles/variables.scss';
+
+.rich-editor {
+    &__label {
+        display: inline-block;
+        font-size: 15px;
+        line-height: 24px;
+        margin-bottom: 8px;
+    }
+
+    .jodit_workplace,
+    .jodit_toolbar {
+        border-color: $brownGreyColor !important;
+    }
+}

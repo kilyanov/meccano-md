@@ -1,0 +1,16 @@
+.input-file {
+    &__field {
+        display: none;
+    }
+
+    &__button {
+        border-bottom: 2px dashed;
+        border-radius: 0;
+    }
+
+    &__file-names {
+        margin-top: 10px;
+        font-size: 12px;
+        color: #999;
+    }
+}

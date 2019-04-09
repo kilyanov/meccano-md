@@ -19,7 +19,9 @@ export default class ConfirmModal extends PureComponent {
         onCancel: PropTypes.func,
         cancelText: PropTypes.string,
         submitText: PropTypes.string,
-        buttons: PropTypes.array
+        submitDisabled: PropTypes.bool,
+        buttons: PropTypes.array,
+        width: PropTypes.oneOf(['wide', 'normal', 'small'])
     };
 
     static defaultProps = {
@@ -27,7 +29,8 @@ export default class ConfirmModal extends PureComponent {
         onCancel: () => {},
         onSubmit: () => {},
         submitText: 'Подтвердить',
-        cancelText: 'Отмена'
+        cancelText: 'Отмена',
+        width: 'normal'
     };
 
     render() {
@@ -40,11 +43,13 @@ export default class ConfirmModal extends PureComponent {
             onSubmit,
             cancelText,
             submitText,
-            buttons
+            submitDisabled,
+            buttons,
+            width
         } = this.props;
 
         return (
-            <div {...classes('', '', className)}>
+            <div {...classes('', {[width]: true}, className)}>
                 <div {...classes('container')}>
                     <section {...classes('header')}>
                         <h2 {...classes('title')}>{title}</h2>
@@ -78,6 +83,7 @@ export default class ConfirmModal extends PureComponent {
                                     text={submitText}
                                     type='submit'
                                     style='success'
+                                    disabled={submitDisabled}
                                     onClick={() => {
                                         onSubmit();
                                         // onClose();
