@@ -7,6 +7,7 @@ import InputFile from '../../Form/InputFile/InputFile';
 import { ArticleService } from '../../../services';
 import store from '../../../redux/store';
 import { getArticlesByProject } from '../../../redux/actions/article/index';
+import Loader from '../../Shared/Loader/Loader';
 
 const classes = new Bem('articles-import-modal');
 
@@ -18,9 +19,10 @@ export default class ArticlesImportModal extends Component {
 
     state = {
         form: {
-            files: null,
+            files: [],
             service: null
-        }
+        },
+        inProgress: false
     };
 
     handleSelectService = (isChecked, service) => {
@@ -30,29 +32,32 @@ export default class ArticlesImportModal extends Component {
     };
 
     handleChangeFiles = (files) => {
-        files.forEach((file) => {
-            const form = new FormData();
-
-            form.append('doc', file);
-
-            ArticleService.upload(this.props.projectId, form).then(() => {
-                store.dispatch(getArticlesByProject(this.props.projectId));
-            });
-        });
+        this.setState(prev => prev.form.files = files);
     };
 
     handleSubmitForm = () => {
         const {form} = this.state;
 
         if (form.files) {
-            this.inputFile.upload();
-            this.setState({inProgress: true});
+            this.setState({inProgress: true}, () => {
+                form.files.forEach((file) => {
+                    const formData = new FormData();
+
+                    formData.append('doc', file);
+
+                    ArticleService.upload(this.props.projectId, formData).then(() => {
+                        store.dispatch(getArticlesByProject(this.props.projectId));
+                        this.setState({inProgress: false});
+                        this.props.onClose();
+                    });
+                });
+            });
         }
     }
 
     render() {
         const {onClose} = this.props;
-        const {form} = this.state;
+        const {form, inProgress} = this.state;
 
         return (
             <ConfirmModal
@@ -61,7 +66,7 @@ export default class ArticlesImportModal extends Component {
                 onClose={onClose}
                 onSubmit={this.handleSubmitForm}
                 submitText='Импорт'
-                submitDisabled={!form.service && !form.files}
+                submitDisabled={!form.service && !form.files.length}
             >
                 <div {...classes('row', '', 'row')}>
                     <div {...classes('col', '', 'col-md-4')}>
@@ -72,7 +77,7 @@ export default class ArticlesImportModal extends Component {
                             onChange={this.handleChangeFiles}
                         />
                     </div>
-                    <div {...classes('col', '', 'col-md-8')}>
+                    <div {...classes('col', '', ['col-md-8', 'd-none'])}>
                         <h3 {...classes('section-title')}>Импорт из сервиса:</h3>
 
                         <RadioButton
@@ -84,6 +89,8 @@ export default class ArticlesImportModal extends Component {
                         />
                     </div>
                 </div>
+
+                {inProgress && <Loader/>}
             </ConfirmModal>
         );
     }
