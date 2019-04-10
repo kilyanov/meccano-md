@@ -194,7 +194,7 @@ class ProjectPage extends Component {
                         />
 
                         <IconButton
-                            {...classes('filter-item')}
+                            {...classes('filter-item', '', 'd-none')}
                             iconComponent={<TrashIcon/>}
                             text='Дублировать'
                             disabled={!hasSelectedItems}

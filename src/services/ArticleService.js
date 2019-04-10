@@ -6,6 +6,7 @@ export const ArticleService = {
     get: (id = '', form) => API.get(`${ApiList.article}${id ? `/${id}` : ''}${Tools.parseFormToRequest(form)}`),
     getList: (form) => API.get(`${ApiList.article}${Tools.parseFormToRequest(form)}`),
     delete: (id) => API.delete(`${ApiList.article}/${id}`),
-    post: (form) => API.post(ApiList.article, form),
-    put: (form, id) => API.put(`${ApiList.article}/${id}`, form)
+    create: (form) => API.post(ApiList.article, form),
+    update: (form, id) => API.put(`${ApiList.article}/${id}`, form),
+    upload: (projectId, form) => API.post(`${ApiList.article}/${projectId}/upload`, form)
 };

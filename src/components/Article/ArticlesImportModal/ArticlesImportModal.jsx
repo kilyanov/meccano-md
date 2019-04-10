@@ -4,6 +4,9 @@ import ConfirmModal from '../../Shared/ConfirmModal/ConfirmModal';
 import './articles-import-modal.scss';
 import RadioButton from '../../Form/RadioButton/RadioButton';
 import InputFile from '../../Form/InputFile/InputFile';
+import { ArticleService } from '../../../services';
+import store from '../../../redux/store';
+import { getArticlesByProject } from '../../../redux/actions/article/index';
 
 const classes = new Bem('articles-import-modal');
 
@@ -27,7 +30,15 @@ export default class ArticlesImportModal extends Component {
     };
 
     handleChangeFiles = (files) => {
-        this.setState(prev => prev.form.files = files);
+        files.forEach((file) => {
+            const form = new FormData();
+
+            form.append('doc', file);
+
+            ArticleService.upload(this.props.projectId, form).then(() => {
+                store.dispatch(getArticlesByProject(this.props.projectId));
+            });
+        });
     };
 
     handleSubmitForm = () => {
