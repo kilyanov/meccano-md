@@ -3,6 +3,10 @@
 
 .page {
     height: 100%;
+
+    &--with-bar {
+      padding-top: 100px;
+    }
 }
 
 .notification .title {

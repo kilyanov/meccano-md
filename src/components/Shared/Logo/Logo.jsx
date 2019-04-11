@@ -5,8 +5,8 @@ import './logo.scss';
 const classes = new Bem('logo');
 const Logo = () => (
     <Link to='/' {...classes()}>
-        <img {...classes('img')} src={require('./img/logo.jpg')} alt='ExLibris'/>
-        <span {...classes('divider')}/>
+        <img {...classes('img', '', ['d-none', 'd-sm-block'])} src={require('./img/logo.jpg')} alt='ExLibris'/>
+        <span {...classes('divider', '', ['d-none', 'd-sm-block'])}/>
         <h3 {...classes('title')}>Meccano</h3>
     </Link>
 );

@@ -14,7 +14,13 @@ export default class ArticlesUploadModal extends Component {
 
     state = {
         form: {
-            format: ''
+            format: '',
+            settings: {
+                a: false,
+                b: false,
+                c: false,
+                d: false
+            }
         }
     };
 
@@ -38,19 +44,27 @@ export default class ArticlesUploadModal extends Component {
 
                         <CheckBox
                             {...classes('field')}
-                            label='Выгрузка по сортировке'
+                            label='DOC'
+                            checked={form.settings.a}
+                            onChange={() => this.setState(prev => prev.form.settings.a = !prev.form.settings.a)}
                         />
                         <CheckBox
                             {...classes('field')}
-                            label='Включить HTML/XML'
+                            label='PDF'
+                            checked={form.settings.b}
+                            onChange={() => this.setState(prev => prev.form.settings.b = !prev.form.settings.b)}
                         />
                         <CheckBox
                             {...classes('field')}
-                            label='Включить MS WORD'
+                            label='HTMl'
+                            checked={form.settings.c}
+                            onChange={() => this.setState(prev => prev.form.settings.c = !prev.form.settings.c)}
                         />
                         <CheckBox
                             {...classes('field')}
-                            label='Добавлять в конец'
+                            label='...'
+                            checked={form.settings.d}
+                            onChange={() => this.setState(prev => prev.form.settings.d = !prev.form.settings.d)}
                         />
                     </div>
                     <div {...classes('col', '', 'col-sm-6')}>

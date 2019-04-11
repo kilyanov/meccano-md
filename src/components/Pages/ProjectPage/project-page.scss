@@ -1,8 +1,9 @@
 @import "../../../assets/styles/variables";
 
 .project-page {
-  &__top-bar {
-    margin-bottom: 40px;
+  &__content {
+    display: flex;
+    flex-direction: column;
   }
 
   &__title-wrapper {

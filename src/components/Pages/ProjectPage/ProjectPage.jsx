@@ -170,7 +170,7 @@ class ProjectPage extends Component {
             });
 
         return (
-            <div {...classes('', '', 'page')}>
+            <div {...classes('', '', ['page', 'page--with-bar'])}>
                 <TopBar {...classes('top-bar')}/>
 
                 <div {...classes('content', '', 'container')}>
