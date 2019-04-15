@@ -17,7 +17,7 @@ $namespace: '.input-text';
   }
 
   &--error {
-    &:after {
+    &:not(#{$namespace}--empty):after {
       content: "";
       position: absolute;
       width: 32px;

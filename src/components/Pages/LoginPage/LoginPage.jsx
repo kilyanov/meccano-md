@@ -80,8 +80,8 @@ class LoginPage extends Component {
                         name='password'
                         {...classes('input', 'password')}
                         type='password'
-                        // onValidate={value => value.length >= 3}
-                        validateErrorMessage='Пароль не может быть меньше 6-ти симоволов'
+                        onValidate={value => value.length >= 3}
+                        validateErrorMessage='Пароль не может быть меньше 3-х симоволов'
                         value={password}
                         onChange={value => this.handleChangeField(value, 'password')}
                     />

@@ -175,7 +175,8 @@ export default class ArticleCreateModal extends Component {
                                 <div {...classes('col', '', 'col-lg-12')}>
                                     <InputText
                                         label='URL'
-                                        // validateType='link'
+                                        validateType='link'
+                                        validateErrorMessage='Неверный адрес ссылки'
                                         value={form.url || ''}
                                         onChange={value => this.handleChangeForm(value, 'url')}
                                     />

@@ -59,11 +59,10 @@ export default class InputText extends Component {
         if (value || value === '') {
             if (controlled) {
                 onChange(value);
+                this.validate(value);
             } else {
                 this.setValue(value);
             }
-
-            this.validate();
         }
     };
 
@@ -87,7 +86,10 @@ export default class InputText extends Component {
         this.setState({
             value,
             error: false
-        }, () => this.props.onChange(value));
+        }, () => {
+            this.props.onChange(value);
+            this.validate(value);
+        });
     };
 
     focus = () => {
@@ -120,12 +122,13 @@ export default class InputText extends Component {
         return this.state.error;
     };
 
-    validate = () => {
-        const {controlled, validateType, type, onValidate, required} = this.props;
-        const value = controlled ? this.props.value : this.state.value;
+    validate = (value) => {
+        const {validateType, type, onValidate, required} = this.props;
 
         if (validateType || onValidate || type === 'email' || required) {
-            this.setState({error: !this.isValidate(value)});
+            const error = !this.isValidate(value);
+
+            this.setState({error});
         }
     };
 
@@ -161,6 +164,9 @@ export default class InputText extends Component {
         const isLink = validateType === 'link';
         const value = controlled ? this.props.value : this.state.value;
         const isSucceed = !!value && !isError;
+        const isEmpty = !value.length;
+
+        console.log(isEmpty, value, value.length, isError && !isEmpty);
 
         return (
             <div
@@ -168,6 +174,7 @@ export default class InputText extends Component {
                     error: isError,
                     focused: isFocused,
                     succeed: isSucceed,
+                    empty: isEmpty,
                     link: isLink
                 }, className)}
             >
@@ -188,11 +195,11 @@ export default class InputText extends Component {
                         ref={node => this.inputRef = node}
                     />
 
-                    {isLink &&
+                    {(isLink && !isError) &&
                         <img {...classes('earth-icon')} src={require('./img/earth-icon.svg')}/>
                     }
 
-                    {isError && (
+                    {(isError && !isEmpty) && (
                         <div
                             {...classes('clear')}
                             onClick={this.handleClear}

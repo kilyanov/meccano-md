@@ -38,6 +38,21 @@ $namespace: '.home-menu';
         }
       }
     }
+
+    &:focus {
+      #{$namespace}__item-caption {
+        color: white;
+        background-color: $greenColor;
+
+        #{$namespace}__arrow-icon,
+        #{$namespace}__item-icon {
+          fill: white;
+        }
+        #{$namespace}__item-link {
+          color: white;
+        }
+      }
+    }
   }
 
   &__item-caption {
@@ -109,6 +124,7 @@ $namespace: '.home-menu';
       padding-left: 64px;
     }
 
+    &:focus,
     &:hover {
       background-color: $greenColor;
 
