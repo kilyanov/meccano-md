@@ -1,0 +1,13 @@
+.project-table-settings-modal {
+    &__items {
+        display: flex;
+        flex-wrap: wrap;
+    }
+
+    &__item {
+        display: flex;
+        align-items: center;
+        flex: 0 0 50%;
+        padding: 10px;
+    }
+}

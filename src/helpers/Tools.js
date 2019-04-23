@@ -1,3 +1,5 @@
+import PerfectScrollbar from 'perfect-scrollbar';
+
 export const Tools = {
     parseFormToRequest: (form) => (
         `?${Object.keys(form).map(key => `${key}=${form[key]}`).join('&')}`
@@ -13,5 +15,14 @@ export const Tools = {
         || navigator.userAgent.match(/iPod/i)
         || navigator.userAgent.match(/BlackBerry/i)
         || navigator.userAgent.match(/Windows Phone/i);
+    },
+    initScrollbar: (node, options) => {
+        if (node && !node.classList.contains('ps')) {
+            if (getComputedStyle(node).position === 'static') node.style.position = 'relative';
+
+            /* eslint-disable no-unused-vars */
+            return new PerfectScrollbar(node, options);
+            /* eslint-enable no-unused-vars */
+        }
     }
 };

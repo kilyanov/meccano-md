@@ -1,14 +1,24 @@
 export const COLUMN_TYPE = {
-    check: 'check',
     date: 'date',
     source: 'source',
     title: 'title',
-    annotation: 'annotation'
+    annotation: 'annotation',
+    author: 'author',
+    city: 'city',
+    region: 'region',
+    federalDistrict: 'federalDistrict',
+    typeMedia: 'typeMedia'
 };
 export const COLUMN_NAME = {
-    check: 'check',
     date: 'Дата',
     source: 'Источник',
     title: 'Заголовок',
-    annotation: 'Аннотация'
+    annotation: 'Аннотация',
+    author: 'Автор',
+    city: 'Город',
+    region: 'Область/край',
+    federalDistrict: 'Федеральный округ',
+    typeMedia: 'Тип СМИ'
 };
+
+export const DEFAULT_COLUMNS = ['date', 'source', 'title', 'annotation'];

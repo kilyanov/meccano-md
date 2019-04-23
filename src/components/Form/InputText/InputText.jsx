@@ -166,8 +166,6 @@ export default class InputText extends Component {
         const isSucceed = !!value && !isError;
         const isEmpty = !value.length;
 
-        console.log(isEmpty, value, value.length, isError && !isEmpty);
-
         return (
             <div
                 {...classes('', {

@@ -1,14 +1,6 @@
 @import './variables.scss';
 @import './mixins.scss';
 
-.page {
-    height: 100%;
-
-    &--with-bar {
-      padding-top: 100px;
-    }
-}
-
 .notification .title {
     color: #fff;
 }

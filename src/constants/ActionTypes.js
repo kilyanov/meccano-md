@@ -13,6 +13,9 @@ export default {
         }
     },
     project: {
+        ADD: 'ADD',
+        UPDATE: 'UPDATE',
+        DELETE: 'DELETE',
         PROJECTS_LOADING: 'PROJECTS_LOADING',
         PROJECTS_LOADED: 'PROJECTS_LOADED',
         PROJECTS_LOAD_FAILURE: 'PROJECTS_LOAD_FAILURE'

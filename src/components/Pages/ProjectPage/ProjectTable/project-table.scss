@@ -2,13 +2,14 @@
 @import "../../../../assets/styles/variables";
 
 .project-table {
+  // position: relative;
   max-width: 100%;
   min-width: 768px;
 
   &__body {
-    min-height: 60vh;
-    max-height: 300px;
-    overflow-y: auto;
+    // min-height: 60vh;
+    // max-height: 300px;
+    // overflow-y: auto;
   }
 
   &__row {
@@ -33,6 +34,7 @@
   &__cell {
     display: flex;
     align-items: center;
+    flex: 1 0 10%;
     height: 40px;
     padding-left: 16px;
     border-top: 1px solid $gray;
@@ -58,16 +60,6 @@
 
     &--source {
       flex: 0 0 $sourceSection;
-    }
-
-    &--title {
-      flex: 0 0 $titleSection;
-      width: $titleSection;
-    }
-
-    &--annotation {
-      flex: 0 0 $annotationSection;
-      width: $annotationSection;
     }
   }
 
@@ -103,5 +95,19 @@
     width: 32px;
     height: 32px;
     transform: rotate(90deg);
+  }
+
+  &__settings-button {
+    position: absolute;
+    top: 3px;
+    right: 0;
+    padding: 5px 16px;
+    background: #fff;
+    border: none;
+
+    svg {
+      width: 24px;
+      height: 24px;
+    }
   }
 }

@@ -1,0 +1,20 @@
+@import '../../../../assets//styles/variables.scss';
+
+.project-property {
+    display: flex;
+    align-items: center;
+    height: 64px;
+    padding: 0 48px;
+    background-color: #fff;
+    border-top: 1px solid $gray;
+    border-bottom: 1px solid $gray;
+    user-select: none;
+
+    & + & {
+        border-top: none;
+    }
+
+    &--dragging {
+        background-color: $gray-four;
+    }
+}

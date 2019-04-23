@@ -8,8 +8,6 @@ import InputDatePicker from '../../Form/InputDatePicker/InputDatePicker';
 import { ArticleService } from '../../../services/ArticleService';
 import { NotificationManager } from 'react-notifications';
 import Form from '../../Form/Form/Form';
-import { updateArticle, addArticle } from '../../../redux/actions/article';
-import store from '../../../redux/store';
 import Loader from '../../Shared/Loader/Loader';
 import Select from '../../Form/Select/Select';
 import RichEditor from '../../Form/RichEditor/RichEditor';
@@ -21,7 +19,9 @@ export default class ArticleCreateModal extends Component {
         article: PropTypes.object,
         projectId: PropTypes.string.isRequired,
         onSubmit: PropTypes.func,
-        onClose: PropTypes.func.isRequired
+        onClose: PropTypes.func.isRequired,
+        onAddArticle: PropTypes.func.isRequired,
+        onUpdateArticle: PropTypes.func.isRequired
     };
 
     state = {
@@ -93,8 +93,8 @@ export default class ArticleCreateModal extends Component {
 
                 newArticle.projectId = this.props.projectId;
 
-                if (isUpdate) store.dispatch(updateArticle(response.data));
-                else store.dispatch(addArticle(response.data));
+                if (isUpdate) this.props.onUpdateArticle(response.data);
+                else this.props.onAddArticle(response.data);
 
                 this.setState({inProgress: false});
                 this.props.onClose();
@@ -226,7 +226,7 @@ export default class ArticleCreateModal extends Component {
                             <div {...classes('row', '', 'row')}>
                                 <div {...classes('col', '', 'col-lg-6')}>
                                     <InputText
-                                        label='Обласьт/край'
+                                        label='Область/край'
                                         value='' // {form.region}
                                     />
                                 </div>

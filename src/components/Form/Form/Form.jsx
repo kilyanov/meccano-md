@@ -18,8 +18,6 @@ export default class Form extends Component {
             this.r(child);
         });
 
-        console.log(this.inputs);
-        console.log(this.form.checkValidity());
         this.props.onSubmit();
 
         return false;

@@ -6,6 +6,9 @@ import './project-create-modal.scss';
 import Form from '../../Form/Form/Form';
 import { ProjectService } from '../../../services/ProjectService';
 import { NotificationManager } from 'react-notifications';
+import store from '../../../redux/store';
+import { addProject } from '../../../redux/actions';
+import { EventEmitter } from '../../../helpers';
 
 const classes = new Bem('project-create-modal');
 
@@ -36,8 +39,10 @@ export default class ProjectCreateModal extends Component {
         const {form} = this.state;
 
         this.setState({inProgress: true}, () => {
-            ProjectService.post(form).then(() => {
+            ProjectService.post(form).then(response => {
                 NotificationManager.success(`Проект успешно ${project ? 'отредактирован' : 'создан'}`, 'Успех');
+                store.dispatch(addProject(response.data));
+                EventEmitter.emit('redirect', `/project-create/${response.data.id}/1`);
                 this.setState({inProgress: false});
                 this.props.onClose();
             });
@@ -54,6 +59,7 @@ export default class ProjectCreateModal extends Component {
                 title={`${project ? 'Редактирование' : 'Создание'} проекта`}
                 onClose={onClose}
                 onSubmit={() => this.form.submit()}
+                submitText='Создать'
             >
                 <Form onSubmit={this.handleSubmit} ref={node => this.form = node}>
                     <div {...classes('row', '', 'row')}>
@@ -72,44 +78,6 @@ export default class ProjectCreateModal extends Component {
                                 name='slug'
                                 value={form.slug}
                                 onChange={value => this.handleChangeForm(value, 'slug')}
-                            />
-                        </div>
-                    </div>
-
-                    <div {...classes('row', '', 'row')}>
-                        <div {...classes('col', '', 'col-md-4')}>
-                            <InputText
-                                label='Раздел 1'
-                                name='sectionFirst'
-                                value={form.sectionFirst}
-                                onChange={value => this.handleChangeForm(value, 'sectionFirst')}
-                            />
-                        </div>
-                        <div {...classes('col', '', 'col-md-4')}>
-                            <InputText
-                                label='Раздел 2'
-                                name='sectionSecond'
-                                value={form.sectionSecond}
-                                onChange={value => this.handleChangeForm(value, 'sectionSecond')}
-                            />
-                        </div>
-                        <div {...classes('col', '', 'col-md-4')}>
-                            <InputText
-                                label='Раздел 3'
-                                name='sectionThird'
-                                value={form.sectionThird}
-                                onChange={value => this.handleChangeForm(value, 'sectionThird')}
-                            />
-                        </div>
-                    </div>
-
-                    <div {...classes('row', '', 'row')}>
-                        <div {...classes('col', '', 'col-md-4')}>
-                            <InputText
-                                label='Вид СМИ'
-                                name='medias'
-                                value={form.medias}
-                                onChange={value => this.handleChangeForm(value, 'medias')}
                             />
                         </div>
                     </div>

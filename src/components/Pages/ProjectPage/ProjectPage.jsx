@@ -2,7 +2,6 @@ import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import './project-page.scss';
-import TopBar from '../../Shared/TopBar/TopBar';
 import Button from '../../Shared/Button/Button';
 import IconButton from '../../Shared/IconButton/IconButton';
 import TrashIcon from '../../Shared/SvgIcons/TrashIcon';
@@ -14,12 +13,11 @@ import PromiseDialogModal from '../../Shared/PromiseDialogModal/PromiseDialogMod
 import ArticleCreateModal from '../../Article/ArticleCreateModal/ArticleCreateModal';
 import ArticlesUploadModal from '../../Article/ArticlesUploadModal/ArticlesUploadModal';
 import { ProjectService } from '../../../services/ProjectService';
-import store from '../../../redux/store';
-import { getArticlesByProject, deleteArticle } from '../../../redux/actions/article';
 import { ArticleService } from '../../../services/ArticleService';
 import { NotificationManager } from 'react-notifications';
 import DropDownButton from '../../Shared/DropDownButton/DropDownButton';
 import ArticlesImportModal from '../../Article/ArticlesImportModal/ArticlesImportModal';
+import Page from '../../Shared/Page/Page';
 
 const classes = new Bem('project-page');
 
@@ -30,6 +28,7 @@ class ProjectPage extends Component {
     };
 
     state = {
+        articles: [],
         activeArticle: null,
         selectedItemIds: [],
         project: null,
@@ -79,15 +78,18 @@ class ProjectPage extends Component {
 
                 Promise.all(requestStack).then(() => {
                     NotificationManager.success('Выбранные статьи успешно удалены', 'Успех');
-                    selectedItemIds.forEach(articleId => store.dispatch(deleteArticle(articleId)));
-                    this.setState({selectedItemIds: []});
+
+                    this.setState({
+                        articles: this.state.articles.filter(({id}) => !selectedItemIds.includes(id)),
+                        selectedItemIds: []
+                    });
                 });
             });
         }
     };
 
     handleDeleteArticle = (articleId) => {
-        const {articles} = this.props;
+        const {articles} = this.state;
         const article = articles.find(({id}) => id === articleId);
 
         if (articleId && article) {
@@ -99,7 +101,9 @@ class ProjectPage extends Component {
             }).then(() => {
                 ArticleService.delete(articleId).then(() => {
                     NotificationManager.success('Статья была успешно удалена', 'Успех');
-                    store.dispatch(deleteArticle(articleId));
+                    this.setState({
+                        articles: this.state.articles.filter(({id}) => id !== articleId)
+                    });
                 });
             });
         }
@@ -118,13 +122,31 @@ class ProjectPage extends Component {
         });
     };
 
-    getArticles = () => {
-        const storeState = store.getState();
-        const articles = storeState.articles.filter(({projectId}) => projectId === this.projectId);
+    handleCreateArticle = (article) => {
+        const {articles} = this.state;
 
-        if (!articles.length) {
-            store.dispatch(getArticlesByProject(this.projectId));
-        }
+        articles.unshift(article);
+
+        this.setState({articles});
+    };
+
+    handleUpdateArticle = (newArticle) => {
+        this.setState({
+            articles: this.state.articles.map(article =>
+                (article.id === newArticle.id) ? newArticle : article
+            )
+        });
+    }
+
+    getArticles = () => {
+        ArticleService
+            .getList({project: this.projectId})
+            .then(response => {
+                this.setState({
+                    articles: response.data,
+                    inProgress: false
+                });
+            });
     };
 
     getProject = (projectId) => {
@@ -134,10 +156,7 @@ class ProjectPage extends Component {
     };
 
     setProject = (project) => {
-        this.setState({
-            project,
-            inProgress: false
-        });
+        this.setState({project});
     };
 
     projectId = this.props.match.params.id;
@@ -161,8 +180,7 @@ class ProjectPage extends Component {
             showImportArticlesModal
         } = this.state;
         const hasSelectedItems = !!selectedItemIds.length;
-        const articles = _.cloneDeep(this.props.articles)
-            .filter(({projectId}) => projectId === this.projectId)
+        const articles = _.cloneDeep(this.state.articles)
             .map(article => {
                 article.date = new Date(article.date);
 
@@ -170,100 +188,98 @@ class ProjectPage extends Component {
             });
 
         return (
-            <div {...classes('', '', ['page', 'page--with-bar'])}>
-                <TopBar {...classes('top-bar')}/>
+            <Page {...classes()} withBar>
+                <section {...classes('title-wrapper')}>
+                    <h2 {...classes('title')}>{_.get(project, 'name')}</h2>
+                    <Button
+                        text='Выгрузить все'
+                        {...classes('upload-btn')}
+                        style='success'
+                        onClick={() => this.setState({showUploadArticlesModal: true})}
+                    />
+                </section>
 
-                <div {...classes('content', '', 'container')}>
-                    <section {...classes('title-wrapper')}>
-                        <h2 {...classes('title')}>{_.get(project, 'name')}</h2>
-                        <Button
-                            text='Выгрузить все'
-                            {...classes('upload-btn')}
-                            style='success'
-                            onClick={() => this.setState({showUploadArticlesModal: true})}
-                        />
-                    </section>
+                <section {...classes('filters')}>
+                    <IconButton
+                        {...classes('filter-item')}
+                        iconComponent={<TrashIcon/>}
+                        text='Удалить'
+                        disabled={!hasSelectedItems}
+                        onClick={this.handleDeleteArticles}
+                    />
 
-                    <section {...classes('filters')}>
-                        <IconButton
-                            {...classes('filter-item')}
-                            iconComponent={<TrashIcon/>}
-                            text='Удалить'
-                            disabled={!hasSelectedItems}
-                            onClick={this.handleDeleteArticles}
-                        />
+                    <IconButton
+                        {...classes('filter-item', '', 'd-none')}
+                        iconComponent={<TrashIcon/>}
+                        text='Дублировать'
+                        disabled={!hasSelectedItems}
+                    />
 
-                        <IconButton
-                            {...classes('filter-item', '', 'd-none')}
-                            iconComponent={<TrashIcon/>}
-                            text='Дублировать'
-                            disabled={!hasSelectedItems}
-                        />
+                    <IconButton
+                        {...classes('filter-item')}
+                        iconComponent={<ServicesIcon/>}
+                        text='Сгруппировать'
+                        disabled={!hasSelectedItems}
+                    />
 
-                        <IconButton
-                            {...classes('filter-item')}
-                            iconComponent={<ServicesIcon/>}
-                            text='Сгруппировать'
-                            disabled={!hasSelectedItems}
-                        />
+                    <IconButton
+                        {...classes('filter-item')}
+                        iconComponent={<StarIcon/>}
+                        text='Добавить в избранное'
+                        disabled={!hasSelectedItems}
+                    />
 
-                        <IconButton
-                            {...classes('filter-item')}
-                            iconComponent={<StarIcon/>}
-                            text='Добавить в избранное'
-                            disabled={!hasSelectedItems}
-                        />
+                    <SearchFilter
+                        {...classes('filter-item')}
+                        placeholder='Найти'
+                        value={filters.search}
+                        onChange={value => this.handleChangeFilter('search', value)}
+                    />
 
-                        <SearchFilter
-                            {...classes('filter-item')}
-                            placeholder='Найти'
-                            value={filters.search}
-                            onChange={value => this.handleChangeFilter('search', value)}
-                        />
+                    <span {...classes('articles-count')}>Всего статей: 66</span>
 
-                        <span {...classes('articles-count')}>Всего статей: 66</span>
+                    <DropDownButton
+                        {...classes('article-add-btn')}
+                        buttonText='Добавить'
+                        dropDownItems={this.addMenuItems}
+                    />
+                </section>
 
-                        <DropDownButton
-                            {...classes('article-add-btn')}
-                            buttonText='Добавить'
-                            dropDownItems={this.addMenuItems}
-                        />
-                    </section>
-
-                    <div {...classes('project-table-wrapper')}>
-                        <ProjectTable
-                            onClickArticle={this.handleClickArticle}
-                            onChangeSelected={this.handleChangeSelected}
-                            onDeleteArticle={this.handleDeleteArticle}
-                            selectedIds={selectedItemIds}
-                            articles={articles}
-                        />
-                    </div>
-
-                    {showArticleModal && (
-                        <ArticleCreateModal
-                            article={activeArticle || {}}
-                            projectId={this.projectId}
-                            onClose={() => this.setState({activeArticle: null, showArticleModal: false})}
-                        />
-                    )}
-
-                    {showUploadArticlesModal && (
-                        <ArticlesUploadModal
-                            onClose={() => this.setState({showUploadArticlesModal: false})}
-                        />
-                    )}
-
-                    {showImportArticlesModal && (
-                        <ArticlesImportModal
-                            onClose={() => this.setState({showImportArticlesModal: false})}
-                            projectId={this.projectId}
-                        />
-                    )}
-
-                    <PromiseDialogModal ref={node => this.promiseDialogModal = node}/>
+                <div {...classes('project-table-wrapper')}>
+                    <ProjectTable
+                        onClickArticle={this.handleClickArticle}
+                        onChangeSelected={this.handleChangeSelected}
+                        onDeleteArticle={this.handleDeleteArticle}
+                        selectedIds={selectedItemIds}
+                        articles={articles}
+                    />
                 </div>
-            </div>
+
+                {showArticleModal && (
+                    <ArticleCreateModal
+                        article={activeArticle || {}}
+                        projectId={this.projectId}
+                        onClose={() => this.setState({activeArticle: null, showArticleModal: false})}
+                        onAddArticle={this.handleCreateArticle}
+                        onUpdateArticle={this.handleUpdateArticle}
+                    />
+                )}
+
+                {showUploadArticlesModal && (
+                    <ArticlesUploadModal
+                        onClose={() => this.setState({showUploadArticlesModal: false})}
+                    />
+                )}
+
+                {showImportArticlesModal && (
+                    <ArticlesImportModal
+                        onClose={() => this.setState({showImportArticlesModal: false})}
+                        projectId={this.projectId}
+                    />
+                )}
+
+                <PromiseDialogModal ref={node => this.promiseDialogModal = node}/>
+            </Page>
         );
     }
 }

@@ -10,3 +10,19 @@ export const getProjects = () => ({
     ],
     promise: ProjectService.get()
 });
+
+export const addProject = (form) => ({
+    type: types.project.ADD,
+    payload: form
+});
+
+export const updateArticle = (form) => ({
+    type: types.project.UPDATE,
+    id: form.id,
+    payload: form
+});
+
+export const deleteArticle = (articleId) => ({
+    type: types.project.DELETE,
+    id: articleId
+});

@@ -28,7 +28,7 @@ export default class ConfirmModal extends PureComponent {
         buttons: Object.keys(BUTTONS),
         onCancel: () => {},
         onSubmit: () => {},
-        submitText: 'Подтвердить',
+        submitText: 'Сохранить',
         cancelText: 'Отмена',
         width: 'normal'
     };
