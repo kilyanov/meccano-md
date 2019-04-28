@@ -18,6 +18,7 @@ export default class PromiseDialogModal extends PureComponent {
 
     componentWillUnmount() {
         document.removeEventListener('keydown', this.handleDocumentKeyDown);
+        this.isUnmonted = true;
     }
 
     handleDocumentKeyDown = (event) => {
@@ -28,8 +29,14 @@ export default class PromiseDialogModal extends PureComponent {
 
     handleClick = () => {
         this.setState({pulse: true});
-        setTimeout(() => this.setState({pulse: false}), 1000);
+        setTimeout(() => {
+            if (!this.isUnmonted) {
+                this.setState({pulse: false});
+            }
+        }, 1000);
     };
+
+    isUnmonted = false;
 
     open = (props) => {
         const {
@@ -39,14 +46,14 @@ export default class PromiseDialogModal extends PureComponent {
             closeOnSubmit = true,
             submitText = 'Ok',
             cancelText = 'Отмена',
-            style
+            style // danger
         } = props;
 
         return new Promise((resolve, reject) => {
             const modal = (
                 <div {...classes('container', {[style]: !!style})}>
                     <div {...classes('header')}>
-                        <h4 {...classes('title')}>{title}</h4>
+                        <h3 {...classes('title')}>{title}</h3>
                         {subTitle && <h6 {...classes('sub-title')}>{subTitle}</h6>}
                     </div>
 

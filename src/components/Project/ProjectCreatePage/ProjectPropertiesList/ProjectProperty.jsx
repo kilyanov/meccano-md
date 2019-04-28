@@ -1,40 +1,43 @@
 import React, { Component } from 'react';
 import { Draggable } from 'react-beautiful-dnd';
-import NaturalDragAnimation from '../NaturalDragAnimation';
 import './project-property.scss';
+import ArrowIcon from '../../../Shared/SvgIcons/ArrowIcon';
+import TrashIcon from '../../../Shared/SvgIcons/TrashIcon';
 
 const classes = new Bem('project-property');
 
 class Item extends Component {
     render() {
-        const { item, index, ...props } = this.props;
+        const { item, index } = this.props;
 
         return (
             <Draggable
-                key={item.id}
-                draggableId={item.id}
+                key={item.code}
+                draggableId={item.code}
                 index={index}
             >
                 {(provided, snapshot) => (
-                    <NaturalDragAnimation
-                        style={provided.draggableProps.style}
-                        snapshot={snapshot}
-                        {...props}
+                    <div
+                        {...classes('', {
+                            dragging: snapshot.isDragging
+                        })}
+                        ref={provided.innerRef}
+                        {...provided.draggableProps}
+                        {...provided.dragHandleProps}
                     >
-                        {style => (
-                            <div
-                                {...classes('', {
-                                    dragging: snapshot.isDragging
-                                })}
-                                ref={provided.innerRef}
-                                {...provided.draggableProps}
-                                {...provided.dragHandleProps}
-                                style={style}
-                            >
-                                {item.name}
-                            </div>
-                        )}
-                    </NaturalDragAnimation>
+                        <div {...classes('arrows')}>
+                            <ArrowIcon {...classes('arrow-top')}/>
+                            <ArrowIcon {...classes('arrow-bottom')}/>
+                        </div>
+
+                        {item.name}
+
+                        <button
+                            {...classes('remove-button')}
+                        >
+                            <TrashIcon {...classes('trash-icon')}/>
+                        </button>
+                    </div>
                 )}
             </Draggable>
         );

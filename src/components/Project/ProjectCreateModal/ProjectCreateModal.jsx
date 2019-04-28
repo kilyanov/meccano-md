@@ -42,7 +42,7 @@ export default class ProjectCreateModal extends Component {
             ProjectService.post(form).then(response => {
                 NotificationManager.success(`Проект успешно ${project ? 'отредактирован' : 'создан'}`, 'Успех');
                 store.dispatch(addProject(response.data));
-                EventEmitter.emit('redirect', `/project-create/${response.data.id}/1`);
+                EventEmitter.emit('redirect', `/project-create/${response.data.id}`);
                 this.setState({inProgress: false});
                 this.props.onClose();
             });

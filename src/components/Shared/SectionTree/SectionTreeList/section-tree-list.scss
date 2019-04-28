@@ -1,0 +1,105 @@
+@import "../../../../assets/styles/variables";
+
+$namespace: '.section-tree-list';
+
+#{$namespace} {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  &__item {
+    display: flex;
+    flex-direction: column;
+
+    &--level-0 {
+      border-top: 1px solid $brownGreyColor;
+    }
+
+    & #{$namespace}__item {
+      padding-left: 48px;
+    }
+  }
+
+  &__item-name-wrap {
+    flex: 1;
+    display: inline-flex;
+    align-items: center;
+    height: 44px;
+  }
+
+  &__item-name {
+    display: flex;
+    position: relative;
+    align-items: center;
+    height: 64px;
+    padding-left: 48px;
+    border-bottom: 1px solid $gray;
+
+    &:hover {
+      background-color: $gray-four;
+
+      #{$namespace}__item-arrows {
+        display: block;
+      }
+
+      #{$namespace}__item-buttons {
+        display: flex;
+      }
+    }
+  }
+
+  &__item-arrows {
+    display: none;
+    position: absolute;
+    top: 0;
+    left: 14px;
+    bottom: 0;
+    height: 100%;
+    width: 20px;
+  }
+
+  &__item-arrow-top,
+  &__item-arrow-bottom {
+    position: absolute;
+    width: 20px;
+    fill: $brownGreyColor
+  }
+
+  &__item-arrow-top {
+    top: 5px;
+    transform: rotate(-90deg);
+  }
+
+  &__item-arrow-bottom {
+    bottom: 5px;
+    transform: rotate(90deg);
+  }
+
+  &__item-buttons {
+    display: none;
+    align-items: center;
+    position: absolute;
+    right: 10px;
+  }
+
+  &__item-button {
+    padding: 5px;
+    background: none;
+    border: none;
+  }
+
+  &__item-icon {
+    width: 32px;
+    height: 32px;
+    fill: $brownGreyColor;
+    color: $brownGreyColor;
+    overflow: hidden;
+
+    &--plus {
+      font-size: 50px;
+      font-style: normal;
+      font-weight: 100;
+      line-height: 18px;
+    }
+  }
+}

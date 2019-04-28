@@ -18,11 +18,25 @@
     color: #fff;
   }
 
+  &--error {
+    background-color: $strawberry;
+    border-color: $strawberry;
+    color: #fff;
+  }
+
   &--inline {
     padding: 0;
     border: none;
     color: $linkColor;
     background-color: transparent;
+
+    &.button--success {
+      color: $greenColor;
+    }
+
+    &.button--error {
+      color: $strawberry;
+    }
   }
 
   &--disabled {

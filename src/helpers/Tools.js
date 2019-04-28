@@ -1,9 +1,12 @@
 import PerfectScrollbar from 'perfect-scrollbar';
+import API from '../api/api';
 
 export const Tools = {
-    parseFormToRequest: (form) => (
-        `?${Object.keys(form).map(key => `${key}=${form[key]}`).join('&')}`
-    ),
+    parseFormToRequest: (form) => {
+        if (!form) return '';
+
+        return `?${Object.keys(form).map(key => `${key}=${form[key]}`).join('&')}`;
+    },
     isMobileScreen: () => {
         return window.innerWidth <= 800;
     },
@@ -24,5 +27,8 @@ export const Tools = {
             return new PerfectScrollbar(node, options);
             /* eslint-enable no-unused-vars */
         }
+    },
+    prepareRequest: (type = 'get', url, form) => {
+        return API[type](url, form);
     }
 };

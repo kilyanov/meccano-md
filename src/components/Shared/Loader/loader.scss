@@ -15,6 +15,10 @@
 
   z-index: 1000;
 
+  &--fixed {
+    position: fixed;
+  }
+
   svg {
     animation: rotate 2s linear infinite;
 

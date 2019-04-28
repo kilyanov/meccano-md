@@ -3,7 +3,10 @@ export default {
         login: '/auth/login',
         create: '/auth/create'
     },
-    project: '/project',
+    project: {
+        project: '/project',
+        sections: '/project/section'
+    },
     article: '/article',
     country: '/country',
     user: {

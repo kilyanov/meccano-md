@@ -1,0 +1,62 @@
+$scrollbar-bgc: black;
+
+.ps {
+  &__rail-x,
+  &__rail-y {
+    z-index: 1000;
+  }
+
+  &__rail-x,
+  &__thumb-x,
+  &__rail-x:hover > &__thumb-x,
+  &__rail-x:focus > &__thumb-x {
+    height: 10px;
+  }
+
+  &__rail-y,
+  &__thumb-y,
+  &__rail-y:hover > &__thumb-y,
+  &__rail-y:focus > &__thumb-y {
+    width: 10px;
+  }
+
+  &:hover > &__rail-x,
+  &:hover > &__rail-y,
+  &--focus > &__rail-x,
+  &--focus > &__rail-y,
+  &--scrolling-x > &__rail-x,
+  &--scrolling-y > &__rail-y {
+    opacity: 0.2;
+  }
+
+  &__rail-x:hover > &__thumb-x,
+  &__rail-x:focus > &__thumb-x {
+    background-color: $scrollbar-bgc;
+  }
+
+  &__rail-y:hover > &__thumb-y,
+  &__rail-y:focus > &__thumb-y {
+    background-color: $scrollbar-bgc;
+  }
+
+  &__rail-x:hover,
+  &__rail-y:hover,
+  &__rail-x:focus,
+  &__rail-y:focus {
+    background-color: transparent;
+  }
+
+  &__thumb-x,
+  &__thumb-y {
+    border-radius: 0;
+    background-color: $scrollbar-bgc;
+  }
+
+  &__thumb-x {
+    bottom: 0;
+  }
+
+  &__thumb-y {
+    right: 0;
+  }
+}

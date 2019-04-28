@@ -128,9 +128,15 @@ $namespace: '.home-menu';
     &:hover {
       background-color: $greenColor;
 
+      #{$namespace}__item-button,
       #{$namespace}__item-link {
         color: white;
+        fill: white;
       }
     }
+  }
+
+  &__item-button {
+    padding: 16px 20px;
   }
 }

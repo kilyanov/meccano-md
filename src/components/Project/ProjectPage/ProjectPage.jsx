@@ -116,12 +116,6 @@ class ProjectPage extends Component {
         });
     };
 
-    handleAddArticle = () => {
-        this.setState({
-            showArticleModal: true
-        });
-    };
-
     handleCreateArticle = (article) => {
         const {articles} = this.state;
 
@@ -136,7 +130,7 @@ class ProjectPage extends Component {
                 (article.id === newArticle.id) ? newArticle : article
             )
         });
-    }
+    };
 
     getArticles = () => {
         ArticleService
@@ -163,7 +157,7 @@ class ProjectPage extends Component {
 
     addMenuItems = [{
         title: 'Добавить новую',
-        onClick: this.handleAddArticle
+        link: `/project/${this.projectId}/article`
     }, {
         title: 'Импорт статей',
         onClick: () => this.setState({showImportArticlesModal: true})

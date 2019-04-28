@@ -1,0 +1,8 @@
+@import "../../../../assets/styles/variables";
+
+.project-properties-list {
+  min-height: 92%;
+  max-height: 92%;
+  border-top: 1px solid $gray;
+  overflow-y: auto;
+}

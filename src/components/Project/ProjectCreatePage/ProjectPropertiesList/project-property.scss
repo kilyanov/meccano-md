@@ -1,7 +1,10 @@
-@import '../../../../assets//styles/variables.scss';
+@import '../../../../assets/styles/variables.scss';
 
-.project-property {
+$namespace: '.project-property';
+
+#{$namespace} {
     display: flex;
+    position: relative;
     align-items: center;
     height: 64px;
     padding: 0 48px;
@@ -10,11 +13,68 @@
     border-bottom: 1px solid $gray;
     user-select: none;
 
-    & + & {
+    &:first-child {
         border-top: none;
     }
 
-    &--dragging {
+    &:active,
+    &:focus,
+    &:hover {
         background-color: $gray-four;
+
+        #{$namespace}__arrows {
+            display: block;
+        }
+
+        #{$namespace}__remove-button {
+            display: block;
+        }
+    }
+
+    & + & {
+        margin-top: -1px;
+    }
+
+    &--dragging {
+        border-top: 1px solid $gray !important;
+    }
+
+    &__arrows {
+        display: none;
+        position: absolute;
+        top: 0;
+        left: 14px;
+        bottom: 0;
+        height: 100%;
+        width: 20px;
+    }
+
+    &__arrow-top,
+    &__arrow-bottom {
+        position: absolute;
+        width: 20px;
+        fill: $brownGreyColor
+    }
+
+    &__arrow-top {
+        top: 5px;
+        transform: rotate(-90deg);
+    }
+
+    &__arrow-bottom {
+        bottom: 5px;
+        transform: rotate(90deg);
+    }
+
+    &__remove-button {
+        display: none;
+        position: absolute;
+        right: 10px;
+        background: none;
+        border: none;
+    }
+
+    &__trash-icon {
+        fill: $brownGreyColor;
     }
 }

@@ -1,9 +1,10 @@
 @import "variables";
 
 .container {
-  box-sizing: border-box;
+  width: 100%;
   margin: 0 auto;
   padding: 0 1em;
+  box-sizing: border-box;
 
   @media (min-width: $device-xs) {
     max-width: $device-xs;

@@ -70,18 +70,17 @@ export default class DropDown extends PureComponent {
             <div {...classes('', '', className)} style={styles}>
                 <div {...classes('list')} role='listbox'>
                     {items.map(({
-                        isLink, 
-                        to, 
-                        title, 
+                        link,
+                        title,
                         disabled, 
                         onClick, 
                         closeOnClick,
                         danger
-                    }, itemIndex) => isLink ? (
+                    }, itemIndex) => link ? (
                         <Link
                             key={itemIndex}
                             {...classes('list-item', {disabled, danger})}
-                            to={to}
+                            to={link}
                             role='option'
                         >{title}</Link>
                     ) : (

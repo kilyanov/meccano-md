@@ -24,6 +24,8 @@ export default class RichEditor extends Component {
         showCharsCounter: false,
         showWordsCounter: false,
         showXPathInStatusbar: false,
+        allowResizeX: true,
+        allowResizeY: true,
         language: 'ru',
         i18n: {
             ru: {

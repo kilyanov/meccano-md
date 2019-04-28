@@ -6,20 +6,9 @@ import ProjectPropertiesList from './ProjectPropertiesList/ProjectPropertiesList
 class ProjectCreateFirstStep extends Component {
     static propTypes = {
         classes: PropTypes.func.isRequired,
-        project: PropTypes.object.isRequired
-    };
-
-    state = {
-        items: [
-            { id: 1, name: 'Первый' },
-            { id: 2, name: 'Второй' },
-            { id: 3, name: 'Третий' },
-            { id: 4, name: 'Четвертый' },
-            { id: 5, name: 'Пятый' },
-            { id: 6, name: 'Шестой' },
-            { id: 7, name: 'Седьмой' }
-        ],
-        selected: []
+        project: PropTypes.object.isRequired,
+        fields: PropTypes.array.isRequired,
+        allFields: PropTypes.array.isRequired
     };
 
     handleDragEnd = (res) => {
@@ -32,31 +21,23 @@ class ProjectCreateFirstStep extends Component {
 
         if (source.droppableId === destination.droppableId) {
             const items = this.reorder(
-                this.getList(source.droppableId),
+                this.props[source.droppableId],
                 source.index,
                 destination.index,
             );
 
-            let state = { items };
-
-            if (source.droppableId === 'selected') {
-                state = { selected: items };
-            }
-
-            this.setState(state);
+            this.props.onChange({ [source.droppableId]: items });
         } else {
             const result = this.move(
-                this.getList(source.droppableId),
-                this.getList(destination.droppableId),
+                this.props[source.droppableId],
+                this.props[destination.droppableId],
                 source,
                 destination,
             );
 
-            this.setState({...this.state, ...result});
+            this.props.onChange(result);
         }
     };
-
-    getList = id => this.state[id];
 
     reorder = (list, startIndex, endIndex) => {
         const result = Array.from(list);
@@ -96,8 +77,8 @@ class ProjectCreateFirstStep extends Component {
                             <h3>Выбранные поля</h3>
 
                             <ProjectPropertiesList
-                                droppableId="selected"
-                                data={this.state.selected}
+                                droppableId="fields"
+                                data={this.props.fields}
                                 {...this.props}
                             />
                         </div>
@@ -105,8 +86,8 @@ class ProjectCreateFirstStep extends Component {
                             <h3>Добавление полей</h3>
 
                             <ProjectPropertiesList
-                                droppableId="items"
-                                data={this.state.items}
+                                droppableId="allFields"
+                                data={this.props.allFields}
                                 {...this.props}
                             />
                         </div>

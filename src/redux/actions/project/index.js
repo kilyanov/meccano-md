@@ -16,13 +16,13 @@ export const addProject = (form) => ({
     payload: form
 });
 
-export const updateArticle = (form) => ({
+export const updateProject = (form) => ({
     type: types.project.UPDATE,
     id: form.id,
     payload: form
 });
 
-export const deleteArticle = (articleId) => ({
+export const deleteProject = (projectId) => ({
     type: types.project.DELETE,
-    id: articleId
+    id: projectId
 });

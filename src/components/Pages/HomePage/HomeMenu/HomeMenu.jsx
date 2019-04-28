@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import ArrowIcon from '../../../Shared/SvgIcons/ArrowIcon';
 import './home-menu.scss';
 import { KEY_CODE } from '../../../../constants/KeyCode';
+import PencilIcon from '../../../Shared/SvgIcons/PencilIcon';
 
 const classes = new Bem('home-menu');
 
@@ -88,7 +89,7 @@ export default class HomeMenu extends PureComponent {
             default:
                 break;
         }
-    }
+    };
 
     setNextItem(activeItemIndex) {
         const listItems = Array.from(this.list.childNodes);
@@ -166,6 +167,12 @@ export default class HomeMenu extends PureComponent {
                                     <Link to={child.link} {...classes('item-link')} onClick={() => onClick(item.name)}>
                                         <span {...classes('child-title')}>{child.name}</span>
                                     </Link>
+
+                                    {child.editLink && (
+                                        <Link to={child.editLink} {...classes('item-button')}>
+                                            <PencilIcon size={{width: 16, height: 16}}/>
+                                        </Link>
+                                    )}
                                 </li>
                             ))}
                         </ul>

@@ -9,7 +9,7 @@
   box-shadow: 0 4px 15px 0 rgba(0, 0, 0, .2);
   overflow: hidden;
   word-break: break-all;
-  z-index: 1;
+  z-index: 10;
 
   &__list {
     position: relative;
@@ -25,9 +25,11 @@
     height: 48px;
     padding: 0 16px;
     font-size: 15px;
+    color: #333;
     cursor: pointer;
     user-select: none;
     white-space: nowrap;
+    text-decoration: none;
 
     &:not(:last-child) {
       border-bottom: 1px solid $gray;
@@ -40,6 +42,7 @@
     &:active,
     &:hover {
       background-color: #f2f2f2;
+      text-decoration: none;
     }
   }
 }

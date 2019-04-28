@@ -2,12 +2,12 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Droppable } from 'react-beautiful-dnd';
 import ProjectProperty from './ProjectProperty';
+import './project-properties-list.scss';
 
 const classes = new Bem('project-properties-list');
 
 const getListStyle = isDraggingOver => ({
-    background: isDraggingOver ? 'transparent' : 'transparent',
-    minHeight: '100%'
+    background: isDraggingOver ? 'transparent' : 'transparent'
 });
 
 class ProjectPropertiesList extends Component {
@@ -31,7 +31,7 @@ class ProjectPropertiesList extends Component {
                             <ProjectProperty
                                 item={item}
                                 index={index}
-                                key={item.id}
+                                key={item.code}
                                 {...props}
                             />
                         ))}

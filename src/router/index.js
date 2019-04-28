@@ -5,9 +5,10 @@ import AuthRoute from './AuthRoute';
 import App from '../components/App';
 import HomePage from '../components/Pages/HomePage/HomePage';
 import LoginPage from '../components/Pages/LoginPage/LoginPage';
-import ProjectPage from '../components/Pages/ProjectPage/ProjectPage';
+import ProjectPage from '../components/Project/ProjectPage/ProjectPage';
 import ProjectCreatePage from '../components/Project/ProjectCreatePage/ProjectCreatePage';
 import NotFoundPage from '../components/Pages/NotFoundPage/NotFoundPage';
+import ArticleCreatePage from '../components/Article/ArticleCeratePage/ArticleCreatePage';
 
 export default (
     <Router>
@@ -15,8 +16,11 @@ export default (
             <Switch>
                 <Route exact component={LoginPage} path="/login"/>
                 <AuthRoute exact component={HomePage} path="/"/>
+
                 <AuthRoute exact component={ProjectPage} path="/project/:id"/>
-                <AuthRoute exact component={ProjectCreatePage} path="/project-create/:id/:step"/>
+                <AuthRoute exact component={ProjectCreatePage} path="/project-create/:id"/>
+
+                <AuthRoute exact component={ArticleCreatePage} path="/project/:projectId/article/:articleId?"/>
 
                 <AuthRoute component={NotFoundPage}/>
             </Switch>

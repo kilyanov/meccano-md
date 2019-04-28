@@ -46,7 +46,11 @@ class HomePage extends Component {
             id: 'projects',
             icon: <ProjectsIcon/>,
             name: 'Проекты',
-            children: this.props.projects.map(({id, name}) => ({name, link: `/project/${id}`}))
+            children: this.props.projects.map(({id, name}) => ({
+                name,
+                link: `/project/${id}`,
+                editLink: `/project-create/${id}`
+            }))
         }, {
             id: 'users',
             icon: <UsersIcon/>,

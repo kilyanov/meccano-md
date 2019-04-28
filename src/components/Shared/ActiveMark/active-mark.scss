@@ -1,0 +1,21 @@
+@import "../../../assets/styles/variables";
+
+.active-mark {
+  position: absolute;
+  top: -12px;
+  right: -12px;
+  height: 24px;
+  width: 24px;
+  background-color: $shamrock;
+  border-radius: 50%;
+  box-shadow: 0 4px 4px 0 rgba(0, 185, 86, .25);
+
+  &__icon {
+    position: absolute;
+    top: 0;
+    left: -1px;
+    height: inherit;
+    width: inherit;
+    fill: #fff;
+  }
+}

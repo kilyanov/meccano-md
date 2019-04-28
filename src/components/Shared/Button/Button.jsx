@@ -11,19 +11,28 @@ const Button = ({
     className,
     disabled,
     style,
+    viewType,
     onClick = () => {},
     text,
     type = 'button'
 }) => {
     return to ? (
         <Link
-            {...classes('', {[style]: !!style, disabled}, className)}
+            {...classes('', {
+                [style]: !!style,
+                [viewType]: !!viewType,
+                disabled
+            }, className)}
             to={to}
             disabled={disabled}
         >{text}</Link>
     ) : (
         <button
-            {...classes('', {[style]: !!style, disabled}, className)}
+            {...classes('', {
+                [style]: !!style,
+                [viewType]: !!viewType,
+                disabled
+            }, className)}
             type={type}
             onClick={onClick}
             disabled={disabled}
@@ -36,6 +45,7 @@ Button.propTypes = {
     disabled: PropTypes.bool,
     to: PropTypes.string,
     style: PropTypes.oneOf(['default', 'success', 'error', 'info', 'inline']),
+    viewType: PropTypes.oneOf(['inline', 'default']),
     text: PropTypes.string.isRequired,
     onClick: PropTypes.func,
     type: PropTypes.string
