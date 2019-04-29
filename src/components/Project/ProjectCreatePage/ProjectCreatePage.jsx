@@ -22,7 +22,7 @@ class ProjectCreatePage extends Component {
     };
 
     state = {
-        step: 2,
+        step: 1,
         projectId: this.props.match.params.id,
         fields: [],
         allFields: [],

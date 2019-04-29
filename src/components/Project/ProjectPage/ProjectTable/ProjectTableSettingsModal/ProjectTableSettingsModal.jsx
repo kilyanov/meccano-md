@@ -17,7 +17,8 @@ export default class ProjectTableSettingsModal extends Component {
     constructor() {
         super();
 
-        const storageColumns = JSON.parse(StorageService.get('project-table-columns'));
+        const storageValue = StorageService.get('project-table-columns');
+        const storageColumns = storageValue && JSON.parse(storageValue);
 
         this.state = {
             columns: storageColumns || [...DEFAULT_COLUMNS]
