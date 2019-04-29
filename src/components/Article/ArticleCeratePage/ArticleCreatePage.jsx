@@ -14,6 +14,7 @@ import BackButton from '../../Shared/BackButton/BackButton';
 import ArrowIcon from '../../Shared/SvgIcons/ArrowIcon';
 import Button from '../../Shared/Button/Button';
 import ArticleViewSettings from './ArticleViewSettings/ArticleViewSettings';
+import {EventEmitter} from '../../../helpers';
 
 const classes = new Bem('article-create-page');
 
@@ -78,6 +79,30 @@ export default class ArticleCreatePage extends Component {
 
     handleChangeViewType = (key) => {
         this.setState({viewType: key});
+    };
+
+    handlePrevArticle = () => {
+        const {articles, articleIndex} = this.state;
+
+        let prevArticle = articles[articleIndex - 1];
+
+        if (!prevArticle) {
+            prevArticle = articles[articles.length - 1];
+        }
+
+        EventEmitter.emit('redirect', `/project/${this.projectId}/article/${prevArticle.id}`);
+    };
+
+    handleNextArticle = () => {
+        const {articles, articleIndex} = this.state;
+
+        let nextArticle = articles[articleIndex + 1];
+
+        if (!nextArticle) {
+            nextArticle = articles[0];
+        }
+
+        EventEmitter.emit('redirect', `/project/${this.projectId}/article/${nextArticle.id}`);
     };
 
     handleSubmit = () => {
@@ -305,6 +330,7 @@ export default class ArticleCreatePage extends Component {
                         {!!articles.length && (
                             <button
                                 {...classes('title-button', 'left')}
+                                onClick={this.handlePrevArticle}
                             ><ArrowIcon {...classes('title-arrow')}/></button>
                         )}
 
@@ -316,6 +342,7 @@ export default class ArticleCreatePage extends Component {
                         {!!articles.length && (
                             <button
                                 {...classes('title-button', 'right')}
+                                onClick={this.handleNextArticle}
                             ><ArrowIcon {...classes('title-arrow')}/></button>
                         )}
                     </div>

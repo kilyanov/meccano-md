@@ -18,12 +18,12 @@ import { NotificationManager } from 'react-notifications';
 import DropDownButton from '../../Shared/DropDownButton/DropDownButton';
 import ArticlesImportModal from '../../Article/ArticlesImportModal/ArticlesImportModal';
 import Page from '../../Shared/Page/Page';
+import Loader from '../../Shared/Loader/Loader';
 
 const classes = new Bem('project-page');
 
 class ProjectPage extends Component {
     static propTypes = {
-        articles: PropTypes.array,
         projects: PropTypes.array
     };
 
@@ -171,7 +171,8 @@ class ProjectPage extends Component {
             project,
             showArticleModal,
             showUploadArticlesModal,
-            showImportArticlesModal
+            showImportArticlesModal,
+            inProgress
         } = this.state;
         const hasSelectedItems = !!selectedItemIds.length;
         const articles = _.cloneDeep(this.state.articles)
@@ -241,10 +242,10 @@ class ProjectPage extends Component {
 
                 <div {...classes('project-table-wrapper')}>
                     <ProjectTable
-                        onClickArticle={this.handleClickArticle}
                         onChangeSelected={this.handleChangeSelected}
                         onDeleteArticle={this.handleDeleteArticle}
                         selectedIds={selectedItemIds}
+                        projectId={this.projectId}
                         articles={articles}
                     />
                 </div>
@@ -273,12 +274,11 @@ class ProjectPage extends Component {
                 )}
 
                 <PromiseDialogModal ref={node => this.promiseDialogModal = node}/>
+
+                {inProgress && <Loader fixed/>}
             </Page>
         );
     }
 }
 
-export default connect(({projects, articles}) => ({
-    articles,
-    projects
-}))(ProjectPage);
+export default connect(({projects}) => ({projects}))(ProjectPage);

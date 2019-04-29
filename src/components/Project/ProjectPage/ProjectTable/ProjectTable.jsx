@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import { Link } from 'react-router-dom';
 import { SORT_DIR } from '../../../../constants';
 import CheckBox from '../../../Form/CheckBox/CheckBox';
 import DropDown from '../../../Shared/DropDown/DropDown';
@@ -22,7 +23,7 @@ export default class ProjectTable extends Component {
         selectedIds: PropTypes.array,
         onChangeSelected: PropTypes.func,
         onDeleteArticle: PropTypes.func,
-        onClickArticle: PropTypes.func
+        projectId: PropTypes.string.isRequired
     };
 
     static defaultProps = {
@@ -87,10 +88,6 @@ export default class ProjectTable extends Component {
         this.props.onChangeSelected(newSelected);
     };
 
-    handleEditArticle = (article) => {
-        console.log('edit article ', article);
-    };
-
     handleDeleteArticle = (articleId) => {
         console.log('delete article ', articleId);
     };
@@ -101,7 +98,7 @@ export default class ProjectTable extends Component {
 
     handleChangeColumns = (columns) => {
         this.setState({columns});
-    }
+    };
 
     setColumnWidth = () => {
         const {columns} = this.state;
@@ -171,11 +168,11 @@ export default class ProjectTable extends Component {
     };
 
     renderRow = (article) => {
-        const {selectedIds} = this.props;
+        const {selectedIds, projectId} = this.props;
         const {columns} = this.state;
         const menuItems = [{
             title: 'Изменить',
-            onClick: () => this.handleEditArticle(article)
+            link: `/project/${projectId}/article/${article.id}`
         }, {
             danger: true,
             title: 'Удвлить',
@@ -196,10 +193,10 @@ export default class ProjectTable extends Component {
 
                 {columns.map(key => {
                     return (
-                        <div
+                        <Link
+                            to={`/project/${projectId}/article/${article.id}`}
                             key={key}
                             {...classes('cell', key)}
-                            onClick={() => this.props.onClickArticle(article)}
                         >
                             <span {...classes('cell-text')}>
                                 {key === 'date' && moment(article.date).format('DD.MM.YYYY')}
@@ -212,7 +209,7 @@ export default class ProjectTable extends Component {
                                 {key === 'federalDistrict' && article.federalDistrict}
                                 {key === 'typeMedia' && article.typeMedia}
                             </span>
-                        </div>
+                        </Link>
                     );
                 })}
 
