@@ -57,6 +57,7 @@ export default class ArticleCreatePage extends Component {
                 const articles = listResponse.data;
                 const form = articleResponse.data;
 
+                this.article = _.cloneDeep(form);
                 form.date = new Date(form.date);
 
                 this.setState({
@@ -107,13 +108,16 @@ export default class ArticleCreatePage extends Component {
 
     handleSubmit = () => {
         const form = {...this.state.form};
-        const isUpdate = !!form.id;
+        const isUpdate = !!this.articleId;
 
+        form.date = moment(form.date).format();
+
+        // Check new properties
         Object.keys(form).forEach(key => {
             if (!form[key]) delete form[key];
 
             if (isUpdate) {
-                if (form[key] === this.props.article[key] && key !== 'id') {
+                if (form[key] === this.article[key] && key !== 'id') {
                     delete form[key];
                 }
             }
@@ -121,24 +125,19 @@ export default class ArticleCreatePage extends Component {
 
         if (_.isEmpty(form)) return;
 
-        form.project_id = this.props.projectId;
+        form.project_id = this.projectId;
 
         this.setState({inProgress: true}, () => {
-            ArticleService[isUpdate ? 'update' : 'create'](form, form.id).then((response) => {
-                const newArticle = response.data;
-
+            ArticleService[isUpdate ? 'update' : 'create'](form, form.id).then(() => {
                 NotificationManager.success('Статья успешно добавлена в проект', 'Успех');
-
-                newArticle.projectId = this.props.projectId;
-
-                if (isUpdate) this.props.onUpdateArticle(response.data);
-                else this.props.onAddArticle(response.data);
-
-                this.setState({inProgress: false});
-                this.props.onClose();
+                this.setState({inProgress: false}, () => {
+                    setTimeout(() => EventEmitter.emit('redirect', `/project/${this.projectId}`), 2000);
+                });
             }).catch(() => this.setState({inProgress: false}));
         });
     };
+
+    article = null;
 
     sources = [{
         name: 'Яндекс',
@@ -361,6 +360,7 @@ export default class ArticleCreatePage extends Component {
                     <Button
                         {...classes('submit-button')}
                         text={isUpdate ? 'Обновить' : 'Создать'}
+                        onClick={() => this.form.submit()}
                     />
                 </section>
 

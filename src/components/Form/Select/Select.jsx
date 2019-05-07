@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import './select.scss';
-import { Tools } from '../../../helpers/Tools';
+import {isMobileScreen} from '../../../helpers/Tools';
 import CheckBox from '../CheckBox/CheckBox';
 
 const classes = new Bem('select');
@@ -70,7 +70,7 @@ export default class Select extends Component {
         else this.open();
     };
 
-    isMobileView = Tools.isMobileScreen();
+    isMobileView = isMobileScreen();
 
     render() {
         const {options, placeholder, label, selected} = this.props;

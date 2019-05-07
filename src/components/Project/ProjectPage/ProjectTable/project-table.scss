@@ -2,14 +2,13 @@
 @import "../../../../assets/styles/variables";
 
 .project-table {
-  // position: relative;
   max-width: 100%;
   min-width: 768px;
+  height: 100%;
 
   &__body {
-    // min-height: 60vh;
-    // max-height: 300px;
-    // overflow-y: auto;
+    margin-bottom: 40px;
+    max-height: calc(100% - 60px);
   }
 
   &__row {
@@ -106,6 +105,7 @@
     padding: 5px 16px;
     background: #fff;
     border: none;
+    z-index: 1;
 
     svg {
       width: 24px;

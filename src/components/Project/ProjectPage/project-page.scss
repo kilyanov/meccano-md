@@ -1,6 +1,10 @@
 @import "../../../assets/styles/variables";
 
 .project-page {
+  display: flex;
+  flex-direction: column;
+  justify-content: stretch;
+
   &__content {
     display: flex;
     flex-direction: column;
@@ -8,8 +12,9 @@
 
   &__title-wrapper {
     display: flex;
+    flex: 0 0 58px;
     align-items: center;
-    margin-bottom: 18px;
+    padding-bottom: 18px;
   }
 
   &__title {
@@ -23,11 +28,12 @@
 
   &__filters {
     display: flex;
+    flex: 0 0 48px;
+    flex-wrap: wrap;
     align-items: center;
     justify-content: space-between;
     width: 100%;
-    flex-wrap: wrap;
-    margin-bottom: 16px;
+    padding-bottom: 16px;
   }
 
   &__filter-item {
@@ -45,6 +51,9 @@
   }
 
   &__project-table-wrapper {
+    position: relative;
+    flex: 1;
+    overflow: hidden;
     // overflow-x: hidden;
   }
 }

@@ -31,6 +31,10 @@ class ProjectPage extends Component {
         articles: [],
         activeArticle: null,
         selectedItemIds: [],
+        pagination: {
+            page: 1,
+            pageCount: 1
+        },
         project: null,
         filters: {
             search: ''
@@ -109,13 +113,6 @@ class ProjectPage extends Component {
         }
     };
 
-    handleClickArticle = (article) => {
-        this.setState({
-            activeArticle: article,
-            showArticleModal: true
-        });
-    };
-
     handleCreateArticle = (article) => {
         const {articles} = this.state;
 
@@ -132,12 +129,33 @@ class ProjectPage extends Component {
         });
     };
 
-    getArticles = () => {
+    handleScrollToEndArticles = (page) => {
+        const {inProgress} = this.state;
+
+        if (!inProgress) {
+            this.setState(prev => prev.pagination.page = page, () => this.getArticles(true));
+        }
+    };
+
+    getArticles = (isPagination = false) => {
+        const {pagination} = this.state;
+
         ArticleService
-            .getList({project: this.projectId})
+            .getList({
+                project: this.projectId,
+                page: pagination.page
+            })
             .then(response => {
+                const responsePagination = {
+                    pageCount: +_.get(response.headers, 'x-pagination-page-count'),
+                    page: +_.get(response.headers, 'x-pagination-current-page'),
+                    perPage: +_.get(response.headers, 'x-pagination-per-page'),
+                    totalCount: +_.get(response.headers, 'x-pagination-total-count')
+                };
+
                 this.setState({
-                    articles: response.data,
+                    articles: isPagination ? this.state.articles.concat(response.data) : response.data,
+                    pagination: responsePagination,
                     inProgress: false
                 });
             });
@@ -170,6 +188,7 @@ class ProjectPage extends Component {
             filters,
             project,
             showArticleModal,
+            pagination,
             showUploadArticlesModal,
             showImportArticlesModal,
             inProgress
@@ -247,6 +266,8 @@ class ProjectPage extends Component {
                         selectedIds={selectedItemIds}
                         projectId={this.projectId}
                         articles={articles}
+                        pagination={pagination}
+                        onScrollToEnd={this.handleScrollToEndArticles}
                     />
                 </div>
 

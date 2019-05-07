@@ -26,11 +26,14 @@ export default class Form extends Component {
     inputs = [];
 
     r = (elem) => {
+        if (!elem) return;
+
         const children = _.get(elem, 'props.children', []);
 
         if (elem.type.prototype instanceof InputText) {
             this.inputs.push(elem);
         }
+
         if (children.length) {
             children.forEach(child => {
                 if (child.type.prototype instanceof InputText) {
@@ -38,7 +41,7 @@ export default class Form extends Component {
                 } else this.r(child);
             });
         } else return;
-    }
+    };
 
     submit = () => {
         this.handleOnSubmit();

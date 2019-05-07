@@ -12,6 +12,7 @@ import { DEFAULT_COLUMNS, COLUMN_TYPE, COLUMN_NAME } from './Columns';
 import { StorageService } from '../../../../services/StorageService';
 import SettingsIcon from '../../../Shared/SvgIcons/SettingsIcon';
 import SortArrow from './ProjectTableHeader/ProjectTableHeaderSortArrow';
+import {InitScrollbar} from '../../../../helpers/Tools';
 
 const classes = new Bem('project-table');
 const headerClasses = new Bem('project-table-header');
@@ -23,7 +24,9 @@ export default class ProjectTable extends Component {
         selectedIds: PropTypes.array,
         onChangeSelected: PropTypes.func,
         onDeleteArticle: PropTypes.func,
-        projectId: PropTypes.string.isRequired
+        projectId: PropTypes.string.isRequired,
+        pagination: PropTypes.object.isRequired,
+        onScrollToEnd: PropTypes.func.isRequired
     };
 
     static defaultProps = {
@@ -47,6 +50,10 @@ export default class ProjectTable extends Component {
                 dir: null
             }
         };
+    }
+
+    componentDidMount() {
+        InitScrollbar(this.bodyRef);
     }
 
     componentDidUpdate = () => {
@@ -89,16 +96,23 @@ export default class ProjectTable extends Component {
         this.props.onChangeSelected(newSelected);
     };
 
-    handleDeleteArticle = (articleId) => {
-        console.log('delete article ', articleId);
-    };
-
     handleClickColumnSettings = () => {
         this.setState({showColumnSettingsModal: true});
     };
 
     handleChangeColumns = (columns) => {
         this.setState({columns});
+    };
+
+    handleBodyScroll = (e) => {
+        const {pagination, onScrollToEnd} = this.props;
+        const isEndPage = e.target.scrollTop === e.target.scrollHeight - e.target.clientHeight;
+
+        this.headerRef.scrollLeft = e.target.scrollLeft;
+
+        if (isEndPage && pagination.page < pagination.pageCount) {
+            onScrollToEnd(pagination.page + 1);
+        }
     };
 
     setColumnWidth = () => {
@@ -238,7 +252,11 @@ export default class ProjectTable extends Component {
             <div {...classes('', '', className)}>
                 {this.renderHeader()}
 
-                <section {...classes('body')} onScroll={e => this.headerRef.scrollLeft = e.target.scrollLeft}>
+                <section
+                    {...classes('body')}
+                    ref={ref => this.bodyRef = ref}
+                    onScroll={this.handleBodyScroll}
+                >
                     {articles.map(article => this.renderRow(article))}
 
                     {!articles.length && (

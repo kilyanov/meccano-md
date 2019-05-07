@@ -38,7 +38,7 @@ class TopBar extends PureComponent {
                     <div {...classes('profile', {opened: profileIsOpen})}>
                         <div
                             {...classes('profile-button')}
-                            onClick={() => this.dropdown.toggle({style: {right: 0}})}
+                            onClick={() => this.dropdown.toggle({style: {right: 0, width: '100%'}})}
                         >
                             <ProfileIcon {...classes('profile-icon')}/>
                             <div {...classes('profile-data', '', 'd-none d-md-flex')}>
