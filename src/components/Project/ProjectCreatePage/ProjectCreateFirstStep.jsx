@@ -11,6 +11,23 @@ class ProjectCreateFirstStep extends Component {
         allFields: PropTypes.array.isRequired
     };
 
+    handleDelete = (item, index) => {
+        item.index = index;
+        item.droppableId = 'fields';
+
+        const result = this.move(
+            this.props.fields,
+            this.props.allFields,
+            item,
+            {
+                index,
+                droppableId: 'allFields'
+            }
+        );
+
+        this.props.onChange(result);
+    };
+
     handleDragEnd = (res) => {
         const { source, destination } = res;
 
@@ -79,6 +96,7 @@ class ProjectCreateFirstStep extends Component {
                             <ProjectPropertiesList
                                 droppableId="fields"
                                 data={this.props.fields}
+                                onDelete={this.handleDelete}
                                 {...this.props}
                             />
                         </div>

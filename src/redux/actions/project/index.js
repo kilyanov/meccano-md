@@ -8,7 +8,7 @@ export const getProjects = () => ({
         types.project.PROJECTS_LOADED,
         types.project.PROJECTS_LOAD_FAILURE
     ],
-    promise: ProjectService.get()
+    promise: ProjectService.get('', {expand: 'fields'})
 });
 
 export const addProject = (form) => ({

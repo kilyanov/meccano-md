@@ -1,12 +1,11 @@
 import React, {Component} from 'react';
+import PropTypes from 'prop-types';
+import {connect} from 'react-redux';
 import Page from '../../Shared/Page/Page';
 import {ArticleService, StorageService} from '../../../services';
 import {NotificationManager} from 'react-notifications';
 import './article-create-page.scss';
 import Form from '../../Form/Form/Form';
-import InputText from '../../Form/InputText/InputText';
-import InputDatePicker from '../../Form/InputDatePicker/InputDatePicker';
-import Select from '../../Form/Select/Select';
 import TextArea from '../../Form/TextArea/TextArea';
 import RichEditor from '../../Form/RichEditor/RichEditor';
 import Loader from '../../Shared/Loader/Loader';
@@ -15,10 +14,15 @@ import ArrowIcon from '../../Shared/SvgIcons/ArrowIcon';
 import Button from '../../Shared/Button/Button';
 import ArticleViewSettings from './ArticleViewSettings/ArticleViewSettings';
 import {EventEmitter} from '../../../helpers';
+import ProjectCreateField from '../../Project/ProjectCreatePage/ProjectCreatePageField/ProjectCreatePageField';
 
 const classes = new Bem('article-create-page');
 
-export default class ArticleCreatePage extends Component {
+class ArticleCreatePage extends Component {
+    static propTypes = {
+        projects: PropTypes.array.isRequired
+    };
+
     constructor(props) {
         super(props);
 
@@ -26,9 +30,11 @@ export default class ArticleCreatePage extends Component {
         this.projectId = props.match.params.projectId;
         this.state = {
             articles: [],
+            fields: [],
             articleIndex: 0,
             form: {
                 title: '',
+                source_id: null,
                 date: new Date(),
                 media: '',
                 url: '',
@@ -51,17 +57,20 @@ export default class ArticleCreatePage extends Component {
     componentDidMount() {
         if (this.articleId) {
             Promise.all([
-                ArticleService.get(this.articleId, {expand: 'text,url,number,sectionFirst,sectionSecond,sectionThird'}),
+                ArticleService.get(this.articleId, {expand: 'project.fields'}),
                 ArticleService.getList({project: this.projectId})
             ]).then(([articleResponse, listResponse]) => {
-                const articles = listResponse.data;
                 const form = articleResponse.data;
+                const articles = listResponse.data;
 
                 this.article = _.cloneDeep(form);
                 form.date = new Date(form.date);
 
+                console.log(this.article);
+
                 this.setState({
                     articles,
+                    fields: form.project.fields,
                     form,
                     articleIndex: articles.findIndex(({id}) => id === this.articleId),
                     inProgress: false
@@ -168,153 +177,41 @@ export default class ArticleCreatePage extends Component {
     render() {
         const {articles, articleIndex, form, showViewSettings, viewType, inProgress} = this.state;
         const isUpdate = !!this.articleId;
+        const dataSectionFields = this.state.fields.filter(({code}) => code !== 'annotation' && code !== 'text');
 
         const sectionData = (
             <section {...classes('section')}>
-                <div {...classes('row', '', 'row')}>
-                    <div {...classes('field', '', 'col-xs-12')}>
-                        <InputText
-                            label='Название'
-                            value={form.title || ''}
-                            onChange={value => this.handleChangeForm(value, 'title')}
-                        />
-                    </div>
-                </div>
-
-                <div {...classes('row', '', 'row')}>
-                    <div {...classes('field', '', 'col-lg-5')}>
-                        <InputDatePicker
-                            label='Дата'
-                            value={form.date}
-                            onChange={value => this.handleChangeForm(value, 'date')}
-                        />
-                    </div>
-                    <div {...classes('field', '', 'col-lg-7')}>
-                        <Select
-                            placeholder='Выберите источник...'
-                            label='Источник'
-                            options={this.sources}
-                            selected={this.state.selectedMedia}
-                            onChange={selectedMedia => this.setState({selectedMedia})}
-                        />
-                    </div>
-                </div>
-
-                <div {...classes('row', '', 'row')}>
-                    <div {...classes('col', '', 'col-lg-12')}>
-                        <InputText
-                            label='URL'
-                            validateType='link'
-                            validateErrorMessage='Неверный адрес ссылки'
-                            value={form.url || ''}
-                            onChange={value => this.handleChangeForm(value, 'url')}
-                        />
-                    </div>
-                </div>
-
-                <div {...classes('row', '', 'row')}>
-                    <div {...classes('col', '', 'col-lg-4')}>
-                        <InputText
-                            label='Раздел 1'
-                            value={form.sectionFirst || ''}
-                            onChange={value => this.handleChangeForm(value, 'sectionFirst')}
-                        />
-                    </div>
-                    <div {...classes('col', '', 'col-lg-4')}>
-                        <InputText
-                            label='Раздел 2'
-                            value={form.sectionSecond || ''}
-                            onChange={value => this.handleChangeForm(value, 'sectionSecond')}
-                        />
-                    </div>
-                    <div {...classes('col', '', 'col-lg-4')}>
-                        <InputText
-                            label='Раздел 3'
-                            value={form.sectionThird || ''}
-                            onChange={value => this.handleChangeForm(value, 'sectionThird')}
-                        />
-                    </div>
-                </div>
-
-                <div {...classes('row', '', 'row')}>
-                    <div {...classes('col', '', 'col-lg-6')}>
-                        <InputText
-                            label='Автор'
-                            value={form.author || ''}
-                            onChange={value => this.handleChangeForm(value, 'author')}
-                        />
-                    </div>
-                    <div {...classes('col', '', 'col-lg-6')}>
-                        <InputText
-                            label='Город'
-                            value='' // {form.city}
-                        />
-                    </div>
-                </div>
-
-                <div {...classes('row', '', 'row')}>
-                    <div {...classes('col', '', 'col-lg-6')}>
-                        <InputText
-                            label='Область/край'
-                            value='' // {form.region}
-                        />
-                    </div>
-                    <div {...classes('col', '', 'col-lg-6')}>
-                        <InputText
-                            label='Федеральный округ'
-                            value='' // {form.federalDistrict}
-                        />
-                    </div>
-                </div>
-
-                <div {...classes('row', '', 'row')}>
-                    <div {...classes('col', '', 'col-lg-6')}>
-                        <InputText
-                            label='Код СМИ'
-                            value=''
-                        />
-                    </div>
-                    <div {...classes('col', '', 'col-lg-6')}>
-                        <InputText
-                            label='Вид СМИ'
-                            value=''
-                        />
-                    </div>
-                </div>
-
-                <div {...classes('row', '', 'row')}>
-                    <div {...classes('col', '', 'col-lg-6')}>
-                        <InputText
-                            label='Ноиер'
-                            value={form.number || ''}
-                            onChange={value => this.handleChangeForm(value, 'number')}
-                        />
-                    </div>
-                    <div {...classes('col', '', 'col-lg-6')}>
-                        <InputText
-                            label='Еще поле по СМИ'
-                            value=''
-                        />
-                    </div>
-                </div>
+                {dataSectionFields.map(field =>
+                    <ProjectCreateField
+                        key={field.code}
+                        field={field}
+                        value={form[field.code] || ''}
+                        onChange={this.handleChangeForm}
+                    />
+                )}
             </section>
         );
 
         const sectionAnnotation = (
-            <TextArea
-                label='Аннотация'
-                value={form.annotation || ''}
-                onChange={value => this.handleChangeForm(value, 'annotation')}
-            />
+            <section {...classes('section')}>
+                <TextArea
+                    {...classes('field', 'annotation')}
+                    label='Аннотация'
+                    value={form.annotation || ''}
+                    onChange={value => this.handleChangeForm(value, 'annotation')}
+                />
+            </section>
         );
 
         const sectionText = (
-            <RichEditor
-                {...classes('field', 'textarea')}
-                label='Текст статьи'
-                content={form.text}
-                onChange={value => this.handleChangeForm(value, 'text')}
-            />
+            <section {...classes('section')}>
+                <RichEditor
+                    {...classes('field', 'textarea')}
+                    label='Текст статьи'
+                    content={form.text}
+                    onChange={value => this.handleChangeForm(value, 'text')}
+                />
+            </section>
         );
 
         return (
@@ -326,7 +223,7 @@ export default class ArticleCreatePage extends Component {
                     />
 
                     <div {...classes('title-wrap')}>
-                        {!!articles.length && (
+                        {articles.length > 1 && (
                             <button
                                 {...classes('title-button', 'left')}
                                 onClick={this.handlePrevArticle}
@@ -338,7 +235,7 @@ export default class ArticleCreatePage extends Component {
                             {!!articles.length && ` ${articleIndex + 1} из ${articles.length}`}
                         </h2>
 
-                        {!!articles.length && (
+                        {articles.length > 1 && (
                             <button
                                 {...classes('title-button', 'right')}
                                 onClick={this.handleNextArticle}
@@ -427,3 +324,5 @@ export default class ArticleCreatePage extends Component {
         );
     }
 }
+
+export default connect(({projects}) => ({projects}))(ArticleCreatePage);

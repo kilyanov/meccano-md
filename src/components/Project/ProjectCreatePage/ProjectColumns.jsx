@@ -14,9 +14,9 @@ const getListStyle = isDraggingOver => ({
 
 class Column extends Component {
     static propTypes = {
-      droppableId: PropTypes.string.isRequired,
-      data: PropTypes.arrayOf(PropTypes.shape()).isRequired,
-    }
+        droppableId: PropTypes.string.isRequired,
+        data: PropTypes.arrayOf(PropTypes.shape()).isRequired,
+    };
 
     render() {
         const { droppableId, data, ...props } = this.props;
@@ -25,10 +25,10 @@ class Column extends Component {
             <Droppable droppableId={droppableId}>
                 {(provided, snapshot) => (
                     <div
-                      ref={provided.innerRef}
-                      style={getListStyle(snapshot.isDraggingOver)}
+                        ref={provided.innerRef}
+                        style={getListStyle(snapshot.isDraggingOver)}
                     >
-                        {this.props.data.map((item, index) => (
+                        {data.map((item, index) => (
                             <Item item={item} index={index} key={item.id} {...props} />
                         ))}
                         {provided.placeholder}

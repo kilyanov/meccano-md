@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import {ProjectService} from '../../../services';
 import SectionTree from '../../Shared/SectionTree/SectionTree';
+import {EventEmitter} from '../../../helpers';
 
 export default class ProjectCreateSecondStep extends Component {
     static propTypes = {
@@ -28,6 +29,18 @@ export default class ProjectCreateSecondStep extends Component {
         this.setState({sections});
     };
 
+    submit = () => {
+        const {project} = this.props;
+        const {sections} = this.state;
+
+        if (sections && sections.length) {
+            ProjectService.createSections(project.id, sections).then(response => {
+                console.log(response);
+                setTimeout(() => EventEmitter.emit('redirect', `/project/${project.id}`), 2000);
+            });
+        }
+    };
+
     render() {
         const {classes} = this.props;
         const {sections} = this.state;
@@ -38,7 +51,7 @@ export default class ProjectCreateSecondStep extends Component {
 
                 <SectionTree
                     data={sections}
-                    onChage={this.handleChangeSections}
+                    onChange={this.handleChangeSections}
                 />
             </div>
         );

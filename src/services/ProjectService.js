@@ -7,5 +7,6 @@ export const ProjectService = {
     delete: (id) => API.delete(`${ApiList.project.project}/${id}`),
     post: (form) => API.post(ApiList.project.project, form),
     put: (id, form) => API.put(`${ApiList.project.project}/${id}`, form),
-    getSections: (projectId) => API.get(`${ApiList.project.sections}${ParseToRequest({projectId})}`)
+    getSections: (projectId) => API.get(`${ApiList.project.sections}${ParseToRequest({projectId})}`),
+    createSections: (projectId, form) => API.post(`${ApiList.project.sections}${ParseToRequest({projectId})}`, form)
 };

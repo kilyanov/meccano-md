@@ -78,3 +78,7 @@ $namespace: '.project-property';
         fill: $brownGreyColor;
     }
 }
+
+[data-react-beatiful-dnd-placeholder] {
+    background-color: red !important;
+}

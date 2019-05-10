@@ -74,16 +74,22 @@ class ProjectCreatePage extends Component {
     };
 
     handleSubmit = () => {
-        this.setState({inProgress: true}, () => {
-            const fields = this.state.fields.map((field, index) => {
-                field.order = index;
-                return field;
-            });
+        const {step} = this.state;
 
-            ProjectService.put(this.state.projectId, {fields}).then(() => {
-                this.setState({step: 2, inProgress: false});
+        if (step === 1) {
+            this.setState({inProgress: true}, () => {
+                const fields = this.state.fields.map((field, index) => {
+                    field.order = index;
+                    return field;
+                });
+
+                ProjectService.put(this.state.projectId, {fields}).then(() => {
+                    this.setState({step: 2, inProgress: false});
+                });
             });
-        });
+        } else {
+            this.secondStep.submit();
+        }
     };
 
     getProject = () => {
@@ -134,6 +140,7 @@ class ProjectCreatePage extends Component {
 
                     {(project && step === 2) && (
                         <ProjectCreateSecondStep
+                            ref={ref => this.secondStep = ref}
                             classes={classes}
                             project={project}
                         />

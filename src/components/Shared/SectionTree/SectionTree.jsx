@@ -9,13 +9,14 @@ const classes = new Bem('section-tree');
 
 export default class SectionTree extends Component {
     static propTypes = {
-        data: PropTypes.array.isRequired
+        data: PropTypes.array.isRequired,
+        onChange: PropTypes.func.isRequired
     };
 
     state = {
         showAddModal: false,
         selectedSection: null,
-        data: []
+        data: this.props.data || []
     };
 
     handleAddSection = (name) => {
@@ -33,6 +34,8 @@ export default class SectionTree extends Component {
             data.push({name, sectionsTwo: []});
             this.setState({data});
         }
+
+        this.updateParent();
     };
 
     handleOpenAddModal = (selectedSection, isEdit = false) => {
@@ -48,6 +51,7 @@ export default class SectionTree extends Component {
 
         selectedSection.name = name;
         this.setState({selectedSection: null});
+        this.updateParent();
     };
 
     handleDeleteSection = (section, parent) => {
@@ -70,7 +74,12 @@ export default class SectionTree extends Component {
             }
 
             this.forceUpdate();
+            this.updateParent();
         });
+    };
+
+    updateParent = () => {
+        this.props.onChange(this.state.data);
     };
 
     render() {

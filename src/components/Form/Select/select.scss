@@ -4,6 +4,7 @@ $namespace: '.select';
 
 #{$namespace} {
     position: relative;
+    margin-bottom: 20px;
 
     &--mobile {
         #{$namespace}__list-container {

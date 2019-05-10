@@ -194,7 +194,9 @@ export default class InputText extends Component {
                     />
 
                     {(isLink && !isError) &&
-                        <img {...classes('earth-icon')} src={require('./img/earth-icon.svg')}/>
+                        <a href={value} target='_blank'>
+                            <img {...classes('earth-icon')} src={require('./img/earth-icon.svg')}/>
+                        </a>
                     }
 
                     {(isError && !isEmpty) && (

@@ -5,6 +5,11 @@
     color: #fff;
 }
 
+.ps__rail-y,
+.ps__rail-x {
+  z-index: 1;
+}
+
 @function breakpoint-infix($name, $breakpoints: $grid-breakpoints) {
   @return if(breakpoint-min($name, $breakpoints) == null, "", "-#{$name}");
 }

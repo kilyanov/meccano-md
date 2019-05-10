@@ -19,6 +19,8 @@ import DropDownButton from '../../Shared/DropDownButton/DropDownButton';
 import ArticlesImportModal from '../../Article/ArticlesImportModal/ArticlesImportModal';
 import Page from '../../Shared/Page/Page';
 import Loader from '../../Shared/Loader/Loader';
+import store from '../../../redux/store';
+import {addProject} from '../../../redux/actions/project';
 
 const classes = new Bem('project-page');
 
@@ -162,7 +164,8 @@ class ProjectPage extends Component {
     };
 
     getProject = (projectId) => {
-        ProjectService.get(projectId).then(response => {
+        ProjectService.get(projectId, {expand: 'fields'}).then(response => {
+            store.dispatch(addProject(response.data));
             this.setProject(response.data);
         });
     };
