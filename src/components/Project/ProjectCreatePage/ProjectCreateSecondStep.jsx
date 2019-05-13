@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import {ProjectService} from '../../../services';
 import SectionTree from '../../Shared/SectionTree/SectionTree';
 import {EventEmitter} from '../../../helpers';
+import Loader from '../../Shared/Loader/Loader';
 
 export default class ProjectCreateSecondStep extends Component {
     static propTypes = {
@@ -17,7 +18,6 @@ export default class ProjectCreateSecondStep extends Component {
 
     componentDidMount() {
         ProjectService.getSections(this.props.project.id).then(response => {
-            console.log(response);
             this.setState({
                 sections: response.data,
                 inProgress: false
@@ -34,8 +34,7 @@ export default class ProjectCreateSecondStep extends Component {
         const {sections} = this.state;
 
         if (sections && sections.length) {
-            ProjectService.createSections(project.id, sections).then(response => {
-                console.log(response);
+            ProjectService.createSections(project.id, sections).then(() => {
                 setTimeout(() => EventEmitter.emit('redirect', `/project/${project.id}`), 2000);
             });
         }
@@ -43,7 +42,7 @@ export default class ProjectCreateSecondStep extends Component {
 
     render() {
         const {classes} = this.props;
-        const {sections} = this.state;
+        const {sections, inProgress} = this.state;
 
         return (
             <div {...classes('step', 'second', 'container')}>
@@ -53,6 +52,8 @@ export default class ProjectCreateSecondStep extends Component {
                     data={sections}
                     onChange={this.handleChangeSections}
                 />
+
+                {inProgress && <Loader/>}
             </div>
         );
     }

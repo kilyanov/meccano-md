@@ -88,7 +88,7 @@ class ProjectCreatePage extends Component {
                 });
             });
         } else {
-            this.secondStep.submit();
+            this.setState({inProgress: true}, this.secondStep.submit);
         }
     };
 

@@ -19,6 +19,14 @@ export default class SectionTree extends Component {
         data: this.props.data || []
     };
 
+    static getDerivedStateFromProps(nextProps, prevState) {
+        if (nextProps.data !== prevState.data) {
+            return {data: nextProps.data};
+        }
+
+        return  null;
+    }
+
     handleAddSection = (name) => {
         const {data, selectedSection} = this.state;
 

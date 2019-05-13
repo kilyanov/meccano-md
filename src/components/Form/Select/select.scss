@@ -156,6 +156,37 @@ $namespace: '.select';
         z-index: 2;
     }
 
+    &__search-wrapper {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+    }
+
+    &__search-field {
+        position: absolute;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        width: calc(100% - 50px);
+        padding: 0 17px;
+        background: transparent;
+        border: none;
+        font-size: 15px;
+        color: $fontGrey;
+    }
+
+    &__search-clear-button {
+        position: absolute;
+        top: 8px;
+        right: 45px;
+        border: none;
+        padding: 8px;
+        font-size: 14px;
+        line-height: 14px;
+    }
+
     .checkbox {
         pointer-events: none;
     }

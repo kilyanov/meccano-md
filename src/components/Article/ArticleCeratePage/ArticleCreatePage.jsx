@@ -29,6 +29,7 @@ class ArticleCreatePage extends Component {
         this.articleId = props.match.params.articleId;
         this.projectId = props.match.params.projectId;
         this.state = {
+            articleId: this.articleId,
             articles: [],
             fields: [],
             articleIndex: 0,
@@ -76,6 +77,13 @@ class ArticleCreatePage extends Component {
                     inProgress: false
                 });
             }).catch(() => this.setState({inProgress: false}));
+        }
+    }
+
+    componentDidUpdate(prevProps) {
+        if (prevProps.match.params.articleId !== this.props.match.params.articleId) {
+            this.articleId = this.props.match.params.articleId;
+            this.getArticle();
         }
     }
 
@@ -146,6 +154,26 @@ class ArticleCreatePage extends Component {
         });
     };
 
+    getArticle = () => {
+        this.setState({inProgress: true}, () => {
+            const {articles} = this.state;
+
+            ArticleService.get(this.articleId, {expand: 'project.fields'}).then(response => {
+                const form = response.data;
+
+                form.date = new Date(form.date);
+
+                this.article = _.cloneDeep(form);
+                this.setState({
+                    fields: form.project.fields,
+                    articleIndex: articles.findIndex(({id}) => id === this.articleId),
+                    form,
+                    inProgress: false
+                });
+            }).catch(() => this.setState({inProgress: false}));
+        });
+    };
+
     article = null;
 
     sources = [{
@@ -181,14 +209,20 @@ class ArticleCreatePage extends Component {
 
         const sectionData = (
             <section {...classes('section')}>
-                {dataSectionFields.map(field =>
-                    <ProjectCreateField
-                        key={field.code}
-                        field={field}
-                        value={form[field.code] || ''}
-                        onChange={this.handleChangeForm}
-                    />
-                )}
+                {dataSectionFields.map(field => {
+                    if (field.code === 'source_id') {
+                        field.options = this.sources;
+                    }
+
+                    return (
+                        <ProjectCreateField
+                            key={field.code}
+                            field={field}
+                            value={form[field.code] || ''}
+                            onChange={this.handleChangeForm}
+                        />
+                    );
+                })}
             </section>
         );
 
@@ -208,7 +242,7 @@ class ArticleCreatePage extends Component {
                 <RichEditor
                     {...classes('field', 'textarea')}
                     label='Текст статьи'
-                    content={form.text}
+                    content={form.text || ''}
                     onChange={value => this.handleChangeForm(value, 'text')}
                 />
             </section>
@@ -220,6 +254,7 @@ class ArticleCreatePage extends Component {
                     <BackButton
                         {...classes('back-button')}
                         to={`/project/${this.projectId}`}
+                        force
                     />
 
                     <div {...classes('title-wrap')}>

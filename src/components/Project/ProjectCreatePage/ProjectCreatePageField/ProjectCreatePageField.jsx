@@ -25,6 +25,7 @@ const ProjectCreateField = ({field, value, onChange, className}) => {
                     options={field.options || []}
                     selected={value || []}
                     onChange={val => onChange(val, field.code)}
+                    withSearch
                 />
             </div>;
         case 'url':

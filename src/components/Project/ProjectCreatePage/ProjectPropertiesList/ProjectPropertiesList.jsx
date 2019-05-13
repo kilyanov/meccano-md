@@ -7,10 +7,6 @@ import {InitScrollbar} from '../../../../helpers/Tools';
 
 const classes = new Bem('project-properties-list');
 
-const getListStyle = isDraggingOver => ({
-    background: isDraggingOver ? 'transparent' : 'transparent'
-});
-
 class ProjectPropertiesList extends Component {
     static propTypes = {
         droppableId: PropTypes.string.isRequired,
@@ -34,7 +30,7 @@ class ProjectPropertiesList extends Component {
                             this.ref = ref;
                             provided.innerRef(ref);
                         }}
-                        style={getListStyle(snapshot.isDraggingOver)}
+                        style={{background: snapshot.isDraggingOver ? '#f2fff8' : 'white'}}
                     >
                         {data.map((item, index) => (
                             <ProjectProperty
@@ -46,7 +42,12 @@ class ProjectPropertiesList extends Component {
                                 {...props}
                             />
                         ))}
+
                         {provided.placeholder}
+
+                        {/* {snapshot.isDraggingOver && ( */}
+                        <div {...classes('overlay')}/>
+                        {/* )} */}
                     </div>
                 )}
             </Droppable>

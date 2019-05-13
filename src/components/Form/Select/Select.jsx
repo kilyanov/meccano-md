@@ -15,7 +15,8 @@ export default class Select extends Component {
         options: PropTypes.array,
         placeholder: PropTypes.string,
         onChange: PropTypes.func,
-        label: PropTypes.string.isRequired
+        label: PropTypes.string.isRequired,
+        withSearch: PropTypes.bool
     };
 
     static defaultProps = {
@@ -23,7 +24,8 @@ export default class Select extends Component {
     };
 
     state = {
-        opened: false
+        opened: false,
+        searchString: ''
     };
 
     componentDidMount() {
@@ -57,9 +59,17 @@ export default class Select extends Component {
         return this.props.onChange(isMultiple ? selected : item);
     };
 
+    handleSearch = (event) => {
+        const value = event.target.value.trim().toLowerCase();
+
+        console.log(value);
+
+        this.setState({searchString: event.target.value});
+    };
+
     open = () => {
         this.setState({opened: true});
-    }
+    };
 
     close = () => {
         this.setState({opened: false});
@@ -73,10 +83,11 @@ export default class Select extends Component {
     isMobileView = isMobileScreen();
 
     render() {
-        const {options, placeholder, label, selected} = this.props;
-        const {opened} = this.state;
+        const {options, placeholder, label, selected, withSearch} = this.props;
+        const {opened, searchString} = this.state;
         const isMultiple = selected instanceof Array;
         const selectedName = isMultiple ? _.get(selected, '[0].name', '') : selected.name;
+        const searchInFocus = document.activeElement === this.searchRef;
 
         return (
             <div {...classes('', {multiple: isMultiple, mobile: this.isMobileView})} ref={node => this.domNode = node}>
@@ -85,8 +96,27 @@ export default class Select extends Component {
                 </label>
 
                 <div {...classes('container', {opened})} onClick={() => this.toggle()}>
-                    {placeholder && !selectedName && (<span {...classes('placeholder')}>{placeholder}</span>)}
-                    {selectedName && (
+                    {(placeholder && !selectedName && !searchString.length) && (
+                        <span {...classes('placeholder')}>{searchInFocus ? 'Начните вводить...' : placeholder}</span>
+                    )}
+
+                    {withSearch && (
+                        <div {...classes('search-wrapper')}>
+                            <input
+                                {...classes('search-field')}
+                                type='text'
+                                onChange={this.handleSearch}
+                                value={searchString}
+                                ref={ref => this.searchRef = ref}
+                            />
+
+                            {!!searchString.length  && (
+                                <button {...classes('search-clear-button')}>✕</button>
+                            )}
+                        </div>
+                    )}
+
+                    {(selectedName && !searchString.length) && (
                         <span {...classes('selected-name')}>
                             <span>{selectedName}</span> {(isMultiple && selected.length > 1) && <i>+{selected.length - 1}</i>}
                         </span>
