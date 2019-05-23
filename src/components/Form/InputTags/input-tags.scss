@@ -1,0 +1,59 @@
+@import "./react-tags";
+
+@import "../../../assets/styles/variables";
+
+$namespace: '.input-tags';
+
+#{$namespace} {
+  position: relative;
+  margin-bottom: 20px;
+
+  &--succeed {
+    #{$namespace}__label-text {
+      font-weight: 500;
+
+      &:before {
+        content: '✔️ ';
+      }
+    }
+  }
+
+  &--error {
+    #{$namespace}__label-text {
+      color: $errorColor;
+    }
+
+    #{$namespace}__field {
+      color: $errorColor;
+      padding-right: 40px;
+      border-color: $errorColor;
+    }
+  }
+
+  &__label {
+    display: flex;
+    flex-direction: column;
+  }
+
+  &__label-text {
+    font-size: 15px;
+    line-height: 24px;
+    margin-bottom: 8px;
+  }
+
+  &__message {
+    position: absolute;
+    left: 0;
+    top: 100%;
+    font-size: 12px;
+    line-height: 15px;
+    margin-top: 3px;
+    color: #F62434;
+  }
+
+  .react-tags {
+    min-height: 40px;
+    padding: 2px 17px 0;
+    border: 1px solid $brownGreyColor;
+  }
+}

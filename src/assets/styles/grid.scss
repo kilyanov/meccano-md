@@ -26,7 +26,7 @@
 .row {
   display: flex;
   flex-wrap: wrap;
-  min-width: 100%;
+  width: calc(100% + 1em);
   margin: 0 -1em 1em;
   box-sizing: border-box;
 }

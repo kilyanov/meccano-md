@@ -9,6 +9,7 @@
   &__body {
     margin-bottom: 40px;
     max-height: calc(100% - 60px);
+    min-height: calc(100% - 60px);
   }
 
   &__row {

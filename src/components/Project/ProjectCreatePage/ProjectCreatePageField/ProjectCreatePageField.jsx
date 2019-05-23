@@ -5,6 +5,7 @@ import InputDatePicker from '../../../Form/InputDatePicker/InputDatePicker';
 import Select from '../../../Form/Select/Select';
 import InputLink from '../../../Form/InputLink/InputLink';
 import InputNumber from '../../../Form/InputNumber/InputNumber';
+import InputTags from '../../../Form/InputTags/InputTags';
 
 const classes = new Bem('article-create-page');
 const ProjectCreateField = ({field, value, onChange, className}) => {
@@ -17,13 +18,16 @@ const ProjectCreateField = ({field, value, onChange, className}) => {
                     onChange={val => onChange(val, field.code)}
                 />
             </div>;
+        case 'section_main_id':
+        case 'section_sub_id':
+        case 'section_three_id':
         case 'source_id':
             return <div {...classes('field', field.code, className)}>
                 <Select
-                    placeholder='Выберите источник...'
+                    placeholder={field.placeholder}
                     label={field.name}
                     options={field.options || []}
-                    selected={value || []}
+                    selected={value || {}}
                     onChange={val => onChange(val, field.code)}
                     withSearch
                 />
@@ -46,7 +50,15 @@ const ProjectCreateField = ({field, value, onChange, className}) => {
                 />
             </div>;
         case 'authors':
-            return  value.map(v => v).join(', ');
+        case 'genre':
+            return <div {...classes('field', field.code, className)}>
+                <InputTags
+                    label={field.name}
+                    tags={field.tags}
+                    suggestions={field.suggestions}
+                    onChange={val => onChange(val, field.code)}
+                />
+            </div>;
         default:
             return <div {...classes('field', field.code, className)}>
                 <InputText

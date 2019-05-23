@@ -110,10 +110,14 @@ $namespace: '.article-create-page';
       flex: .5;
     }
 
+    &--authors,
     &--date,
-    &--source_id {
+    &--source_id,
+    &--section_main_id,
+    &--section_sub_id,
+    &--section_three_id {
       flex-shrink: 0;
-      flex-basis: 200px;
+      flex-basis: 250px;
     }
   }
 }

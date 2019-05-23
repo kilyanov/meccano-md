@@ -7,7 +7,12 @@ const logger = createLogger();
 const initialState = {
     articles: [],
     profile: {},
-    projects: []
+    projects: [],
+    city: [],
+    country: [],
+    federal: [],
+    region: [],
+    source: []
 };
 
 /* eslint-disable no-underscore-dangle */

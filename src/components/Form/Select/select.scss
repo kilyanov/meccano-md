@@ -40,7 +40,7 @@ $namespace: '.select';
         position: relative;
         display: flex;
         align-items: center;
-        height: 48px;
+        height: 40px;
         padding: 0 17px;
         border: 1px solid #b2b2b2;
         font-size: 15px;
@@ -120,6 +120,7 @@ $namespace: '.select';
         padding: 0 16px;
         height: 48px;
         font-size: 15px;
+        cursor: pointer;
 
         &:hover {
             background-color: #f2f2f2;
@@ -179,7 +180,7 @@ $namespace: '.select';
 
     &__search-clear-button {
         position: absolute;
-        top: 8px;
+        top: 5px;
         right: 45px;
         border: none;
         padding: 8px;

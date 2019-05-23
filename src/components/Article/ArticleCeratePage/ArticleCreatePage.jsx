@@ -15,12 +15,19 @@ import Button from '../../Shared/Button/Button';
 import ArticleViewSettings from './ArticleViewSettings/ArticleViewSettings';
 import {EventEmitter} from '../../../helpers';
 import ProjectCreateField from '../../Project/ProjectCreatePage/ProjectCreatePageField/ProjectCreatePageField';
+import store from '../../../redux/store';
+import {getSource} from '../../../redux/actions/source';
 
 const classes = new Bem('article-create-page');
 
 class ArticleCreatePage extends Component {
     static propTypes = {
-        projects: PropTypes.array.isRequired
+        projects: PropTypes.array.isRequired,
+        country: PropTypes.array,
+        city: PropTypes.array,
+        federal: PropTypes.array,
+        region: PropTypes.array,
+        source: PropTypes.array
     };
 
     constructor(props) {
@@ -40,9 +47,9 @@ class ArticleCreatePage extends Component {
                 media: '',
                 url: '',
                 projectId: this.projectId,
-                sectionFirst: '',
-                sectionSecond: '',
-                sectionThird: '',
+                section_main_id: null,
+                section_sub_id: null,
+                section_three_id: null,
                 author: '',
                 number: '',
                 annotation: '',
@@ -51,32 +58,52 @@ class ArticleCreatePage extends Component {
             selectedMedia: {},
             viewType: StorageService.get('article-view-type') || 1,
             showViewSettings: false,
-            inProgress: !!this.articleId
+            inProgress: true
         };
     }
 
     componentDidMount() {
         if (this.articleId) {
             Promise.all([
-                ArticleService.get(this.articleId, {expand: 'project.fields'}),
+                ArticleService.get(this.articleId, {expand: 'project.fields,project.sections'}),
                 ArticleService.getList({project: this.projectId})
             ]).then(([articleResponse, listResponse]) => {
                 const form = articleResponse.data;
                 const articles = listResponse.data;
+                const sections = form.project.sections;
 
                 this.article = _.cloneDeep(form);
                 form.date = new Date(form.date);
 
-                console.log(this.article);
+                ['section_main_id', 'section_sub_id', 'section_three_id'].forEach(option => {
+                    if (form[option]) {
+                        const found = this.findSectionById(form[option], sections);
+
+                        if (found) {
+                            form[option] = {name: found.name, value: found.id, ...found};
+                        }
+                    }
+                });
 
                 this.setState({
                     articles,
                     fields: form.project.fields,
+                    sections,
                     form,
                     articleIndex: articles.findIndex(({id}) => id === this.articleId),
                     inProgress: false
-                });
+                }, this.getAdditionalDataFields);
             }).catch(() => this.setState({inProgress: false}));
+        } else if (this.props.projects.length) {
+            const project = this.props.projects.find(({id}) => id === this.projectId);
+
+            if (project && project.fields) {
+                this.setState({
+                    sections: project.sections,
+                    fields: project.fields,
+                    inProgress: false
+                }, this.getAdditionalDataFields);
+            }
         }
     }
 
@@ -85,10 +112,35 @@ class ArticleCreatePage extends Component {
             this.articleId = this.props.match.params.articleId;
             this.getArticle();
         }
+
+        if (!this.articleId && !this.state.fields.length && this.props.projects.length) {
+            const project = this.props.projects.find(({id}) => id === this.projectId);
+
+            if (project && project.fields) {
+                this.setState({
+                    sections: project.sections,
+                    fields: project.fields,
+                    inProgress: false
+                }, this.getAdditionalDataFields);
+            }
+        }
     }
 
     handleChangeForm = (value, option) => {
-        this.setState(prev => prev.form[option] = value);
+        this.setState(({form}) => {
+            form[option] = value;
+
+            if (option === 'section_main_id') {
+                form.section_sub_id = null;
+                form.section_three_id = null;
+            }
+
+            if (option === 'section_sub_id') {
+                form.section_three_id = null;
+            }
+
+            return form;
+        });
     };
 
     handleShowViewSettings = () => {
@@ -128,6 +180,17 @@ class ArticleCreatePage extends Component {
         const isUpdate = !!this.articleId;
 
         form.date = moment(form.date).format();
+
+        if (form.source_id) {
+            form.source_id = null;
+        }
+
+        ['section_main_id', 'section_sub_id', 'section_three_id']
+            .forEach(option => {
+                if (form[option] && form[option].value) {
+                    form[option] = form[option].value;
+                }
+            });
 
         // Check new properties
         Object.keys(form).forEach(key => {
@@ -174,50 +237,102 @@ class ArticleCreatePage extends Component {
         });
     };
 
+    getDataSectionFields = () => {
+        const {form, fields} = this.state;
+
+        let dataSectionFields = _.cloneDeep(fields).filter(({code}) => code !== 'annotation' && code !== 'text');
+
+        if (!form.section_main_id || !_.get(form.section_main_id, 'sectionsTwo', []).length) {
+            dataSectionFields = dataSectionFields.filter(({code}) => code !== 'section_sub_id');
+        }
+
+        if (!form.section_sub_id || !!_.get(form.section_sub_id, 'sectionsThree.length', []).length) {
+            dataSectionFields = dataSectionFields.filter(({code}) => code !== 'section_three_id');
+        }
+
+        return dataSectionFields;
+    };
+
+    getAdditionalDataFields = () => {
+        const {fields} = this.state;
+
+        if (fields.find(({code}) => code === 'source_id') && !this.props.source.length) {
+            store.dispatch(getSource());
+        }
+    };
+
+    findSectionById = (sectionId, sections) => {
+        const r = (items) => {
+            let found = null;
+
+            items.every(item => {
+                if (item.id === sectionId) {
+                    found = item;
+                    return false; // for stop loop
+                }
+
+                if (item.sectionsTwo && item.sectionsTwo.length) {
+                    found = r(item.sectionsTwo);
+                }
+
+                if (item.sectionsThree && item.sectionsThree.length) {
+                    found = r(item.sectionsThree);
+                }
+
+                if (found) return false;
+            });
+
+            return found;
+        };
+
+        return r(sections);
+    };
+
     article = null;
 
-    sources = [{
-        name: 'Яндекс',
-        value: 'yandex'
-    }, {
-        name: 'Google',
-        value: 'google'
-    }, {
-        name: 'Mail.ru',
-        value: 'mail.ru'
-    }, {
-        name: 'Lenta.ru',
-        value: 'lenta'
-    }, {
-        name: 'Яндекс',
-        value: 'yandex1'
-    }, {
-        name: 'Google',
-        value: 'google1'
-    }, {
-        name: 'Mail.ru',
-        value: 'mail.ru1'
-    }, {
-        name: 'Lenta.ru',
-        value: 'lenta1'
-    }];
-
     render() {
-        const {articles, articleIndex, form, showViewSettings, viewType, inProgress} = this.state;
+        const {articles, articleIndex, form, showViewSettings, sections, viewType, inProgress} = this.state;
         const isUpdate = !!this.articleId;
-        const dataSectionFields = this.state.fields.filter(({code}) => code !== 'annotation' && code !== 'text');
-
+        const dataSectionFields = this.getDataSectionFields();
         const sectionData = (
             <section {...classes('section')}>
                 {dataSectionFields.map(field => {
-                    if (field.code === 'source_id') {
-                        field.options = this.sources;
+                    switch (field.code) {
+                        case 'source_id':
+                            field.placeholder = 'Выберите источник...';
+                            field.options = this.props.source.map(({id, name}) => ({name, value: id}));
+                            break;
+                        case 'section_main_id':
+                            field.placeholder = 'Выберите раздел...';
+                            field.options = sections.map(({name, id, sectionsTwo}) => ({name, value: id, sectionsTwo}));
+                            break;
+                        case 'section_sub_id':
+                            field.placeholder = 'Выберите раздел...';
+                            field.options = _.get(form, 'section_main_id.sectionsTwo', [])
+                                .map(({name, id, sectionsThree}) => ({name, value: id, sectionsThree}));
+                            break;
+                        case 'section_three_id':
+                            field.placeholder = 'Выберите раздел...';
+                            field.options = _.get(form, 'section_sub_id.sectionsThree', [])
+                                .map(({name, id}) => ({name, value: id}));
+                            break;
+                        case 'authors':
+                            field.tags = form.authors;
+                            field.suggestions = this.state.suggestions;
+                            break;
+                        case 'genres':
+                            field.tags = form.genres;
+                            field.suggestions = this.state.suggestions;
+                            break;
+                        default:
+                            field.options = [];
                     }
 
                     return (
                         <ProjectCreateField
                             key={field.code}
                             field={field}
+                            placeholder={field.placeholder}
                             value={form[field.code] || ''}
                             onChange={this.handleChangeForm}
                         />
@@ -360,4 +475,18 @@ class ArticleCreatePage extends Component {
     }
 }
 
-export default connect(({projects}) => ({projects}))(ArticleCreatePage);
+export default connect(({
+    projects,
+    country,
+    city,
+    federal,
+    region,
+    source
+}) => ({
+    projects,
+    country,
+    city,
+    federal,
+    region,
+    source
+}))(ArticleCreatePage);

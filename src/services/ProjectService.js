@@ -9,5 +9,5 @@ export const ProjectService = {
     put: (id, form) => API.put(`${ApiList.project.project}/${id}`, form),
     getSections: (projectId) => API.get(`${ApiList.project.sections}${ParseToRequest({projectId})}`),
     createSections: (projectId, form) => API.post(`${ApiList.project.sections}${ParseToRequest({projectId})}`, form),
-    updateSections: (projectId, form) => API.put(`${ApiList.project.sections}${ParseToRequest({projectId})}`, form)
+    getFields: (projectId) => API.get(`${ApiList.project.fieldValue}?id=${projectId}`)
 };

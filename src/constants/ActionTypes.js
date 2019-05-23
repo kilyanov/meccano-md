@@ -1,10 +1,5 @@
 export default {
     REQUEST: 'REQUEST',
-    country: {
-        COUNTRY_LOADING: 'COUNTRY_LOADING',
-        COUNTRY_LOADED: 'COUNTRY_LOADED',
-        COUNTRY_LOAD_FAILURE: 'COUNTRY_LOAD_FAILURE'
-    },
     user: {
         profile: {
             PROFILE_LOADING: 'PROFILE_LOADING',
@@ -27,5 +22,45 @@ export default {
         ARTICLE_BY_PROJECT_LOADING: 'ARTICLE_BY_PROJECT_LOADING',
         ARTICLE_BY_PROJECT_LOADED: 'ARTICLE_BY_PROJECT_LOADED',
         ARTICLE_BY_PROJECT_LOAD_FAILURE: 'ARTICLE_BY_PROJECT_LOAD_FAILURE'
+    },
+    city: {
+        ADD: 'ADD',
+        UPDATE: 'UPDATE',
+        DELETE: 'DELETE',
+        CITY_LOADING: 'CITY_LOADING',
+        CITY_LOADED: 'CITY_LOADED',
+        CITY_LOAD_FAILURE: 'CITY_LOAD_FAILURE'
+    },
+    country: {
+        ADD: 'ADD',
+        UPDATE: 'UPDATE',
+        DELETE: 'DELETE',
+        COUNTRY_LOADING: 'COUNTRY_LOADING',
+        COUNTRY_LOADED: 'COUNTRY_LOADED',
+        COUNTRY_LOAD_FAILURE: 'COUNTRY_LOAD_FAILURE'
+    },
+    federal: {
+        ADD: 'ADD',
+        UPDATE: 'UPDATE',
+        DELETE: 'DELETE',
+        FEDERAL_LOADING: 'FEDERAL_LOADING',
+        FEDERAL_LOADED: 'FEDERAL_LOADED',
+        FEDERAL_LOAD_FAILURE: 'FEDERAL_LOAD_FAILURE'
+    },
+    region: {
+        ADD: 'ADD',
+        UPDATE: 'UPDATE',
+        DELETE: 'DELETE',
+        REGION_LOADING: 'REGION_LOADING',
+        REGION_LOADED: 'REGION_LOADED',
+        REGION_LOAD_FAILURE: 'REGION_LOAD_FAILURE'
+    },
+    source: {
+        ADD: 'ADD',
+        UPDATE: 'UPDATE',
+        DELETE: 'DELETE',
+        SOURCE_LOADING: 'SOURCE_LOADING',
+        SOURCE_LOADED: 'SOURCE_LOADED',
+        SOURCE_LOAD_FAILURE: 'SOURCE_LOAD_FAILURE'
     }
 };

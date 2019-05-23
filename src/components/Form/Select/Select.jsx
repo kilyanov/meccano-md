@@ -25,6 +25,7 @@ export default class Select extends Component {
 
     state = {
         opened: false,
+        searchOptions: null,
         searchString: ''
     };
 
@@ -46,9 +47,8 @@ export default class Select extends Component {
 
     handleSelect = (item) => {
         let selected = _.clone(this.props.selected);
-        const isMultiple = selected instanceof Array;
 
-        if (isMultiple) {
+        if (this.isMultiple) {
             if (selected.find(({value}) => value === item.value)) {
                 selected = selected.filter(({value}) => value !== item.value);
             } else {
@@ -56,23 +56,45 @@ export default class Select extends Component {
             }
         } else this.close();
 
-        return this.props.onChange(isMultiple ? selected : item);
+        this.setState({searchString: ''});
+
+        return this.props.onChange(this.isMultiple ? selected : item);
     };
 
     handleSearch = (event) => {
         const value = event.target.value.trim().toLowerCase();
+        const searchOptions = this.props.options.filter(({name}) => name.toLowerCase().includes(value));
 
-        console.log(value);
+        this.setState({searchString: event.target.value, searchOptions: !!value && searchOptions});
+    };
 
-        this.setState({searchString: event.target.value});
+    handleSearchFocus = () => {
+        this.setState({searchFocused: true});
+    };
+
+    handleSearchBlur = () => {
+        this.setState({searchFocused: false});
+    };
+
+    handleClearValue = () => {
+        this.setState({searchString: ''});
+        this.props.onChange(this.isMultiple ? [] : {});
     };
 
     open = () => {
-        this.setState({opened: true});
+        this.setState({opened: true}, () => {
+            if (_.isEmpty(this.props.selected)) {
+                this.searchRef.focus();
+            }
+        });
     };
 
     close = () => {
-        this.setState({opened: false});
+        this.setState({
+            opened: false,
+            searchString: '',
+            searchOptions: null
+        });
     };
 
     toggle = () => {
@@ -80,14 +102,37 @@ export default class Select extends Component {
         else this.open();
     };
 
+    highlight = (text, searchString) => {
+        if (searchString) {
+            const parts = text.split(new RegExp(`(${searchString})`, 'gi'));
+
+            return (
+                <span>
+                    {parts.map((part, i) =>
+                        <span
+                            key={i}
+                            style={part.toLowerCase() === searchString.toLowerCase() ?
+                                {backgroundColor: '#ffff8f'} : {}}
+                        >
+                            {part}
+                        </span>
+                    )}
+                </span>);
+        }
+
+        return text;
+    };
+
     isMobileView = isMobileScreen();
 
+    isMultiple = this.props.selected instanceof Array;
+
     render() {
-        const {options, placeholder, label, selected, withSearch} = this.props;
-        const {opened, searchString} = this.state;
+        const {placeholder, label, selected, withSearch} = this.props;
+        const {opened, searchString, searchFocused} = this.state;
         const isMultiple = selected instanceof Array;
         const selectedName = isMultiple ? _.get(selected, '[0].name', '') : selected.name;
-        const searchInFocus = document.activeElement === this.searchRef;
+        const options = this.state.searchOptions || this.props.options;
 
         return (
             <div {...classes('', {multiple: isMultiple, mobile: this.isMobileView})} ref={node => this.domNode = node}>
@@ -97,7 +142,7 @@ export default class Select extends Component {
 
                 <div {...classes('container', {opened})} onClick={() => this.toggle()}>
                     {(placeholder && !selectedName && !searchString.length) && (
-                        <span {...classes('placeholder')}>{searchInFocus ? 'Начните вводить...' : placeholder}</span>
+                        <span {...classes('placeholder')}>{searchFocused ? 'Начните вводить...' : placeholder}</span>
                     )}
 
                     {withSearch && (
@@ -106,13 +151,11 @@ export default class Select extends Component {
                                 {...classes('search-field')}
                                 type='text'
                                 onChange={this.handleSearch}
+                                onFocus={this.handleSearchFocus}
+                                onBlur={this.handleSearchBlur}
                                 value={searchString}
                                 ref={ref => this.searchRef = ref}
                             />
-
-                            {!!searchString.length  && (
-                                <button {...classes('search-clear-button')}>✕</button>
-                            )}
                         </div>
                     )}
 
@@ -121,6 +164,14 @@ export default class Select extends Component {
                             <span>{selectedName}</span> {(isMultiple && selected.length > 1) && <i>+{selected.length - 1}</i>}
                         </span>
                     )}
+
+                    {!!searchString.length || selectedName  && (
+                        <button
+                            type='button'
+                            {...classes('search-clear-button')}
+                            onClick={this.handleClearValue}
+                        >✕</button>
+                    )}
                 </div>
 
                 {opened && (
@@ -128,10 +179,11 @@ export default class Select extends Component {
                         {this.isMobileView && (
                             <div {...classes('list-header')}>
                                 <h3 {...classes('list-title')}>{label}</h3>
-                                <button
+                                <a
+                                    rel='button'
                                     {...classes('list-close-button')}
-                                    onClick={() => this.close()}
-                                >✕</button>
+                                    onClick={() => this.setState({searchString: '', searchOptions: null})}
+                                >✕</a>
                             </div>
                         )}
 
@@ -143,17 +195,18 @@ export default class Select extends Component {
 
                                 return (
                                     <li
+                                        tabIndex={0}
                                         key={itemIndex}
                                         {...classes('list-item', {active})}
                                         onClick={() => this.handleSelect(item)}
                                     >
                                         {isMultiple ? (
                                             <CheckBox
-                                                label={item.name}
+                                                label={this.highlight(item.name, searchString)}
                                                 onChange={() => null}
                                                 checked={active}
                                             />
-                                        ) : item.name}
+                                        ) : this.highlight(item.name, searchString)}
                                     </li>
                                 );
                             })}
