@@ -3,6 +3,8 @@ import PropTypes from 'prop-types';
 import './select.scss';
 import {isMobileScreen} from '../../../helpers/Tools';
 import CheckBox from '../CheckBox/CheckBox';
+import {KEY_CODE} from '../../../constants';
+import Loader from '../../Shared/Loader/Loader';
 
 const classes = new Bem('select');
 
@@ -15,6 +17,8 @@ export default class Select extends Component {
         options: PropTypes.array,
         placeholder: PropTypes.string,
         onChange: PropTypes.func,
+        onSearch: PropTypes.func,
+        onCancelSearch: PropTypes.func,
         label: PropTypes.string.isRequired,
         withSearch: PropTypes.bool
     };
@@ -26,7 +30,8 @@ export default class Select extends Component {
     state = {
         opened: false,
         searchOptions: null,
-        searchString: ''
+        searchString: '',
+        inProgress: false
     };
 
     componentDidMount() {
@@ -63,9 +68,23 @@ export default class Select extends Component {
 
     handleSearch = (event) => {
         const value = event.target.value.trim().toLowerCase();
-        const searchOptions = this.props.options.filter(({name}) => name.toLowerCase().includes(value));
 
-        this.setState({searchString: event.target.value, searchOptions: !!value && searchOptions});
+        if (this.props.onSearch) {
+            this.setState({
+                searchString: event.target.value,
+                inProgress: true
+            }, () => {
+                if (value) this.debouncedSearch(value);
+                else this.setState({inProgress: false, searchOptions: null});
+            });
+        } else {
+            const searchOptions = this.props.options.filter(({name}) => name.toLowerCase().includes(value));
+
+            this.setState({
+                searchString: event.target.value,
+                searchOptions: !!value && searchOptions
+            });
+        }
     };
 
     handleSearchFocus = () => {
@@ -76,9 +95,55 @@ export default class Select extends Component {
         this.setState({searchFocused: false});
     };
 
+    handleSearchKeyDown = (event) => {
+        if (!this.listRef) return;
+
+        switch (event.keyCode) {
+            case KEY_CODE.arrows.down:
+                this.listRef.querySelector('li:first-child').focus();
+                event.preventDefault();
+                break;
+            case KEY_CODE.arrows.up:
+                this.listRef.querySelector('li:last-child').focus();
+                event.preventDefault();
+                break;
+            default:
+                break;
+        }
+    };
+
     handleClearValue = () => {
         this.setState({searchString: ''});
         this.props.onChange(this.isMultiple ? [] : {});
+    };
+
+    handleListKeyDown = (event) => {
+        const focused = this.listRef.querySelector('li:focus');
+        const options = this.state.searchOptions || this.props.options;
+
+        event.preventDefault();
+
+        switch (event.keyCode) {
+            case KEY_CODE.arrows.down:
+                if (focused && focused.nextElementSibling) {
+                    focused.nextElementSibling.focus();
+                } else {
+                    this.listRef.querySelector('li:first-child').focus();
+                }
+                break;
+            case KEY_CODE.arrows.up:
+                if (focused && focused.previousElementSibling) {
+                    focused.previousElementSibling.focus();
+                } else {
+                    this.listRef.querySelector('li:last-child').focus();
+                }
+                break;
+            case KEY_CODE.enter:
+                this.handleSelect(options[focused.getAttribute('data-index')]);
+                break;
+            default:
+                break;
+        }
     };
 
     open = () => {
@@ -123,13 +188,24 @@ export default class Select extends Component {
         return text;
     };
 
+    debouncedSearch = _.debounce((value) => {
+        if (this.props.onCancelSearch) this.props.onCancelSearch();
+        this.props.onSearch(value).then(response => {
+            this.setState({
+                inProgress: false,
+                searchOptions: response.data,
+                opened: !!response.data.length
+            });
+        });
+    }, 1000);
+
     isMobileView = isMobileScreen();
 
     isMultiple = this.props.selected instanceof Array;
 
     render() {
         const {placeholder, label, selected, withSearch} = this.props;
-        const {opened, searchString, searchFocused} = this.state;
+        const {opened, searchString, searchFocused, inProgress} = this.state;
         const isMultiple = selected instanceof Array;
         const selectedName = isMultiple ? _.get(selected, '[0].name', '') : selected.name;
         const options = this.state.searchOptions || this.props.options;
@@ -153,6 +229,7 @@ export default class Select extends Component {
                                 onChange={this.handleSearch}
                                 onFocus={this.handleSearchFocus}
                                 onBlur={this.handleSearchBlur}
+                                onKeyDown={this.handleSearchKeyDown}
                                 value={searchString}
                                 ref={ref => this.searchRef = ref}
                             />
@@ -174,7 +251,7 @@ export default class Select extends Component {
                     )}
                 </div>
 
-                {opened && (
+                {(opened && !inProgress) && (
                     <div {...classes('list-container')}>
                         {this.isMobileView && (
                             <div {...classes('list-header')}>
@@ -187,7 +264,11 @@ export default class Select extends Component {
                             </div>
                         )}
 
-                        <ul {...classes('list')}>
+                        <ul
+                            {...classes('list')}
+                            ref={ref => this.listRef = ref}
+                            onKeyDown={this.handleListKeyDown}
+                        >
                             {options.map((item, itemIndex) => {
                                 const active = isMultiple ?
                                     selected.find(({value}) => value === item.value) :
@@ -199,17 +280,27 @@ export default class Select extends Component {
                                         key={itemIndex}
                                         {...classes('list-item', {active})}
                                         onClick={() => this.handleSelect(item)}
+                                        data-index={itemIndex}
                                     >
                                         {isMultiple ? (
                                             <CheckBox
-                                                label={this.highlight(item.name, searchString)}
+                                                label={this.state.searchOptions ?
+                                                    this.highlight(item.name, searchString) : item.name}
                                                 onChange={() => null}
                                                 checked={active}
                                             />
-                                        ) : this.highlight(item.name, searchString)}
+                                        ) : this.state.searchOptions ? this.highlight(item.name, searchString) : item.name}
                                     </li>
                                 );
                             })}
+                        </ul>
+                    </div>
+                )}
+
+                {(opened && inProgress) && (
+                    <div {...classes('list-container')}>
+                        <ul {...classes('list', 'progress')}>
+                            <Loader radius={8} strokeWidth={3}/>
                         </ul>
                     </div>
                 )}

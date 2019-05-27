@@ -29,6 +29,10 @@ const ProjectCreateField = ({field, value, onChange, className}) => {
                     options={field.options || []}
                     selected={value || {}}
                     onChange={val => onChange(val, field.code)}
+                    /* eslint-disable-next-line */
+                    onSearch={field.onSearch}
+                    /* eslint-disable-next-line */
+                    onCancelSearch={field.onCancelSearch}
                     withSearch
                 />
             </div>;

@@ -112,6 +112,10 @@ $namespace: '.select';
         word-break: break-all;
         list-style: none;
         overflow-y: auto;
+
+        &--progress {
+            min-height: 30px;
+        }
     }
 
     &__list-item {
@@ -122,6 +126,7 @@ $namespace: '.select';
         font-size: 15px;
         cursor: pointer;
 
+        &:focus,
         &:hover {
             background-color: #f2f2f2;
         }

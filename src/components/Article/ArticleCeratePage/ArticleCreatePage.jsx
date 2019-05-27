@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
 import Page from '../../Shared/Page/Page';
-import {ArticleService, StorageService} from '../../../services';
+import {ArticleService, SourceService, StorageService} from '../../../services';
 import {NotificationManager} from 'react-notifications';
 import './article-create-page.scss';
 import Form from '../../Form/Form/Form';
@@ -301,6 +301,8 @@ class ArticleCreatePage extends Component {
                         case 'source_id':
                             field.placeholder = 'Выберите источник...';
                             field.options = this.props.source.map(({id, name}) => ({name, value: id}));
+                            field.onSearch = query => SourceService.get('', {'query[name]': query});
+                            field.onCancelSearch = SourceService.cancelGet;
                             break;
                         case 'section_main_id':
                             field.placeholder = 'Выберите раздел...';
