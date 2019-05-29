@@ -1,6 +1,6 @@
 @import "../../../assets/styles/variables";
 
-$namespace: '.input-number';
+$namespace: '.input-time';
 
 #{$namespace} {
   position: relative;
@@ -22,8 +22,8 @@ $namespace: '.input-number';
       position: absolute;
       width: 32px;
       height: 32px;
-      //background: url(./img/input-clear.svg) no-repeat;
-      bottom: 8px;
+      background: url(./img/input-clear.svg) no-repeat;
+      bottom: 5px;
       right: 8px;
     }
 
@@ -55,9 +55,13 @@ $namespace: '.input-number';
   }
 
   &__label-text {
+    display: inline-block;
+    width: 100%;
     font-size: 15px;
     line-height: 24px;
     margin-bottom: 8px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
   }
 
   &__field {
@@ -75,7 +79,7 @@ $namespace: '.input-number';
     height: 32px;
     background: rgba(255, 255, 255, 0);
     cursor: pointer;
-    bottom: 8px;
+    bottom: 4px;
     right: 8px;
     z-index: 1;
   }
@@ -92,7 +96,62 @@ $namespace: '.input-number';
 
   &__earth-icon {
     position: absolute;
-    bottom: 14px;
+    bottom: 10px;
     right: 16px;
+  }
+
+  &__picker {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 114px;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    box-shadow: 0 1px 5px #ccc;
+    z-index: 10;
+  }
+
+  &__picker-select-panel {
+    float: left;
+    width: 56px;
+    box-sizing: border-box;
+    overflow: hidden;
+  }
+
+  &__picker-list {
+    width: 100%;
+    max-height: 300px;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    list-style: none;
+    overflow: hidden;
+
+    &:first-child {
+      border-right: 1px solid #e9e9e9;
+    }
+
+    &:hover {
+      overflow-y: auto;
+    }
+  }
+
+  &__picker-list-item {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 55px;
+    height: 24px;
+    box-sizing: content-box;
+    font-size: 12px;
+    cursor: pointer;
+
+    &--active,
+    &:hover,
+    &:focus {
+      background: #edfaff;
+      color: #2db7f5;
+    }
   }
 }

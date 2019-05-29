@@ -175,6 +175,7 @@ export default class InputText extends Component {
                     empty: isEmpty,
                     link: isLink
                 }, className)}
+                title={label}
             >
                 <label {...classes('label')}>
                     {label && <span {...classes('label-text')}>{label}</span>}

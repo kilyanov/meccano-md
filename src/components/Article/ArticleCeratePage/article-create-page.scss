@@ -133,16 +133,18 @@ $namespace: '.article-create-page';
     flex: 1;
     padding: 0 20px;
 
-    &--url,
+
     &--title {
       flex-basis: 100%;
     }
 
+    &--url,
     &--number,
     &--newsmaker {
       flex: .5;
     }
 
+    &--time_main,
     &--authors,
     &--date,
     &--source_id,

@@ -6,6 +6,7 @@ import Select from '../../../Form/Select/Select';
 import InputLink from '../../../Form/InputLink/InputLink';
 import InputNumber from '../../../Form/InputNumber/InputNumber';
 import InputTags from '../../../Form/InputTags/InputTags';
+import InputTime from '../../../Form/InputTime/InputTime';
 
 const classes = new Bem('article-create-page');
 const ProjectCreateField = ({field, value, onChange, className}) => {
@@ -64,6 +65,13 @@ const ProjectCreateField = ({field, value, onChange, className}) => {
                     onChange={val => onChange(val, field.code)}
                     /* eslint-disable-next-line */
                     onSearch={field.onSearch}
+                />
+            </div>;
+        case 'time_main':
+            return <div {...classes('field', field.code, className)}>
+                <InputTime
+                    label={field.name}
+                    value={value}
                 />
             </div>;
         default:
