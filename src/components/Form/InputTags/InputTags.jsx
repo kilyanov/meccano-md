@@ -13,7 +13,8 @@ export default class InputTags extends Component {
         tags: PropTypes.array,
         suggestions: PropTypes.array,
         onChange: PropTypes.func.isRequired,
-        searchPromiseFn: PropTypes.func,
+        onSearch: PropTypes.func,
+        onCancelSearch: PropTypes.func,
         placeholder: PropTypes.string
     };
 
@@ -22,20 +23,13 @@ export default class InputTags extends Component {
     };
 
     state = {
-        suggestions: this.props.suggestions || null,
-        busy: false
+        suggestions: [],
+        inProgress: false
     };
 
     handleInputChange = (value) => {
-        if (this.props.searchPromiseFn && !this.state.busy) {
-            this.setState({busy: true}, () => {
-                return this.props.searchPromiseFn({search: value}).then(response => {
-                    this.setState({
-                        suggestions: response.data,
-                        busy: false
-                    });
-                });
-            });
+        if (this.props.onSearch) {
+            this.debouncedSearch(value);
         }
     };
 
@@ -53,8 +47,25 @@ export default class InputTags extends Component {
         this.props.onChange(tags);
     };
 
+    debouncedSearch = _.debounce((value) => {
+        if (this.props.onCancelSearch) this.props.onCancelSearch();
+
+        this.setState({inProgress: true}, () => {
+            this.props.onSearch(value).then(response => {
+                // filter selected
+                const suggestions = response.data.filter(({name}) => !this.props.tags.find(tag => tag.name !== name));
+
+                this.setState({
+                    inProgress: false,
+                    suggestions
+                });
+            });
+        });
+    }, 1000);
+
     render() {
-        const {label, tags, suggestions, placeholder} = this.props;
+        const {label, tags, placeholder} = this.props;
+        const suggestions = this.props.suggestions || this.state.suggestions;
 
         return (
             <div {...classes()}>

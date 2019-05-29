@@ -1,5 +1,12 @@
 export default {
-    article: '/article',
+    article: {
+        article: '/article',
+        type: '/article/type',
+        rating: '/article/rating',
+        heading: '/article/heading',
+        author: '/article/author',
+        genre: '/article/genre'
+    },
     city: '/city',
     country: '/country',
     federal: '/federal',

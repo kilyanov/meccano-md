@@ -190,6 +190,7 @@ export default class Select extends Component {
 
     debouncedSearch = _.debounce((value) => {
         if (this.props.onCancelSearch) this.props.onCancelSearch();
+
         this.props.onSearch(value).then(response => {
             this.setState({
                 inProgress: false,

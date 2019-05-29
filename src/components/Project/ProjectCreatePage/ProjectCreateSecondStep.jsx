@@ -2,47 +2,35 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import {ProjectService} from '../../../services';
 import SectionTree from '../../Shared/SectionTree/SectionTree';
-import {EventEmitter} from '../../../helpers';
 import Loader from '../../Shared/Loader/Loader';
 
 export default class ProjectCreateSecondStep extends Component {
     static propTypes = {
         classes: PropTypes.func.isRequired,
-        project: PropTypes.object.isRequired
+        projectId: PropTypes.string.isRequired,
+        sections: PropTypes.array.isRequired,
+        onChange: PropTypes.func.isRequired
     };
 
     state = {
-        sections: [],
         inProgress: true
     };
 
     componentDidMount() {
-        ProjectService.getSections(this.props.project.id).then(response => {
+        ProjectService.getSections(this.props.projectId).then(response => {
             this.setState({
-                sections: response.data,
                 inProgress: false
-            });
+            }, () => this.props.onChange(response.data));
         });
     }
 
     handleChangeSections = (sections) => {
-        this.setState({sections});
-    };
-
-    submit = () => {
-        const {project} = this.props;
-        const {sections} = this.state;
-
-        if (sections && sections.length) {
-            ProjectService.createSections(project.id, sections).then(() => {
-                setTimeout(() => EventEmitter.emit('redirect', `/project/${project.id}`), 2000);
-            });
-        }
+        this.props.onChange(sections);
     };
 
     render() {
-        const {classes} = this.props;
-        const {sections, inProgress} = this.state;
+        const {classes, sections} = this.props;
+        const {inProgress} = this.state;
 
         return (
             <div {...classes('step', 'second', 'container')}>

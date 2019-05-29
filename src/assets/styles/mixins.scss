@@ -2,10 +2,10 @@
 
 @function translate-media-condition($c) {
   $condMap: (
-          "descktop-large": "only screen and (min-width: #{$device-md}) and (max-width: #{$device-lg - 1px})",
-          "descktop": "only screen and (min-width: #{$device-md}) and (max-width: #{$device-lg - 1px})",
-          "tablet": "only screen and (min-width: #{$device-sm}) and (max-width: #{$device-md - 1px})",
-          "mobile": "only screen and (min-width: #{$device-xs}) and (max-width: #{$device-sm - 1px})",
+          "descktop-large": "only screen and (min-width: #{$device-md}) and (max-width: #{$device-lg})",
+          "desktop": "only screen and (min-width: #{$device-md}) and (max-width: #{$device-lg})",
+          "tablet": "only screen and (min-width: #{$device-sm}) and (max-width: #{$device-md})",
+          "mobile": "only screen and (max-width: #{$device-sm})",
   );
 
   @return map-get( $condMap, $c );
@@ -13,6 +13,24 @@
 
 @mixin media($type) {
   @media #{translate-media-condition($type)}  { @content; }
+}
+
+@mixin desktop {
+  @media (min-width: $device-md) and (max-width: #{$device-lg -1px}) {
+    @content;
+  }
+}
+
+@mixin tablet {
+  @media (min-width: $device-sm) and (max-width: #{$device-md}) {
+    @content;
+  }
+}
+
+@mixin mobile {
+  @media (min-width: $device-xs) and (max-width: #{$device-sm -1px}) {
+    @content;
+  }
 }
 
 @function breakpoint-next($name, $breakpoints: $grid-breakpoints, $breakpoint-names: map-keys($breakpoints)) {

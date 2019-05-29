@@ -26,6 +26,7 @@ class ProjectCreatePage extends Component {
         projectId: this.props.match.params.id,
         fields: [],
         allFields: [],
+        sections: [],
         isEdit: false,
         inProgress: true
     };
@@ -37,9 +38,7 @@ class ProjectCreatePage extends Component {
 
         ProjectService.get(this.projectId, params).then(response => {
             const {fields, allFields, createdAt, updatedAt} = response.data;
-            const isEdit = createdAt !== updatedAt;
-
-            console.log('isEdit', isEdit);
+            // const isEdit = createdAt !== updatedAt;
 
             this.setState({
                 fields,
@@ -54,7 +53,62 @@ class ProjectCreatePage extends Component {
         this.setState({...fields});
     };
 
-    handleDeleteProject = () => {
+    handleClickBackButton = () => {
+        const {step} = this.state;
+
+        if (step === 2) this.setState({step: 1});
+        else this.deleteProject();
+    };
+
+    handleChangeSections = (sections) => {
+        this.setState({sections});
+    };
+
+    handleSubmit = () => {
+        if (this.state.step === 1) {
+            this.setState({inProgress: true}, () => {
+                const fields = this.state.fields.map((field, index) => {
+                    field.order = index;
+                    return field;
+                });
+
+                ProjectService.put(this.state.projectId, {fields}).then(() => {
+                    // Проверяем на наличие полей sections
+                    const found = this.state.fields.find(({code}) => {
+                        return ['section_main_id', 'section_sub_id', 'section_three_id'].includes(code);
+                    });
+
+                    if (!found) {
+                        return EventEmitter.emit('redirect', `/project/${this.projectId}`);
+                    }
+
+                    this.setState({step: 2, inProgress: false});
+                }).catch(() => this.setState({inProgress: false}));
+            });
+        } else {
+            const {sections} = this.state;
+
+            if (!sections || !sections.length) return;
+
+            this.setState({inProgress: true}, () => {
+                ProjectService.createSections(this.projectId, sections).then(() => {
+                    setTimeout(() => EventEmitter.emit('redirect', `/project/${this.projectId}`), 2000);
+                }).catch(() => this.setState({inProgress: false}));
+            });
+        }
+    };
+
+    getProject = () => {
+        if (this.project && this.project.id === this.projectId) {
+            return this.project;
+        } else if (this.props.projects.length) {
+            this.project = this.props.projects.find(({id}) => id === this.projectId);
+
+            return this.project;
+        }
+    };
+
+    deleteProject = () => {
         const {isEdit} = this.state;
 
         this.promiseDialogModal.open({
@@ -73,42 +127,15 @@ class ProjectCreatePage extends Component {
         });
     };
 
-    handleSubmit = () => {
-        const {step} = this.state;
-
-        if (step === 1) {
-            this.setState({inProgress: true}, () => {
-                const fields = this.state.fields.map((field, index) => {
-                    field.order = index;
-                    return field;
-                });
-
-                ProjectService.put(this.state.projectId, {fields}).then(() => {
-                    this.setState({step: 2, inProgress: false});
-                });
-            });
-        } else {
-            this.setState({inProgress: true}, this.secondStep.submit);
-        }
-    };
-
-    getProject = () => {
-        if (this.project && this.project.id === this.projectId) {
-            return this.project;
-        } else if (this.props.projects.length) {
-            this.project = this.props.projects.find(({id}) => id === this.projectId);
-
-            return this.project;
-        }
-    };
-
     projectId = this.props.match.params.id;
 
     project = null;
 
     render() {
-        const { step, fields, allFields, isEdit, inProgress } = this.state;
+        const { step, fields, allFields, sections, isEdit, inProgress } = this.state;
         const project = this.getProject();
+        const backButtonLabel = step === 2 ? 'Назад' :
+            isEdit ? 'Удалить проект' : 'Отменить создание';
 
         return (
             <Page
@@ -140,9 +167,10 @@ class ProjectCreatePage extends Component {
 
                     {(project && step === 2) && (
                         <ProjectCreateSecondStep
-                            ref={ref => this.secondStep = ref}
+                            projectId={this.projectId}
                             classes={classes}
-                            project={project}
+                            sections={sections}
+                            onChange={this.handleChangeSections}
                         />
                     )}
                 </section>
@@ -150,15 +178,16 @@ class ProjectCreatePage extends Component {
                 <section {...classes('footer')}>
                     <div {...classes('container', '', 'container')}>
                         <Button
-                            onClick={this.handleDeleteProject}
+                            onClick={this.handleClickBackButton}
                             {...classes('cancel-button')}
-                            style={isEdit ? 'error' : 'default'}
+                            style={isEdit && step !== 2 ? 'error' : 'default'}
                             viewType='inline'
-                            text={isEdit ? 'Удалить проект' : `Отменить создание`}
+                            text={backButtonLabel}
                         />
                         <Button
                             onClick={this.handleSubmit}
                             {...classes('submit-button')}
+                            disabled={step === 2 && !sections.length}
                             style='success'
                             text='Далее'
                         />

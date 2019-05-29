@@ -85,6 +85,12 @@ class ArticleCreatePage extends Component {
                     }
                 });
 
+                if (form.source_id && this.props.source.length) {
+                    const currentSource = this.props.source.find(({id}) => id === form.source_id);
+
+                    if (currentSource) form.source_id = {name: currentSource.name, value: currentSource.id};
+                }
+
                 this.setState({
                     articles,
                     fields: form.project.fields,
@@ -111,6 +117,20 @@ class ArticleCreatePage extends Component {
         if (prevProps.match.params.articleId !== this.props.match.params.articleId) {
             this.articleId = this.props.match.params.articleId;
             this.getArticle();
+        }
+
+        if (
+            this.state.form.source_id &&
+            _.isString(this.state.form.source_id) &&
+            this.props.source.length
+        ) {
+            const currentSource = this.props.source.find(({id}) => id === this.state.form.source_id);
+
+            if (currentSource) {
+                this.setState(prev => {
+                    return prev.form.source_id = {name: currentSource.name, value: currentSource.id};
+                });
+            }
         }
 
         if (!this.articleId && !this.state.fields.length && this.props.projects.length) {
@@ -181,8 +201,10 @@ class ArticleCreatePage extends Component {
 
         form.date = moment(form.date).format();
 
+        delete form.project;
+
         if (form.source_id) {
-            form.source_id = null;
+            form.source_id = form.source_id.value;
         }
 
         ['section_main_id', 'section_sub_id', 'section_three_id']
@@ -255,9 +277,31 @@ class ArticleCreatePage extends Component {
 
     getAdditionalDataFields = () => {
         const {fields} = this.state;
+        const stackRequest = {};
 
         if (fields.find(({code}) => code === 'source_id') && !this.props.source.length) {
             store.dispatch(getSource());
+        }
+
+        if (fields.find(({code}) => code === 'type_id') && !this.state.types) {
+            stackRequest.types = ArticleService.types();
+        }
+
+        if (fields.find(({code}) => code === 'genre_id') && !this.state.genres) {
+            stackRequest.genres = ArticleService.genre();
+        }
+
+        if (!_.isEmpty(stackRequest)) {
+            Promise.all(_.values(stackRequest)).then((stackResponse) => {
+                const newState = this.state;
+                const keys = Object.keys(stackRequest);
+
+                stackResponse.map((data, index) => {
+                    newState[keys[index]] = data.data.map(({id, name}) => ({name, value: id}));
+                });
+
+                this.setState(newState);
+            });
         }
     };
 
@@ -318,13 +362,22 @@ class ArticleCreatePage extends Component {
                             field.options = _.get(form, 'section_sub_id.sectionsThree', [])
                                 .map(({name, id}) => ({name, value: id}));
                             break;
+                        case 'genre_id':
+                            field.placeholder = 'Выберите жанр...';
+                            field.options = this.state.genres;
+                            field.onSearch = query => ArticleService.genre({'query[name]': query});
+                            field.onCancelSearch = ArticleService.cancelLast;
+                            break;
+                        case 'type_id':
+                            field.placeholder = 'Выберите тип...';
+                            field.options = this.state.types;
+                            field.onSearch = query => ArticleService.types({'query[name]': query});
+                            field.onCancelSearch = ArticleService.cancelLast;
+                            break;
                         case 'authors':
                             field.tags = form.authors;
-                            field.suggestions = this.state.suggestions;
-                            break;
-                        case 'genres':
-                            field.tags = form.genres;
-                            field.suggestions = this.state.suggestions;
+                            field.onSearch = query => ArticleService.author({'query[name]': query});
+                            field.onCancelSearch = ArticleService.cancelLast;
                             break;
                         default:
                             field.options = [];

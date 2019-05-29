@@ -69,6 +69,15 @@ $namespace: '.input-date-picker';
     outline: 0;
   }
 
+  .react-date-picker__calendar {
+    //max-width: 100%;
+    box-shadow: 2px 2px 8px rgba(0, 0, 0, .3);
+  }
+
+  .react-calendar__navigation button {
+    font-size: 18px;
+  }
+
   &__clear {
     position: absolute;
     width: 32px;

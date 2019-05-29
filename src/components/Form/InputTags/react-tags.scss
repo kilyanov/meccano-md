@@ -65,9 +65,10 @@
     top: 100%;
     left: 0;
     width: 100%;
+    z-index: 1;
 
     ul {
-      margin: 4px -1px;
+      margin: 0 -1px;
       padding: 0;
       list-style: none;
       background: white;

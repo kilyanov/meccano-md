@@ -1,4 +1,5 @@
 @import "../../../assets/styles/variables";
+@import "../../../assets/styles/mixins";
 $namespace: '.article-create-page';
 
 #{$namespace} {
@@ -8,6 +9,7 @@ $namespace: '.article-create-page';
     display: flex;
     align-items: center;
     margin-bottom: 50px;
+    flex-wrap: wrap;
   }
 
   &__back-button {
@@ -17,6 +19,16 @@ $namespace: '.article-create-page';
   &__title-wrap {
     display: flex;
     align-items: center;
+
+    @include media("tablet") {
+      margin-left: auto;
+    }
+
+    @include media("mobile") {
+      width: 100%;
+      margin-top: 10px;
+      justify-content: center;
+    }
   }
 
   &__title {
@@ -50,6 +62,17 @@ $namespace: '.article-create-page';
     font-size: 15px;
     font-weight: 500;
     letter-spacing: .1px;
+
+    @include media("tablet") {
+      width: 50%;
+      margin-left: 0;
+    }
+
+    @include media("mobile") {
+      width: 100%;
+      margin-top: 10px;
+      justify-content: center;
+    }
   }
 
   &__view-button-icon {
@@ -88,6 +111,16 @@ $namespace: '.article-create-page';
     margin-left: 20px;
     height: 48px;
     padding: 0 50px;
+
+    @include media("tablet") {
+      margin-top: 10px;
+      margin-left: auto;
+    }
+
+    @include media("mobile") {
+      width: 100%;
+      margin-top: 10px;
+    }
   }
 
   &__section {
@@ -113,6 +146,8 @@ $namespace: '.article-create-page';
     &--authors,
     &--date,
     &--source_id,
+    &--genre_id,
+    &--type_id,
     &--section_main_id,
     &--section_sub_id,
     &--section_three_id {

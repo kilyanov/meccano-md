@@ -22,12 +22,14 @@ const ProjectCreateField = ({field, value, onChange, className}) => {
         case 'section_sub_id':
         case 'section_three_id':
         case 'source_id':
+        case 'genre_id':
+        case 'type_id':
             return <div {...classes('field', field.code, className)}>
                 <Select
                     placeholder={field.placeholder}
                     label={field.name}
                     options={field.options || []}
-                    selected={value || {}}
+                    selected={_.isObject(value) ? value : {}}
                     onChange={val => onChange(val, field.code)}
                     /* eslint-disable-next-line */
                     onSearch={field.onSearch}
@@ -54,13 +56,14 @@ const ProjectCreateField = ({field, value, onChange, className}) => {
                 />
             </div>;
         case 'authors':
-        case 'genre':
             return <div {...classes('field', field.code, className)}>
                 <InputTags
                     label={field.name}
                     tags={field.tags}
                     suggestions={field.suggestions}
                     onChange={val => onChange(val, field.code)}
+                    /* eslint-disable-next-line */
+                    onSearch={field.onSearch}
                 />
             </div>;
         default:
