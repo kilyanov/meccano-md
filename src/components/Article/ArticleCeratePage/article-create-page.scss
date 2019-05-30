@@ -139,20 +139,22 @@ $namespace: '.article-create-page';
     }
 
     &--url,
-    &--number,
-    &--newsmaker {
+    &--number {
       flex: .5;
     }
 
-    &--time_main,
-    &--authors,
-    &--date,
-    &--source_id,
-    &--genre_id,
-    &--type_id,
     &--section_main_id,
     &--section_sub_id,
     &--section_three_id {
+      flex-shrink: 0;
+      flex-basis: 250px;
+    }
+
+    &--time,
+    &--date,
+    &--datetime,
+    &--uuid,
+    &--array {
       flex-shrink: 0;
       flex-basis: 250px;
     }

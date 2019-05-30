@@ -10,54 +10,9 @@ import InputTime from '../../../Form/InputTime/InputTime';
 
 const classes = new Bem('article-create-page');
 const ProjectCreateField = ({field, value, onChange, className}) => {
-    switch (field.code) {
-        case 'date':
-            return  <div {...classes('field', field.code, className)}>
-                <InputDatePicker
-                    label={field.name}
-                    value={value || ''}
-                    onChange={val => onChange(val, field.code)}
-                />
-            </div>;
-        case 'section_main_id':
-        case 'section_sub_id':
-        case 'section_three_id':
-        case 'source_id':
-        case 'genre_id':
-        case 'type_id':
-            return <div {...classes('field', field.code, className)}>
-                <Select
-                    placeholder={field.placeholder}
-                    label={field.name}
-                    options={field.options || []}
-                    selected={_.isObject(value) ? value : {}}
-                    onChange={val => onChange(val, field.code)}
-                    /* eslint-disable-next-line */
-                    onSearch={field.onSearch}
-                    /* eslint-disable-next-line */
-                    onCancelSearch={field.onCancelSearch}
-                    withSearch
-                />
-            </div>;
-        case 'url':
-            return <div {...classes('field', field.code, className)}>
-                <InputLink
-                    label={field.name}
-                    onChange={val => onChange(val, field.code)}
-                    value={value || ''}
-                />
-            </div>;
-        case 'rating_id':
-        case 'number':
-            return <div {...classes('field', field.code, className)}>
-                <InputNumber
-                    label={field.name}
-                    onChange={val => onChange(val, field.code)}
-                    value={value || ''}
-                />
-            </div>;
-        case 'authors':
-            return <div {...classes('field', field.code, className)}>
+    switch (field.type) {
+        case 'array':
+            return <div {...classes('field', [field.code, field.type], className)}>
                 <InputTags
                     label={field.name}
                     tags={field.tags}
@@ -67,15 +22,62 @@ const ProjectCreateField = ({field, value, onChange, className}) => {
                     onSearch={field.onSearch}
                 />
             </div>;
-        case 'time_main':
-            return <div {...classes('field', field.code, className)}>
+        case 'uuid':
+            return <div {...classes('field', [field.code, field.type], className)}>
+                <Select
+                    placeholder={field.placeholder}
+                    label={field.name}
+                    options={field.options || []}
+                    selected={_.isObject(value) ? value : {}}
+                    onChange={val => onChange(val, field.code)}
+                    requestService={field.requestService}
+                    requestCancelService={field.requestCancelService}
+                    withSearch
+                />
+            </div>;
+        case 'url':
+            return <div {...classes('field', [field.code, field.type], className)}>
+                <InputLink
+                    label={field.name}
+                    onChange={val => onChange(val, field.code)}
+                    value={value || ''}
+                />
+            </div>;
+        case 'float':
+        case 'integer':
+            return <div {...classes('field', [field.code, field.type], className)}>
+                <InputNumber
+                    label={field.name}
+                    onChange={val => onChange(val, field.code)}
+                    value={value || ''}
+                />
+            </div>;
+        case 'datetime':
+            return <div {...classes('field', [field.code, field.type], className)}>
+                <InputDatePicker
+                    label={field.name}
+                    value={value || ''}
+                    onChange={val => onChange(val, field.code)}
+                />
+            </div>;
+        case 'date':
+            return <div {...classes('field', [field.code, field.type], className)}>
+                <InputDatePicker
+                    label={field.name}
+                    value={value || ''}
+                    onChange={val => onChange(val, field.code)}
+                />
+            </div>;
+        case 'time':
+            return <div {...classes('field', [field.code, field.type], className)}>
                 <InputTime
                     label={field.name}
                     value={value}
                 />
             </div>;
+        case 'text':
         default:
-            return <div {...classes('field', field.code, className)}>
+            return <div {...classes('field', [field.code, field.type], className)}>
                 <InputText
                     label={field.name}
                     value={value || ''}

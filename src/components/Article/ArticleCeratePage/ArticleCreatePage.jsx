@@ -203,9 +203,8 @@ class ArticleCreatePage extends Component {
 
         delete form.project;
 
-        if (form.source_id) {
-            form.source_id = form.source_id.value;
-        }
+        if (form.source_id) form.source_id = form.source_id.value;
+        if (form.genre_id) form.genre_id = form.genre_id.value;
 
         ['section_main_id', 'section_sub_id', 'section_three_id']
             .forEach(option => {
@@ -291,6 +290,10 @@ class ArticleCreatePage extends Component {
             stackRequest.genres = ArticleService.genre();
         }
 
+        if (fields.find(({code}) => code === 'heading_id') && !this.state.headings) {
+            stackRequest.headings = ArticleService.heading();
+        }
+
         if (!_.isEmpty(stackRequest)) {
             Promise.all(_.values(stackRequest)).then((stackResponse) => {
                 const newState = this.state;
@@ -344,9 +347,8 @@ class ArticleCreatePage extends Component {
                     switch (field.code) {
                         case 'source_id':
                             field.placeholder = 'Выберите источник...';
-                            field.options = this.props.source.map(({id, name}) => ({name, value: id}));
-                            field.onSearch = query => SourceService.get('', {'query[name]': query});
-                            field.onCancelSearch = SourceService.cancelGet;
+                            field.requestService = SourceService.get;
+                            field.requestCancelService = SourceService.cancelLast;
                             break;
                         case 'section_main_id':
                             field.placeholder = 'Выберите раздел...';
@@ -364,15 +366,23 @@ class ArticleCreatePage extends Component {
                             break;
                         case 'genre_id':
                             field.placeholder = 'Выберите жанр...';
-                            field.options = this.state.genres;
-                            field.onSearch = query => ArticleService.genre({'query[name]': query});
-                            field.onCancelSearch = ArticleService.cancelLast;
+                            field.requestService = ArticleService.genre;
+                            field.requestCancelService = ArticleService.cancelLast;
                             break;
                         case 'type_id':
                             field.placeholder = 'Выберите тип...';
-                            field.options = this.state.types;
-                            field.onSearch = query => ArticleService.types({'query[name]': query});
-                            field.onCancelSearch = ArticleService.cancelLast;
+                            field.requestService = ArticleService.types;
+                            field.requestCancelService = ArticleService.cancelLast;
+                            break;
+                        case 'heading_id':
+                            field.placeholder = 'Выберите рубрику...';
+                            field.requestService = ArticleService.heading;
+                            field.requestCancelService = ArticleService.cancelLast;
+                            break;
+                        case 'rating_id':
+                            field.placeholder = 'Выберите рубрику...';
+                            field.requestService = ArticleService.rating;
+                            field.requestCancelService = ArticleService.cancelLast;
                             break;
                         case 'authors':
                             field.tags = form.authors;

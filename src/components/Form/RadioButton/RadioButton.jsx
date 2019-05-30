@@ -8,17 +8,19 @@ const RadioButton = ({
     className,
     label = '',
     checked = false,
+    disabled,
     name,
     value,
     onChange
 }) => (
-    <div {...classes('', {checked}, className)}>
+    <div {...classes('', {disabled, checked}, className)}>
         <label {...classes('label')}>
             <span {...classes('box')} />
 
             <input
                 {...classes('field')}
                 type='radio'
+                disabled={disabled}
                 name={name}
                 value={value}
                 checked={checked}

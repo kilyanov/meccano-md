@@ -14,7 +14,7 @@ export const SourceService = {
             cancelToken: source.token
         });
     },
-    cancelGet: () => source && source.cancel('Operation canceled by the user.'),
+    cancelLast: () => source && source.cancel('Operation canceled by the user.'),
     delete: (id) => API.delete(`${ApiList.source.source}/${id}`),
     create: (form) => API.post(ApiList.source.source, form),
     update: (form, id) => API.put(`${ApiList.source.source}/${id}`, form)

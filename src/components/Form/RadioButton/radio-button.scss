@@ -8,7 +8,7 @@ $namespace: '.radio-button';
   cursor: pointer;
   user-select: none;
 
-  &:hover {
+  &:not(&--disabled):hover {
     #{$namespace}__box {
       border-color: $greenColor;
     }

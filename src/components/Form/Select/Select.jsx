@@ -20,7 +20,9 @@ export default class Select extends Component {
         onSearch: PropTypes.func,
         onCancelSearch: PropTypes.func,
         label: PropTypes.string.isRequired,
-        withSearch: PropTypes.bool
+        withSearch: PropTypes.bool,
+        requestService: PropTypes.func,
+        requestCancelService: PropTypes.func
     };
 
     static defaultProps = {
@@ -35,6 +37,10 @@ export default class Select extends Component {
     };
 
     componentDidMount() {
+        if (this.props.requestService) {
+            this.getInitialData();
+        }
+
         document.addEventListener('click', this.handleClickOutside, true);
     }
 
@@ -69,7 +75,7 @@ export default class Select extends Component {
     handleSearch = (event) => {
         const value = event.target.value.trim().toLowerCase();
 
-        if (this.props.onSearch) {
+        if (this.props.requestService) {
             this.setState({
                 searchString: event.target.value,
                 inProgress: true
@@ -146,6 +152,19 @@ export default class Select extends Component {
         }
     };
 
+    getInitialData = () => {
+        if (this.props.requestService) {
+            this.props.requestService().then(response => {
+                const options = response.data.map(option => ({
+                    name: _.get(option, 'name'),
+                    value: _.get(option, 'id')
+                }));
+
+                this.setState({options});
+            });
+        }
+    };
+
     open = () => {
         this.setState({opened: true}, () => {
             if (_.isEmpty(this.props.selected)) {
@@ -189,9 +208,9 @@ export default class Select extends Component {
     };
 
     debouncedSearch = _.debounce((value) => {
-        if (this.props.onCancelSearch) this.props.onCancelSearch();
+        if (this.props.requestCancelService) this.props.requestCancelService();
 
-        this.props.onSearch(value).then(response => {
+        this.props.requestService({'query[name]': value}).then(response => {
             this.setState({
                 inProgress: false,
                 searchOptions: response.data,
@@ -209,7 +228,7 @@ export default class Select extends Component {
         const {opened, searchString, searchFocused, inProgress} = this.state;
         const isMultiple = selected instanceof Array;
         const selectedName = isMultiple ? _.get(selected, '[0].name', '') : selected.name;
-        const options = this.state.searchOptions || this.props.options;
+        const options = this.state.searchOptions || this.state.options || this.props.options;
 
         return (
             <div {...classes('', {multiple: isMultiple, mobile: this.isMobileView})} ref={node => this.domNode = node}>

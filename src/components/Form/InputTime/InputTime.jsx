@@ -118,6 +118,10 @@ export default class InputTime extends React.Component {
         }
     };
 
+    handleBlurInput = () => {
+        // TODO: Вся обработка
+    };
+
     handleInputKeyDown = (e) => {
         const key = e.keyCode;
         const {isOpen} = this.state;
@@ -300,6 +304,7 @@ export default class InputTime extends React.Component {
                         disabled={disabled}
                         // onKeyDown={this.handleInputKeyDown}
                         onChange={this.handleChangeInput}
+                        onBlur={this.handleBlurInput}
                     />
 
                     {(isError && !isEmpty) && (

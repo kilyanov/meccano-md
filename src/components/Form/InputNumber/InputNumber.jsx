@@ -25,11 +25,18 @@ export default class InputNumber extends Component {
     render() {
         const {className, label, value} = this.props;
         const {error} = this.state;
+        const isFocused = this.inputRef === document.activeElement;
+        const isError = error;
+        const isSucceed = !!value && !isError;
+        const isEmpty = !value.length;
 
         return (
             <div
                 {...classes('', {
-                    error
+                    error: isError,
+                    focused: isFocused,
+                    succeed: isSucceed,
+                    empty: isEmpty
                 }, className)}
             >
                 <label {...classes('label')}>

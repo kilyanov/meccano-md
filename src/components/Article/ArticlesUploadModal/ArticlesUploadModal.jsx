@@ -4,11 +4,14 @@ import ConfirmModal from '../../Shared/ConfirmModal/ConfirmModal';
 import CheckBox from '../../Form/CheckBox/CheckBox';
 import RadioButton from '../../Form/RadioButton/RadioButton';
 import './articles-upload-modal.scss';
+import Loader from '../../Shared/Loader/Loader';
+import {ExportService} from '../../../services';
 
 const classes = new Bem('articles-upload-modal');
 
 export default class ArticlesUploadModal extends Component {
     static propTypes= {
+        projectId: PropTypes.string.isRequired,
         onClose: PropTypes.func.isRequired
     };
 
@@ -16,27 +19,67 @@ export default class ArticlesUploadModal extends Component {
         form: {
             format: '',
             settings: {
-                a: false,
+                excel: false,
                 b: false,
                 c: false,
                 d: false
             }
-        }
+        },
+        inProgress: false
     };
 
     handleChangeFormat = (isSelect, formatValue) => {
         this.setState(prev => prev.form.format = isSelect ? formatValue : '');
     };
 
+    handleChangeSettings = (type, value) => {
+        this.setState(prev => prev.form.settings[type] = value);
+    };
+
+    handleSubmit = () => {
+        const {settings} = this.state.form;
+        const selectedFormats = Object.keys(settings).filter(key => settings[key]);
+
+        if (selectedFormats.length) {
+            this.setState({inProgress: true}, () => {
+                ExportService.xlsx(this.props.projectId).then(response => {
+                    console.log(response);
+                    // var disposition = request.getResponseHeader('content-disposition');
+                    // var matches = /"([^"]*)"/.exec(disposition);
+                    // var filename = (matches != null && matches[1] ? matches[1] : 'file.pdf');
+                    //
+                    // // The actual download
+                    // var blob = new Blob([request.response], { type: 'application/pdf' });
+                    // var link = document.createElement('a');
+                    // link.href = window.URL.createObjectURL(blob);
+                    // link.download = filename;
+                    //
+                    // document.body.appendChild(link);
+                    //
+                    // link.click();
+                    //
+                    // document.body.removeChild(link);
+                }).catch(e => console.log(e));
+                setTimeout(() => {
+                    this.setState({inProgress: false});
+                    this.props.onClose();
+                }, 3000);
+            });
+        }
+    };
+
     render() {
         const {onClose} = this.props;
-        const {form} = this.state;
+        const {inProgress, form: {format, settings}} = this.state;
+        const selectedFormats = Object.keys(settings).filter(key => settings[key]);
 
         return (
             <ConfirmModal
                 {...classes()}
                 title='Выгрузка статей'
                 onClose={onClose}
+                submitDisabled={!selectedFormats.length}
+                onSubmit={this.handleSubmit}
             >
                 <div {...classes('row', '', 'row')}>
                     <div {...classes('col', '', 'col-sm-6')}>
@@ -44,27 +87,23 @@ export default class ArticlesUploadModal extends Component {
 
                         <CheckBox
                             {...classes('field')}
-                            label='DOC'
-                            checked={form.settings.a}
-                            onChange={() => this.setState(prev => prev.form.settings.a = !prev.form.settings.a)}
+                            label='XLSX'
+                            checked={settings.excel}
+                            onChange={() => this.handleChangeSettings('excel', !settings.excel)}
                         />
                         <CheckBox
                             {...classes('field')}
                             label='PDF'
-                            checked={form.settings.b}
+                            disabled
+                            checked={settings.b}
                             onChange={() => this.setState(prev => prev.form.settings.b = !prev.form.settings.b)}
                         />
                         <CheckBox
                             {...classes('field')}
                             label='HTMl'
-                            checked={form.settings.c}
+                            disabled
+                            checked={settings.c}
                             onChange={() => this.setState(prev => prev.form.settings.c = !prev.form.settings.c)}
-                        />
-                        <CheckBox
-                            {...classes('field')}
-                            label='...'
-                            checked={form.settings.d}
-                            onChange={() => this.setState(prev => prev.form.settings.d = !prev.form.settings.d)}
                         />
                     </div>
                     <div {...classes('col', '', 'col-sm-6')}>
@@ -73,21 +112,25 @@ export default class ArticlesUploadModal extends Component {
                         <RadioButton
                             {...classes('field')}
                             name='format'
+                            disabled
                             value='meccano-light'
                             label='Формат XML (MEL Meccano Light)'
                             onChange={this.handleChangeFormat}
-                            checked={form.format === 'meccano-light'}
+                            checked={format === 'meccano-light'}
                         />
                         <RadioButton
                             {...classes('field')}
                             name='format'
+                            disabled
                             value='meccano'
                             label='Формат XML (MEL Meccano)'
                             onChange={this.handleChangeFormat}
-                            checked={form.format === 'meccano'}
+                            checked={format === 'meccano'}
                         />
                     </div>
                 </div>
+
+                {inProgress && <Loader/>}
             </ConfirmModal>
         );
     }

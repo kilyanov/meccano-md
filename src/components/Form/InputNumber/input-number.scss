@@ -55,6 +55,8 @@ $namespace: '.input-number';
   }
 
   &__label-text {
+    display: inline-block;
+    white-space: nowrap;
     font-size: 15px;
     line-height: 24px;
     margin-bottom: 8px;

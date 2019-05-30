@@ -25,5 +25,8 @@ export default {
     },
     user: {
         profile: '/user/profile'
+    },
+    export: {
+        xlsx: '/export/xlsx'
     }
 };

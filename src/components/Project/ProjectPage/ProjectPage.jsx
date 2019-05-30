@@ -286,6 +286,7 @@ class ProjectPage extends Component {
 
                 {showUploadArticlesModal && (
                     <ArticlesUploadModal
+                        projectId={this.projectId}
                         onClose={() => this.setState({showUploadArticlesModal: false})}
                     />
                 )}
