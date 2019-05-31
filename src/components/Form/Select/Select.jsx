@@ -26,6 +26,7 @@ export default class Select extends Component {
     };
 
     static defaultProps = {
+        placeholder: 'Выберите из списка...',
         options: []
     };
 

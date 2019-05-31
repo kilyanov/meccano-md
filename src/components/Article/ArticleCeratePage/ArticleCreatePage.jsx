@@ -346,41 +346,33 @@ class ArticleCreatePage extends Component {
                 {dataSectionFields.map(field => {
                     switch (field.code) {
                         case 'source_id':
-                            field.placeholder = 'Выберите источник...';
                             field.requestService = SourceService.get;
                             field.requestCancelService = SourceService.cancelLast;
                             break;
                         case 'section_main_id':
-                            field.placeholder = 'Выберите раздел...';
                             field.options = sections.map(({name, id, sectionsTwo}) => ({name, value: id, sectionsTwo}));
                             break;
                         case 'section_sub_id':
-                            field.placeholder = 'Выберите раздел...';
                             field.options = _.get(form, 'section_main_id.sectionsTwo', [])
                                 .map(({name, id, sectionsThree}) => ({name, value: id, sectionsThree}));
                             break;
                         case 'section_three_id':
-                            field.placeholder = 'Выберите раздел...';
                             field.options = _.get(form, 'section_sub_id.sectionsThree', [])
                                 .map(({name, id}) => ({name, value: id}));
                             break;
                         case 'genre_id':
-                            field.placeholder = 'Выберите жанр...';
                             field.requestService = ArticleService.genre;
                             field.requestCancelService = ArticleService.cancelLast;
                             break;
                         case 'type_id':
-                            field.placeholder = 'Выберите тип...';
                             field.requestService = ArticleService.types;
                             field.requestCancelService = ArticleService.cancelLast;
                             break;
                         case 'heading_id':
-                            field.placeholder = 'Выберите рубрику...';
                             field.requestService = ArticleService.heading;
                             field.requestCancelService = ArticleService.cancelLast;
                             break;
                         case 'rating_id':
-                            field.placeholder = 'Выберите рейтинг...';
                             field.requestService = ArticleService.rating;
                             field.requestCancelService = ArticleService.cancelLast;
                             break;
