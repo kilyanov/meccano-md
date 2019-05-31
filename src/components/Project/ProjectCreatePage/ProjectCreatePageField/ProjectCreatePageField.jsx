@@ -19,7 +19,9 @@ const ProjectCreateField = ({field, value, onChange, className}) => {
                     suggestions={field.suggestions}
                     onChange={val => onChange(val, field.code)}
                     /* eslint-disable-next-line */
-                    onSearch={field.onSearch}
+                    // onSearch={field.onSearch}
+                    requestService={field.requestService}
+                    requestCancelService={field.requestCancelService}
                 />
             </div>;
         case 'uuid':

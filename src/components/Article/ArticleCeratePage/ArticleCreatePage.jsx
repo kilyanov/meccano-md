@@ -380,14 +380,14 @@ class ArticleCreatePage extends Component {
                             field.requestCancelService = ArticleService.cancelLast;
                             break;
                         case 'rating_id':
-                            field.placeholder = 'Выберите рубрику...';
+                            field.placeholder = 'Выберите рейтинг...';
                             field.requestService = ArticleService.rating;
                             field.requestCancelService = ArticleService.cancelLast;
                             break;
                         case 'authors':
                             field.tags = form.authors;
-                            field.onSearch = query => ArticleService.author({'query[name]': query});
-                            field.onCancelSearch = ArticleService.cancelLast;
+                            field.requestService = ArticleService.author;
+                            field.requestCancelService = ArticleService.cancelLast;
                             break;
                         default:
                             field.options = [];

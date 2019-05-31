@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import ReactTags from 'react-tag-autocomplete';
 import './input-tags.scss';
+import Loader from '../../Shared/Loader/Loader';
 
 const classes = new Bem('input-tags');
 const Tag = ({classNames, tag, onDelete}) => (
@@ -15,7 +16,9 @@ export default class InputTags extends Component {
         onChange: PropTypes.func.isRequired,
         onSearch: PropTypes.func,
         onCancelSearch: PropTypes.func,
-        placeholder: PropTypes.string
+        placeholder: PropTypes.string,
+        requestService: PropTypes.func,
+        requestCancelService: PropTypes.func
     };
 
     static defaultProps = {
@@ -28,13 +31,12 @@ export default class InputTags extends Component {
     };
 
     handleInputChange = (value) => {
-        if (this.props.onSearch) {
+        if (this.props.requestService) {
             this.debouncedSearch(value);
         }
     };
 
     handleDelete = (i) => {
-        console.log(i);
         const tags = this.props.tags.slice(0);
 
         tags.splice(i, 1);
@@ -48,10 +50,10 @@ export default class InputTags extends Component {
     };
 
     debouncedSearch = _.debounce((value) => {
-        if (this.props.onCancelSearch) this.props.onCancelSearch();
+        if (this.props.requestCancelService) this.props.requestCancelService();
 
         this.setState({inProgress: true}, () => {
-            this.props.onSearch(value).then(response => {
+            this.props.requestService({'query[name]': value}).then(response => {
                 // filter selected
                 const suggestions = response.data.filter(({name}) => !this.props.tags.find(tag => tag.name !== name));
 
@@ -65,6 +67,7 @@ export default class InputTags extends Component {
 
     render() {
         const {label, tags, placeholder} = this.props;
+        const {inProgress} = this.state;
         const suggestions = this.props.suggestions || this.state.suggestions;
 
         return (
@@ -87,6 +90,14 @@ export default class InputTags extends Component {
                         tagComponent={Tag}
                     />
                 </label>
+
+                {inProgress && (
+                    <Loader
+                        {...classes('loader')}
+                        radius={5}
+                        strokeWidth={2}
+                    />
+                )}
             </div>
         );
     }

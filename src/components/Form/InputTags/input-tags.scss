@@ -51,6 +51,13 @@ $namespace: '.input-tags';
     color: #F62434;
   }
 
+  &__loader {
+    background: none;
+    top: 32px;
+    left: auto;
+    right: 3px;
+  }
+
   .react-tags {
     min-height: 40px;
     padding: 2px 17px 0;
