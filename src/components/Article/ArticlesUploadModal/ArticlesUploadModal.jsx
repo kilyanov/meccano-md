@@ -42,25 +42,18 @@ export default class ArticlesUploadModal extends Component {
 
         if (selectedFormats.length) {
             this.setState({inProgress: true}, () => {
-                ExportService.xlsx(this.props.projectId).then(response => {
-                    // var disposition = request.getResponseHeader('content-disposition');
-                    // var matches = /"([^"]*)"/.exec(disposition);
-                    // var filename = (matches != null && matches[1] ? matches[1] : 'file.pdf');
+                const link = document.createElement('a');
 
-                    const blob = new Blob([response.data], { type: 'appliкоторыcation/xlsx' });
-                    const link = document.createElement('a');
+                link.href = ExportService.getLink(this.props.projectId);
+                link.download = 'Выгрузка.xlsx';
+                link.target = '_blank';
 
-                    link.href = window.URL.createObjectURL(blob);
-                    link.download = 'Выгрузка.xlsx';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
 
-                    document.body.appendChild(link);
-
-                    link.click();
-
-                    document.body.removeChild(link);
-                    this.setState({inProgress: false});
-                    this.props.onClose();
-                }).catch(e => console.log(e));
+                this.setState({inProgress: false});
+                this.props.onClose();
             });
         }
     };
