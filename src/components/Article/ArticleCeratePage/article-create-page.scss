@@ -120,6 +120,7 @@ $namespace: '.article-create-page';
     @include media("mobile") {
       width: 100%;
       margin-top: 10px;
+      margin-left: 0;
     }
   }
 

@@ -8,12 +8,13 @@ const CancelToken = axios.CancelToken;
 let source;
 
 export const SourceService = {
-    get: (id = '', form) => {
+    get: (form) => {
         source = CancelToken.source();
-        return API.get(`${ApiList.source.source}${id ? `/${id}` : ''}${ParseToRequest(form)}`, {
+        return API.get(`${ApiList.source.source}${ParseToRequest(form)}`, {
             cancelToken: source.token
         });
     },
+    getById: (id = '') => API.get(`${ApiList.source.source}/${id}`),
     cancelLast: () => source && source.cancel('Operation canceled by the user.'),
     delete: (id) => API.delete(`${ApiList.source.source}/${id}`),
     create: (form) => API.post(ApiList.source.source, form),

@@ -29,6 +29,11 @@ $namespace: '.select';
         }
     }
 
+    &--disabled {
+        opacity: .6;
+        pointer-events: none;
+    }
+
     &__label-text {
         display: inline-block;
         font-size: 15px;

@@ -34,12 +34,16 @@ export default class Select extends Component {
         opened: false,
         searchOptions: null,
         searchString: '',
+        pagination: {
+            page: 1,
+            perPage: 10
+        },
         inProgress: false
     };
 
     componentDidMount() {
         if (this.props.requestService) {
-            this.getInitialData();
+            this.getList();
         }
 
         document.addEventListener('click', this.handleClickOutside, true);
@@ -54,6 +58,25 @@ export default class Select extends Component {
 
         if (!isInnerClick && this.state.opened) {
             this.close();
+        }
+    };
+
+    handleListScroll = (event) => {
+        const {target} = event;
+        const {pagination, inProgress} = this.state;
+        const isEndPage = target.scrollTop === target.scrollHeight - target.clientHeight;
+
+        if (
+            isEndPage &&
+            !inProgress &&
+            pagination.page < pagination.pageCount
+        ) {
+            const newState = this.state;
+
+            newState.pagination.page = newState.pagination.page + 1;
+            newState.inProgress = true;
+
+            this.setState(newState, () => this.getList(true));
         }
     };
 
@@ -153,17 +176,30 @@ export default class Select extends Component {
         }
     };
 
-    getInitialData = () => {
-        if (this.props.requestService) {
-            this.props.requestService().then(response => {
-                const options = response.data.map(option => ({
-                    name: _.get(option, 'name'),
-                    value: _.get(option, 'id')
-                }));
+    getList = (isPagination = false) => {
+        if (!this.props.requestService) return;
 
-                this.setState({options});
+        this.props.requestService({
+            page: this.state.pagination.page,
+            'per-page': this.state.pagination.perPage
+        }).then(response => {
+            const pagination = {
+                pageCount: +_.get(response.headers, 'x-pagination-page-count'),
+                page: +_.get(response.headers, 'x-pagination-current-page'),
+                perPage: +_.get(response.headers, 'x-pagination-per-page'),
+                totalCount: +_.get(response.headers, 'x-pagination-total-count')
+            };
+            const options = response.data.map(option => ({
+                name: _.get(option, 'name'),
+                value: _.get(option, 'id')
+            }));
+
+            this.setState({
+                options: isPagination ? this.state.options.concat(options) : options,
+                pagination,
+                inProgress: false
             });
-        }
+        });
     };
 
     open = () => {
@@ -225,14 +261,21 @@ export default class Select extends Component {
     isMultiple = this.props.selected instanceof Array;
 
     render() {
-        const {placeholder, label, selected, withSearch} = this.props;
+        const {placeholder, label, selected, disabled, withSearch} = this.props;
         const {opened, searchString, searchFocused, inProgress} = this.state;
         const isMultiple = selected instanceof Array;
         const selectedName = isMultiple ? _.get(selected, '[0].name', '') : selected.name;
         const options = this.state.searchOptions || this.state.options || this.props.options;
 
         return (
-            <div {...classes('', {multiple: isMultiple, mobile: this.isMobileView})} ref={node => this.domNode = node}>
+            <div
+                {...classes('', {
+                    multiple: isMultiple,
+                    mobile: this.isMobileView,
+                    disabled: disabled || !options.length
+                })}
+                ref={node => this.domNode = node}
+            >
                 <label {...classes('label')}>
                     <span {...classes('label-text')}>{label}</span>
                 </label>
@@ -272,7 +315,7 @@ export default class Select extends Component {
                     )}
                 </div>
 
-                {(opened && !inProgress) && (
+                {opened && (
                     <div {...classes('list-container')}>
                         {this.isMobileView && (
                             <div {...classes('list-header')}>
@@ -280,7 +323,7 @@ export default class Select extends Component {
                                 <a
                                     rel='button'
                                     {...classes('list-close-button')}
-                                    onClick={() => this.setState({searchString: '', searchOptions: null})}
+                                    onClick={() => this.close()}
                                 >✕</a>
                             </div>
                         )}
@@ -289,6 +332,7 @@ export default class Select extends Component {
                             {...classes('list')}
                             ref={ref => this.listRef = ref}
                             onKeyDown={this.handleListKeyDown}
+                            onScroll={this.handleListScroll}
                         >
                             {options.map((item, itemIndex) => {
                                 const active = isMultiple ?
@@ -315,14 +359,8 @@ export default class Select extends Component {
                                 );
                             })}
                         </ul>
-                    </div>
-                )}
 
-                {(opened && inProgress) && (
-                    <div {...classes('list-container')}>
-                        <ul {...classes('list', 'progress')}>
-                            <Loader radius={8} strokeWidth={3}/>
-                        </ul>
+                        {inProgress &&  <Loader radius={8} strokeWidth={3}/>}
                     </div>
                 )}
 

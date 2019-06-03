@@ -5,7 +5,8 @@ import {EventEmitter} from "../helpers";
 import {NotificationContainer} from 'react-notifications';
 import {Redirect} from 'react-router-dom';
 import '../assets/styles/main.scss';
-import { storeMainActions } from '../redux/storeMainActions';
+import {storeMainActions} from '../redux/storeMainActions';
+import {InitScrollbar} from '../helpers/Tools';
 
 export default class App extends Component {
     static propTypes = {
@@ -35,6 +36,10 @@ export default class App extends Component {
         if (AuthService.isAuth()) {
             storeMainActions();
         }
+
+        if (this.containerRef) {
+            InitScrollbar(this.bodyRef);
+        }
     }
 
     componentWillUnmount() {
@@ -48,7 +53,7 @@ export default class App extends Component {
         return redirect ? (
             <Redirect push to={redirect}/>
         ) : (
-            <div className='app'>
+            <div className='app' ref={node => this.containerRef = node}>
                 {children}
                 <NotificationContainer/>
             </div>
