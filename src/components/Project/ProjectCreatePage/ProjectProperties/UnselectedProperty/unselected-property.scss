@@ -1,0 +1,58 @@
+@import "../../../../../assets/styles/variables";
+$namespace: '.unselected-property';
+
+#{$namespace} {
+  position: relative;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 183px;
+  height: 80px;
+
+  margin: 10px;
+  padding: 0 10px;
+
+  background-color: #fff;
+  border: 1px solid $gray;
+  border-radius: 8px;
+
+  text-align: center;
+
+  user-select: none;
+  cursor: grab;
+
+  &--selected {
+    background-color: $gray-four;
+    color: $brown-grey;
+
+    #{$namespace}__selected-icon {
+      opacity: 1;
+    }
+  }
+
+  &__selected-icon {
+    position: absolute;
+    top: -12px;
+    right: -12px;
+
+    display: flex;
+    align-items: center;
+
+    width: 24px;
+    height: 24px;
+
+    background-color: $shamrock;
+    border-radius: 50%;
+
+    opacity: 0;
+    transition: opacity .3s ease;
+
+    svg {
+      width: 22px;
+      height: 22px;
+      fill: #fff;
+    }
+  }
+}

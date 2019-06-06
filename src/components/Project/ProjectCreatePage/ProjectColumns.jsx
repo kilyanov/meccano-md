@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Droppable } from 'react-beautiful-dnd';
 
-import Item from './ProjectPropertiesList/ProjectProperty.jsx';
+import Item from './ProjectProperties/SelectedProperty/SelectedProperty.jsx';
 
 const grid = 8;
 

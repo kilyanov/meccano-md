@@ -1,6 +1,6 @@
-@import '../../../../assets/styles/variables.scss';
+@import '../../../../../assets/styles/variables';
 
-$namespace: '.project-property';
+$namespace: '.selected-property';
 
 #{$namespace} {
     display: flex;
@@ -9,16 +9,28 @@ $namespace: '.project-property';
     height: 64px;
     padding: 0 48px;
     background-color: #fff;
-    border-top: 1px solid $gray;
     border-bottom: 1px solid $gray;
     user-select: none;
 
-    &:first-child {
+    &--allFields {
+        flex: 0 0 179px;
+        justify-content: center;
+        height: 80px;
+        margin: 10px;
+        padding: 0 10px;
+        border: 1px solid $gray;
+        border-radius: 8px;
+        text-align: center;
+
+        #{$namespace}__arrows {
+            display: none !important;
+        }
+    }
+
+    &:not(&--allFields):first-child {
         border-top: none;
     }
 
-    &:active,
-    &:focus,
     &:hover {
         background-color: $gray-four;
 
@@ -31,9 +43,9 @@ $namespace: '.project-property';
         }
     }
 
-    & + & {
-        margin-top: -1px;
-    }
+    //&:not(&--allFields) + &:not(&--allFields) {
+    //    margin-top: -1px;
+    //}
 
     &--dragging {
         border-top: 1px solid $gray !important;

@@ -4,7 +4,6 @@ import {connect} from 'react-redux';
 import Page from '../../Shared/Page/Page';
 import Button from '../../Shared/Button/Button';
 import './project-create-page.scss';
-import ProjectCreateFirstStep from './ProjectCreateFirstStep';
 import ProjectCreateSecondStep from './ProjectCreateSecondStep';
 import Loader from '../../Shared/Loader/Loader';
 import {ProjectService} from '../../../services';
@@ -13,6 +12,7 @@ import {NotificationManager} from 'react-notifications';
 import {EventEmitter} from '../../../helpers';
 import store from '../../../redux/store';
 import {deleteProject} from '../../../redux/actions';
+import ProjectProperties from './ProjectProperties/ProjectProperties';
 
 const classes = new Bem('project-create-page');
 
@@ -42,7 +42,7 @@ class ProjectCreatePage extends Component {
 
             this.setState({
                 fields,
-                allFields: allFields.filter(({code}) => !fields.find(f => f.code === code)),
+                allFields, // allFields.filter(({code}) => !fields.find(f => f.code === code))
                 isEdit: createdAt !== updatedAt,
                 inProgress: false
             });
@@ -50,7 +50,7 @@ class ProjectCreatePage extends Component {
     }
 
     handleChangeSelectedFields = (fields) => {
-        this.setState({...fields});
+        this.setState({fields});
     };
 
     handleClickBackButton = () => {
@@ -155,8 +155,8 @@ class ProjectCreatePage extends Component {
                 </section>
 
                 <section {...classes('body')}>
-                    {(project && step === 1) && (
-                        <ProjectCreateFirstStep
+                    {(project && step === 1 && (fields.length || allFields.length)) && (
+                        <ProjectProperties
                             classes={classes}
                             project={project}
                             fields={fields || []}

@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import {Droppable} from 'react-beautiful-dnd';
-import ProjectProperty from './ProjectProperty';
+import SelectedProperty from '../ProjectProperties/SelectedProperty/SelectedProperty';
 import './project-properties-list.scss';
 import {InitScrollbar} from '../../../../helpers/Tools';
 
@@ -25,15 +25,15 @@ class ProjectPropertiesList extends Component {
             <Droppable droppableId={droppableId}>
                 {(provided, snapshot) => (
                     <div
-                        {...classes()}
+                        {...classes('', droppableId)}
                         ref={ref => {
                             this.ref = ref;
                             provided.innerRef(ref);
                         }}
-                        style={{background: snapshot.isDraggingOver ? '#f2fff8' : 'white'}}
+                        style={{background: snapshot.isDraggingOver ? '#f2fff8' : 'transparent'}}
                     >
                         {data.map((item, index) => (
-                            <ProjectProperty
+                            <SelectedProperty
                                 item={item}
                                 type={droppableId}
                                 index={index}
