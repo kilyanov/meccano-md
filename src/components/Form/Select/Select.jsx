@@ -12,7 +12,8 @@ export default class Select extends Component {
     static propTypes = {
         selected: PropTypes.oneOfType([
             PropTypes.object,
-            PropTypes.array
+            PropTypes.array,
+            PropTypes.instanceOf(undefined)
         ]),
         options: PropTypes.array,
         placeholder: PropTypes.string,
@@ -21,6 +22,7 @@ export default class Select extends Component {
         onCancelSearch: PropTypes.func,
         label: PropTypes.string.isRequired,
         withSearch: PropTypes.bool,
+        fixedPosList: PropTypes.bool,
         requestService: PropTypes.func,
         requestCancelService: PropTypes.func
     };
@@ -83,7 +85,7 @@ export default class Select extends Component {
     handleSelect = (item) => {
         let selected = _.clone(this.props.selected);
 
-        if (this.isMultiple) {
+        if (this.isMultiple && selected) {
             if (selected.find(({value}) => value === item.value)) {
                 selected = selected.filter(({value}) => value !== item.value);
             } else {
@@ -204,7 +206,7 @@ export default class Select extends Component {
 
     open = () => {
         this.setState({opened: true}, () => {
-            if (_.isEmpty(this.props.selected)) {
+            if (_.isEmpty(this.props.selected) && this.searchRef) {
                 this.searchRef.focus();
             }
         });
@@ -261,10 +263,10 @@ export default class Select extends Component {
     isMultiple = this.props.selected instanceof Array;
 
     render() {
-        const {placeholder, label, selected, disabled, withSearch} = this.props;
+        const {placeholder, label, selected, disabled, withSearch, fixedPosList, className} = this.props;
         const {opened, searchString, searchFocused, inProgress} = this.state;
         const isMultiple = selected instanceof Array;
-        const selectedName = isMultiple ? _.get(selected, '[0].name', '') : selected.name;
+        const selectedName = isMultiple ? _.get(selected, '[0].name', '') : _.get(selected, 'name');
         const options = this.state.searchOptions || this.state.options || this.props.options;
 
         return (
@@ -272,8 +274,9 @@ export default class Select extends Component {
                 {...classes('', {
                     multiple: isMultiple,
                     mobile: this.isMobileView,
+                    succeed: isMultiple && selected.length || !_.isEmpty(selected),
                     disabled: disabled || !options.length
-                })}
+                }, className)}
                 ref={node => this.domNode = node}
             >
                 <label {...classes('label')}>
@@ -316,7 +319,10 @@ export default class Select extends Component {
                 </div>
 
                 {opened && (
-                    <div {...classes('list-container')}>
+                    <div
+                        {...classes('list-container', {fixed: fixedPosList})}
+                        style={fixedPosList ? {width: this.domNode.offsetWidth} : null}
+                    >
                         {this.isMobileView && (
                             <div {...classes('list-header')}>
                                 <h3 {...classes('list-title')}>{label}</h3>
@@ -336,7 +342,7 @@ export default class Select extends Component {
                         >
                             {options.map((item, itemIndex) => {
                                 const active = isMultiple ?
-                                    selected.find(({value}) => value === item.value) :
+                                    selected && selected.find(({value}) => value === item.value) :
                                     _.get(selected, 'value') === item.value;
 
                                 return (

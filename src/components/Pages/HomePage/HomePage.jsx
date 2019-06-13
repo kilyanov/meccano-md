@@ -1,16 +1,15 @@
-import React, { Component } from 'react';
-import { connect } from 'react-redux';
+import React, {Component} from 'react';
 import PropTypes from 'prop-types';
-import HomeMenu from './HomeMenu/HomeMenu';
+import './home-page.scss';
+import {connect} from 'react-redux';
 import PromiseDialogModal from '../../Shared/PromiseDialogModal/PromiseDialogModal';
 import Logo from '../../Shared/Logo/Logo';
-import ArticlesIcon from '../../Shared/SvgIcons/ArticlesIcon';
+import EarthIcon from '../../Shared/SvgIcons/EarthIcon';
 import ProjectsIcon from '../../Shared/SvgIcons/ProjectsIcon';
 import UsersIcon from '../../Shared/SvgIcons/UsersIcon';
 import SettingsIcon from '../../Shared/SvgIcons/SettingsIcon';
-
-import './home-page.scss';
 import ProjectCreateModal from '../../Project/ProjectCreateModal/ProjectCreateModal';
+import VerticalMenu from '../../Shared/VerticalMenu/VerticalMenu';
 
 class HomePage extends Component {
     static propTypes = {
@@ -39,7 +38,7 @@ class HomePage extends Component {
     getMenu = () => (
         [{
             id: 'articles',
-            icon: <ArticlesIcon/>,
+            icon: <EarthIcon/>,
             name: 'Статьи',
             children: []
         }, {
@@ -58,7 +57,8 @@ class HomePage extends Component {
         }, {
             id: 'settings',
             icon: <SettingsIcon/>,
-            name: 'Настройки'
+            name: 'Настройки',
+            link: '/settings'
         }]
     );
 
@@ -87,7 +87,7 @@ class HomePage extends Component {
 
                 <div {...classes('row', '', ['row', 'row--align-h-center'])}>
                     <div {...classes('column', '', 'col-md-6')}>
-                        <HomeMenu list={ menu } onClick={ this.handleClick }/>
+                        <VerticalMenu list={menu} onClick={this.handleClick}/>
                     </div>
                 </div>
 

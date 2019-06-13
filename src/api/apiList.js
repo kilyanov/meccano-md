@@ -10,6 +10,7 @@ export default {
     city: '/city',
     country: '/country',
     federal: '/federal',
+    region: '/region',
     source: {
         source: '/source',
         type: '/source/type'

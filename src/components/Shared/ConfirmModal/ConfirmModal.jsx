@@ -70,6 +70,7 @@ export default class ConfirmModal extends PureComponent {
                                     {...classes('button', 'cancel')}
                                     text={cancelText}
                                     style='inline'
+                                    tabIndex={0}
                                     onClick={() => {
                                         onCancel();
                                         onClose();
@@ -84,6 +85,7 @@ export default class ConfirmModal extends PureComponent {
                                     type='submit'
                                     style='success'
                                     disabled={submitDisabled}
+                                    tabIndex={0}
                                     onClick={() => {
                                         onSubmit();
                                         // onClose();

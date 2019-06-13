@@ -1,0 +1,52 @@
+@import "../../../assets/styles/variables";
+
+.settings-page {
+  display: flex;
+  flex-direction: column;
+
+  &__title {
+    flex-shrink: 0;
+  }
+
+  &__body-header {
+    display: flex;
+    align-items: center;
+    height: 40px;
+    margin-bottom: 60px;
+  }
+
+  &__button {
+    height: 100%;
+    margin-left: auto;
+  }
+
+  &__body-title-wrapper {}
+
+  &__body-title {
+    flex-shrink: 0;
+    margin-bottom: 0;
+  }
+
+  &__body-subtitle {
+    margin-bottom: 0;
+    font-weight: 100;
+  }
+
+  &__content {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+  }
+
+  &__left-sidebar {
+    flex: 0 0 300px;
+    border-right: 1px solid $gray;
+  }
+
+  &__body {
+    flex: 1;
+    max-height: 100%;
+    padding: 20px 40px;
+    border-top: 1px solid $gray;
+  }
+}

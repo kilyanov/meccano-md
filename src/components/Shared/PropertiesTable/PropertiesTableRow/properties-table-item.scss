@@ -1,0 +1,65 @@
+@import "../../../../assets/styles/variables";
+
+$namespace: '.properties-table-item';
+
+#{$namespace} {
+  position: relative;
+
+  display: flex;
+  align-items: center;
+
+  height: 75px;
+
+  border: 1px solid $gray;
+
+  padding: 0 25px;
+
+  color: $blackColor;
+  font-size: 15px;
+
+  &:not(:first-child) {
+    border-top: none;
+  }
+
+  &:hover {
+    background-color: $gray-four;
+    text-decoration: none;
+
+    #{$namespace}__buttons {
+      display: flex;
+      background-color: $gray-four;
+    }
+  }
+
+  &__cells {
+    display: flex;
+    flex: 1;
+    align-items: center;
+  }
+
+  &__cell {
+  }
+
+  &__buttons {
+    position: absolute;
+    right: 25px;
+
+    display: none;
+    align-items: center;
+
+    background-color: #fff;
+  }
+
+  &__button {
+    padding: 5px;
+    background: none;
+    border: none;
+
+    svg {
+      width: 32px;
+      height: 32px;
+      fill: $brownGreyColor;
+      pointer-events: none;
+    }
+  }
+}

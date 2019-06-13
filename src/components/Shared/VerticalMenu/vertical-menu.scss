@@ -1,8 +1,8 @@
-@import "../../../../assets/styles/variables";
+@import "../../../assets/styles/variables";
 
-$namespace: '.home-menu';
+$namespace: '.vertical-menu';
 
-.home-menu {
+#{$namespace} {
   width: 100%;
   margin: 0;
   padding: 0;
@@ -12,6 +12,10 @@ $namespace: '.home-menu';
 
   &__item {
     border-bottom: 1px solid $gray;
+
+    &--active {
+      background-color: $gray;
+    }
 
     &--open {
       #{$namespace}__sub-list {
@@ -38,21 +42,6 @@ $namespace: '.home-menu';
         }
       }
     }
-
-    &:focus {
-      #{$namespace}__item-caption {
-        color: white;
-        background-color: $greenColor;
-
-        #{$namespace}__arrow-icon,
-        #{$namespace}__item-icon {
-          fill: white;
-        }
-        #{$namespace}__item-link {
-          color: white;
-        }
-      }
-    }
   }
 
   &__item-caption {
@@ -60,10 +49,12 @@ $namespace: '.home-menu';
     align-items: center;
     height: 64px;
     cursor: pointer;
+    text-decoration: none;
 
     &:hover {
-      color: white;
       background-color: $greenColor;
+      color: white;
+      text-decoration: none;
 
       #{$namespace}__arrow-icon,
       #{$namespace}__item-icon {
@@ -96,8 +87,10 @@ $namespace: '.home-menu';
   }
 
   &__item-icon {
-    fill: $greenColor;
+    width: 40px;
+    height: 40px;
     margin: 0 20px;
+    fill: $greenColor;
   }
 
   &__arrow-icon {
@@ -119,6 +112,10 @@ $namespace: '.home-menu';
     display: flex;
     align-items: center;
     height: 48px;
+
+    &--active {
+      background-color: $gray-two;
+    }
 
     #{$namespace}__item-link {
       padding-left: 64px;

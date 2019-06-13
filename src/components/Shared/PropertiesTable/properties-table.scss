@@ -1,0 +1,15 @@
+@import "../../../assets/styles/variables";
+
+.properties-table {
+  display: flex;
+  flex-direction: column;
+
+  &__header {
+    display: flex;
+    align-items: center;
+    height: 75px;
+    padding: 0 25px;
+    font-weight: 100;
+    color: $brown-grey;
+  }
+}

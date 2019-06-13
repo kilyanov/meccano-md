@@ -6,6 +6,16 @@ $namespace: '.select';
     position: relative;
     margin-bottom: 20px;
 
+    &--succeed {
+        #{$namespace}__label-text {
+            font-weight: 500;
+
+            &:before {
+                content: '✔️ ';
+            }
+        }
+    }
+
     &--mobile {
         #{$namespace}__list-container {
             position: fixed;
@@ -106,6 +116,13 @@ $namespace: '.select';
         width: 100%;
         background-color: #fff;
         z-index: 1;
+
+        &--fixed {
+            position: fixed;
+            top: auto;
+            left: auto;
+            width: auto;
+        }
     }
 
     &__list {

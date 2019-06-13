@@ -13,6 +13,7 @@ const Button = ({
     style,
     viewType,
     onClick = () => {},
+    tabIndex = 0,
     text,
     type = 'button'
 }) => {
@@ -24,6 +25,7 @@ const Button = ({
                 disabled
             }, className)}
             to={to}
+            tabIndex={tabIndex}
             disabled={disabled}
         >{text}</Link>
     ) : (
@@ -34,6 +36,7 @@ const Button = ({
                 disabled
             }, className)}
             type={type}
+            tabIndex={tabIndex}
             onClick={onClick}
             disabled={disabled}
         >{text}</button>

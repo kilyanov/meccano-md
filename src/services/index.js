@@ -8,3 +8,4 @@ export * from './CountryService';
 export * from './FederalService';
 export * from './SourceService';
 export * from './ExportService';
+export * from './LocationService';

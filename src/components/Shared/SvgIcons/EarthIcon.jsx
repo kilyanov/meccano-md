@@ -1,6 +1,6 @@
 import React from 'react';
 
-const ArticlesIcon = ({className}) => (
+const EarthIcon = ({className}) => (
     <svg
         className={className}
         xmlns="http://www.w3.org/2000/svg"
@@ -18,4 +18,4 @@ const ArticlesIcon = ({className}) => (
 
 );
 
-export default ArticlesIcon;
+export default EarthIcon;
