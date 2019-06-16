@@ -28,7 +28,14 @@ export default class SettingsImport extends Component {
     };
 
     componentDidMount() {
-        this.getList();
+        this.setState({inProgress: true}, () => {
+            TransferService.import.get().then(response => {
+                this.setState({
+                    items: response.data.map(item => ({...item, value: item.id})),
+                    inProgress: false
+                });
+            }).catch(() => this.setState({inProgress: false}));
+        });
     }
 
     handleClickItem = (item) => {
@@ -62,17 +69,6 @@ export default class SettingsImport extends Component {
         }
 
         this.setState({items, selectedItem: null});
-    };
-
-    getList = () => {
-        this.setState({inProgress: true}, () => {
-            TransferService.import.get().then(response => {
-                this.setState({
-                    items: response.data.map(item => ({...item, value: item.id})),
-                    inProgress: false
-                });
-            }).catch(() => this.setState({inProgress: false}));
-        });
     };
 
     render() {

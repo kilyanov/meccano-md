@@ -11,7 +11,9 @@ export default {
     },
     export: {
         get: (id = '', form) => API.get(`${ApiList.transfer.export}${id ? `/${id}` : ''}${ParseToRequest(form)}`),
-        set: (form) => API.post(ApiList.transfer.export, form)
+        set: (form) => API.post(ApiList.transfer.export, form),
+        delete: (id) => API.delete(`${ApiList.transfer.export}/${id}`),
+        update: (form, id) => API.put(`${ApiList.transfer.export}/${id}`, form)
     },
     type: {
         get: () =>  API.get(ApiList.transfer.type)
