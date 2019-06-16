@@ -18,6 +18,18 @@ export default class Form extends Component {
             this.r(child);
         });
 
+        // let invalid = false;
+
+        // this.inputs.forEach(input => {
+        //     let ref ;
+        //
+        //     input.ref = r => ref = r;
+        //
+        //     debugger;
+        //     if (!input.validate()) invalid = true;
+        // });
+
+        // if (!invalid)
         this.props.onSubmit();
 
         return false;
@@ -28,19 +40,22 @@ export default class Form extends Component {
     r = (elem) => {
         if (!elem) return;
 
-        const children = _.get(elem, 'props.children', []);
-
-        if (elem.type.prototype instanceof InputText) {
+        if (
+            elem.type instanceof Function &&
+            _.get(elem.type.prototype, 'constructor.name') === InputText.name) {
             this.inputs.push(elem);
         }
 
-        if (children.length) {
-            children.forEach(child => {
-                if (child.type.prototype instanceof InputText) {
-                    this.inputs.push(child);
-                } else this.r(child);
-            });
-        } else return;
+        const children = _.get(elem, 'props.children');
+
+        if (children) {
+            if (children instanceof Array) {
+                children.forEach(this.r);
+            }
+            if (children instanceof Object) {
+                this.r(children);
+            }
+        }
     };
 
     submit = () => {

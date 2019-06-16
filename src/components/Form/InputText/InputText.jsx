@@ -122,13 +122,14 @@ export default class InputText extends Component {
         return this.state.error;
     };
 
-    validate = (value) => {
+    validate = (value = this.state.value) => {
         const {validateType, type, onValidate, required} = this.props;
 
         if (validateType || onValidate || type === 'email' || required) {
             const error = !this.isValidate(value);
 
             this.setState({error});
+            return error;
         }
     };
 
@@ -175,10 +176,9 @@ export default class InputText extends Component {
                     empty: isEmpty,
                     link: isLink
                 }, className)}
-                title={label}
             >
                 <label {...classes('label')}>
-                    {label && <span {...classes('label-text')}>{label}</span>}
+                    {label && <span {...classes('label-text')} title={label}>{label}</span>}
 
                     <input
                         {...classes("field")}

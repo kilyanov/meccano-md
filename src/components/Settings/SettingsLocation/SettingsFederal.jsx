@@ -96,6 +96,7 @@ export default class SettingsFederal extends Component {
                     items.push(response.data);
                 }
 
+                NotificationManager.success('Успешно сохранено', 'Сохранено');
                 this.setState({
                     items,
                     form: {name: ''},

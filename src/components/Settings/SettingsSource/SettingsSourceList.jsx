@@ -33,12 +33,15 @@ export default class SettingsSourceList extends Component {
             category: ''
         },
         items: [],
+
         typeItems: [],
         countryItems: [],
         regionItems: [],
         cityItems: [],
+
         selectedItem: null,
         showItemModal: false,
+
         inProgress: true,
         modalInProgress: false
     };
@@ -64,27 +67,53 @@ export default class SettingsSourceList extends Component {
 
     handleChangeForm = (value, prop) => {
         const newState = _.clone(this.state);
+        const isCountryChange = prop === 'country_id';
+        const isRegionChange = prop === 'region_id';
 
         if (prop && value) {
             newState.form[prop] = value;
-            newState.modalInProgress = prop === 'country_id' || prop === 'region_id';
+            newState.modalInProgress = isCountryChange || isRegionChange;
 
-            if (prop === 'country_id' && value) {
-                this.getRegions(value);
+            if (isCountryChange) {
+                newState.form.region_id = '';
+                newState.form.city_id = '';
+                newState.regionItems = [];
+                newState.cityItems = [];
             }
 
-            if (prop === 'region_id' && value) {
-                this.getCities(value);
+            if (isRegionChange) {
+                newState.form.city_id = '';
+                newState.cityItems = [];
             }
 
-            this.setState(newState);
+            this.setState(newState, () => {
+                if (isCountryChange && value) {
+                    this.getRegions(value);
+                }
+
+                if (isRegionChange && value) {
+                    this.getCities(value);
+                }
+            });
         }
     };
 
     handleEditItem = (item) => {
+        const hasCountry = !!item.country_id;
+        const hasRegion = !!item.region_id;
+
         this.setState({
             form: item,
+            modalInProgress: hasCountry || hasRegion,
             showItemModal: true
+        }, () => {
+            if (hasCountry && !hasRegion) {
+                this.getRegions(item.country_id);
+            }
+
+            if (hasRegion) {
+                this.getCities(item.region_id);
+            }
         });
     };
 
@@ -131,6 +160,7 @@ export default class SettingsSourceList extends Component {
                     items.push(response.data);
                 }
 
+                NotificationManager.success('Успешно сохранено', 'Сохранено');
                 this.setState({
                     items,
                     form: {name: ''},
@@ -227,7 +257,7 @@ export default class SettingsSourceList extends Component {
                             fixedPosList
                         />
 
-                        {!!regionItems.length && (
+                        {!!form.country_id && (
                             <Select
                                 label='Регион'
                                 options={regionItems}
@@ -237,7 +267,7 @@ export default class SettingsSourceList extends Component {
                             />
                         )}
 
-                        {!!cityItems.length && (
+                        {!!form.region_id && (
                             <Select
                                 label='Город'
                                 options={cityItems}

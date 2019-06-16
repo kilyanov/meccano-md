@@ -33,9 +33,9 @@ export default class PropertiesTable extends Component {
                 </div>
 
                 <div {...classes('body')}>
-                    {items.map(item => (
+                    {items.map((item, itemIndex) => (
                         <PropertiesTableRow
-                            key={item.id}
+                            key={item.id || itemIndex}
                             item={item}
                             columnSettings={columnSettings}
                             onClick={this.props.onClickItem}

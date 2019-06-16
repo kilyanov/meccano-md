@@ -29,5 +29,10 @@ export default {
     },
     export: {
         xlsx: '/export/xlsx'
+    },
+    transfer: {
+        import: '/transfer/import',
+        export: '/transfer/export',
+        type: '/transfer/type'
     }
 };

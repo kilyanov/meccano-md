@@ -62,6 +62,7 @@ $namespace: '.input-text';
     margin-bottom: 8px;
     white-space: nowrap;
     text-overflow: ellipsis;
+    overflow: hidden;
   }
 
   &__field {

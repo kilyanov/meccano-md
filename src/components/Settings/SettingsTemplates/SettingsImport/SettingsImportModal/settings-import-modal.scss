@@ -1,0 +1,35 @@
+@import "../../../../../assets/styles/variables";
+
+.settings-import-modal {
+  &__button {
+    &--add {
+      margin-left: auto;
+    }
+
+    &--remove {
+      margin-top: 14px;
+      margin-left: 5px;
+      padding: 10px;
+      background: none;
+      border: none;
+      font-size: 16px;
+      color: #222;
+    }
+  }
+
+  &__rule {
+    display: flex;
+    align-items: center;
+  }
+
+  &__rule-row {
+    .input-text {
+      margin-bottom: 0;
+    }
+  }
+
+  &__empty-msg {
+    display: inline-block;
+    margin-bottom: 20px;
+  }
+}

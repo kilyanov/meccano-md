@@ -285,7 +285,8 @@ export default class Select extends Component {
 
                 <div {...classes('container', {opened})} onClick={() => this.toggle()}>
                     {(placeholder && !selectedName && !searchString.length) && (
-                        <span {...classes('placeholder')}>{searchFocused ? 'Начните вводить...' : placeholder}</span>
+                        <span {...classes('placeholder')}>{searchFocused ? 'Начните вводить...' :
+                            options.length ? placeholder : 'Нет элементов для выбора'}</span>
                     )}
 
                     {withSearch && (

@@ -99,6 +99,7 @@ export default class SettingsCity extends Component {
                     items.push(response.data);
                 }
 
+                NotificationManager.success('Успешно сохранено', 'Сохранено');
                 this.setState({
                     items,
                     form: {name: ''},

@@ -3,7 +3,10 @@ import './settings-import.scss';
 import PropertiesTable from '../../../Shared/PropertiesTable/PropertiesTable';
 import SettingsPage from '../../SettingsPage/SettingsPage';
 import PromiseDialogModal from '../../../Shared/PromiseDialogModal/PromiseDialogModal';
-import SettingsTemplateModal from '../SettingsTemplateModal/SettingsTemplateModal';
+import SettingsImportModal from './SettingsImportModal/SettingsImportModal';
+import TransferService from '../../../../services/TransferService';
+import Loader from '../../../Shared/Loader/Loader';
+import {NotificationManager} from 'react-notifications';
 
 const columnSettings = {
     name: {
@@ -20,23 +23,13 @@ export default class SettingsImport extends Component {
     state = {
         showItemModal: false,
         selectedItem: null,
-        items: [{
-            id: _.uniqueId(),
-            name: 'Шаблон HTML',
-            link: '/settings/import/html',
-            type: 'html'
-        }, {
-            id: _.uniqueId(),
-            name: 'Шаблон EXCEL',
-            link: '/settings/import/xlsx',
-            type: 'xlsx'
-        }, {
-            id: _.uniqueId(),
-            name: 'Шаблон WORD',
-            link: '/settings/import/word',
-            type: 'docx'
-        }]
+        items: [],
+        inProgress: false
     };
+
+    componentDidMount() {
+        this.getList();
+    }
 
     handleClickItem = (item) => {
         this.setState({
@@ -53,24 +46,37 @@ export default class SettingsImport extends Component {
             style: 'danger'
         }).then(() => {
             this.setState({items: this.state.items.filter(({id}) => id !== item.id)});
+            TransferService.import.delete(item.id).then(() => {
+                NotificationManager.success('Успешно удален', 'Удалено');
+            });
         });
     };
 
-    handleSubmitItem = (item) => {
+    handleSubmitItem = (item, method = 'save') => {
         let items = [...this.state.items];
 
-        if (item.id) {
+        if (method === 'update') {
             items = items.map(i => (i.id === item.id) ? item : i);
         } else {
-            item.id = _.uniqueId();
             items.push(item);
         }
 
         this.setState({items, selectedItem: null});
     };
 
+    getList = () => {
+        this.setState({inProgress: true}, () => {
+            TransferService.import.get().then(response => {
+                this.setState({
+                    items: response.data.map(item => ({...item, value: item.id})),
+                    inProgress: false
+                });
+            }).catch(() => this.setState({inProgress: false}));
+        });
+    };
+
     render() {
-        const {showItemModal, selectedItem} = this.state;
+        const {showItemModal, selectedItem, inProgress} = this.state;
 
         return (
             <SettingsPage
@@ -88,7 +94,7 @@ export default class SettingsImport extends Component {
                 />
 
                 {showItemModal && (
-                    <SettingsTemplateModal
+                    <SettingsImportModal
                         item={selectedItem}
                         onClose={() => this.setState({selectedItem: null, showItemModal: false})}
                         onSubmit={this.handleSubmitItem}
@@ -96,6 +102,8 @@ export default class SettingsImport extends Component {
                 )}
 
                 <PromiseDialogModal ref={node => this.dialogModal = node}/>
+
+                {inProgress && <Loader/>}
             </SettingsPage>
         );
     }

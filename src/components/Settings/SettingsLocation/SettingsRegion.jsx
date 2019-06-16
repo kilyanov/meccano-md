@@ -41,16 +41,16 @@ export default class SettingsRegion extends Component {
     componentDidMount() {
         Promise.all([
             LocationService.region.get(),
-            LocationService.federal.get(),
             LocationService.country.get()
+            // LocationService.federal.get(),
         ]).then(([
             regionResponse,
-            federalResponse,
             countryResponse
+            // federalResponse
         ]) => {
             this.setState({
                 items: regionResponse.data,
-                federalItems: federalResponse.data.map(({id, name}) => ({name, value: id})),
+                // federalItems: federalResponse.data.map(({id, name}) => ({name, value: id})),
                 countryItems: countryResponse.data.map(({id, name}) => ({name, value: id})),
                 inProgress: false
             });
@@ -58,13 +58,35 @@ export default class SettingsRegion extends Component {
     }
 
     handleChangeForm = (value, prop) => {
-        this.setState(prev => prev.form[prop] = value);
+        const newState = this.state;
+        const isCountryChange = prop === 'country_id';
+
+        if (value && prop) {
+            newState.form[prop] = value;
+            newState.modalInProgress = isCountryChange;
+
+            if (isCountryChange) {
+                newState.form.federal_district_id = '';
+                newState.federalItems = [];
+            }
+        }
+
+        this.setState(newState, () => {
+            if (isCountryChange) {
+                this.getFederalItems();
+            }
+        });
     };
 
     handleEditItem = (item) => {
+        const hasCountry = !!item.country_id;
+
         this.setState({
             form: item,
+            modalInProgress: hasCountry,
             showItemModal: true
+        }, () => {
+            if (hasCountry) this.getFederalItems(item.country_id);
         });
     };
 
@@ -112,6 +134,19 @@ export default class SettingsRegion extends Component {
                 });
             }).catch(() => this.setState({modalInProgress: false}));
         });
+    };
+
+    getFederalItems = (countryId = this.state.form.country_id) => {
+        LocationService
+            .federal
+            .get('', {'query[country_id]': countryId})
+            .then(response => {
+                this.setState({
+                    federalItems: response.data.map(({id, name}) => ({name, value: id})),
+                    modalInProgress: false
+                });
+            })
+            .catch(() => this.setState({modalInProgress: false}));
     };
 
     render() {
@@ -164,13 +199,15 @@ export default class SettingsRegion extends Component {
                             fixedPosList
                         />
 
-                        <Select
-                            label='Федеральный округ'
-                            options={federalItems}
-                            selected={selectedFederal}
-                            onChange={({value}) => this.handleChangeForm(value, 'federal_district_id')}
-                            fixedPosList
-                        />
+                        {!!form.country_id && (
+                            <Select
+                                label='Федеральный округ'
+                                options={federalItems}
+                                selected={selectedFederal}
+                                onChange={({value}) => this.handleChangeForm(value, 'federal_district_id')}
+                                fixedPosList
+                            />
+                        )}
 
                         {modalInProgress && <Loader/>}
                     </ConfirmModal>

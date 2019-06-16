@@ -92,6 +92,7 @@ export default class SettingsSourceType extends Component {
                     items.push(response.data);
                 }
 
+                NotificationManager.success('Успешно сохранено', 'Сохранено');
                 this.setState({
                     items,
                     form: {name: ''},
