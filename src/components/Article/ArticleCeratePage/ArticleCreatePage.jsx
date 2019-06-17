@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
 import Page from '../../Shared/Page/Page';
-import {ArticleService, SourceService, StorageService} from '../../../services';
+import {ArticleService, ProjectService, SourceService, StorageService} from '../../../services';
 import {NotificationManager} from 'react-notifications';
 import './article-create-page.scss';
 import Form from '../../Form/Form/Form';
@@ -17,6 +17,7 @@ import {EventEmitter} from '../../../helpers';
 import ProjectCreateField from '../../Project/ProjectCreatePage/ProjectCreatePageField/ProjectCreatePageField';
 import store from '../../../redux/store';
 import {getSource} from '../../../redux/actions/source';
+import Sortable from 'react-sortablejs';
 
 const classes = new Bem('article-create-page');
 
@@ -195,6 +196,13 @@ class ArticleCreatePage extends Component {
         EventEmitter.emit('redirect', `/project/${this.projectId}/article/${nextArticle.id}`);
     };
 
+    handleEndSort = (sortedKeys) => {
+        const {fields} = this.state;
+        const sortedList = sortedKeys.map(key => fields.find(({code}) => code === key)).filter(item => !!item);
+
+        this.setState({fields: sortedList}, this.saveFieldsSort);
+    };
+
     handleSubmit = () => {
         const form = {...this.state.form};
         const isUpdate = !!this.articleId;
@@ -335,6 +343,13 @@ class ArticleCreatePage extends Component {
         return r(sections);
     };
 
+    saveFieldsSort = () => {
+        const {fields} = this.state;
+
+        ProjectService.cancelLast();
+        ProjectService.put(this.projectId, {fields});
+    };
+
     article = null;
 
     render() {
@@ -342,7 +357,14 @@ class ArticleCreatePage extends Component {
         const isUpdate = !!this.articleId;
         const dataSectionFields = this.getDataSectionFields();
         const sectionData = (
-            <section {...classes('section')}>
+            <Sortable
+                {...classes('section', 'sortable')}
+                options={{
+                    animation: 150,
+                    handle: '.drag-handle'
+                }}
+                onChange={this.handleEndSort}
+            >
                 {dataSectionFields.map(field => {
                     switch (field.code) {
                         case 'source_id':
@@ -395,7 +417,7 @@ class ArticleCreatePage extends Component {
                         />
                     );
                 })}
-            </section>
+            </Sortable>
         );
 
         const sectionAnnotation = (

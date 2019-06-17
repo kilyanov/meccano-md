@@ -37,7 +37,7 @@ export default class InputDatePicker extends Component {
         return (
             <div {...classes()}>
                 <label {...classes('label')}>
-                    {label && <span {...classes('label-text')}>{label}</span>}
+                    {label && <span {...classes('label-text', '', 'drag-handle')}>{label}</span>}
 
                     <DatePicker
                         calendarIcon={<CalendarIcon/>}

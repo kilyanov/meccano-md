@@ -40,7 +40,7 @@ export default class InputNumber extends Component {
                 }, className)}
             >
                 <label {...classes('label')}>
-                    {label && <span {...classes('label-text')}>{label}</span>}
+                    {label && <span {...classes('label-text', '', 'drag-handle')}>{label}</span>}
 
                     <input
                         {...classes('field')}

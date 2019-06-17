@@ -73,7 +73,7 @@ export default class InputTags extends Component {
         return (
             <div {...classes()}>
                 <label {...classes('label')}>
-                    {label && <span {...classes('label-text')}>{label}</span>}
+                    {label && <span {...classes('label-text', '', 'drag-handle')}>{label}</span>}
 
                     <ReactTags
                         {...classes('field')}

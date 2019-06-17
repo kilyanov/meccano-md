@@ -30,24 +30,33 @@ const SettingsPage = ({
                     <SettingsMenu/>
                 </aside>
 
-                <div {...classes('body')} ref={bodyRef}>
-                    <div {...classes('body-header')}>
-                        <div {...classes('body-title-wrapper')}>
-                            <h3 {...classes('body-title')}>{title}</h3>
+                <div {...classes('body', {empty: !children})} ref={bodyRef}>
+                    {!!children && (
+                        <div {...classes('body-header')}>
+                            <div {...classes('body-title-wrapper')}>
+                                <h2 {...classes('body-title')}>{title}</h2>
 
-                            {subtitle && <h5 {...classes('body-subtitle')}>{subtitle}</h5>}
+                                {subtitle && <h5 {...classes('body-subtitle')}>{subtitle}</h5>}
+                            </div>
+
+                            {withAddButton && (
+                                <Button
+                                    {...classes('button', 'add')}
+                                    text={addButtonTitle}
+                                    onClick={onAdd}
+                                />
+                            )}
                         </div>
-
-                        {withAddButton && (
-                            <Button
-                                {...classes('button', 'add')}
-                                text={addButtonTitle}
-                                onClick={onAdd}
-                            />
-                        )}
-                    </div>
+                    )}
 
                     {children}
+
+                    {!children && (
+                        <div {...classes('stub')}>
+                            <h2>Настройки</h2>
+                            <h5>Выберите пункт меню слева</h5>
+                        </div>
+                    )}
                 </div>
             </section>
         </Page>

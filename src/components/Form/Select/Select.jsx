@@ -279,8 +279,8 @@ export default class Select extends Component {
                 }, className)}
                 ref={node => this.domNode = node}
             >
-                <label {...classes('label')}>
-                    <span {...classes('label-text')}>{label}</span>
+                <label {...classes('label', '', 'drag-handle')}>
+                    <span {...classes('label-text', '', 'drag-handle')}>{label}</span>
                 </label>
 
                 <div {...classes('container', {opened})} onClick={() => this.toggle()}>

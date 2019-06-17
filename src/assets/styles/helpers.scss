@@ -5,6 +5,10 @@
     color: #fff;
 }
 
+.drag-handle {
+  cursor: move;
+}
+
 .ps__rail-y,
 .ps__rail-x {
   z-index: 1;

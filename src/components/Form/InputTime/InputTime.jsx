@@ -288,7 +288,7 @@ export default class InputTime extends React.Component {
                 onClick={() => !isOpen && this.open()}
             >
                 <label {...classes('label')}>
-                    {label && <span {...classes('label-text')}>{label}</span>}
+                    {label && <span {...classes('label-text', '', 'drag-handle')}>{label}</span>}
 
                     <input
                         autoFocus={autoFocus}
