@@ -8,6 +8,7 @@ import InputText from '../../Form/InputText/InputText';
 import {NotificationManager} from 'react-notifications';
 import Loader from '../../Shared/Loader/Loader';
 import Select from '../../Form/Select/Select';
+import ListEndedStub from '../../Shared/ListEndedStub/ListEndedStub';
 
 const columnSettings = {
     name: {
@@ -34,6 +35,11 @@ export default class SettingsSourceList extends Component {
         },
         items: [],
 
+        pagination: {
+            page: 1,
+            pageCount: 1
+        },
+
         typeItems: [],
         countryItems: [],
         regionItems: [],
@@ -58,6 +64,10 @@ export default class SettingsSourceList extends Component {
         ]) => {
             this.setState({
                 items: sourceResponse.data,
+                pagination: {
+                    pageCount: +_.get(sourceResponse.headers, 'x-pagination-page-count'),
+                    page: +_.get(sourceResponse.headers, 'x-pagination-current-page')
+                },
                 typeItems: typeResponse.data.map(({id, name}) => ({name, value: id})),
                 countryItems: countryResponse.data.map(({id, name}) => ({name, value: id})),
                 inProgress: false
@@ -134,6 +144,18 @@ export default class SettingsSourceList extends Component {
         });
     };
 
+    handleEndPage = () => {
+        const {inProgress, pagination: {page, pageCount}} = this.state;
+
+        if (page < pageCount && !inProgress) {
+            const newState = this.state;
+
+            newState.pagination.page = newState.pagination.page + 1;
+            newState.inProgress = true;
+            this.setState(newState, this.getSources);
+        }
+    };
+
     handleSubmit = () => {
         const {form} = this.state;
         const method = form.id ? 'update' : 'create';
@@ -171,6 +193,21 @@ export default class SettingsSourceList extends Component {
         });
     };
 
+    getSources = () => {
+        const {pagination: {page}} = this.state;
+
+        SourceService.get({page}).then(response => {
+            this.setState({
+                items: this.state.items.concat(response.data),
+                pagination: {
+                    pageCount: +_.get(response.headers, 'x-pagination-page-count'),
+                    page: +_.get(response.headers, 'x-pagination-current-page')
+                },
+                inProgress: false
+            });
+        });
+    };
+
     getRegions = (countryId) => {
         LocationService
             .region
@@ -199,6 +236,7 @@ export default class SettingsSourceList extends Component {
         const {
             form,
             items,
+            pagination,
             typeItems,
             countryItems,
             regionItems,
@@ -218,6 +256,8 @@ export default class SettingsSourceList extends Component {
                 subtitle='Список'
                 withAddButton
                 onAdd={() => this.setState({showItemModal: true})}
+                onEndPage={this.handleEndPage}
+                inProgress={inProgress}
             >
                 <PropertiesTable
                     columnSettings={columnSettings}
@@ -226,6 +266,10 @@ export default class SettingsSourceList extends Component {
                     onClickItem={this.handleEditItem}
                     onDeleteItem={this.handleDeleteItem}
                 />
+
+                {(pagination.page === pagination.pageCount && !inProgress) && (
+                    <ListEndedStub/>
+                )}
 
                 {showItemModal && (
                     <ConfirmModal
@@ -282,7 +326,6 @@ export default class SettingsSourceList extends Component {
                 )}
 
                 <PromiseDialogModal ref={node => this.dialogModal = node}/>
-                {inProgress && <Loader/>}
             </SettingsPage>
         );
     }

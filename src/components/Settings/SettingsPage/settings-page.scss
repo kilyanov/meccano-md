@@ -1,5 +1,7 @@
 @import "../../../assets/styles/variables";
 
+$sidebar-width: 300px;
+
 .settings-page {
   display: flex;
   flex-direction: column;
@@ -32,14 +34,19 @@
   }
 
   &__content {
+    position: relative;
     display: flex;
     flex: 1;
     overflow: hidden;
   }
 
   &__left-sidebar {
-    flex: 0 0 300px;
+    flex: 0 0 $sidebar-width;
     border-right: 1px solid $gray;
+  }
+
+  &__loader {
+    left: $sidebar-width;
   }
 
   &__body {

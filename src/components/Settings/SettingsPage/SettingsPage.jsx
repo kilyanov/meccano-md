@@ -4,6 +4,7 @@ import SettingsMenu from './SettingsMenu/SettingsMenu';
 import {InitScrollbar} from '../../../helpers/Tools';
 import './settings-page.scss';
 import Button from '../../Shared/Button/Button';
+import Loader from '../../Shared/Loader/Loader';
 
 const classes = new Bem('settings-page');
 
@@ -12,10 +13,18 @@ const SettingsPage = ({
     subtitle,
     children,
     withAddButton,
+    inProgress,
     addButtonTitle = 'Добавить',
-    onAdd = () => {}
+    onAdd = () => {},
+    onEndPage = () => {}
 }) => {
     const bodyRef = useRef(null);
+    const handleScroll = event => {
+        const {target} = event;
+        const isEndPage = target.scrollTop === target.scrollHeight - target.clientHeight;
+
+        if (isEndPage) onEndPage();
+    };
 
     useEffect(() => {
         if (bodyRef) InitScrollbar(bodyRef.current);
@@ -30,7 +39,11 @@ const SettingsPage = ({
                     <SettingsMenu/>
                 </aside>
 
-                <div {...classes('body', {empty: !children})} ref={bodyRef}>
+                <div
+                    {...classes('body', {empty: !children})}
+                    ref={bodyRef}
+                    onScroll={handleScroll}
+                >
                     {!!children && (
                         <div {...classes('body-header')}>
                             <div {...classes('body-title-wrapper')}>
@@ -58,6 +71,8 @@ const SettingsPage = ({
                         </div>
                     )}
                 </div>
+
+                {inProgress && <Loader {...classes('loader')}/>}
             </section>
         </Page>
     );
