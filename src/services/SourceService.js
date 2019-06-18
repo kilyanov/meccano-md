@@ -20,7 +20,12 @@ export const SourceService = {
     create: (form) => API.post(ApiList.source.source, form),
     update: (form, id) => API.put(`${ApiList.source.source}/${id}`, form),
     type: {
-        get: (form) => API.get(`${ApiList.source.type}${ParseToRequest(form)}`),
+        get: (form) => {
+            source = CancelToken.source();
+            return API.get(`${ApiList.source.type}${ParseToRequest(form)}`, {
+                cancelToken: source.token
+            });
+        },
         create: (form) => API.post(ApiList.source.type, form),
         update: (form, id) => API.put(`${ApiList.source.type}/${id}`, form),
         delete: (id) => API.delete(`${ApiList.source.type}/${id}`)

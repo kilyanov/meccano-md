@@ -7,6 +7,7 @@ import SettingsPage from '../SettingsPage/SettingsPage';
 import InputText from '../../Form/InputText/InputText';
 import {NotificationManager} from 'react-notifications';
 import Loader from '../../Shared/Loader/Loader';
+import ListEndedStub from '../../Shared/ListEndedStub/ListEndedStub';
 
 const columnSettings = {
     name: {
@@ -27,6 +28,11 @@ export default class SettingsSourceType extends Component {
             name: ''
         },
         items: [],
+        pagination: {
+            page: 1,
+            pageCount: 1
+        },
+        searchQuery: '',
         showItemModal: false,
         inProgress: true,
         modalInProgress: false
@@ -36,9 +42,13 @@ export default class SettingsSourceType extends Component {
         SourceService.type.get().then(response => {
             this.setState({
                 items: response.data,
+                pagination: {
+                    pageCount: +_.get(response.headers, 'x-pagination-page-count'),
+                    page: +_.get(response.headers, 'x-pagination-current-page')
+                },
                 inProgress: false
             });
-        });
+        }).catch(() => this.setState({inProgress: false}));
     }
 
     handleChangeForm = (value, prop) => {
@@ -73,6 +83,26 @@ export default class SettingsSourceType extends Component {
         });
     };
 
+    handleEndPage = () => {
+        const {inProgress, pagination: {page, pageCount}} = this.state;
+
+        if (page < pageCount && !inProgress) {
+            const newState = this.state;
+
+            newState.pagination.page = newState.pagination.page + 1;
+            newState.inProgress = true;
+            this.setState(newState, this.getTypes);
+        }
+    };
+
+    handleSearch = (query) => {
+        const searchQuery = query.trim().toLowerCase();
+
+        this.setState({searchQuery: query}, () => {
+            this.debouncedSearch(searchQuery);
+        });
+    };
+
     handleSubmit = () => {
         const {form} = this.state;
         const method = form.id ? 'update' : 'create';
@@ -103,8 +133,52 @@ export default class SettingsSourceType extends Component {
         });
     };
 
+    getTypes = () => {
+        const {pagination: {page}, searchQuery} = this.state;
+
+        SourceService.type
+            .get({page, 'query[name]': searchQuery}).then(response => {
+                this.setState({
+                    items: this.state.items.concat(response.data),
+                    pagination: {
+                        pageCount: +_.get(response.headers, 'x-pagination-page-count'),
+                        page: +_.get(response.headers, 'x-pagination-current-page')
+                    },
+                    inProgress: false
+                });
+            })
+            .catch(() => this.setState({inProgress: false}));
+    };
+
+    debouncedSearch = _.debounce((value) => {
+        this.setState({inProgress: true}, () => {
+            SourceService.cancelLast();
+            SourceService.type
+                .get({'query[name]': value})
+                .then(response => {
+                    this.setState({
+                        inProgress: false,
+                        items: response.data,
+                        pagination: {
+                            pageCount: +_.get(response.headers, 'x-pagination-page-count'),
+                            page: +_.get(response.headers, 'x-pagination-current-page')
+                        }
+                    });
+                })
+                .catch(() => this.setState({inProgress: false}));
+        });
+    }, 1000);
+
     render() {
-        const {form, items, showItemModal, inProgress, modalInProgress} = this.state;
+        const {
+            form,
+            items,
+            showItemModal,
+            inProgress,
+            pagination,
+            searchQuery,
+            modalInProgress
+        } = this.state;
 
         return (
             <SettingsPage
@@ -112,6 +186,10 @@ export default class SettingsSourceType extends Component {
                 subtitle='Тип'
                 withAddButton
                 onAdd={() => this.setState({showItemModal: true})}
+                onEndPage={this.handleEndPage}
+                onSearch={this.handleSearch}
+                searchQuery={searchQuery}
+                inProgress={inProgress}
             >
                 <PropertiesTable
                     columnSettings={columnSettings}
@@ -120,6 +198,10 @@ export default class SettingsSourceType extends Component {
                     onClickItem={this.handleEditItem}
                     onDeleteItem={this.handleDeleteItem}
                 />
+
+                {(pagination.page === pagination.pageCount && !inProgress) && (
+                    <ListEndedStub/>
+                )}
 
                 {showItemModal && (
                     <ConfirmModal
@@ -140,7 +222,6 @@ export default class SettingsSourceType extends Component {
                 )}
 
                 <PromiseDialogModal ref={node => this.dialogModal = node}/>
-                {inProgress && <Loader/>}
             </SettingsPage>
         );
     }

@@ -5,6 +5,7 @@ import {InitScrollbar} from '../../../helpers/Tools';
 import './settings-page.scss';
 import Button from '../../Shared/Button/Button';
 import Loader from '../../Shared/Loader/Loader';
+import InputText from '../../Form/InputText/InputText';
 
 const classes = new Bem('settings-page');
 
@@ -16,7 +17,9 @@ const SettingsPage = ({
     inProgress,
     addButtonTitle = 'Добавить',
     onAdd = () => {},
-    onEndPage = () => {}
+    onEndPage = () => {},
+    onSearch,
+    searchQuery
 }) => {
     const bodyRef = useRef(null);
     const handleScroll = event => {
@@ -46,17 +49,29 @@ const SettingsPage = ({
                 >
                     {!!children && (
                         <div {...classes('body-header')}>
-                            <div {...classes('body-title-wrapper')}>
-                                <h2 {...classes('body-title')}>{title}</h2>
+                            <div {...classes('body-header-row')}>
+                                <div {...classes('body-title-wrapper')}>
+                                    <h2 {...classes('body-title')}>{title}</h2>
 
-                                {subtitle && <h5 {...classes('body-subtitle')}>{subtitle}</h5>}
+                                    {subtitle && <h5 {...classes('body-subtitle')}>{subtitle}</h5>}
+                                </div>
+
+                                {withAddButton && (
+                                    <Button
+                                        {...classes('button', 'add')}
+                                        text={addButtonTitle}
+                                        onClick={onAdd}
+                                    />
+                                )}
                             </div>
 
-                            {withAddButton && (
-                                <Button
-                                    {...classes('button', 'add')}
-                                    text={addButtonTitle}
-                                    onClick={onAdd}
+                            {!!onSearch && (
+                                <InputText
+                                    {...classes('search-field')}
+                                    placeholder='Поиск...'
+                                    clearable
+                                    onChange={onSearch}
+                                    value={searchQuery}
                                 />
                             )}
                         </div>

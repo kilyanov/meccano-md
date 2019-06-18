@@ -8,6 +8,7 @@ import InputText from '../../Form/InputText/InputText';
 import {NotificationManager} from 'react-notifications';
 import Loader from '../../Shared/Loader/Loader';
 import Select from '../../Form/Select/Select';
+import ListEndedStub from '../../Shared/ListEndedStub/ListEndedStub';
 
 const columnSettings = {
     name: {
@@ -30,9 +31,18 @@ export default class SettingsRegion extends Component {
             federal_district_id: ''
         },
         items: [],
+
+        pagination: {
+            page: 1,
+            pageCount: 1
+        },
+
         countryItems: [],
         federalItems: [],
+
         selectedItem: null,
+        searchQuery: '',
+
         showItemModal: false,
         inProgress: true,
         modalInProgress: false
@@ -50,11 +60,15 @@ export default class SettingsRegion extends Component {
         ]) => {
             this.setState({
                 items: regionResponse.data,
+                pagination: {
+                    pageCount: +_.get(regionResponse.headers, 'x-pagination-page-count'),
+                    page: +_.get(regionResponse.headers, 'x-pagination-current-page')
+                },
                 // federalItems: federalResponse.data.map(({id, name}) => ({name, value: id})),
                 countryItems: countryResponse.data.map(({id, name}) => ({name, value: id})),
                 inProgress: false
             });
-        });
+        }).catch(() => this.setState({inProgress: false}));
     }
 
     handleChangeForm = (value, prop) => {
@@ -107,6 +121,26 @@ export default class SettingsRegion extends Component {
         });
     };
 
+    handleEndPage = () => {
+        const {inProgress, pagination: {page, pageCount}} = this.state;
+
+        if (page < pageCount && !inProgress) {
+            const newState = this.state;
+
+            newState.pagination.page = newState.pagination.page + 1;
+            newState.inProgress = true;
+            this.setState(newState, this.getRegions);
+        }
+    };
+
+    handleSearch = (query) => {
+        const searchQuery = query.trim().toLowerCase();
+
+        this.setState({searchQuery: query}, () => {
+            this.debouncedSearch(searchQuery);
+        });
+    };
+
     handleSubmit = () => {
         const {form} = this.state;
         const method = form.id ? 'update' : 'create';
@@ -136,6 +170,24 @@ export default class SettingsRegion extends Component {
         });
     };
 
+    getRegions = () => {
+        const {pagination: {page}, searchQuery} = this.state;
+
+        LocationService.region
+            .get({page, 'query[name]': searchQuery})
+            .then(response => {
+                this.setState({
+                    items: this.state.items.concat(response.data),
+                    pagination: {
+                        pageCount: +_.get(response.headers, 'x-pagination-page-count'),
+                        page: +_.get(response.headers, 'x-pagination-current-page')
+                    },
+                    inProgress: false
+                });
+            })
+            .catch(() => this.setState({inProgress: false}));
+    };
+
     getFederalItems = (countryId = this.state.form.country_id) => {
         LocationService
             .federal
@@ -149,13 +201,34 @@ export default class SettingsRegion extends Component {
             .catch(() => this.setState({modalInProgress: false}));
     };
 
+    debouncedSearch = _.debounce((value) => {
+        this.setState({inProgress: true}, () => {
+            LocationService.cancelLast();
+            LocationService.region
+                .get('', {'query[name]': value})
+                .then(response => {
+                    this.setState({
+                        inProgress: false,
+                        items: response.data,
+                        pagination: {
+                            pageCount: +_.get(response.headers, 'x-pagination-page-count'),
+                            page: +_.get(response.headers, 'x-pagination-current-page')
+                        }
+                    });
+                })
+                .catch(() => this.setState({inProgress: false}));
+        });
+    }, 1000);
+
     render() {
         const {
             form,
             items,
             countryItems,
             federalItems,
+            searchQuery,
             showItemModal,
+            pagination,
             inProgress,
             modalInProgress
         } = this.state;
@@ -168,6 +241,10 @@ export default class SettingsRegion extends Component {
                 subtitle='Регион'
                 withAddButton
                 onAdd={() => this.setState({showItemModal: true})}
+                onEndPage={this.handleEndPage}
+                onSearch={this.handleSearch}
+                searchQuery={searchQuery}
+                inProgress={inProgress}
             >
                 <PropertiesTable
                     columnSettings={columnSettings}
@@ -176,6 +253,10 @@ export default class SettingsRegion extends Component {
                     onClickItem={this.handleEditItem}
                     onDeleteItem={this.handleDeleteItem}
                 />
+
+                {(pagination.page === pagination.pageCount && !inProgress) && (
+                    <ListEndedStub/>
+                )}
 
                 {showItemModal && (
                     <ConfirmModal
@@ -214,7 +295,6 @@ export default class SettingsRegion extends Component {
                 )}
 
                 <PromiseDialogModal ref={node => this.dialogModal = node}/>
-                {inProgress && <Loader/>}
             </SettingsPage>
         );
     }

@@ -8,6 +8,7 @@ import InputText from '../../Form/InputText/InputText';
 import {NotificationManager} from 'react-notifications';
 import Loader from '../../Shared/Loader/Loader';
 import Select from '../../Form/Select/Select';
+import ListEndedStub from '../../Shared/ListEndedStub/ListEndedStub';
 
 const columnSettings = {
     name: {
@@ -29,8 +30,17 @@ export default class SettingsFederal extends Component {
             country_id: ''
         },
         items: [],
+
+        pagination: {
+            page: 1,
+            pageCount: 1
+        },
+
         countryItems: [],
+        searchQuery: '',
+
         selectedItem: null,
+
         showItemModal: false,
         inProgress: true,
         modalInProgress: false
@@ -43,6 +53,10 @@ export default class SettingsFederal extends Component {
         ]).then(([federalResponse, countryResponse]) => {
             this.setState({
                 items: federalResponse.data,
+                pagination: {
+                    pageCount: +_.get(federalResponse.headers, 'x-pagination-page-count'),
+                    page: +_.get(federalResponse.headers, 'x-pagination-current-page')
+                },
                 countryItems: countryResponse.data.map(({id, name}) => ({name, value: id})),
                 inProgress: false
             });
@@ -77,6 +91,26 @@ export default class SettingsFederal extends Component {
         });
     };
 
+    handleEndPage = () => {
+        const {inProgress, pagination: {page, pageCount}} = this.state;
+
+        if (page < pageCount && !inProgress) {
+            const newState = this.state;
+
+            newState.pagination.page = newState.pagination.page + 1;
+            newState.inProgress = true;
+            this.setState(newState, this.getFederal);
+        }
+    };
+
+    handleSearch = (query) => {
+        const searchQuery = query.trim().toLowerCase();
+
+        this.setState({searchQuery: query}, () => {
+            this.debouncedSearch(searchQuery);
+        });
+    };
+
     handleSubmit = () => {
         const {form} = this.state;
         const method = form.id ? 'update' : 'create';
@@ -107,8 +141,54 @@ export default class SettingsFederal extends Component {
         });
     };
 
+    getFederal = () => {
+        const {pagination: {page}, searchQuery} = this.state;
+
+        LocationService.federal
+            .get({page, 'query[name]': searchQuery})
+            .then(response => {
+                this.setState({
+                    items: this.state.items.concat(response.data),
+                    pagination: {
+                        pageCount: +_.get(response.headers, 'x-pagination-page-count'),
+                        page: +_.get(response.headers, 'x-pagination-current-page')
+                    },
+                    inProgress: false
+                });
+            })
+            .catch(() => this.setState({inProgress: false}));
+    };
+
+    debouncedSearch = _.debounce((value) => {
+        this.setState({inProgress: true}, () => {
+            LocationService.cancelLast();
+            LocationService.federal
+                .get('', {'query[name]': value})
+                .then(response => {
+                    this.setState({
+                        inProgress: false,
+                        items: response.data,
+                        pagination: {
+                            pageCount: +_.get(response.headers, 'x-pagination-page-count'),
+                            page: +_.get(response.headers, 'x-pagination-current-page')
+                        }
+                    });
+                })
+                .catch(() => this.setState({inProgress: false}));
+        });
+    }, 1000);
+
     render() {
-        const {form, items, countryItems, showItemModal, inProgress, modalInProgress} = this.state;
+        const {
+            form,
+            items,
+            countryItems,
+            showItemModal,
+            searchQuery,
+            pagination,
+            inProgress,
+            modalInProgress
+        } = this.state;
         const selectedCountry = countryItems.find(({value}) => value === form.country_id);
 
         return (
@@ -117,6 +197,10 @@ export default class SettingsFederal extends Component {
                 subtitle='Федеральный округ'
                 withAddButton
                 onAdd={() => this.setState({showItemModal: true})}
+                onEndPage={this.handleEndPage}
+                onSearch={this.handleSearch}
+                searchQuery={searchQuery}
+                inProgress={inProgress}
             >
                 <PropertiesTable
                     columnSettings={columnSettings}
@@ -125,6 +209,10 @@ export default class SettingsFederal extends Component {
                     onClickItem={this.handleEditItem}
                     onDeleteItem={this.handleDeleteItem}
                 />
+
+                {(pagination.page === pagination.pageCount && !inProgress) && (
+                    <ListEndedStub/>
+                )}
 
                 {showItemModal && (
                     <ConfirmModal
@@ -153,7 +241,6 @@ export default class SettingsFederal extends Component {
                 )}
 
                 <PromiseDialogModal ref={node => this.dialogModal = node}/>
-                {inProgress && <Loader/>}
             </SettingsPage>
         );
     }

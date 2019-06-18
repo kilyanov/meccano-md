@@ -11,9 +11,24 @@ $sidebar-width: 300px;
   }
 
   &__body-header {
+    margin-bottom: 40px;
+  }
+
+  &__body-header-row {
     display: flex;
     align-items: center;
-    margin-bottom: 60px;
+    margin-bottom: 20px;
+  }
+
+  &__search-field {
+    width: 300px;
+    margin-left: auto;
+
+    .input-text__field {
+      border-top: none;
+      border-left: none;
+      border-right: none;
+    }
   }
 
   &__button {

@@ -47,6 +47,7 @@ export default class SettingsSourceList extends Component {
 
         selectedItem: null,
         showItemModal: false,
+        searchQuery: '',
 
         inProgress: true,
         modalInProgress: false
@@ -156,6 +157,14 @@ export default class SettingsSourceList extends Component {
         }
     };
 
+    handleSearch = (query) => {
+        const searchQuery = query.trim().toLowerCase();
+
+        this.setState({searchQuery: query}, () => {
+            this.debouncedSearch(searchQuery);
+        });
+    };
+
     handleSubmit = () => {
         const {form} = this.state;
         const method = form.id ? 'update' : 'create';
@@ -194,9 +203,9 @@ export default class SettingsSourceList extends Component {
     };
 
     getSources = () => {
-        const {pagination: {page}} = this.state;
+        const {pagination: {page}, searchQuery} = this.state;
 
-        SourceService.get({page}).then(response => {
+        SourceService.get({page, 'query[name]': searchQuery}).then(response => {
             this.setState({
                 items: this.state.items.concat(response.data),
                 pagination: {
@@ -232,6 +241,25 @@ export default class SettingsSourceList extends Component {
             }).catch(() => this.setState({modalInProgress: false}));
     };
 
+    debouncedSearch = _.debounce((value) => {
+        this.setState({inProgress: true}, () => {
+            SourceService.cancelLast();
+            SourceService
+                .get({'query[name]': value})
+                .then(response => {
+                    this.setState({
+                        inProgress: false,
+                        items: response.data,
+                        pagination: {
+                            pageCount: +_.get(response.headers, 'x-pagination-page-count'),
+                            page: +_.get(response.headers, 'x-pagination-current-page')
+                        }
+                    });
+                })
+                .catch(() => this.setState({inProgress: false}));
+        });
+    }, 1000);
+
     render() {
         const {
             form,
@@ -242,6 +270,7 @@ export default class SettingsSourceList extends Component {
             regionItems,
             cityItems,
             showItemModal,
+            searchQuery,
             inProgress,
             modalInProgress
         } = this.state;
@@ -257,6 +286,8 @@ export default class SettingsSourceList extends Component {
                 withAddButton
                 onAdd={() => this.setState({showItemModal: true})}
                 onEndPage={this.handleEndPage}
+                onSearch={this.handleSearch}
+                searchQuery={searchQuery}
                 inProgress={inProgress}
             >
                 <PropertiesTable

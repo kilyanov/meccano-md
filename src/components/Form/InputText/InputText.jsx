@@ -20,11 +20,13 @@ export default class InputText extends Component {
         onClick: PropTypes.func,
         disabled: PropTypes.bool,
         controlled: PropTypes.bool,
+        clearable: PropTypes.bool,
         placeholder: PropTypes.string,
         validateType: PropTypes.oneOf(['notEmpty', 'email', 'link']),
         validateErrorMessage: PropTypes.string,
         onValidate: PropTypes.func,
-        required: PropTypes.bool
+        required: PropTypes.bool,
+        children: PropTypes.node
     };
 
     static defaultProps = {
@@ -154,10 +156,12 @@ export default class InputText extends Component {
             placeholder,
             controlled,
             required,
+            clearable,
             type,
             onClick,
             validateType,
-            validateErrorMessage
+            validateErrorMessage,
+            children
         } = this.props;
         const {error} = this.state;
         const isFocused = this.inputRef === document.activeElement;
@@ -200,17 +204,19 @@ export default class InputText extends Component {
                         </a>
                     }
 
-                    {(isError && !isEmpty) && (
+                    {((isError || clearable) && !isEmpty) && (
                         <div
                             {...classes('clear')}
                             onClick={this.handleClear}
-                        />
+                        >✕</div>
                     )}
 
                     {(isError && validateErrorMessage) && (
                         <span {...classes('message')}>{validateErrorMessage}</span>
                     )}
                 </label>
+
+                {children}
             </div>
         );
     }
