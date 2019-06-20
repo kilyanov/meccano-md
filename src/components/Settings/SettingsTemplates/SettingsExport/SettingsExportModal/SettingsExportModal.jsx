@@ -7,6 +7,7 @@ import TransferService from '../../../../../services/TransferService';
 import Form from '../../../../Form/Form/Form';
 import Loader from '../../../../Shared/Loader/Loader';
 import {NotificationManager} from 'react-notifications';
+import InputFile from '../../../../Form/InputFile/InputFile';
 
 const classes = new Bem('settings-export-modal');
 
@@ -86,6 +87,10 @@ export default class SettingsExportModal extends Component {
         newState.form.replaces.splice(index, 1);
 
         this.setState(newState);
+    };
+
+    handleChangeFile = (file) => {
+        console.log(file);
     };
 
     handleSubmit = () => {
@@ -187,6 +192,11 @@ export default class SettingsExportModal extends Component {
                                 label='Название'
                                 value={form.name}
                                 onChange={val => this.handleChangeForm(val, 'name')}
+                            />
+                        </div>
+                        <div {...classes('item', '', 'col-md-6')}>
+                            <InputFile
+                                onChange={this.handleChangeFile}
                             />
                         </div>
                     </div>

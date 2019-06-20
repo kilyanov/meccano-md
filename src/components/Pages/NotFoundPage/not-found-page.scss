@@ -5,12 +5,40 @@
   flex-direction: column;
 
   h1 {
+    position: relative;
     margin: 0;
     font-size: 160px;
     line-height: 160px;
+    filter: blur(2px);
+    color: #fff;
+
+    &:before,
+    &:after {
+      content: attr(data-content);
+      position: absolute;
+      top: 0;
+      left: 0;
+      color: #dd0a35;
+      animation: glitch 3s infinite;
+      z-index: -1;
+    }
+
+    &:after {
+      color: #1687a7;
+      animation: glitch 3s reverse infinite;
+    }
   }
 
   h3 {
     font-weight: 100;
+  }
+
+  @keyframes glitch {
+    0% {transform: translate(0)}
+    20% {transform: translate(-3px, 3px)}
+    40% {transform: translate(-3px, -3px)}
+    60% {transform: translate(3px, 3px)}
+    80% {transform: translate(3px, -3px)}
+    100% {transform: translate(0)}
   }
 }

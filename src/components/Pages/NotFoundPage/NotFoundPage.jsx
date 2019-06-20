@@ -7,8 +7,8 @@ const NotFoundPage = () => {
 
     return (
         <div {...classes('', '', 'page')}>
-            <h1>404</h1>
-            <h3>Страница не найдена</h3>
+            <h1 data-content='404'>404</h1>
+            <h3 data-content='Страница не найдена'>Страница не найдена</h3>
 
             <Button
                 text='На главную'
