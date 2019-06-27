@@ -58,12 +58,17 @@ export default class ProjectCreateModal extends Component {
                 onSubmit={() => this.form.submit()}
                 submitText='Создать'
             >
-                <Form onSubmit={this.handleSubmit} ref={node => this.form = node}>
+                <Form
+                    onSubmit={this.handleSubmit}
+                    ref={node => this.form = node}
+                    validate
+                >
                     <div {...classes('row', '', 'row')}>
                         <div {...classes('col', '', 'col-md-9')}>
                             <InputText
                                 label='Наименование'
                                 name='name'
+                                required
                                 value={form.name}
                                 onChange={value => this.handleChangeForm(value, 'name')}
                             />
