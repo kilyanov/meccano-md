@@ -1,10 +1,6 @@
 import store from './store';
-import {
-    getProfile,
-    getProjects
-} from './actions';
+import {getProfile} from './actions';
 
 export const storeMainActions = () => {
     store.dispatch(getProfile());
-    store.dispatch(getProjects());
 };

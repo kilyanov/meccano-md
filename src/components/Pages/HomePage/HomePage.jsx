@@ -10,18 +10,28 @@ import UsersIcon from '../../Shared/SvgIcons/UsersIcon';
 import SettingsIcon from '../../Shared/SvgIcons/SettingsIcon';
 import ProjectCreateModal from '../../Project/ProjectCreateModal/ProjectCreateModal';
 import VerticalMenu from '../../Shared/VerticalMenu/VerticalMenu';
+import {ProjectService} from '../../../services';
+import Loader from '../../Shared/Loader/Loader';
 
 class HomePage extends Component {
     static propTypes = {
-        profile: PropTypes.object,
-        projects: PropTypes.array
+        profile: PropTypes.object
     };
 
-    static defaultProps = {
-        projects: []
+    state = {
+        projects: [],
+        inProgress: true,
+        showProjectCreateModal: false
     };
 
-    state = { showProjectCreateModal: false };
+    componentDidMount() {
+        ProjectService.get().then(response => {
+            this.setState({
+                projects: response.data,
+                inProgress: false
+            });
+        }).catch(() => this.setState({inProgress: false}));
+    }
 
     handleClick = (name) => {
         if (this.dialogModal) {
@@ -45,7 +55,7 @@ class HomePage extends Component {
             id: 'projects',
             icon: <ProjectsIcon/>,
             name: 'Проекты',
-            children: this.props.projects.map(({id, name}) => ({
+            children: this.state.projects.map(({id, name}) => ({
                 name,
                 link: `/project/${id}`,
                 editLink: `/project-create/${id}`
@@ -64,8 +74,8 @@ class HomePage extends Component {
 
     render() {
         const classes = new Bem('home-page');
-        const { profile } = this.props;
-        const { showProjectCreateModal } = this.state;
+        const {profile} = this.props;
+        const {showProjectCreateModal, inProgress} = this.state;
         const menu = this.getMenu();
 
         return (
@@ -98,12 +108,11 @@ class HomePage extends Component {
                 )}
 
                 <PromiseDialogModal ref={node => this.dialogModal = node}/>
+
+                {inProgress && <Loader/>}
             </div>
         );
     }
 }
 
-export default connect(({profile, projects}) => ({
-    profile,
-    projects
-}))(HomePage);
+export default connect(({profile}) => ({profile}))(HomePage);

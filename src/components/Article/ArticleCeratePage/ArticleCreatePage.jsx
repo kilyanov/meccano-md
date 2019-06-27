@@ -15,8 +15,6 @@ import Button from '../../Shared/Button/Button';
 import ArticleViewSettings from './ArticleViewSettings/ArticleViewSettings';
 import {EventEmitter} from '../../../helpers';
 import ProjectCreateField from '../../Project/ProjectCreatePage/ProjectCreatePageField/ProjectCreatePageField';
-import store from '../../../redux/store';
-import {getSource} from '../../../redux/actions/source';
 import Sortable from 'react-sortablejs';
 
 const classes = new Bem('article-create-page');
@@ -27,8 +25,7 @@ class ArticleCreatePage extends Component {
         country: PropTypes.array,
         city: PropTypes.array,
         federal: PropTypes.array,
-        region: PropTypes.array,
-        source: PropTypes.array
+        region: PropTypes.array
     };
 
     constructor(props) {
@@ -40,6 +37,7 @@ class ArticleCreatePage extends Component {
             articleId: this.articleId,
             articles: [],
             fields: [],
+            sources: [],
             articleIndex: 0,
             form: {
                 title: '',
@@ -67,10 +65,12 @@ class ArticleCreatePage extends Component {
         if (this.articleId) {
             Promise.all([
                 ArticleService.get(this.articleId, {expand: 'project.fields,project.sections'}),
-                ArticleService.getList({project: this.projectId})
-            ]).then(([articleResponse, listResponse]) => {
+                ArticleService.getList({project: this.projectId}),
+                SourceService.get()
+            ]).then(([articleResponse, listResponse, sourceResponse]) => {
                 const form = articleResponse.data;
                 const articles = listResponse.data;
+                const sources = sourceResponse.data;
                 const sections = form.project.sections;
 
                 this.article = _.cloneDeep(form);
@@ -86,8 +86,8 @@ class ArticleCreatePage extends Component {
                     }
                 });
 
-                if (form.source_id && this.props.source.length) {
-                    const currentSource = this.props.source.find(({id}) => id === form.source_id);
+                if (form.source_id && sources.length) {
+                    const currentSource = sources.find(({id}) => id === form.source_id);
 
                     if (currentSource) form.source_id = {name: currentSource.name, value: currentSource.id};
                 }
@@ -97,6 +97,7 @@ class ArticleCreatePage extends Component {
                     fields: form.project.fields,
                     sections,
                     form,
+                    sources,
                     articleIndex: articles.findIndex(({id}) => id === this.articleId),
                     inProgress: false
                 }, this.getAdditionalDataFields);
@@ -123,9 +124,9 @@ class ArticleCreatePage extends Component {
         if (
             this.state.form.source_id &&
             _.isString(this.state.form.source_id) &&
-            this.props.source.length
+            this.state.sources.length
         ) {
-            const currentSource = this.props.source.find(({id}) => id === this.state.form.source_id);
+            const currentSource = this.state.sources.find(({id}) => id === this.state.form.source_id);
 
             if (currentSource) {
                 this.setState(prev => {
@@ -285,10 +286,6 @@ class ArticleCreatePage extends Component {
     getAdditionalDataFields = () => {
         const {fields} = this.state;
         const stackRequest = {};
-
-        if (fields.find(({code}) => code === 'source_id') && !this.props.source.length) {
-            store.dispatch(getSource());
-        }
 
         if (fields.find(({code}) => code === 'type_id') && !this.state.types) {
             stackRequest.types = ArticleService.types();
@@ -559,13 +556,11 @@ export default connect(({
     country,
     city,
     federal,
-    region,
-    source
+    region
 }) => ({
     projects,
     country,
     city,
     federal,
-    region,
-    source
+    region
 }))(ArticleCreatePage);

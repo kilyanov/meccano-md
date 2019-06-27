@@ -6,8 +6,6 @@ import './project-create-modal.scss';
 import Form from '../../Form/Form/Form';
 import { ProjectService } from '../../../services/ProjectService';
 import { NotificationManager } from 'react-notifications';
-import store from '../../../redux/store';
-import { addProject } from '../../../redux/actions';
 import { EventEmitter } from '../../../helpers';
 
 const classes = new Bem('project-create-modal');
@@ -41,7 +39,6 @@ export default class ProjectCreateModal extends Component {
         this.setState({inProgress: true}, () => {
             ProjectService.post(form).then(response => {
                 NotificationManager.success(`Проект успешно ${project ? 'отредактирован' : 'создан'}`, 'Успех');
-                store.dispatch(addProject(response.data));
                 EventEmitter.emit('redirect', `/project-create/${response.data.id}`);
                 this.setState({inProgress: false});
                 this.props.onClose();

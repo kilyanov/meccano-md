@@ -10,8 +10,6 @@ import {ProjectService} from '../../../services';
 import PromiseDialogModal from '../../Shared/PromiseDialogModal/PromiseDialogModal';
 import {NotificationManager} from 'react-notifications';
 import {EventEmitter} from '../../../helpers';
-import store from '../../../redux/store';
-import {deleteProject} from '../../../redux/actions';
 import ProjectProperties from './ProjectProperties/ProjectProperties';
 
 const classes = new Bem('project-create-page');
@@ -120,7 +118,6 @@ class ProjectCreatePage extends Component {
             submitText: isEdit ? 'Удалить' : 'Отменить создание'
         }).then(() => {
             ProjectService.delete(this.projectId).then(() => {
-                store.dispatch(deleteProject(this.projectId));
                 NotificationManager.success('Проект был удален', 'Успех');
                 EventEmitter.emit('redirect', '/');
             });
