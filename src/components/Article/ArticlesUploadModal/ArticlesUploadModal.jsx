@@ -1,11 +1,11 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
+import './articles-upload-modal.scss';
 import ConfirmModal from '../../Shared/ConfirmModal/ConfirmModal';
 import CheckBox from '../../Form/CheckBox/CheckBox';
-import RadioButton from '../../Form/RadioButton/RadioButton';
-import './articles-upload-modal.scss';
 import Loader from '../../Shared/Loader/Loader';
 import {ExportService} from '../../../services';
+import TransferService from '../../../services/TransferService';
 
 const classes = new Bem('articles-upload-modal');
 
@@ -16,31 +16,39 @@ export default class ArticlesUploadModal extends Component {
     };
 
     state = {
-        form: {
-            format: '',
-            settings: {
-                excel: false,
-                b: false,
-                c: false,
-                d: false
-            }
-        },
-        inProgress: false
+        templates: [],
+        selectedTemplates: [],
+        inProgress: true
     };
 
-    handleChangeFormat = (isSelect, formatValue) => {
-        this.setState(prev => prev.form.format = isSelect ? formatValue : '');
-    };
+    componentDidMount() {
+        TransferService.export
+            .get()
+            .then(response => {
+                this.setState({
+                    templates: response.data.map(({id, name}) => ({name, value: id})),
+                    inProgress: false
+                });
+            })
+            .catch(() => this.setState({inProgress: false}));
+    }
 
-    handleChangeSettings = (type, value) => {
-        this.setState(prev => prev.form.settings[type] = value);
+    handleSelectTemplate = (templateId) => {
+        let {selectedTemplates} = this.state;
+
+        if (selectedTemplates.includes(templateId)) {
+            selectedTemplates = selectedTemplates.filter(id => id !== templateId);
+        } else {
+            selectedTemplates.push(templateId);
+        }
+
+        this.setState({selectedTemplates});
     };
 
     handleSubmit = () => {
-        const {settings} = this.state.form;
-        const selectedFormats = Object.keys(settings).filter(key => settings[key]);
+        const {selectedTemplates} = this.state;
 
-        if (selectedFormats.length) {
+        if (selectedTemplates.length) {
             this.setState({inProgress: true}, () => {
                 const link = document.createElement('a');
 
@@ -60,65 +68,27 @@ export default class ArticlesUploadModal extends Component {
 
     render() {
         const {onClose} = this.props;
-        const {inProgress, form: {format, settings}} = this.state;
-        const selectedFormats = Object.keys(settings).filter(key => settings[key]);
+        const {inProgress, templates, selectedTemplates} = this.state;
 
         return (
             <ConfirmModal
                 {...classes()}
                 title='Выгрузка статей'
                 onClose={onClose}
-                submitDisabled={!selectedFormats.length}
+                submitDisabled={!selectedTemplates.length}
                 onSubmit={this.handleSubmit}
             >
-                <div {...classes('row', '', 'row')}>
-                    <div {...classes('col', '', 'col-sm-6')}>
-                        <h3 {...classes('block-title')}>Настройки:</h3>
+                <h3 {...classes('block-title')}>Исходящие шаблоны:</h3>
 
-                        <CheckBox
-                            {...classes('field')}
-                            label='XLSX'
-                            checked={settings.excel}
-                            onChange={() => this.handleChangeSettings('excel', !settings.excel)}
-                        />
-                        <CheckBox
-                            {...classes('field')}
-                            label='PDF'
-                            disabled
-                            checked={settings.b}
-                            onChange={() => this.setState(prev => prev.form.settings.b = !prev.form.settings.b)}
-                        />
-                        <CheckBox
-                            {...classes('field')}
-                            label='HTMl'
-                            disabled
-                            checked={settings.c}
-                            onChange={() => this.setState(prev => prev.form.settings.c = !prev.form.settings.c)}
-                        />
-                    </div>
-                    <div {...classes('col', '', 'col-sm-6')}>
-                        <h3 {...classes('block-title')}>Исходящие шаблоны:</h3>
-
-                        <RadioButton
-                            {...classes('field')}
-                            name='format'
-                            disabled
-                            value='meccano-light'
-                            label='Формат XML (MEL Meccano Light)'
-                            onChange={this.handleChangeFormat}
-                            checked={format === 'meccano-light'}
-                        />
-                        <RadioButton
-                            {...classes('field')}
-                            name='format'
-                            disabled
-                            value='meccano'
-                            label='Формат XML (MEL Meccano)'
-                            onChange={this.handleChangeFormat}
-                            checked={format === 'meccano'}
-                        />
-                    </div>
-                </div>
+                {templates.map(template =>
+                    <CheckBox
+                        key={template.value}
+                        {...classes('field')}
+                        label={template.name}
+                        checked={selectedTemplates.includes(template.value)}
+                        onChange={() => this.handleSelectTemplate(template.value)}
+                    />
+                )}
 
                 {inProgress && <Loader/>}
             </ConfirmModal>

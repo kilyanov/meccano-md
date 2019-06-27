@@ -1,61 +1,70 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
-import InputText from '../InputText/InputText';
+import {EventEmitter} from '../../../helpers';
+import {EVENTS} from '../../../constants/Events';
 
 export default class Form extends Component {
     static propTypes = {
+        validate: PropTypes.bool,
         className: PropTypes.string,
         children: PropTypes.node,
-        onSubmit: PropTypes.func.isRequired
+        onSubmit: PropTypes.func.isRequired,
+        onFailure: PropTypes.func
     };
+
+    static defaultProps = {
+        onFailure: () => {}
+    };
+
+    componentDidMount() {
+        if (this.props.validate) {
+            EventEmitter.on(EVENTS.ON_VALIDATE_SUCCESS, this.validateForm.bind(null, 'success'));
+            EventEmitter.on(EVENTS.ON_VALIDATE_FAILURE, this.validateForm.bind(null, 'failure'));
+        }
+    }
+
+    componentWillUnmount() {
+        EventEmitter.off(EVENTS.ON_VALIDATE_SUCCESS, this.validateForm);
+        EventEmitter.off(EVENTS.ON_VALIDATE_FAILURE, this.validateForm);
+    }
 
     handleOnSubmit = (event) => {
         if (event) event.preventDefault();
 
-        const {children} = this.props;
+        const {onSubmit, validate} = this.props;
 
-        React.Children.forEach(children, child => {
-            this.r(child);
-        });
-
-        // let invalid = false;
-
-        // this.inputs.forEach(input => {
-        //     let ref ;
-        //
-        //     input.ref = r => ref = r;
-        //
-        //     debugger;
-        //     if (!input.validate()) invalid = true;
-        // });
-
-        // if (!invalid)
-        this.props.onSubmit();
+        if (validate) {
+            this.elementsCount.success = 0;
+            this.elementsCount.failure = 0;
+            EventEmitter.emit(EVENTS.ON_VALIDATE);
+        } else onSubmit();
 
         return false;
     };
 
-    inputs = [];
+    validateForm = (type) => {
+        if (!this.form) return;
 
-    r = (elem) => {
-        if (!elem) return;
+        const validatedElements = this.form.querySelectorAll('.validated');
+        const countValidatedElements = validatedElements.length;
 
-        if (
-            elem.type instanceof Function &&
-            _.get(elem.type.prototype, 'constructor.name') === InputText.name) {
-            this.inputs.push(elem);
-        }
+        this.elementsCount[type]++;
+        console.log(type, this.elementsCount[type]);
 
-        const children = _.get(elem, 'props.children');
-
-        if (children) {
-            if (children instanceof Array) {
-                children.forEach(this.r);
-            }
-            if (children instanceof Object) {
-                this.r(children);
+        if (this.elementsCount.success + this.elementsCount.failure === countValidatedElements) {
+            if (this.elementsCount.success === countValidatedElements) {
+                console.log('SUBMIT FORM SUCCESS');
+                this.props.onSubmit();
+            } else {
+                console.log('SUBMIT FORM FAILURE');
+                this.props.onFailure();
             }
         }
+    };
+
+    elementsCount = {
+        success: 0,
+        failure: 0
     };
 
     submit = () => {

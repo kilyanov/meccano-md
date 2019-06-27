@@ -2,6 +2,8 @@ import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 
 import './input-text.scss';
+import {EventEmitter} from '../../../helpers';
+import {EVENTS} from '../../../constants/Events';
 
 const classes = new Bem('input-text');
 
@@ -34,7 +36,8 @@ export default class InputText extends Component {
         type: 'text',
         onClick: () => {},
         onChange: () => {},
-        validateErrorMessage: 'Error message'
+        validateErrorMessage: 'Поле обязательно для заполнения',
+        controlled: true
     };
 
     state = {
@@ -43,12 +46,16 @@ export default class InputText extends Component {
     };
 
     componentDidMount() {
-        // console.log(this.props.label, this.props.value);
+        EventEmitter.on(EVENTS.ON_VALIDATE, this.validate);
+    }
+
+    componentWillUnmount() {
+        EventEmitter.off(EVENTS.ON_VALIDATE, this.validate);
     }
 
     static getDerivedStateFromProps(nextProps, prevState) {
         if (nextProps.value !== prevState.value) {
-            return {value: nextProps.value};
+            return {value: nextProps.value, error: false};
         }
 
         return null;
@@ -59,12 +66,8 @@ export default class InputText extends Component {
         const value = event.target.value.replace(/^\s*/, '');
 
         if (value || value === '') {
-            if (controlled) {
-                onChange(value);
-                this.validate(value);
-            } else {
-                this.setValue(value);
-            }
+            if (controlled) onChange(value);
+            else this.setValue(value);
         }
     };
 
@@ -99,13 +102,13 @@ export default class InputText extends Component {
     };
 
     isValidate = (value) => {
-        const {validateType, onValidate, type} = this.props;
+        const {validateType, required, onValidate, type} = this.props;
 
         if (onValidate && onValidate instanceof Function) {
             return onValidate(value);
         }
 
-        if (validateType) {
+        if (validateType || required) {
             switch (validateType) {
                 default:
                 case 'notEmpty':
@@ -130,6 +133,7 @@ export default class InputText extends Component {
         if (validateType || onValidate || type === 'email' || required) {
             const error = !this.isValidate(value);
 
+            EventEmitter.emit(error ? EVENTS.ON_VALIDATE_FAILURE : EVENTS.ON_VALIDATE_SUCCESS);
             this.setState({error});
             return error;
         }
@@ -169,17 +173,23 @@ export default class InputText extends Component {
         const isLink = validateType === 'link';
         const value = controlled ? this.props.value : this.state.value;
         const isSucceed = !!value && !isError;
+        const isValidated = required || validateType;
         const isEmpty = !value.length;
 
         return (
             <div
+                ref={this.props.ref}
                 {...classes('', {
                     error: isError,
                     focused: isFocused,
                     succeed: isSucceed,
                     empty: isEmpty,
                     link: isLink
-                }, className)}
+                }, {
+                    validated: isValidated,
+                    error: isError,
+                    [className]: !!className
+                })}
             >
                 <label {...classes('label')}>
                     {label && <span {...classes('label-text', '', 'drag-handle')} title={label}>{label}</span>}
@@ -193,6 +203,7 @@ export default class InputText extends Component {
                         name={name}
                         value={value}
                         onChange={this.handleChange}
+                        onSubmit={() => this.validate()}
                         onClick={onClick}
                         data-error={isError || (required && !value)}
                         ref={node => this.inputRef = node}

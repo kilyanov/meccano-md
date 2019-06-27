@@ -9,6 +9,7 @@ import {NotificationManager} from 'react-notifications';
 import Loader from '../../Shared/Loader/Loader';
 import Select from '../../Form/Select/Select';
 import ListEndedStub from '../../Shared/ListEndedStub/ListEndedStub';
+import Form from '../../Form/Form/Form';
 
 const columnSettings = {
     name: {
@@ -87,6 +88,7 @@ export default class SettingsCity extends Component {
                 LocationService.federal.delete(item.id).then(() => {
                     const items = this.state.items.filter(({id}) => id !== item.id);
 
+                    NotificationManager.success('Успешно удалено', 'Удаление');
                     this.setState({items, inProgress: false});
                 }).catch(() => this.setState({inProgress: false}));
             });
@@ -220,22 +222,30 @@ export default class SettingsCity extends Component {
                         title={form.id ? 'Изменить' : 'Добавить'}
                         width='small'
                         onClose={() => this.setState({showItemModal: false, form: {name: ''}})}
-                        onSubmit={this.handleSubmit}
+                        onSubmit={() => this.form.submit()}
                     >
-                        <InputText
-                            autoFocus
-                            label='Название'
-                            value={form.name}
-                            onChange={value => this.handleChangeForm(value, 'name')}
-                        />
+                        <Form
+                            onSubmit={this.handleSubmit}
+                            ref={ref => this.form = ref}
+                            validate
+                        >
+                            <InputText
+                                autoFocus
+                                label='Название'
+                                required
+                                value={form.name}
+                                onChange={value => this.handleChangeForm(value, 'name')}
+                            />
 
-                        <Select
-                            label='Регион'
-                            options={regionItems}
-                            selected={selectedRegion}
-                            onChange={({value}) => this.handleChangeForm(value, 'region_id')}
-                            fixedPosList
-                        />
+                            <Select
+                                label='Регион'
+                                required
+                                options={regionItems}
+                                selected={selectedRegion}
+                                onChange={({value}) => this.handleChangeForm(value, 'region_id')}
+                                fixedPosList
+                            />
+                        </Form>
 
                         {modalInProgress && <Loader/>}
                     </ConfirmModal>

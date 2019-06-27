@@ -8,6 +8,7 @@ import InputText from '../../Form/InputText/InputText';
 import {NotificationManager} from 'react-notifications';
 import Loader from '../../Shared/Loader/Loader';
 import ListEndedStub from '../../Shared/ListEndedStub/ListEndedStub';
+import Form from '../../Form/Form/Form';
 
 const columnSettings = {
     name: {
@@ -77,6 +78,7 @@ export default class SettingsSourceType extends Component {
                 SourceService.type.delete(item.id).then(() => {
                     const items = this.state.items.filter(({id}) => id !== item.id);
 
+                    NotificationManager.success('Успешно удалено', 'Удаление');
                     this.setState({items, inProgress: false});
                 }).catch(() => this.setState({inProgress: false}));
             });
@@ -208,14 +210,21 @@ export default class SettingsSourceType extends Component {
                         title={form.id ? 'Изменить' : 'Добавить'}
                         width='small'
                         onClose={this.handleCloseModal}
-                        onSubmit={this.handleSubmit}
+                        onSubmit={() => this.form.submit()}
                     >
-                        <InputText
-                            autoFocus
-                            label='Название'
-                            value={form.name}
-                            onChange={value => this.handleChangeForm(value, 'name')}
-                        />
+                        <Form
+                            validate
+                            onSubmit={this.handleSubmit}
+                            ref={ref => this.form = ref}
+                        >
+                            <InputText
+                                autoFocus
+                                required
+                                label='Название'
+                                value={form.name}
+                                onChange={value => this.handleChangeForm(value, 'name')}
+                            />
+                        </Form>
 
                         {modalInProgress && <Loader/>}
                     </ConfirmModal>

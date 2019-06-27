@@ -95,7 +95,7 @@ $namespace: '.input-text';
     font-size: 12px;
     line-height: 15px;
     margin-top: 3px;
-    color: #F62434;
+    color: $errorColor;
   }
 
   &__earth-icon {

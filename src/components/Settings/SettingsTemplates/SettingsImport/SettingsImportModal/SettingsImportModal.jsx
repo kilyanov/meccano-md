@@ -112,6 +112,17 @@ export default class SettingsImportModal extends Component {
         delete form.value;
         delete form.slug;
 
+
+        if (!form.rules.length) return NotificationManager.error('Не заполнены "Правила"', 'Ошибка');
+        if (!form.rules.every(item => item.field_name && item.path_value)) {
+            return NotificationManager.error('Не верно заполнены поля "Правила"', ' Ошибка');
+        }
+
+        if (!form.joins.length) return  NotificationManager.error('Не заполнено "Объединение полей"', 'Ошибка');
+        if (!form.joins.every(item => item.name && item.value)) {
+            return NotificationManager.error('Не верно заполнены поля "Объединение полей"', ' Ошибка');
+        }
+
         this.setState({inProgress: true}, () => {
             TransferService.import[method](form, this.state.form.id).then(response => {
                 NotificationManager.success('Успешно сохранено', 'Сохранено');
@@ -192,13 +203,16 @@ export default class SettingsImportModal extends Component {
                 onClose={onClose}
                 onSubmit={() => this.form.submit()}
             >
-                <Form onSubmit={this.handleSubmit} ref={ref => this.form = ref}>
+                <Form
+                    onSubmit={this.handleSubmit}
+                    ref={ref => this.form = ref}
+                    validate
+                >
                     <div {...classes('row', '', 'row')}>
                         <div {...classes('item', '', 'col-md-6')}>
                             <InputText
                                 autoFocus
-                                validateType={'notEmpty'}
-                                validateErrorMessage={'Поле обязательно для заполнения'}
+                                required
                                 label='Название'
                                 value={form.name}
                                 onChange={val => this.handleChangeForm(val, 'name')}
@@ -207,6 +221,7 @@ export default class SettingsImportModal extends Component {
                         <div {...classes('item', '', 'col-md-6')}>
                             <Select
                                 label='Тип файла'
+                                required
                                 options={types}
                                 onChange={({value}) => this.handleChangeForm(value, 'type')}
                                 selected={selectedType}

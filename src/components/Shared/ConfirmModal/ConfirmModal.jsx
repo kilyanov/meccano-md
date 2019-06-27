@@ -2,6 +2,7 @@ import React, {PureComponent} from 'react';
 import PropTypes from 'prop-types';
 import Button from "../Button/Button";
 import './confirm-modal.scss';
+import {KEY_CODE} from '../../../constants';
 
 const classes = new Bem('confirm-modal');
 const BUTTONS = {
@@ -20,6 +21,7 @@ export default class ConfirmModal extends PureComponent {
         cancelText: PropTypes.string,
         submitText: PropTypes.string,
         submitDisabled: PropTypes.bool,
+        closeOnEsc: PropTypes.bool,
         buttons: PropTypes.array,
         width: PropTypes.oneOf(['wide', 'normal', 'small'])
     };
@@ -28,9 +30,24 @@ export default class ConfirmModal extends PureComponent {
         buttons: Object.keys(BUTTONS),
         onCancel: () => {},
         onSubmit: () => {},
+        closeOnEsc: true,
         submitText: 'Сохранить',
         cancelText: 'Отмена',
         width: 'normal'
+    };
+
+    componentDidMount() {
+        if (this.props.closeOnEsc) document.addEventListener('keydown', this.handleDocumentKeyDown);
+    }
+
+    componentWillUnmount() {
+        document.removeEventListener('keydown', this.handleDocumentKeyDown);
+    }
+
+    handleDocumentKeyDown = (event) => {
+        if (event.keyCode === KEY_CODE.esc) {
+            this.props.onClose();
+        }
     };
 
     render() {

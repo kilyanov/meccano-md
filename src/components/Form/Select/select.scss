@@ -44,6 +44,16 @@ $namespace: '.select';
         pointer-events: none;
     }
 
+    &--error {
+        #{$namespace}__label-text {
+            color: $errorColor;
+        }
+
+        #{$namespace}__container {
+            border-color: $errorColor;
+        }
+    }
+
     &__label-text {
         display: inline-block;
         font-size: 15px;
@@ -214,6 +224,16 @@ $namespace: '.select';
         padding: 8px;
         font-size: 14px;
         line-height: 14px;
+    }
+
+    &__message {
+        position: absolute;
+        left: 0;
+        top: 100%;
+        font-size: 12px;
+        line-height: 15px;
+        margin-top: 3px;
+        color: $errorColor;
     }
 
     .checkbox {

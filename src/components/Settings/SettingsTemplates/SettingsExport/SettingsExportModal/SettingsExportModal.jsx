@@ -8,6 +8,8 @@ import Form from '../../../../Form/Form/Form';
 import Loader from '../../../../Shared/Loader/Loader';
 import {NotificationManager} from 'react-notifications';
 import InputFile from '../../../../Form/InputFile/InputFile';
+import objectToFormData from 'object-to-formdata';
+import Select from '../../../../Form/Select/Select';
 
 const classes = new Bem('settings-export-modal');
 
@@ -24,7 +26,8 @@ export default class SettingsExportModal extends Component {
         this.defaultForm = {
             name: '',
             rules: [],
-            replaces: []
+            replaces: [],
+            type: 'html'
         };
         this.defaultRule = {
             selector: '',
@@ -89,22 +92,23 @@ export default class SettingsExportModal extends Component {
         this.setState(newState);
     };
 
-    handleChangeFile = (file) => {
-        console.log(file);
-    };
-
     handleSubmit = () => {
-        const form = {...this.state.form};
-        const method = form.id ? 'update' : 'set';
+        const form = _.pick(this.state.form, ['name', 'rules', 'replaces', 'file', 'type']);
+        const method = this.state.form.id ? 'update' : 'set';
+        const formData = objectToFormData(form, {indices: true});
 
-        delete form.id;
-        delete form.createdAt;
-        delete form.updatedAt;
-        delete form.value;
-        delete form.slug;
+        if (!form.rules.length) return NotificationManager.error('Не заполнены "Правила замены"', 'Ошибка');
+        if (!form.rules.every(item => item.selector && item.element)) {
+            return NotificationManager.error('Не верно заполнены поля "Правила замены"', ' Ошибка');
+        }
+
+        if (!form.replaces.length) return  NotificationManager.error('Не заполнен "Список замен"', 'Ошибка');
+        if (!form.replaces.every(item => item.search && item.replace)) {
+            return NotificationManager.error('Не верно заполнены поля "Список замен"', ' Ошибка');
+        }
 
         this.setState({inProgress: true}, () => {
-            TransferService.export[method](form, this.state.form.id).then(response => {
+            TransferService.export[method](formData, this.state.form.id).then(response => {
                 NotificationManager.success('Успешно сохранено', 'Сохранено');
                 this.setState({
                     form: {...this.defaultForm},
@@ -115,6 +119,12 @@ export default class SettingsExportModal extends Component {
             }).catch(() => this.setState({inProgress: false}));
         });
     };
+
+    types = [
+        {name: 'xlsx', value: 'xlsx'},
+        {name: 'html', value: 'html'},
+        {name: 'docx', value: 'docx'}
+    ];
 
     renderRule = (rule, ruleIndex) => (
         <div {...classes('rule')}  key={ruleIndex}>
@@ -129,7 +139,7 @@ export default class SettingsExportModal extends Component {
                 </div>
                 <div {...classes('item', '', 'col-xs-6')}>
                     <InputText
-                        label='Элемент"'
+                        label='Элемент'
                         value={rule.element}
                         onChange={val => this.handleChangeRule(val, 'element', ruleIndex)}
                     />
@@ -175,6 +185,7 @@ export default class SettingsExportModal extends Component {
     render() {
         const {onClose} = this.props;
         const {form, inProgress} = this.state;
+        const fileName = form.filename ? [{name: form.filename}] : [];
 
         return (
             <ConfirmModal
@@ -182,21 +193,38 @@ export default class SettingsExportModal extends Component {
                 onClose={onClose}
                 onSubmit={() => this.form.submit()}
             >
-                <Form onSubmit={this.handleSubmit} ref={ref => this.form = ref}>
+                <Form
+                    onSubmit={this.handleSubmit}
+                    ref={ref => this.form = ref}
+                    validate
+                >
                     <div {...classes('row', '', 'row')}>
                         <div {...classes('item', '', 'col-md-6')}>
                             <InputText
                                 autoFocus
-                                validateType={'notEmpty'}
-                                validateErrorMessage={'Поле обязательно для заполнения'}
+                                required
                                 label='Название'
                                 value={form.name}
                                 onChange={val => this.handleChangeForm(val, 'name')}
                             />
                         </div>
                         <div {...classes('item', '', 'col-md-6')}>
+                            <Select
+                                label='Тип'
+                                options={this.types}
+                                required
+                                onChange={item => this.handleChangeForm(item.value, 'type')}
+                                selected={this.types.find(({value}) => value === form.type)}
+                            />
+                        </div>
+                    </div>
+
+                    <div {...classes('row', '', 'row')}>
+                        <div {...classes('item', '', 'col-md-12')}>
                             <InputFile
-                                onChange={this.handleChangeFile}
+                                required
+                                files={fileName}
+                                onChange={file => this.handleChangeForm(file, 'file')}
                             />
                         </div>
                     </div>

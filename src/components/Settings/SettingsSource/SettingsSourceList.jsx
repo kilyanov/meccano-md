@@ -9,6 +9,7 @@ import {NotificationManager} from 'react-notifications';
 import Loader from '../../Shared/Loader/Loader';
 import Select from '../../Form/Select/Select';
 import ListEndedStub from '../../Shared/ListEndedStub/ListEndedStub';
+import Form from '../../Form/Form/Form';
 
 const columnSettings = {
     name: {
@@ -139,6 +140,7 @@ export default class SettingsSourceList extends Component {
                 SourceService.delete(item.id).then(() => {
                     const items = this.state.items.filter(({id}) => id !== item.id);
 
+                    NotificationManager.success('Успешно удалено', 'Удаление');
                     this.setState({items, inProgress: false});
                 }).catch(() => this.setState({inProgress: false}));
             });
@@ -307,50 +309,61 @@ export default class SettingsSourceList extends Component {
                         title={form.id ? 'Изменить' : 'Добавить'}
                         width='small'
                         onClose={() => this.setState({showItemModal: false, form: {name: ''}})}
-                        onSubmit={this.handleSubmit}
+                        onSubmit={() => this.form.submit()}
                     >
-                        <InputText
-                            autoFocus
-                            label='Название'
-                            value={form.name}
-                            onChange={value => this.handleChangeForm(value, 'name')}
-                        />
+                        <Form
+                            validate
+                            onSubmit={this.handleSubmit}
+                            ref={ref => this.form = ref}
+                        >
+                            <InputText
+                                autoFocus
+                                required
+                                label='Название'
+                                value={form.name}
+                                onChange={value => this.handleChangeForm(value, 'name')}
+                            />
 
-                        <Select
-                            label='Тип источника'
-                            options={typeItems}
-                            selected={selectedType}
-                            onChange={({value}) => this.handleChangeForm(value, 'source_type_id')}
-                            fixedPosList
-                        />
-
-                        <Select
-                            label='Страна'
-                            options={countryItems}
-                            selected={selectedCountry}
-                            onChange={({value}) => this.handleChangeForm(value, 'country_id')}
-                            fixedPosList
-                        />
-
-                        {!!form.country_id && (
                             <Select
-                                label='Регион'
-                                options={regionItems}
-                                selected={selectedRegion}
-                                onChange={({value}) => this.handleChangeForm(value, 'region_id')}
+                                label='Тип источника'
+                                required
+                                options={typeItems}
+                                selected={selectedType}
+                                onChange={({value}) => this.handleChangeForm(value, 'source_type_id')}
                                 fixedPosList
                             />
-                        )}
 
-                        {!!form.region_id && (
                             <Select
-                                label='Город'
-                                options={cityItems}
-                                selected={selectedCity}
-                                onChange={({value}) => this.handleChangeForm(value, 'city_id')}
+                                label='Страна'
+                                required
+                                options={countryItems}
+                                selected={selectedCountry}
+                                onChange={({value}) => this.handleChangeForm(value, 'country_id')}
                                 fixedPosList
                             />
-                        )}
+
+                            {!!form.country_id && (
+                                <Select
+                                    label='Регион'
+                                    required
+                                    options={regionItems}
+                                    selected={selectedRegion}
+                                    onChange={({value}) => this.handleChangeForm(value, 'region_id')}
+                                    fixedPosList
+                                />
+                            )}
+
+                            {!!form.region_id && (
+                                <Select
+                                    label='Город'
+                                    required
+                                    options={cityItems}
+                                    selected={selectedCity}
+                                    onChange={({value}) => this.handleChangeForm(value, 'city_id')}
+                                    fixedPosList
+                                />
+                            )}
+                        </Form>
 
                         {modalInProgress && <Loader/>}
                     </ConfirmModal>

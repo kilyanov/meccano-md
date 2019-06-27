@@ -2,24 +2,50 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import Button from '../../Shared/Button/Button';
 import './input-file.scss';
+import {EventEmitter} from '../../../helpers';
+import {EVENTS} from '../../../constants/Events';
 
 const classes = new Bem('input-file');
 
 export default class InputFile extends Component {
     static propTypes = {
-        onChange: PropTypes.func.isRequired
+        className: PropTypes.string,
+        required: PropTypes.bool,
+        files: PropTypes.array,
+        onChange: PropTypes.func.isRequired,
+        validateErrorMessage: PropTypes.string
+    };
+
+    static defaultProps = {
+        validateErrorMessage: 'Поле обязательно для заполнения'
     };
 
     state = {
-        files: [],
+        error: false,
+        files: this.props.files || [],
         inProgress: false
     };
+
+    componentDidMount() {
+        EventEmitter.on(EVENTS.ON_VALIDATE, this.validate);
+    }
+
+    componentWillUnmount() {
+        EventEmitter.off(EVENTS.ON_VALIDATE, this.validate);
+    }
 
     handleChange = (event) => {
         const files = Array.from(event.target.files).map(file => file);
 
         this.props.onChange(files);
-        this.setState({files});
+        this.setState({files, error: false});
+    };
+
+    validate = () => {
+        const invalid = this.props.required && !this.state.files.length;
+
+        this.setState({error: invalid});
+        return EventEmitter.emit(invalid ? EVENTS.ON_VALIDATE_FAILURE : EVENTS.ON_VALIDATE_SUCCESS);
     };
 
     upload = () => {
@@ -27,10 +53,15 @@ export default class InputFile extends Component {
     };
 
     render() {
-        const {files} = this.state;
+        const {className, required, validateErrorMessage} = this.props;
+        const {files, error} = this.state;
 
         return (
-            <div {...classes()}>
+            <div {...classes('', {error}, {
+                validated: required,
+                [className]: !!className
+            })}
+            >
                 <Button
                     {...classes('button')}
                     text="Выберите файл"
@@ -46,6 +77,10 @@ export default class InputFile extends Component {
                     {...classes('field')}
                     onChange={this.handleChange}
                 />
+
+                {error && (
+                    <span {...classes('message')}>{validateErrorMessage}</span>
+                )}
             </div>
         );
     }

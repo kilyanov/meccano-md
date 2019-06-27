@@ -5,6 +5,8 @@ import {isMobileScreen} from '../../../helpers/Tools';
 import CheckBox from '../CheckBox/CheckBox';
 import {KEY_CODE} from '../../../constants';
 import Loader from '../../Shared/Loader/Loader';
+import {EventEmitter} from '../../../helpers';
+import {EVENTS} from '../../../constants/Events';
 
 const classes = new Bem('select');
 
@@ -21,18 +23,22 @@ export default class Select extends Component {
         onSearch: PropTypes.func,
         onCancelSearch: PropTypes.func,
         label: PropTypes.string.isRequired,
+        required: PropTypes.bool,
         withSearch: PropTypes.bool,
         fixedPosList: PropTypes.bool,
         requestService: PropTypes.func,
-        requestCancelService: PropTypes.func
+        requestCancelService: PropTypes.func,
+        validateErrorMessage: PropTypes.string
     };
 
     static defaultProps = {
         placeholder: 'Выберите из списка...',
+        validateErrorMessage: 'Поле обязательно для заполнения',
         options: []
     };
 
     state = {
+        error: false,
         opened: false,
         searchOptions: null,
         searchString: '',
@@ -49,10 +55,12 @@ export default class Select extends Component {
         }
 
         document.addEventListener('click', this.handleClickOutside, true);
+        EventEmitter.on(EVENTS.ON_VALIDATE, this.validate);
     }
 
     componentWillUnmount() {
         document.removeEventListener('click', this.handleClickOutside, true);
+        EventEmitter.off(EVENTS.ON_VALIDATE, this.validate);
     }
 
     handleClickOutside = (event) => {
@@ -93,7 +101,7 @@ export default class Select extends Component {
             }
         } else this.close();
 
-        this.setState({searchString: ''});
+        this.setState({searchString: '', error: false});
 
         return this.props.onChange(this.isMultiple ? selected : item);
     };
@@ -246,6 +254,13 @@ export default class Select extends Component {
         return text;
     };
 
+    validate = () => {
+        const invalid = this.props.required && !this.props.selected;
+
+        this.setState({error: invalid, opened: false});
+        return EventEmitter.emit(invalid ? EVENTS.ON_VALIDATE_FAILURE : EVENTS.ON_VALIDATE_SUCCESS);
+    };
+
     debouncedSearch = _.debounce((value) => {
         if (this.props.requestCancelService) this.props.requestCancelService();
 
@@ -263,8 +278,18 @@ export default class Select extends Component {
     isMultiple = this.props.selected instanceof Array;
 
     render() {
-        const {placeholder, label, selected, disabled, withSearch, fixedPosList, className} = this.props;
-        const {opened, searchString, searchFocused, inProgress} = this.state;
+        const {
+            placeholder,
+            label,
+            selected,
+            disabled,
+            required,
+            withSearch,
+            fixedPosList,
+            validateErrorMessage,
+            className
+        } = this.props;
+        const {opened, searchString, searchFocused, inProgress, error} = this.state;
         const isMultiple = selected instanceof Array;
         const selectedName = isMultiple ? _.get(selected, '[0].name', '') : _.get(selected, 'name');
         const options = this.state.searchOptions || this.state.options || this.props.options;
@@ -272,11 +297,15 @@ export default class Select extends Component {
         return (
             <div
                 {...classes('', {
+                    error,
                     multiple: isMultiple,
                     mobile: this.isMobileView,
                     succeed: isMultiple && selected.length || !_.isEmpty(selected),
                     disabled: disabled || !options.length
-                }, className)}
+                }, {
+                    validated: required,
+                    [className]: !!className
+                })}
                 ref={node => this.domNode = node}
             >
                 <label {...classes('label', '', 'drag-handle')}>
@@ -369,6 +398,10 @@ export default class Select extends Component {
 
                         {inProgress &&  <Loader radius={8} strokeWidth={3}/>}
                     </div>
+                )}
+
+                {error && (
+                    <span {...classes('message')}>{validateErrorMessage}</span>
                 )}
 
                 {(this.isMobileView && opened) && (
