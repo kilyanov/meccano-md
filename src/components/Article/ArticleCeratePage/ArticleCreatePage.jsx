@@ -1,6 +1,5 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
-import {connect} from 'react-redux';
 import Page from '../../Shared/Page/Page';
 import {ArticleService, ProjectService, SourceService, StorageService} from '../../../services';
 import {NotificationManager} from 'react-notifications';
@@ -19,9 +18,8 @@ import Sortable from 'react-sortablejs';
 
 const classes = new Bem('article-create-page');
 
-class ArticleCreatePage extends Component {
+export default class ArticleCreatePage extends Component {
     static propTypes = {
-        projects: PropTypes.array.isRequired,
         country: PropTypes.array,
         city: PropTypes.array,
         federal: PropTypes.array,
@@ -49,7 +47,7 @@ class ArticleCreatePage extends Component {
                 section_main_id: null,
                 section_sub_id: null,
                 section_three_id: null,
-                author: '',
+                authors: [],
                 number: '',
                 annotation: '',
                 text: ''
@@ -102,16 +100,18 @@ class ArticleCreatePage extends Component {
                     inProgress: false
                 }, this.getAdditionalDataFields);
             }).catch(() => this.setState({inProgress: false}));
-        } else if (this.props.projects.length) {
-            const project = this.props.projects.find(({id}) => id === this.projectId);
+        } else {
+            ProjectService.get(this.projectId, {expand: 'fields,sections'}).then(response => {
+                const project = response.data;
 
-            if (project && project.fields) {
-                this.setState({
-                    sections: project.sections,
-                    fields: project.fields,
-                    inProgress: false
-                }, this.getAdditionalDataFields);
-            }
+                if (project && project.fields) {
+                    this.setState({
+                        sections: project.sections,
+                        fields: project.fields,
+                        inProgress: false
+                    }, this.getAdditionalDataFields);
+                }
+            }).catch(() => this.setState({inProgress: false}));
         }
     }
 
@@ -132,18 +132,6 @@ class ArticleCreatePage extends Component {
                 this.setState(prev => {
                     return prev.form.source_id = {name: currentSource.name, value: currentSource.id};
                 });
-            }
-        }
-
-        if (!this.articleId && !this.state.fields.length && this.props.projects.length) {
-            const project = this.props.projects.find(({id}) => id === this.projectId);
-
-            if (project && project.fields) {
-                this.setState({
-                    sections: project.sections,
-                    fields: project.fields,
-                    inProgress: false
-                }, this.getAdditionalDataFields);
             }
         }
     }
@@ -550,17 +538,3 @@ class ArticleCreatePage extends Component {
         );
     }
 }
-
-export default connect(({
-    projects,
-    country,
-    city,
-    federal,
-    region
-}) => ({
-    projects,
-    country,
-    city,
-    federal,
-    region
-}))(ArticleCreatePage);
