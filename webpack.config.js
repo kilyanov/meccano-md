@@ -39,16 +39,16 @@ module.exports = (env, argv) => {
                     }, {
                         loader: 'image-webpack-loader',
                         options: {
-                            bypassOnDebug: true,
-                        },
-                    }],
+                            bypassOnDebug: true
+                        }
+                    }]
                 },
                 {
                     test: /\.(ttf|eot|woff|woff2)$/,
                     loader: 'file-loader',
                     options: {
-                        name: 'assets/fonts/[name].[ext]',
-                    },
+                        name: 'assets/fonts/[name].[ext]'
+                    }
                 }
             ]
         },
@@ -61,7 +61,14 @@ module.exports = (env, argv) => {
             filename: `bundle${argv.mode === 'production' ? '-[hash]' : ''}.js`
         },
         plugins: [
-            new CleanWebpackPlugin('web', {exclude: 'index.php'}),
+            new CleanWebpackPlugin('web', {
+                exclude: [
+                    'index.php',
+                    'manifest.json',
+                    'OneSignalSDKUpdaterWorker.js',
+                    'OneSignalSDKWorker.js'
+                ]
+            }),
             new webpack.HotModuleReplacementPlugin(),
             new MiniCssExtractPlugin({filename: `styles${argv.mode === 'production' ? '-[hash]' : ''}.css`}),
             new webpack.DefinePlugin({'process.env.NODE_ENV': JSON.stringify(argv.mode)}),
@@ -90,5 +97,5 @@ module.exports = (env, argv) => {
             port: 5001,
             historyApiFallback: true
         }
-    }
+    };
 };
