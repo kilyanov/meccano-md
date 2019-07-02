@@ -6,7 +6,10 @@ yarn.lock
 package-lock.json
 web/*.css
 web/*.js
+!web/OneSignalSDKWorker.js
+!web/OneSignalSDKUpdaterWorker.js
 web/*.json
+!web/manifest.json
 web/*.html
 web/assets
 web/favicons
