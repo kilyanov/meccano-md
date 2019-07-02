@@ -7,6 +7,7 @@ import {Redirect} from 'react-router-dom';
 import '../assets/styles/main.scss';
 import {storeMainActions} from '../redux/storeMainActions';
 import {InitScrollbar} from '../helpers/Tools';
+import {Push} from '../services/PushService';
 
 export default class App extends Component {
     static propTypes = {
@@ -40,6 +41,8 @@ export default class App extends Component {
         if (this.containerRef) {
             InitScrollbar(this.bodyRef);
         }
+
+        Push.init();
     }
 
     componentWillUnmount() {
