@@ -185,7 +185,7 @@ export default class SettingsExportModal extends Component {
     render() {
         const {onClose} = this.props;
         const {form, inProgress} = this.state;
-        const fileName = form.filename ? [{name: form.filename}] : [];
+        const fileName = form.file ? [form.file] : [];
 
         return (
             <ConfirmModal
