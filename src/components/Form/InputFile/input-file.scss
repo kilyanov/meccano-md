@@ -14,10 +14,22 @@ $namespace: '.input-file';
         border-radius: 0;
     }
 
-    &__file-names {
+    &__file-list {
         margin-top: 10px;
         font-size: 12px;
         color: #999;
+    }
+
+    &__file {
+        display: flex;
+        align-items: center;
+    }
+
+    &__file-button {
+        margin-left: 5px;
+        padding: 5px;
+        border: none;
+        background: none;
     }
 
     &__message {

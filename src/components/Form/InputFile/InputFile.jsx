@@ -34,6 +34,14 @@ export default class InputFile extends Component {
         EventEmitter.off(EVENTS.ON_VALIDATE, this.validate);
     }
 
+    handleDelete = (fileIndex) => {
+        const newState = this.state;
+
+        newState.files.splice(fileIndex, 1);
+        this.props.onChange(newState.files);
+        this.setState(newState);
+    };
+
     handleChange = (event) => {
         const files = Array.from(event.target.files).map(file => file);
 
@@ -52,6 +60,17 @@ export default class InputFile extends Component {
         this.setState({inProgress: true});
     };
 
+    renderFile = (file, fileIndex) => (
+        <div {...classes('file')} key={fileIndex}>
+            <span {...classes('file-name')}>{file.name}</span>
+            <button
+                type='button'
+                {...classes('file-button')}
+                onClick={() => this.handleDelete(fileIndex)}
+            >✕</button>
+        </div>
+    );
+
     render() {
         const {className, required, validateErrorMessage} = this.props;
         const {files, error} = this.state;
@@ -69,7 +88,7 @@ export default class InputFile extends Component {
                     onClick={() => this.inputFile.click()}
                 />
 
-                <div {...classes('file-names')}>{files.map(file => file.name).join(', ')}</div>
+                <div {...classes('file-list')}>{files.map(this.renderFile)}</div>
 
                 <input
                     ref={node => this.inputFile = node}
