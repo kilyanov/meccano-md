@@ -29,5 +29,9 @@
   &__empty-msg {
     display: inline-block;
     margin-bottom: 20px;
+
+    &:focus {
+      outline: #008bfb auto 1px;
+    }
   }
 }

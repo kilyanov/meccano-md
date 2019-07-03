@@ -10,6 +10,7 @@ import {NotificationManager} from 'react-notifications';
 import InputFile from '../../../../Form/InputFile/InputFile';
 import objectToFormData from 'object-to-formdata';
 import Select from '../../../../Form/Select/Select';
+import InlineButton from '../../../../Shared/InlineButton/InlineButton';
 
 const classes = new Bem('settings-export-modal');
 
@@ -102,10 +103,10 @@ export default class SettingsExportModal extends Component {
             return NotificationManager.error('Не верно заполнены поля "Правила замены"', ' Ошибка');
         }
 
-        if (!form.replaces.length) return  NotificationManager.error('Не заполнен "Список замен"', 'Ошибка');
-        if (!form.replaces.every(item => item.search && item.replace)) {
-            return NotificationManager.error('Не верно заполнены поля "Список замен"', ' Ошибка');
-        }
+        // if (!form.replaces.length) return  NotificationManager.error('Не заполнен "Список замен"', 'Ошибка');
+        // if (!form.replaces.every(item => item.search && item.replace)) {
+        //     return NotificationManager.error('Не верно заполнены поля "Список замен"', ' Ошибка');
+        // }
 
         this.setState({inProgress: true}, () => {
             TransferService.export[method](formData, this.state.form.id).then(response => {
@@ -147,6 +148,8 @@ export default class SettingsExportModal extends Component {
             </div>
             <div {...classes('rule-buttons')}>
                 <button
+                    tabIndex={-1}
+                    type='button'
                     {...classes('button', 'remove')}
                     onClick={() => this.handleDeleteRule(ruleIndex)}
                 >✕</button>
@@ -175,6 +178,8 @@ export default class SettingsExportModal extends Component {
             </div>
             <div {...classes('rule-buttons')}>
                 <button
+                    tabIndex={-1}
+                    type='button'
                     {...classes('button', 'remove')}
                     onClick={() => this.handleDeleteJoin(replaceIndex)}
                 >✕</button>
@@ -222,7 +227,6 @@ export default class SettingsExportModal extends Component {
                     <div {...classes('row', '', 'row')}>
                         <div {...classes('item', '', 'col-md-12')}>
                             <InputFile
-                                required
                                 files={fileName}
                                 onChange={file => this.handleChangeForm(file, 'file')}
                             />
@@ -233,22 +237,18 @@ export default class SettingsExportModal extends Component {
                         <h3 {...classes('title')}>Правила замены</h3>
 
                         {form.rules.map(this.renderRule)}
-                        <a
-                            role='button'
-                            {...classes('empty-msg')}
-                            onClick={this.handleAddRule}
-                        >+ Добавить</a>
+                        <InlineButton onClick={this.handleAddRule}>
+                            + Добавить
+                        </InlineButton>
                     </section>
 
                     <section {...classes('joins')}>
                         <h3 {...classes('title')}>Список замен</h3>
 
                         {form.replaces.map(this.renderReplace)}
-                        <a
-                            role='button'
-                            {...classes('empty-msg')}
-                            onClick={this.handleAddReplace}
-                        >+ Добавить</a>
+                        <InlineButton onClick={this.handleAddReplace}>
+                            + Добавить
+                        </InlineButton>
                     </section>
                 </Form>
 

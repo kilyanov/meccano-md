@@ -8,6 +8,7 @@ import TransferService from '../../../../../services/TransferService';
 import Form from '../../../../Form/Form/Form';
 import Loader from '../../../../Shared/Loader/Loader';
 import {NotificationManager} from 'react-notifications';
+import InlineButton from '../../../../Shared/InlineButton/InlineButton';
 
 const classes = new Bem('settings-import-modal');
 
@@ -247,22 +248,18 @@ export default class SettingsImportModal extends Component {
                         <h3 {...classes('title')}>Правила</h3>
 
                         {form.rules.map(this.renderRule)}
-                        <a
-                            role='button'
-                            {...classes('empty-msg')}
-                            onClick={this.handleAddRule}
-                        >+ Добавить</a>
+                        <InlineButton onClick={this.handleAddRule}>
+                            + Добавить
+                        </InlineButton>
                     </section>
 
                     <section {...classes('joins')}>
                         <h3 {...classes('title')}>Объединение полей</h3>
 
                         {form.joins.map(this.renderJoin)}
-                        <a
-                            role='button'
-                            {...classes('empty-msg')}
-                            onClick={this.handleAddJoin}
-                        >+ Добавить</a>
+                        <InlineButton onClick={this.handleAddJoin}>
+                            + Добавить
+                        </InlineButton>
                     </section>
                 </Form>
 

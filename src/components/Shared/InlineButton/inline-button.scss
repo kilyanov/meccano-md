@@ -1,0 +1,17 @@
+@import "../../../assets/styles/variables";
+
+.inline-button {
+  display: inline-block;
+  margin-bottom: 20px;
+  border-bottom: 2px dashed $linkColor;
+  color: $linkColor;
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: none;
+  }
+
+  &:focus {
+    outline: $linkColor auto 1px;
+  }
+}
