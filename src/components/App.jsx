@@ -42,12 +42,12 @@ export default class App extends Component {
             InitScrollbar(this.bodyRef);
         }
 
-        document.addEventListener('load', () => Push.init());
+        window.addEventListener('load', () => Push.init());
     }
 
     componentWillUnmount() {
         EventEmitter.off('redirect');
-        document.removeEventListener('load', () => {});
+        window.removeEventListener('load', () => {});
     }
 
     render() {

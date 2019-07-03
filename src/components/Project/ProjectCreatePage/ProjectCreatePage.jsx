@@ -1,6 +1,4 @@
 import React, {Component} from 'react';
-import PropTypes from 'prop-types';
-import {connect} from 'react-redux';
 import Page from '../../Shared/Page/Page';
 import Button from '../../Shared/Button/Button';
 import './project-create-page.scss';
@@ -14,11 +12,7 @@ import ProjectProperties from './ProjectProperties/ProjectProperties';
 
 const classes = new Bem('project-create-page');
 
-class ProjectCreatePage extends Component {
-    static propTypes = {
-        projects: PropTypes.array.isRequired
-    };
-
+export default class ProjectCreatePage extends Component {
     state = {
         step: 1,
         projectId: this.props.match.params.id,
@@ -38,6 +32,7 @@ class ProjectCreatePage extends Component {
             const {fields, allFields, createdAt, updatedAt} = response.data;
             // const isEdit = createdAt !== updatedAt;
 
+            this.project = response.data;
             this.setState({
                 fields,
                 allFields, // allFields.filter(({code}) => !fields.find(f => f.code === code))
@@ -96,16 +91,6 @@ class ProjectCreatePage extends Component {
         }
     };
 
-    getProject = () => {
-        if (this.project && this.project.id === this.projectId) {
-            return this.project;
-        } else if (this.props.projects.length) {
-            this.project = this.props.projects.find(({id}) => id === this.projectId);
-
-            return this.project;
-        }
-    };
-
     deleteProject = () => {
         const {isEdit} = this.state;
 
@@ -130,7 +115,7 @@ class ProjectCreatePage extends Component {
 
     render() {
         const { step, fields, allFields, sections, isEdit, inProgress } = this.state;
-        const project = this.getProject();
+        const project = this.project;
         const backButtonLabel = step === 2 ? 'Назад' :
             isEdit ? 'Удалить проект' : 'Отменить создание';
 
@@ -147,22 +132,22 @@ class ProjectCreatePage extends Component {
                                 'Шаг 1 - Настройка полей' : 'Шаг 2: Создание структуры'}
                         </div>
 
-                        {project && <h2 {...classes('title')}>{project.name}</h2>}
+                        {project && <h2 {...classes('title')}>{this.project.name}</h2>}
                     </div>
                 </section>
 
                 <section {...classes('body')}>
-                    {(project && step === 1 && (fields.length || allFields.length)) && (
+                    {(this.project && step === 1 && (fields.length || allFields.length)) && (
                         <ProjectProperties
                             classes={classes}
-                            project={project}
+                            project={this.project}
                             fields={fields || []}
                             allFields={allFields || []}
                             onChange={this.handleChangeSelectedFields}
                         />
                     )}
 
-                    {(project && step === 2) && (
+                    {(this.project && step === 2) && (
                         <ProjectCreateSecondStep
                             projectId={this.projectId}
                             classes={classes}
@@ -193,10 +178,8 @@ class ProjectCreatePage extends Component {
 
                 <PromiseDialogModal ref={node => this.promiseDialogModal = node} />
 
-                {(!project || inProgress) && <Loader fixed/>}
+                {(!this.project || inProgress) && <Loader fixed/>}
             </Page>
         );
     }
 }
-
-export default connect(({projects}) => ({projects}))(ProjectCreatePage);
