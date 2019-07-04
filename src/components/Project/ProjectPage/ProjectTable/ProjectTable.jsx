@@ -223,6 +223,7 @@ export default class ProjectTable extends Component {
                                 {key === 'region' && article.region}
                                 {key === 'federalDistrict' && article.federalDistrict}
                                 {key === 'typeMedia' && article.typeMedia}
+                                {key === 'text' && article.text.replace(/<[^>]*>?/gm, '')}
                             </span>
                         </Link>
                     );

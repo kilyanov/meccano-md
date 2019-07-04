@@ -7,7 +7,8 @@ export const COLUMN_TYPE = {
     city: 'city',
     region: 'region',
     federalDistrict: 'federalDistrict',
-    typeMedia: 'typeMedia'
+    typeMedia: 'typeMedia',
+    text: 'text'
 };
 export const COLUMN_NAME = {
     date: 'Дата',
@@ -18,7 +19,8 @@ export const COLUMN_NAME = {
     city: 'Город',
     region: 'Область/край',
     federalDistrict: 'Федеральный округ',
-    typeMedia: 'Тип СМИ'
+    typeMedia: 'Тип СМИ',
+    text: 'Текст статьи'
 };
 
 export const DEFAULT_COLUMNS = ['date', 'source', 'title', 'annotation'];

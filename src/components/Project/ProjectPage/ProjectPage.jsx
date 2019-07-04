@@ -1,6 +1,4 @@
 import React, {Component} from 'react';
-import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
 import './project-page.scss';
 import Button from '../../Shared/Button/Button';
 import IconButton from '../../Shared/IconButton/IconButton';
@@ -22,11 +20,7 @@ import Loader from '../../Shared/Loader/Loader';
 
 const classes = new Bem('project-page');
 
-class ProjectPage extends Component {
-    static propTypes = {
-        projects: PropTypes.array
-    };
-
+export default class ProjectPage extends Component {
     state = {
         articles: [],
         activeArticle: null,
@@ -46,11 +40,7 @@ class ProjectPage extends Component {
     };
 
     componentDidMount() {
-        const project = this.props.projects.find(({id}) => id === this.projectId);
-
-        if (project) this.setProject(project);
-        else this.getProject(this.projectId);
-
+        this.getProject(this.projectId);
         this.getArticles();
     }
 
@@ -143,7 +133,8 @@ class ProjectPage extends Component {
         ArticleService
             .getList({
                 project: this.projectId,
-                page: pagination.page
+                page: pagination.page,
+                expand: 'text'
             })
             .then(response => {
                 const responsePagination = {
@@ -163,12 +154,8 @@ class ProjectPage extends Component {
 
     getProject = (projectId) => {
         ProjectService.get(projectId, {expand: 'fields'}).then(response => {
-            this.setProject(response.data);
+            this.setState({project: response.data});
         });
-    };
-
-    setProject = (project) => {
-        this.setState({project});
     };
 
     projectId = this.props.match.params.id;
@@ -302,5 +289,3 @@ class ProjectPage extends Component {
         );
     }
 }
-
-export default connect(({projects}) => ({projects}))(ProjectPage);
