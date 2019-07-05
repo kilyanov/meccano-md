@@ -11,6 +11,7 @@ const Tag = ({classNames, tag, onDelete}) => (
 
 export default class InputTags extends Component {
     static propTypes = {
+        allowNew: PropTypes.bool,
         tags: PropTypes.array,
         suggestions: PropTypes.array,
         onChange: PropTypes.func.isRequired,
@@ -22,6 +23,7 @@ export default class InputTags extends Component {
     };
 
     static defaultProps = {
+        allowNew: true,
         placeholder: 'Добавить...'
     };
 
@@ -54,19 +56,16 @@ export default class InputTags extends Component {
 
         this.setState({inProgress: true}, () => {
             this.props.requestService({'query[name]': value}).then(response => {
-                // filter selected
-                const suggestions = response.data.filter(({name}) => !this.props.tags.find(tag => tag.name !== name));
-
                 this.setState({
-                    inProgress: false,
-                    suggestions
+                    suggestions: response.data,
+                    inProgress: false
                 });
             });
         });
-    }, 1000);
+    }, 300);
 
     render() {
-        const {label, tags, placeholder} = this.props;
+        const {label, tags, placeholder, allowNew} = this.props;
         const {inProgress} = this.state;
         const suggestions = this.props.suggestions || this.state.suggestions;
 
@@ -86,7 +85,7 @@ export default class InputTags extends Component {
                         handleInputChange={this.handleInputChange}
                         /* eslint-enable */
                         placeholder={placeholder}
-                        allowNew
+                        allowNew={allowNew}
                         tagComponent={Tag}
                     />
                 </label>

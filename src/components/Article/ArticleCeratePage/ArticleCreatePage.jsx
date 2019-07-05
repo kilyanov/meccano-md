@@ -101,7 +101,7 @@ export default class ArticleCreatePage extends Component {
                 }, this.getAdditionalDataFields);
             }).catch(() => this.setState({inProgress: false}));
         } else {
-            ProjectService.get(this.projectId, {expand: 'fields,sections'}).then(response => {
+            ProjectService.get({expand: 'fields,sections'}, this.projectId).then(response => {
                 const project = response.data;
 
                 if (project && project.fields) {

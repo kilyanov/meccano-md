@@ -153,7 +153,7 @@ export default class ProjectPage extends Component {
     };
 
     getProject = (projectId) => {
-        ProjectService.get(projectId, {expand: 'fields'}).then(response => {
+        ProjectService.get({expand: 'fields'}, projectId).then(response => {
             this.setState({project: response.data});
         });
     };

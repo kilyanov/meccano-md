@@ -17,16 +17,17 @@ export default class ArticlesUploadModal extends Component {
 
     state = {
         templates: [],
+        selectedType: null,
         selectedTemplateId: null,
         inProgress: true
     };
 
     componentDidMount() {
         TransferService.export
-            .get()
+            .get('', {project: this.props.projectId})
             .then(response => {
                 this.setState({
-                    templates: response.data.map(({id, name}) => ({name, value: id})),
+                    templates: _.groupBy(response.data, 'type'),
                     inProgress: false
                 });
             })
@@ -35,6 +36,10 @@ export default class ArticlesUploadModal extends Component {
 
     handleSelectTemplate = (selectedTemplateId) => {
         this.setState({selectedTemplateId});
+    };
+
+    handleSelectType = (selectedType) => {
+        this.setState({selectedType});
     };
 
     handleSubmit = () => {
@@ -61,7 +66,7 @@ export default class ArticlesUploadModal extends Component {
 
     render() {
         const {onClose} = this.props;
-        const {inProgress, templates, selectedTemplateId} = this.state;
+        const {inProgress, templates, selectedTemplateId, selectedType} = this.state;
 
         return (
             <ConfirmModal
@@ -71,18 +76,38 @@ export default class ArticlesUploadModal extends Component {
                 submitDisabled={!selectedTemplateId}
                 onSubmit={this.handleSubmit}
             >
-                <h3 {...classes('block-title')}>Исходящие шаблоны:</h3>
+                <div {...classes('row', '', 'row')}>
+                    <div {...classes('col', '', 'col-md-6')}>
+                        <h3 {...classes('block-title')}>Выберите формат:</h3>
 
-                {templates.map(template =>
-                    <RadioButton
-                        name='template'
-                        key={template.value}
-                        {...classes('field')}
-                        label={template.name}
-                        checked={selectedTemplateId === template.value}
-                        onChange={() => this.handleSelectTemplate(template.value)}
-                    />
-                )}
+                        {Object.keys(templates).map(type =>
+                            <RadioButton
+                                name='type'
+                                key={type}
+                                {...classes('field')}
+                                label={type}
+                                checked={selectedType === type}
+                                onChange={() => this.handleSelectType(type)}
+                            />
+                        )}
+                    </div>
+                    {selectedType && (
+                        <div {...classes('col', '', 'col-md-6')}>
+                            <h3 {...classes('block-title')}>Выберите шаблон:</h3>
+
+                            {templates[selectedType].map(template => (
+                                <RadioButton
+                                    name='template'
+                                    key={template.id}
+                                    {...classes('field')}
+                                    label={template.name}
+                                    checked={selectedTemplateId === template.id}
+                                    onChange={() => this.handleSelectTemplate(template.id)}
+                                />
+                            ))}
+                        </div>
+                    )}
+                </div>
 
                 {inProgress && <Loader/>}
             </ConfirmModal>

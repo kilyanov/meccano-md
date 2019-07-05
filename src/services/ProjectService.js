@@ -8,7 +8,7 @@ const CancelToken = axios.CancelToken;
 let source;
 
 export const ProjectService = {
-    get: (id = '', params) => {
+    get: (params, id = '') => {
         source = CancelToken.source();
         return API.get(`${ApiList.project.project}${id ? `/${id}` : ''}${ParseToRequest(params)}`);
     },

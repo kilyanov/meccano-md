@@ -11,6 +11,8 @@ import InputFile from '../../../../Form/InputFile/InputFile';
 import objectToFormData from 'object-to-formdata';
 import Select from '../../../../Form/Select/Select';
 import InlineButton from '../../../../Shared/InlineButton/InlineButton';
+import InputTags from '../../../../Form/InputTags/InputTags';
+import {ProjectService} from '../../../../../services';
 
 const classes = new Bem('settings-export-modal');
 
@@ -28,6 +30,7 @@ export default class SettingsExportModal extends Component {
             name: '',
             rules: [],
             replaces: [],
+            projects: [],
             type: 'html'
         };
         this.defaultRule = {
@@ -94,8 +97,15 @@ export default class SettingsExportModal extends Component {
     };
 
     handleSubmit = () => {
-        const form = _.pick(this.state.form, ['name', 'rules', 'replaces', 'file', 'type']);
+        const form = _.pick(this.state.form, ['name', 'rules', 'replaces', 'projects', 'file', 'type']);
         const method = this.state.form.id ? 'update' : 'set';
+
+        if (_.get(form.file, 'id')) delete form.file;
+
+        form.rules = form.rules.map(({id, selector, element}) => ({id, selector, element}));
+        form.replaces = form.replaces.map(({id, search, replace}) => ({id, search, replace}));
+        form.projects = form.projects.map(({id}) => id);
+
         const formData = objectToFormData(form, {indices: true});
 
         if (!form.rules.length) return NotificationManager.error('Не заполнены "Правила замены"', 'Ошибка');
@@ -229,6 +239,19 @@ export default class SettingsExportModal extends Component {
                             <InputFile
                                 files={fileName}
                                 onChange={file => this.handleChangeForm(file, 'file')}
+                            />
+                        </div>
+                    </div>
+
+                    <div {...classes('row', '', 'row')}>
+                        <div {...classes('item', '', 'col-md-12')}>
+                            <InputTags
+                                allowNew={false}
+                                label='Проект'
+                                tags={form.projects || []}
+                                onChange={val => this.handleChangeForm(val, 'projects')}
+                                requestService={ProjectService.get}
+                                requestCancelService={ProjectService.cancelLast}
                             />
                         </div>
                     </div>

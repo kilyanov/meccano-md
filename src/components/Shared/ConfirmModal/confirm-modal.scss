@@ -51,6 +51,10 @@ $namespace: '.confirm-modal';
         border: none;
         font-size: 16px;
         color: $brown-grey;
+
+        &:hover {
+            color: $black;
+        }
     }
 
     &__header {

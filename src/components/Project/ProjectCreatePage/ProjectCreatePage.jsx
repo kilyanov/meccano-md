@@ -28,7 +28,7 @@ export default class ProjectCreatePage extends Component {
             expand: 'fields,allFields'
         };
 
-        ProjectService.get(this.projectId, params).then(response => {
+        ProjectService.get(params, this.projectId).then(response => {
             const {fields, allFields, createdAt, updatedAt} = response.data;
             // const isEdit = createdAt !== updatedAt;
 
