@@ -2,7 +2,6 @@ import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import Page from '../../Shared/Page/Page';
 import {ArticleService, ProjectService, SourceService, StorageService} from '../../../services';
-import {NotificationManager} from 'react-notifications';
 import './article-create-page.scss';
 import Form from '../../Form/Form/Form';
 import TextArea from '../../Form/TextArea/TextArea';
@@ -15,6 +14,7 @@ import ArticleViewSettings from './ArticleViewSettings/ArticleViewSettings';
 import {EventEmitter} from '../../../helpers';
 import ProjectCreateField from '../../Project/ProjectCreatePage/ProjectCreatePageField/ProjectCreatePageField';
 import Sortable from 'react-sortablejs';
+import {OperatedNotification} from '../../../helpers/Tools';
 
 const classes = new Bem('article-create-page');
 
@@ -195,6 +195,7 @@ export default class ArticleCreatePage extends Component {
     handleSubmit = () => {
         const form = {...this.state.form};
         const isUpdate = !!this.articleId;
+        const invalidateFields = [];
 
         form.date = moment(form.date).format();
 
@@ -207,6 +208,18 @@ export default class ArticleCreatePage extends Component {
             .forEach(option => {
                 if (form[option] && form[option].value) {
                     form[option] = form[option].value;
+                }
+            });
+
+        // Check required
+        this.state.fields
+            .filter(({required}) => required)
+            .forEach(field => {
+                if (!form[field.code] ||
+                    (form[field.code] instanceof Array && _.isEmpty(form[field.code])) ||
+                    (form[field.code] instanceof Object && _.isEmpty(form[field.code]))
+                ) {
+                    invalidateFields.push(field);
                 }
             });
 
@@ -225,14 +238,32 @@ export default class ArticleCreatePage extends Component {
 
         form.project_id = this.projectId;
 
-        this.setState({inProgress: true}, () => {
-            ArticleService[isUpdate ? 'update' : 'create'](form, form.id).then(() => {
-                NotificationManager.success('Статья успешно добавлена в проект', 'Успех');
-                this.setState({inProgress: false}, () => {
-                    setTimeout(() => EventEmitter.emit('redirect', `/project/${this.projectId}`), 2000);
-                });
-            }).catch(() => this.setState({inProgress: false}));
-        });
+        const submitForm = () => {
+            this.setState({inProgress: true}, () => {
+                ArticleService[isUpdate ? 'update' : 'create'](form, form.id).then(() => {
+                    OperatedNotification.success({
+                        title: `${isUpdate ? 'Обновление' : 'Создание'} статьи`,
+                        message: `Статья успешно ${isUpdate ? 'обновлена' : 'создана'}`,
+                        submitButtonText: '← Перейти ко всем статьям',
+                        timeOut: 10000,
+                        onSubmit: () => EventEmitter.emit('redirect', `/project/${this.projectId}`)
+                    });
+                    this.setState({inProgress: false});
+                }).catch(() => this.setState({inProgress: false}));
+            });
+        };
+
+        if (invalidateFields.length) {
+            return OperatedNotification.warning({
+                title: 'Внимание',
+                message: `Не заполнены обязательные поля: \n${invalidateFields.map(({name}) => name).join(',\n')}`,
+                submitButtonText: isUpdate ? 'Обновить' : 'Создать',
+                onSubmit: () => submitForm(),
+                onCancel: () => {}
+            });
+        }
+
+        submitForm();
     };
 
     getArticle = () => {

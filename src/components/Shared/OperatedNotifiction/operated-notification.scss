@@ -1,0 +1,139 @@
+$namespace: '.operated-notification';
+$buttonHeight: 40px;
+
+#{$namespace} {
+  position: absolute;
+  top: 0;
+  right: 15px;
+  width: 370px;
+  margin-top: 15px;
+  background-color: #ccc;
+  padding: 15px 15px 0 58px;
+  border-radius: 2px;
+  box-shadow: 0 0 12px #999;
+  font-size: 1em;
+  line-height: 1.2em;
+  color: #fff;
+  cursor: pointer;
+  opacity: .9;
+  z-index: 999;
+
+  &:before {
+    content: "";
+    font-family: 'Notification';
+    position: absolute;
+    top: calc(50% - #{$buttonHeight / 2});
+    left: 15px;
+    margin-top: -14px;
+    display: block;
+    width: 28px;
+    height: 28px;
+    font-size: 28px;
+    text-align: center;
+    line-height: 28px;
+  }
+
+  &:hover {
+    opacity: 1;
+  }
+
+  &--info {
+    background-color: #269abc;
+
+    #{$namespace}__submit-button:hover {
+      background-color: #26a8ca;
+    }
+
+    #{$namespace}__submit-button:active {
+      background-color: #2587a8;
+    }
+  }
+
+  &--success {
+    background-color: #51a351;
+
+    &:before {
+      content: "";
+    }
+
+    #{$namespace}__button:hover {
+      background-color: #51be51;
+    }
+
+    #{$namespace}__button:active {
+      background-color: #468c46;
+    }
+  }
+
+  &--warning {
+    background-color: #f89406;
+
+    #{$namespace}__button:hover {
+      background-color: #f3b768;
+    }
+
+    #{$namespace}__button:active {
+      background-color: #b9741a;
+    }
+  }
+
+  &--danger {
+    background-color: #bd362f;
+
+    &:before {
+      content: "";
+    }
+
+    #{$namespace}__button:hover {
+      background-color: #cb372f;
+    }
+
+    #{$namespace}__button:active {
+      background-color: #9d332d;
+    }
+  }
+
+  &__title {
+    margin: 0 0 5px 0;
+    color: #fff;
+    font-size: 1em;
+    line-height: 1.2em;
+    font-weight: bold;
+  }
+
+  &__message {
+    margin-top: 0;
+    font-size: 14px;
+    line-height: 16px;
+    white-space: pre-wrap;
+  }
+
+  &__buttons-container {
+    display: flex;
+    height: $buttonHeight;
+    margin: 0 -15px 0 -58px;
+    border-top: 1px solid rgba(255, 255, 255, 0.3);
+  }
+
+  &__button {
+    flex: 1;
+    height: 100%;
+    background: transparent;
+    border: none;
+    color: #fff;
+    font-size: 12px;
+    transition: background-color .3s ease, color .3s ease;
+
+    &:hover {
+      background-color: #f3b768;
+    }
+
+    &:active {
+      background-color: #b9741a;
+    }
+
+    & + & {
+      border-left: 1px solid rgba(255, 255, 255, 0.3);
+    }
+  }
+}

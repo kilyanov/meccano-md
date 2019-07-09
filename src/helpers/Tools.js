@@ -1,5 +1,7 @@
 import PerfectScrollbar from 'perfect-scrollbar';
 import API from '../api/api';
+import {EventEmitter} from './EventEmitter';
+import {EVENTS} from '../constants/Events';
 
 export const ParseToRequest = (form) => {
     if (!form) return '';
@@ -40,4 +42,12 @@ export const arrayMove = (array, from, to) => {
 
     newArray.splice(to < 0 ? newArray.length + to : to, 0, newArray.splice(from, 1)[0]);
     return newArray;
+};
+
+export const OperatedNotification = {
+    container: document.getElementById('operated-notifications'),
+    info: (notification) => EventEmitter.emit(EVENTS.OPERATED_NOTIFICATION.SHOW, {...notification, type: 'info'}),
+    success: (notification) => EventEmitter.emit(EVENTS.OPERATED_NOTIFICATION.SHOW, {...notification, type: 'success'}),
+    warning: (notification) => EventEmitter.emit(EVENTS.OPERATED_NOTIFICATION.SHOW, {...notification, type: 'warning'}),
+    error: (notification) => EventEmitter.emit(EVENTS.OPERATED_NOTIFICATION.SHOW, {...notification, type: 'error'})
 };

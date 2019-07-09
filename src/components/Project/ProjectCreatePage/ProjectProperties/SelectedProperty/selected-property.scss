@@ -38,8 +38,8 @@ $namespace: '.selected-property';
             display: block;
         }
 
-        #{$namespace}__remove-button {
-            display: block;
+        #{$namespace}__buttons {
+            display: flex;
         }
     }
 
@@ -49,6 +49,10 @@ $namespace: '.selected-property';
 
     &--dragging {
         border-top: 1px solid $gray !important;
+    }
+
+    &__name {
+        flex: 1;
     }
 
     &__arrows {
@@ -78,12 +82,27 @@ $namespace: '.selected-property';
         transform: rotate(90deg);
     }
 
-    &__remove-button {
+    &__buttons {
         display: none;
+        align-items: center;
         position: absolute;
-        right: 10px;
+        right: 0;
+    }
+
+    &__checkbox {
+        margin-right: 10px;
+    }
+
+    &__remove-button {
+        padding: 10px;
         background: none;
         border: none;
+
+        &:hover {
+            #{$namespace}__trash-icon {
+                fill: $strawberry;
+            }
+        }
     }
 
     &__trash-icon {

@@ -8,6 +8,8 @@ import '../assets/styles/main.scss';
 import {storeMainActions} from '../redux/storeMainActions';
 import {InitScrollbar} from '../helpers/Tools';
 import {Push} from '../services/PushService';
+import {EVENTS} from '../constants/Events';
+import OperatedNotification from './Shared/OperatedNotifiction/OperatedNotification';
 
 export default class App extends Component {
     static propTypes = {
@@ -27,10 +29,14 @@ export default class App extends Component {
                 self.setState({redirect: false}, callback);
             });
         });
+
+        EventEmitter.on(EVENTS.OPERATED_NOTIFICATION.SHOW, notification => this.setState({notification}));
+        EventEmitter.on(EVENTS.OPERATED_NOTIFICATION.HIDE, () => this.setState({notification: null}));
     }
 
     state = {
-        redirect: false
+        redirect: false,
+        notification: null
     };
 
     componentDidMount() {
@@ -46,13 +52,15 @@ export default class App extends Component {
     }
 
     componentWillUnmount() {
-        EventEmitter.off('redirect');
+        EventEmitter.off('redirect', null);
+        EventEmitter.off(EVENTS.OPERATED_NOTIFICATION.SHOW, null);
+        EventEmitter.off(EVENTS.OPERATED_NOTIFICATION.HIDE, null);
         window.removeEventListener('load', () => {});
     }
 
     render() {
-        const {redirect} = this.state;
         const {children} = this.props;
+        const {redirect, notification} = this.state;
 
         return redirect ? (
             <Redirect push to={redirect}/>
@@ -60,6 +68,21 @@ export default class App extends Component {
             <div className='app' ref={node => this.containerRef = node}>
                 {children}
                 <NotificationContainer/>
+
+                {notification && (
+                    <OperatedNotification
+                        /* eslint-disable */
+                        onSubmit={notification.onSubmit}
+                        onCancel={notification.onCancel}
+                        /* eslint-enable */
+                        message={notification.message}
+                        title={notification.title}
+                        submitButtonText={notification.submitButtonText}
+                        cancelButtonText={notification.cancelButtonText}
+                        type={notification.type}
+                        timeOut={notification.timeOut}
+                    />
+                )}
             </div>
         );
     }

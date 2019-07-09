@@ -5,6 +5,15 @@
     color: #fff;
 }
 
+#operated-notifications {
+  position: fixed;
+  pointer-events: none;
+  top: 0;
+  right: 0;
+  width: 370px;
+  height: 500px;
+}
+
 .drag-handle {
   cursor: move;
 }

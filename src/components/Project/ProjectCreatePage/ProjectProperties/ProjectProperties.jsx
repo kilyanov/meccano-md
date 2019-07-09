@@ -46,6 +46,13 @@ export default class ProjectProperties extends Component {
         this.props.onChange(sortedList);
     };
 
+    handleChange = (field, index) => {
+        const {fields} = this.props;
+
+        fields[index] = field;
+        this.props.onChange(fields);
+    };
+
     handleDelete = (index) => {
         const {fields} = this.props;
 
@@ -90,8 +97,8 @@ export default class ProjectProperties extends Component {
                                 <SelectedProperty
                                     item={item}
                                     index={index}
-                                    type='fields'
                                     onDelete={this.handleDelete}
+                                    onChange={field => this.handleChange(field, index)}
                                     key={item.code}
                                 />
                             ))}

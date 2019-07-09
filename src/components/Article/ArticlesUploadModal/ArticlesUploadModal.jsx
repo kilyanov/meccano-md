@@ -34,12 +34,12 @@ export default class ArticlesUploadModal extends Component {
             .catch(() => this.setState({inProgress: false}));
     }
 
-    handleSelectTemplate = (selectedTemplateId) => {
-        this.setState({selectedTemplateId});
+    handleSelectType = (selectedType) => {
+        this.setState({selectedType, selectedTemplateId: null});
     };
 
-    handleSelectType = (selectedType) => {
-        this.setState({selectedType});
+    handleSelectTemplate = (selectedTemplateId) => {
+        this.setState({selectedTemplateId});
     };
 
     handleSubmit = () => {
