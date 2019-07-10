@@ -13,7 +13,6 @@ export const ArticleService = {
     delete: (id) => API.delete(`${ApiList.article.article}/${id}`),
     create: (form) => API.post(ApiList.article.article, form),
     update: (form, id) => API.put(`${ApiList.article.article}/${id}`, form),
-    upload: (projectId, form) => API.post(`${ApiList.article.article}/${projectId}/upload`, form),
 
     /* Data fields */
     types: (form) => {

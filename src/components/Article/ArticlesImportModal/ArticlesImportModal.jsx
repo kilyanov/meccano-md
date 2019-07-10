@@ -4,7 +4,7 @@ import ConfirmModal from '../../Shared/ConfirmModal/ConfirmModal';
 import './articles-import-modal.scss';
 import RadioButton from '../../Form/RadioButton/RadioButton';
 import InputFile from '../../Form/InputFile/InputFile';
-import { ArticleService } from '../../../services';
+import {ProjectService} from '../../../services';
 import store from '../../../redux/store';
 import { getArticlesByProject } from '../../../redux/actions/article/index';
 import Loader from '../../Shared/Loader/Loader';
@@ -34,7 +34,7 @@ export default class ArticlesImportModal extends Component {
             .get()
             .then(response => {
                 this.setState({
-                    types: response.data.map(({name}) => ({name, value: name})),
+                    types: response.data.map(({id, name}) => ({name, value: id})),
                     inProgress: false
                 });
             })
@@ -63,14 +63,14 @@ export default class ArticlesImportModal extends Component {
                 form.files.forEach((file) => {
                     const formData = new FormData();
 
-                    formData.append('doc', file);
+                    formData.append('file', file);
                     formData.append('type', form.type);
 
-                    ArticleService.upload(this.props.projectId, formData).then(() => {
+                    ProjectService.importArticles(this.props.projectId, formData).then(() => {
                         store.dispatch(getArticlesByProject(this.props.projectId));
                         this.setState({inProgress: false});
                         this.props.onClose();
-                    });
+                    }).catch(() => this.setState({inProgress: false}));
                 });
             });
         }

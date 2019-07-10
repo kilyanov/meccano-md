@@ -18,6 +18,7 @@ export const ProjectService = {
         source = CancelToken.source();
         return API.put(`${ApiList.project.project}/${id}`, form);
     },
+    importArticles: (projectId, form) => API.post(`${ApiList.project.project}/${projectId}/import`, form),
     getSections: (projectId) => API.get(`${ApiList.project.sections}${ParseToRequest({projectId})}`),
     createSections: (projectId, form) => API.post(`${ApiList.project.sections}${ParseToRequest({projectId})}`, form),
     getFields: (projectId) => API.get(`${ApiList.project.fieldValue}?id=${projectId}`),
