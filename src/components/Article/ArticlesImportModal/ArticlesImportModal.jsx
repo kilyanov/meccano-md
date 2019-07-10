@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import ConfirmModal from '../../Shared/ConfirmModal/ConfirmModal';
 import './articles-import-modal.scss';
@@ -64,7 +64,7 @@ export default class ArticlesImportModal extends Component {
                     const formData = new FormData();
 
                     formData.append('file', file);
-                    formData.append('type', form.type);
+                    formData.append('import', form.type);
 
                     ProjectService.importArticles(this.props.projectId, formData).then(() => {
                         store.dispatch(getArticlesByProject(this.props.projectId));
