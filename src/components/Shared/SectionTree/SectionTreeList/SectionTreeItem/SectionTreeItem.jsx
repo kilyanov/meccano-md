@@ -51,6 +51,7 @@ export default class SectionTreeItem extends Component {
                             <button
                                 {...classes('item-button', 'plus')}
                                 onClick={() => onAddChild(item)}
+                                title='Добавить подраздел'
                             >
                                 <i {...classes('item-icon', 'plus')}>+</i>
                             </button>
@@ -58,12 +59,14 @@ export default class SectionTreeItem extends Component {
                         <button
                             {...classes('item-button', 'edit')}
                             onClick={() => onEdit(item)}
+                            title='Редактировать'
                         >
                             <PencilIcon {...classes('item-icon', 'pencil')}/>
                         </button>
                         <button
                             {...classes('item-button', 'remove')}
                             onClick={() => onDelete(item, parent)}
+                            title='Удалить'
                         >
                             <TrashIcon {...classes('item-icon', 'trash')}/>
                         </button>

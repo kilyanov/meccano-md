@@ -4,6 +4,7 @@ import ConfirmModal from '../../../Shared/ConfirmModal/ConfirmModal';
 import {StorageService} from '../../../../services';
 import './article-view-settings.scss';
 import ActiveMark from '../../../Shared/ActiveMark/ActiveMark';
+import {STORAGE_KEY} from '../../../../constants/LocalStorageKeys';
 
 const classes = new Bem('article-view-settings');
 
@@ -14,12 +15,12 @@ export default class ArticleViewSettings extends Component {
     };
 
     state = {
-        active: StorageService.get('article-view-type') || 1
+        active: StorageService.get(STORAGE_KEY.ARTICLE_VIEW_TYPE) || 1
     };
 
     handleChangeView = (key) => {
         this.setState({active: key});
-        StorageService.set('article-view-type', key);
+        StorageService.set(STORAGE_KEY.ARTICLE_VIEW_TYPE, key);
         this.props.onChange(key);
         setTimeout(() => this.props.onClose(), 1000);
     };

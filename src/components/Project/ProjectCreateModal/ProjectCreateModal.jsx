@@ -7,6 +7,7 @@ import Form from '../../Form/Form/Form';
 import { ProjectService } from '../../../services/ProjectService';
 import { NotificationManager } from 'react-notifications';
 import { EventEmitter } from '../../../helpers';
+import {EVENTS} from '../../../constants/Events';
 
 const classes = new Bem('project-create-modal');
 
@@ -39,7 +40,7 @@ export default class ProjectCreateModal extends Component {
         this.setState({inProgress: true}, () => {
             ProjectService.post(form).then(response => {
                 NotificationManager.success(`Проект успешно ${project ? 'отредактирован' : 'создан'}`, 'Успех');
-                EventEmitter.emit('redirect', `/project-create/${response.data.id}`);
+                EventEmitter.emit(EVENTS.REDIRECT, `/project-create/${response.data.id}`);
                 this.setState({inProgress: false});
                 this.props.onClose();
             });

@@ -9,6 +9,7 @@ import PromiseDialogModal from '../../Shared/PromiseDialogModal/PromiseDialogMod
 import {NotificationManager} from 'react-notifications';
 import {EventEmitter} from '../../../helpers';
 import ProjectProperties from './ProjectProperties/ProjectProperties';
+import {EVENTS} from '../../../constants/Events';
 
 const classes = new Bem('project-create-page');
 
@@ -72,7 +73,7 @@ export default class ProjectCreatePage extends Component {
                     });
 
                     if (!found) {
-                        return EventEmitter.emit('redirect', `/project/${this.projectId}`);
+                        return EventEmitter.emit(EVENTS.REDIRECT, `/project/${this.projectId}`);
                     }
 
                     this.setState({step: 2, inProgress: false});
@@ -85,7 +86,7 @@ export default class ProjectCreatePage extends Component {
 
             this.setState({inProgress: true}, () => {
                 ProjectService.createSections(this.projectId, sections).then(() => {
-                    setTimeout(() => EventEmitter.emit('redirect', `/project/${this.projectId}`), 2000);
+                    setTimeout(() => EventEmitter.emit(EVENTS.REDIRECT, `/project/${this.projectId}`), 2000);
                 }).catch(() => this.setState({inProgress: false}));
             });
         }
@@ -104,7 +105,7 @@ export default class ProjectCreatePage extends Component {
         }).then(() => {
             ProjectService.delete(this.projectId).then(() => {
                 NotificationManager.success('Проект был удален', 'Успех');
-                EventEmitter.emit('redirect', '/');
+                EventEmitter.emit(EVENTS.REDIRECT, '/');
             });
         });
     };

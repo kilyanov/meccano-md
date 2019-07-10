@@ -23,11 +23,11 @@ const columnSettings = {
     }
 };
 
+const defaultForm = {name: ''};
+
 export default class SettingsSourceType extends Component {
     state = {
-        form: {
-            name: ''
-        },
+        form: defaultForm,
         items: [],
         pagination: {
             page: 1,
@@ -57,7 +57,7 @@ export default class SettingsSourceType extends Component {
     };
 
     handleCloseModal = () => {
-        this.setState({showItemModal: false, form: {name: ''}});
+        this.setState({showItemModal: false, form: defaultForm});
     };
 
     handleEditItem = (item) => {

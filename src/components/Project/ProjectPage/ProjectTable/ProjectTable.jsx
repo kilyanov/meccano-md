@@ -1,15 +1,14 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { Link } from 'react-router-dom';
-import { SORT_DIR } from '../../../../constants';
+import {Link} from 'react-router-dom';
+import {SORT_DIR} from '../../../../constants';
 import CheckBox from '../../../Form/CheckBox/CheckBox';
 import DropDown from '../../../Shared/DropDown/DropDown';
 import './project-table.scss';
 import './ProjectTableHeader/project-table-header.scss';
 import DropDownMenuIcon from '../../../Shared/SvgIcons/DropDownMenuIcon';
 import ProjectTableSettingsModal from './ProjectTableSettingsModal/ProjectTableSettingsModal';
-import { DEFAULT_COLUMNS, COLUMN_TYPE, COLUMN_NAME } from './Columns';
-import { StorageService } from '../../../../services/StorageService';
+import {DEFAULT_COLUMNS, COLUMN_TYPE, COLUMN_NAME, getColumnsFromStorage} from './Columns';
 import SettingsIcon from '../../../Shared/SvgIcons/SettingsIcon';
 import SortArrow from './ProjectTableHeader/ProjectTableHeaderSortArrow';
 import {InitScrollbar} from '../../../../helpers/Tools';
@@ -23,6 +22,7 @@ export default class ProjectTable extends Component {
         articles: PropTypes.array,
         selectedIds: PropTypes.array,
         onChangeSelected: PropTypes.func,
+        onChangeColumns: PropTypes.func.isRequired,
         onDeleteArticle: PropTypes.func,
         projectId: PropTypes.string.isRequired,
         pagination: PropTypes.object.isRequired,
@@ -39,8 +39,7 @@ export default class ProjectTable extends Component {
     constructor() {
         super();
 
-        const storageValue = StorageService.get('project-table-columns');
-        const storageColumns = storageValue && JSON.parse(storageValue);
+        const storageColumns = getColumnsFromStorage();
 
         this.state = {
             columns: storageColumns || [...DEFAULT_COLUMNS],
@@ -101,7 +100,7 @@ export default class ProjectTable extends Component {
     };
 
     handleChangeColumns = (columns) => {
-        this.setState({columns});
+        this.setState({columns}, () => this.props.onChangeColumns(columns));
     };
 
     handleBodyScroll = (e) => {
@@ -113,6 +112,10 @@ export default class ProjectTable extends Component {
         if (isEndPage && pagination.page < pagination.pageCount) {
             onScrollToEnd(pagination.page + 1);
         }
+    };
+
+    getColumns = () => {
+        return this.state.columns;
     };
 
     setColumnWidth = () => {
@@ -215,10 +218,11 @@ export default class ProjectTable extends Component {
                         >
                             <span {...classes('cell-text')}>
                                 {key === 'date' && moment(article.date).format('DD.MM.YYYY')}
-                                {key === 'source' && article.media}
+                                {key === 'source' && article.source && article.source.name}
                                 {key === 'title' && article.title}
                                 {key === 'annotation' && article.annotation}
-                                {key === 'author' && article.author}
+                                {key === 'authors' && article.authors &&
+                                    article.authors.map(({name}) => name).join(', ')}
                                 {key === 'city' && article.city}
                                 {key === 'region' && article.region}
                                 {key === 'federalDistrict' && article.federalDistrict}

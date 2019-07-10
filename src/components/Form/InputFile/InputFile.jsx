@@ -27,11 +27,11 @@ export default class InputFile extends Component {
     };
 
     componentDidMount() {
-        EventEmitter.on(EVENTS.ON_VALIDATE, this.validate);
+        EventEmitter.on(EVENTS.FORM.ON_VALIDATE, this.validate);
     }
 
     componentWillUnmount() {
-        EventEmitter.off(EVENTS.ON_VALIDATE, this.validate);
+        EventEmitter.off(EVENTS.FORM.ON_VALIDATE, this.validate);
     }
 
     handleDelete = (fileIndex) => {
@@ -53,7 +53,7 @@ export default class InputFile extends Component {
         const invalid = this.props.required && !this.state.files.length;
 
         this.setState({error: invalid});
-        return EventEmitter.emit(invalid ? EVENTS.ON_VALIDATE_FAILURE : EVENTS.ON_VALIDATE_SUCCESS);
+        return EventEmitter.emit(invalid ? EVENTS.FORM.ON_VALIDATE_FAILURE : EVENTS.FORM.ON_VALIDATE_SUCCESS);
     };
 
     upload = () => {

@@ -15,6 +15,8 @@ import {EventEmitter} from '../../../helpers';
 import ProjectCreateField from '../../Project/ProjectCreatePage/ProjectCreatePageField/ProjectCreatePageField';
 import Sortable from 'react-sortablejs';
 import {OperatedNotification} from '../../../helpers/Tools';
+import {STORAGE_KEY} from '../../../constants/LocalStorageKeys';
+import {EVENTS} from '../../../constants/Events';
 
 const classes = new Bem('article-create-page');
 
@@ -53,7 +55,7 @@ export default class ArticleCreatePage extends Component {
                 text: ''
             },
             selectedMedia: {},
-            viewType: StorageService.get('article-view-type') || 1,
+            viewType: StorageService.get(STORAGE_KEY.ARTICLE_VIEW_TYPE) || 1,
             showViewSettings: false,
             inProgress: true
         };
@@ -170,7 +172,7 @@ export default class ArticleCreatePage extends Component {
             prevArticle = articles[articles.length - 1];
         }
 
-        EventEmitter.emit('redirect', `/project/${this.projectId}/article/${prevArticle.id}`);
+        EventEmitter.emit(EVENTS.REDIRECT, `/project/${this.projectId}/article/${prevArticle.id}`);
     };
 
     handleNextArticle = () => {
@@ -182,7 +184,7 @@ export default class ArticleCreatePage extends Component {
             nextArticle = articles[0];
         }
 
-        EventEmitter.emit('redirect', `/project/${this.projectId}/article/${nextArticle.id}`);
+        EventEmitter.emit(EVENTS.REDIRECT, `/project/${this.projectId}/article/${nextArticle.id}`);
     };
 
     handleEndSort = (sortedKeys) => {
@@ -246,7 +248,7 @@ export default class ArticleCreatePage extends Component {
                         message: `Статья успешно ${isUpdate ? 'обновлена' : 'создана'}`,
                         submitButtonText: '← Перейти ко всем статьям',
                         timeOut: 10000,
-                        onSubmit: () => EventEmitter.emit('redirect', `/project/${this.projectId}`)
+                        onSubmit: () => EventEmitter.emit(EVENTS.REDIRECT, `/project/${this.projectId}`)
                     });
                     this.setState({inProgress: false});
                 }).catch(() => this.setState({inProgress: false}));

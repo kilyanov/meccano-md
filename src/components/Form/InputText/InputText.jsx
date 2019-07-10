@@ -46,11 +46,11 @@ export default class InputText extends Component {
     };
 
     componentDidMount() {
-        EventEmitter.on(EVENTS.ON_VALIDATE, this.validate);
+        EventEmitter.on(EVENTS.FORM.ON_VALIDATE, this.validate);
     }
 
     componentWillUnmount() {
-        EventEmitter.off(EVENTS.ON_VALIDATE, this.validate);
+        EventEmitter.off(EVENTS.FORM.ON_VALIDATE, this.validate);
     }
 
     static getDerivedStateFromProps(nextProps, prevState) {
@@ -133,7 +133,7 @@ export default class InputText extends Component {
         if (validateType || onValidate || type === 'email' || required) {
             const error = !this.isValidate(value);
 
-            EventEmitter.emit(error ? EVENTS.ON_VALIDATE_FAILURE : EVENTS.ON_VALIDATE_SUCCESS);
+            EventEmitter.emit(error ? EVENTS.FORM.ON_VALIDATE_FAILURE : EVENTS.FORM.ON_VALIDATE_SUCCESS);
             this.setState({error});
             return error;
         }

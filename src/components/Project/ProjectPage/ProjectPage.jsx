@@ -82,6 +82,10 @@ export default class ProjectPage extends Component {
         }
     };
 
+    handleChangeColumns = () => {
+        this.setState({inProgress: true}, this.getArticles);
+    };
+
     handleDeleteArticle = (articleId) => {
         const {articles} = this.state;
         const article = articles.find(({id}) => id === articleId);
@@ -128,14 +132,22 @@ export default class ProjectPage extends Component {
     };
 
     getArticles = (isPagination = false) => {
-        const {pagination} = this.state;
+        const {pagination, filters} = this.state;
+        const columns = this.projectTable.getColumns();
+        const form = {
+            project: this.projectId,
+            page: pagination.page,
+            expand: columns.join(',')
+        };
+
+        if (filters.search) {
+            columns.forEach(columnName => {
+                form[`query[${columnName}]`] = filters.search;
+            });
+        }
 
         ArticleService
-            .getList({
-                project: this.projectId,
-                page: pagination.page,
-                expand: 'text'
-            })
+            .getList(form)
             .then(response => {
                 const responsePagination = {
                     pageCount: +_.get(response.headers, 'x-pagination-page-count'),
@@ -235,9 +247,10 @@ export default class ProjectPage extends Component {
                         placeholder='Найти'
                         value={filters.search}
                         onChange={value => this.handleChangeFilter('search', value)}
+                        onSearch={() => this.getArticles()}
                     />
 
-                    <span {...classes('articles-count')}>Всего статей: 66</span>
+                    <span {...classes('articles-count')}>Всего статей: {pagination.totalCount || 0}</span>
 
                     <DropDownButton
                         {...classes('article-add-btn')}
@@ -248,7 +261,9 @@ export default class ProjectPage extends Component {
 
                 <div {...classes('project-table-wrapper')}>
                     <ProjectTable
+                        ref={ref => this.projectTable = ref}
                         onChangeSelected={this.handleChangeSelected}
+                        onChangeColumns={this.handleChangeColumns}
                         onDeleteArticle={this.handleDeleteArticle}
                         selectedIds={selectedItemIds}
                         projectId={this.projectId}

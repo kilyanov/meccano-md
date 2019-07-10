@@ -23,11 +23,11 @@ const columnSettings = {
     }
 };
 
+const defaultForm = {name: ''};
+
 export default class SettingsCountry extends Component {
     state = {
-        form: {
-            name: ''
-        },
+        form: defaultForm,
         items: [],
         pagination: {
             page: 1,
@@ -55,6 +55,10 @@ export default class SettingsCountry extends Component {
 
     handleChangeInput = (value) => {
         this.setState(prev => prev.form.name = value);
+    };
+
+    handleCloseModal = () => {
+        this.setState({showItemModal: false, form: defaultForm});
     };
 
     handleEditItem = (item) => {
@@ -207,7 +211,7 @@ export default class SettingsCountry extends Component {
                     <ConfirmModal
                         title={form.id ? 'Изменить' : 'Добавить'}
                         width='small'
-                        onClose={() => this.setState({showItemModal: false})}
+                        onClose={this.handleCloseModal}
                         onSubmit={() => this.form.submit()}
                     >
                         <Form

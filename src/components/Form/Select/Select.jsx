@@ -55,12 +55,12 @@ export default class Select extends Component {
         }
 
         document.addEventListener('click', this.handleClickOutside, true);
-        EventEmitter.on(EVENTS.ON_VALIDATE, this.validate);
+        EventEmitter.on(EVENTS.FORM.ON_VALIDATE, this.validate);
     }
 
     componentWillUnmount() {
         document.removeEventListener('click', this.handleClickOutside, true);
-        EventEmitter.off(EVENTS.ON_VALIDATE, this.validate);
+        EventEmitter.off(EVENTS.FORM.ON_VALIDATE, this.validate);
     }
 
     handleClickOutside = (event) => {
@@ -258,7 +258,7 @@ export default class Select extends Component {
         const invalid = this.props.required && !this.props.selected;
 
         this.setState({error: invalid, opened: false});
-        return EventEmitter.emit(invalid ? EVENTS.ON_VALIDATE_FAILURE : EVENTS.ON_VALIDATE_SUCCESS);
+        return EventEmitter.emit(invalid ? EVENTS.FORM.ON_VALIDATE_FAILURE : EVENTS.FORM.ON_VALIDATE_SUCCESS);
     };
 
     debouncedSearch = _.debounce((value) => {

@@ -24,13 +24,15 @@ const columnSettings = {
     }
 };
 
+const defaultForm = {
+    name: '',
+    country_id: '',
+    federal_district_id: ''
+};
+
 export default class SettingsRegion extends Component {
     state = {
-        form: {
-            name: '',
-            country_id: '',
-            federal_district_id: ''
-        },
+        form: defaultForm,
         items: [],
 
         pagination: {
@@ -91,6 +93,10 @@ export default class SettingsRegion extends Component {
                 this.getFederalItems();
             }
         });
+    };
+
+    handleCloseModal = () => {
+        this.setState({showItemModal: false, form: defaultForm});
     };
 
     handleEditItem = (item) => {
@@ -264,7 +270,7 @@ export default class SettingsRegion extends Component {
                     <ConfirmModal
                         title={form.id ? 'Изменить' : 'Добавить'}
                         width='small'
-                        onClose={() => this.setState({showItemModal: false, form: {name: ''}})}
+                        onClose={this.handleCloseModal}
                         onSubmit={() => this.form.submit()}
                     >
                         <Form

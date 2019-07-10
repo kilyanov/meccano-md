@@ -24,12 +24,14 @@ const columnSettings = {
     }
 };
 
+const defaultForm = {
+    name: '',
+    country_id: ''
+};
+
 export default class SettingsFederal extends Component {
     state = {
-        form: {
-            name: '',
-            country_id: ''
-        },
+        form: defaultForm,
         items: [],
 
         pagination: {
@@ -66,6 +68,10 @@ export default class SettingsFederal extends Component {
 
     handleChangeForm = (value, prop) => {
         this.setState(prev => prev.form[prop] = value);
+    };
+
+    handleCloseModal = () => {
+        this.setState({showItemModal: false, form: defaultForm});
     };
 
     handleEditItem = (item) => {
@@ -220,7 +226,7 @@ export default class SettingsFederal extends Component {
                     <ConfirmModal
                         title={form.id ? 'Изменить' : 'Добавить'}
                         width='small'
-                        onClose={() => this.setState({showItemModal: false, form: {name: ''}})}
+                        onClose={this.handleCloseModal}
                         onSubmit={() => this.form.submit()}
                     >
                         <Form

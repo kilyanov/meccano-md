@@ -18,14 +18,14 @@ export default class Form extends Component {
 
     componentDidMount() {
         if (this.props.validate) {
-            EventEmitter.on(EVENTS.ON_VALIDATE_SUCCESS, this.validateForm.bind(null, 'success'));
-            EventEmitter.on(EVENTS.ON_VALIDATE_FAILURE, this.validateForm.bind(null, 'failure'));
+            EventEmitter.on(EVENTS.FORM.ON_VALIDATE_SUCCESS, this.validateForm.bind(null, 'success'));
+            EventEmitter.on(EVENTS.FORM.ON_VALIDATE_FAILURE, this.validateForm.bind(null, 'failure'));
         }
     }
 
     componentWillUnmount() {
-        EventEmitter.off(EVENTS.ON_VALIDATE_SUCCESS, this.validateForm);
-        EventEmitter.off(EVENTS.ON_VALIDATE_FAILURE, this.validateForm);
+        EventEmitter.off(EVENTS.FORM.ON_VALIDATE_SUCCESS, this.validateForm);
+        EventEmitter.off(EVENTS.FORM.ON_VALIDATE_FAILURE, this.validateForm);
     }
 
     handleOnSubmit = (event) => {
@@ -36,7 +36,7 @@ export default class Form extends Component {
         if (validate) {
             this.elementsCount.success = 0;
             this.elementsCount.failure = 0;
-            EventEmitter.emit(EVENTS.ON_VALIDATE);
+            EventEmitter.emit(EVENTS.FORM.ON_VALIDATE);
         } else onSubmit();
 
         return false;

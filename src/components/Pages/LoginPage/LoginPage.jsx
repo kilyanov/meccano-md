@@ -9,13 +9,15 @@ import {EventEmitter} from "../../../helpers";
 import Loader from '../../Shared/Loader/Loader';
 import Logo from '../../Shared/Logo/Logo';
 import InputText from '../../Form/InputText/InputText';
+import {STORAGE_KEY} from '../../../constants/LocalStorageKeys';
+import {EVENTS} from '../../../constants/Events';
 
 class LoginPage extends Component {
     constructor() {
         super();
 
         if (AuthService.isAuth()) {
-            EventEmitter.emit('redirect', '/');
+            EventEmitter.emit(EVENTS.REDIRECT, '/');
         }
     }
 
@@ -38,11 +40,11 @@ class LoginPage extends Component {
                     .login({username, password})
                     .then(response => {
                         if (response.data.token) {
-                            let lastPathName = StorageService.get('last-pathname');
+                            let lastPathName = StorageService.get(STORAGE_KEY.LAST_PATHNAME);
 
                             if (lastPathName && lastPathName === '/login') lastPathName = '/';
 
-                            EventEmitter.emit('redirect', lastPathName || '/');
+                            EventEmitter.emit(EVENTS.REDIRECT, lastPathName || '/');
                         }
                     })
                     .catch(() => this.setState({inProgress: false}));

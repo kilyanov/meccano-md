@@ -24,12 +24,14 @@ const columnSettings = {
     }
 };
 
+const defaultForm = {
+    name: '',
+    region_id: ''
+};
+
 export default class SettingsCity extends Component {
     state = {
-        form: {
-            name: '',
-            region_id: ''
-        },
+        form: defaultForm,
         items: [],
 
         pagination: {
@@ -68,6 +70,10 @@ export default class SettingsCity extends Component {
 
     handleChangeForm = (value, prop) => {
         this.setState(prev => prev.form[prop] = value);
+    };
+
+    handleCloseModal = () => {
+        this.setState({showItemModal: false, form: defaultForm});
     };
 
     handleEditItem = (item) => {
@@ -221,7 +227,7 @@ export default class SettingsCity extends Component {
                     <ConfirmModal
                         title={form.id ? 'Изменить' : 'Добавить'}
                         width='small'
-                        onClose={() => this.setState({showItemModal: false, form: {name: ''}})}
+                        onClose={this.handleCloseModal}
                         onSubmit={() => this.form.submit()}
                     >
                         <Form

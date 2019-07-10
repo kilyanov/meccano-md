@@ -3,14 +3,16 @@ import ApiList from '../api/apiList';
 import { StorageService } from "./StorageService";
 import { EventEmitter } from "../helpers";
 import { storeMainActions } from '../redux/storeMainActions';
+import {STORAGE_KEY} from '../constants/LocalStorageKeys';
+import {EVENTS} from '../constants/Events';
 
 export const AuthService = {
     login: (form) => {
         return API
             .post(ApiList.auth.login, form)
             .then(response => {
-                StorageService.set('token', response.data.token);
-                StorageService.set('token-expired', response.data.expired);
+                StorageService.set(STORAGE_KEY.TOKEN, response.data.token);
+                StorageService.set(STORAGE_KEY.TOKEN_EXPIRED, response.data.expired);
                 API.setToken(response.data.token);
                 storeMainActions();
 
@@ -19,21 +21,21 @@ export const AuthService = {
     },
     create: (form) => API.post(ApiList.auth.create, form),
     checkAuthorization: () => {
-        const token = StorageService.get('token');
-        const tokenExpired = StorageService.get('token-expired');
+        const token = StorageService.get(STORAGE_KEY.TOKEN);
+        const tokenExpired = StorageService.get(STORAGE_KEY.TOKEN_EXPIRED);
 
         if (token) {
             API.setToken(token);
         }
 
         if (!token || AuthService.isExpired(tokenExpired)) {
-            StorageService.set('last-pathname', location.pathname);
+            StorageService.set(STORAGE_KEY.LAST_PATHNAME, location.pathname);
             AuthService.logOut();
         }
     },
     isAuth: () => {
-        const token = StorageService.get('token');
-        const tokenExpired = StorageService.get('token-expired');
+        const token = StorageService.get(STORAGE_KEY.TOKEN);
+        const tokenExpired = StorageService.get(STORAGE_KEY.TOKEN_EXPIRED);
 
         return token && !AuthService.isExpired(tokenExpired);
     },
@@ -41,9 +43,9 @@ export const AuthService = {
         return moment(expired).local().isSameOrBefore(moment());
     },
     logOut: () => {
-        StorageService.remove('token');
-        StorageService.remove('token-expired');
+        StorageService.remove(STORAGE_KEY.TOKEN);
+        StorageService.remove(STORAGE_KEY.TOKEN_EXPIRED);
         API.removeToken();
-        EventEmitter.emit('redirect', '/login');
+        EventEmitter.emit(EVENTS.REDIRECT, '/login');
     }
 };

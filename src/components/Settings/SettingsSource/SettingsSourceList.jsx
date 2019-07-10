@@ -24,16 +24,18 @@ const columnSettings = {
     }
 };
 
+const defaultForm = {
+    name: '',
+    source_type_id: '',
+    country_id: '',
+    region_id: '',
+    city_id: '',
+    category: ''
+};
+
 export default class SettingsSourceList extends Component {
     state = {
-        form: {
-            name: '',
-            source_type_id: '',
-            country_id: '',
-            region_id: '',
-            city_id: '',
-            category: ''
-        },
+        form: defaultForm,
         items: [],
 
         pagination: {
@@ -108,6 +110,10 @@ export default class SettingsSourceList extends Component {
                 }
             });
         }
+    };
+
+    handleCloseModal = () => {
+        this.setState({showItemModal: false, form: defaultForm});
     };
 
     handleEditItem = (item) => {
@@ -308,7 +314,7 @@ export default class SettingsSourceList extends Component {
                     <ConfirmModal
                         title={form.id ? 'Изменить' : 'Добавить'}
                         width='small'
-                        onClose={() => this.setState({showItemModal: false, form: {name: ''}})}
+                        onClose={this.handleCloseModal}
                         onSubmit={() => this.form.submit()}
                     >
                         <Form

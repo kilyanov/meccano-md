@@ -1,10 +1,11 @@
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import './project-table-settings-modal.scss';
 import ConfirmModal from '../../../../Shared/ConfirmModal/ConfirmModal';
-import { COLUMN_TYPE, COLUMN_NAME, DEFAULT_COLUMNS } from '../Columns';
+import {COLUMN_TYPE, COLUMN_NAME, DEFAULT_COLUMNS, getColumnsFromStorage} from '../Columns';
 import CheckBox from '../../../../Form/CheckBox/CheckBox';
-import { StorageService } from '../../../../../services/StorageService';
+import {StorageService} from '../../../../../services/StorageService';
+import {STORAGE_KEY} from '../../../../../constants/LocalStorageKeys';
 
 const classes = new Bem('project-table-settings-modal');
 
@@ -17,8 +18,7 @@ export default class ProjectTableSettingsModal extends Component {
     constructor() {
         super();
 
-        const storageValue = StorageService.get('project-table-columns');
-        const storageColumns = storageValue && JSON.parse(storageValue);
+        const storageColumns = getColumnsFromStorage();
 
         this.state = {
             columns: storageColumns || [...DEFAULT_COLUMNS]
@@ -37,7 +37,7 @@ export default class ProjectTableSettingsModal extends Component {
     handleSubmit = () => {
         const {columns} = this.state;
 
-        StorageService.set('project-table-columns', JSON.stringify(columns));
+        StorageService.set(STORAGE_KEY.PROJECT_TABLE_COLUMNS, JSON.stringify(columns));
 
         this.props.onChange(columns);
         this.props.onClose();

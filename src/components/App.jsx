@@ -24,7 +24,7 @@ export default class App extends Component {
         AuthService.checkAuthorization();
 
         EventEmitter.setMaxListeners(0);
-        EventEmitter.on('redirect', (url, callback) => {
+        EventEmitter.on(EVENTS.REDIRECT, (url, callback) => {
             self.setState({redirect: url}, () => {
                 self.setState({redirect: false}, callback);
             });
@@ -52,7 +52,7 @@ export default class App extends Component {
     }
 
     componentWillUnmount() {
-        EventEmitter.off('redirect', null);
+        EventEmitter.off(EVENTS.REDIRECT, null);
         EventEmitter.off(EVENTS.OPERATED_NOTIFICATION.SHOW, null);
         EventEmitter.off(EVENTS.OPERATED_NOTIFICATION.HIDE, null);
         window.removeEventListener('load', () => {});

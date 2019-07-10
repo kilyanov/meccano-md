@@ -132,6 +132,7 @@ export default class SettingsExportModal extends Component {
     };
 
     types = [
+        // {name: 'xml', value: 'xml'},
         {name: 'xlsx', value: 'xlsx'},
         {name: 'html', value: 'html'},
         {name: 'docx', value: 'docx'}
