@@ -17,6 +17,7 @@ $buttonHeight: 40px;
   cursor: pointer;
   opacity: .9;
   z-index: 999;
+  transition: opacity .3s ease;
 
   &:before {
     content: "";

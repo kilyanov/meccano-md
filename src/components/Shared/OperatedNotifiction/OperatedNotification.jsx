@@ -5,6 +5,13 @@ import {EventEmitter} from '../../../helpers';
 import {EVENTS} from '../../../constants/Events';
 
 const classes = new Bem('operated-notification');
+const types = {
+    info: 'info',
+    success: 'success',
+    warning: 'warning',
+    error: 'error'
+};
+const POSITIVE_TYPES = [types.info, types.success];
 
 export default class OperatedNotification extends Component {
     static propTypes = {
@@ -15,7 +22,7 @@ export default class OperatedNotification extends Component {
         timeOut: PropTypes.number,
         onSubmit: PropTypes.func.isRequired,
         onCancel: PropTypes.func,
-        type: PropTypes.oneOf(['info', 'success', 'warning', 'error'])
+        type: PropTypes.oneOf(Object.keys(types))
     };
 
     static defaultProps = {
@@ -26,12 +33,18 @@ export default class OperatedNotification extends Component {
     };
 
     componentDidMount() {
-        if (this.props.timeOut) {
+        if (this.props.timeOut || POSITIVE_TYPES.includes(this.props.type)) {
             setTimeout(() => {
                 EventEmitter.emit(EVENTS.OPERATED_NOTIFICATION.HIDE);
-            }, this.props.timeOut);
+            }, this.props.timeOut || 5000);
         }
     }
+
+    handleClick = () => {
+        if (POSITIVE_TYPES.includes(this.props.type)) {
+            EventEmitter.emit(EVENTS.OPERATED_NOTIFICATION.HIDE);
+        }
+    };
 
     render() {
         const {
@@ -46,8 +59,10 @@ export default class OperatedNotification extends Component {
 
         return (
             <div {...classes(null, type)}>
-                <h4 {...classes('title')}>{title}</h4>
-                <p {...classes('message')}>{message}</p>
+                <div {...classes('content')}  onClick={this.handleClick}>
+                    <h4 {...classes('title')}>{title}</h4>
+                    <p {...classes('message')}>{message}</p>
+                </div>
 
                 <div {...classes('buttons-container')}>
                     <button
