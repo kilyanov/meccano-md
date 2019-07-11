@@ -17,18 +17,20 @@ import DropDownButton from '../../Shared/DropDownButton/DropDownButton';
 import ArticlesImportModal from '../../Article/ArticlesImportModal/ArticlesImportModal';
 import Page from '../../Shared/Page/Page';
 import Loader from '../../Shared/Loader/Loader';
+import {SORT_DIR} from '../../../constants';
 
 const classes = new Bem('project-page');
+const defaultPagination = {
+    page: 1,
+    pageCount: 1
+};
 
 export default class ProjectPage extends Component {
     state = {
         articles: [],
         activeArticle: null,
         selectedItemIds: [],
-        pagination: {
-            page: 1,
-            pageCount: 1
-        },
+        pagination: defaultPagination,
         project: null,
         filters: {
             search: ''
@@ -131,6 +133,16 @@ export default class ProjectPage extends Component {
         }
     };
 
+    handleChangeSort = (sort) => {
+        const newState = this.state;
+
+        newState.filters.sort = sort.type && `${sort.dir === SORT_DIR.ASC ? '-' : ''}${sort.type}`;
+        newState.articles = [];
+        newState.pagination = defaultPagination;
+        newState.inProgress = true;
+        this.setState(newState, this.getArticles);
+    };
+
     getArticles = (isPagination = false) => {
         const {pagination, filters} = this.state;
         const columns = this.projectTable.getColumns();
@@ -145,6 +157,8 @@ export default class ProjectPage extends Component {
                 form[`query[${columnName}]`] = filters.search;
             });
         }
+
+        if (filters.sort) form.sort = filters.sort;
 
         ArticleService
             .getList(form)
@@ -264,6 +278,7 @@ export default class ProjectPage extends Component {
                         ref={ref => this.projectTable = ref}
                         onChangeSelected={this.handleChangeSelected}
                         onChangeColumns={this.handleChangeColumns}
+                        onChangeSort={this.handleChangeSort}
                         onDeleteArticle={this.handleDeleteArticle}
                         selectedIds={selectedItemIds}
                         projectId={this.projectId}

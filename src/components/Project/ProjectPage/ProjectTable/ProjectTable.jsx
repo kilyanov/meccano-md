@@ -22,6 +22,7 @@ export default class ProjectTable extends Component {
         articles: PropTypes.array,
         selectedIds: PropTypes.array,
         onChangeSelected: PropTypes.func,
+        onChangeSort: PropTypes.func,
         onChangeColumns: PropTypes.func.isRequired,
         onDeleteArticle: PropTypes.func,
         projectId: PropTypes.string.isRequired,
@@ -81,7 +82,7 @@ export default class ProjectTable extends Component {
             sort.dir = SORT_DIR.DESC;
         }
 
-        this.setState({sort});
+        this.setState({sort}, () => this.props.onChangeSort(sort));
     };
 
     handleSelectArticle = (articleId) => {
