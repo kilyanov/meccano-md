@@ -18,6 +18,7 @@ import ArticlesImportModal from '../../Article/ArticlesImportModal/ArticlesImpor
 import Page from '../../Shared/Page/Page';
 import Loader from '../../Shared/Loader/Loader';
 import {SORT_DIR} from '../../../constants';
+import {COLUMN_TYPE_FIELD} from './ProjectTable/Columns';
 
 const classes = new Bem('project-page');
 const defaultPagination = {
@@ -140,6 +141,7 @@ export default class ProjectPage extends Component {
         newState.articles = [];
         newState.pagination = defaultPagination;
         newState.inProgress = true;
+
         this.setState(newState, this.getArticles);
     };
 
@@ -149,7 +151,9 @@ export default class ProjectPage extends Component {
         const form = {
             project: this.projectId,
             page: pagination.page,
-            expand: columns.join(',')
+            expand: Object.keys(COLUMN_TYPE_FIELD)
+                .filter(type => columns.includes(type))
+                .map(type => COLUMN_TYPE_FIELD[type])
         };
 
         if (filters.search) {
@@ -175,7 +179,8 @@ export default class ProjectPage extends Component {
                     pagination: responsePagination,
                     inProgress: false
                 });
-            });
+            })
+            .catch(() => this.setState({inProgress: false}));
     };
 
     getProject = (projectId) => {

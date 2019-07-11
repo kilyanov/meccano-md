@@ -10,9 +10,10 @@ export const COLUMN_TYPE = {
     city: 'city',
     region: 'region',
     federalDistrict: 'federalDistrict',
-    typeMedia: 'typeMedia',
+    typeSource: 'typeSource',
     text: 'text'
 };
+
 export const COLUMN_NAME = {
     date: 'Дата',
     source: 'Источник',
@@ -22,8 +23,36 @@ export const COLUMN_NAME = {
     city: 'Город',
     region: 'Область/край',
     federalDistrict: 'Федеральный округ',
-    typeMedia: 'Тип СМИ',
+    typeSource: 'Тип СМИ',
     text: 'Текст статьи'
+};
+
+// Для сортировки статей
+export const COLUMN_TYPE_SORT = {
+    date: 'date',
+    source: 'source.name',
+    title: 'title',
+    annotation: 'annotation',
+    authors: 'authors.name',
+    city: 'source.city.name',
+    region: 'source.region.name',
+    federalDistrict: 'source.federalDistrict.name',
+    typeSource: 'source.type.name',
+    text: 'text'
+};
+
+// Для запроса статей
+export const COLUMN_TYPE_FIELD = {
+    date: 'date',
+    source: 'source',
+    title: 'title',
+    annotation: 'annotation',
+    authors: 'authors',
+    city: 'source.city',
+    region: 'source.region',
+    federalDistrict: 'source.federalDistrict',
+    typeSource: 'source.type',
+    text: 'text'
 };
 
 export const getColumnsFromStorage = () => {

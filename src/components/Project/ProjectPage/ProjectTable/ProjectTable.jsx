@@ -8,7 +8,7 @@ import './project-table.scss';
 import './ProjectTableHeader/project-table-header.scss';
 import DropDownMenuIcon from '../../../Shared/SvgIcons/DropDownMenuIcon';
 import ProjectTableSettingsModal from './ProjectTableSettingsModal/ProjectTableSettingsModal';
-import {DEFAULT_COLUMNS, COLUMN_TYPE, COLUMN_NAME, getColumnsFromStorage} from './Columns';
+import {DEFAULT_COLUMNS, COLUMN_TYPE, COLUMN_NAME, COLUMN_TYPE_SORT, getColumnsFromStorage} from './Columns';
 import SettingsIcon from '../../../Shared/SvgIcons/SettingsIcon';
 import SortArrow from './ProjectTableHeader/ProjectTableHeaderSortArrow';
 import {InitScrollbar} from '../../../../helpers/Tools';
@@ -175,7 +175,7 @@ export default class ProjectTable extends Component {
                             key={key}
                             ref={node => this.headerCellRef[key] = node}
                             {...headerClasses('cell', {[key]: true, active})}
-                            onClick={() => this.handleChangeSort(COLUMN_TYPE[key])}
+                            onClick={() => this.handleChangeSort(COLUMN_TYPE_SORT[key])}
                         >
                             {COLUMN_NAME[key]}
                             {active && <SortArrow classes={headerClasses} dir={sort.dir}/>}
@@ -222,12 +222,11 @@ export default class ProjectTable extends Component {
                                 {key === 'source' && article.source && article.source.name}
                                 {key === 'title' && article.title}
                                 {key === 'annotation' && article.annotation}
-                                {key === 'authors' && article.authors &&
-                                    article.authors.map(({name}) => name).join(', ')}
-                                {key === 'city' && article.city}
-                                {key === 'region' && article.region}
-                                {key === 'federalDistrict' && article.federalDistrict}
-                                {key === 'typeMedia' && article.typeMedia}
+                                {key === 'authors' && article.authors && article.authors.map(({name}) => name).join(', ')}
+                                {key === 'city' && _.get(article, 'source.city.name')}
+                                {key === 'region' && _.get(article, 'source.region.name')}
+                                {key === 'federalDistrict' && _.get(article, 'source.federalDistrict.name')}
+                                {key === 'typeSource' && _.get(article, 'source.type.name')}
                                 {key === 'text' && article.text.replace(/<[^>]*>?/gm, '')}
                             </span>
                         </Link>
