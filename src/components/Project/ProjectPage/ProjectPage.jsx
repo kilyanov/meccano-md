@@ -18,13 +18,12 @@ import ArticlesImportModal from '../../Article/ArticlesImportModal/ArticlesImpor
 import Page from '../../Shared/Page/Page';
 import Loader from '../../Shared/Loader/Loader';
 import {SORT_DIR} from '../../../constants';
-import {COLUMN_TYPE_FIELD} from './ProjectTable/Columns';
+import {COLUMN_TYPE_FIELD, COLUMN_TYPE_SORT} from './ProjectTable/Columns';
 
 const classes = new Bem('project-page');
-const defaultPagination = {
-    page: 1,
-    pageCount: 1
-};
+const defaultPagination = {page: 1, pageCount: 1};
+const defaultSort = {type: null, dir: null};
+const defaultFilters = {search: '', sort: defaultSort};
 
 export default class ProjectPage extends Component {
     state = {
@@ -33,9 +32,7 @@ export default class ProjectPage extends Component {
         selectedItemIds: [],
         pagination: defaultPagination,
         project: null,
-        filters: {
-            search: ''
-        },
+        filters: defaultFilters,
         showArticleModal: false,
         showUploadArticlesModal: false,
         showImportArticlesModal: false,
@@ -73,13 +70,18 @@ export default class ProjectPage extends Component {
             }).then(() => {
                 const requestStack = selectedItemIds.map(articleId => ArticleService.delete(articleId));
 
-                Promise.all(requestStack).then(() => {
-                    NotificationManager.success('Выбранные статьи успешно удалены', 'Успех');
+                this.setState({inProgress: true}, () => {
+                    Promise.all(requestStack)
+                        .then(() => {
+                            NotificationManager.success('Выбранные статьи успешно удалены', 'Успех');
 
-                    this.setState({
-                        articles: this.state.articles.filter(({id}) => !selectedItemIds.includes(id)),
-                        selectedItemIds: []
-                    });
+                            this.setState({
+                                articles: this.state.articles.filter(({id}) => !selectedItemIds.includes(id)),
+                                selectedItemIds: [],
+                                inProgress: false
+                            });
+                        })
+                        .catch(() => this.setState({inProgress: false}));
                 });
             });
         }
@@ -100,11 +102,15 @@ export default class ProjectPage extends Component {
                 submitText: 'Удалить',
                 style: 'danger'
             }).then(() => {
-                ArticleService.delete(articleId).then(() => {
-                    NotificationManager.success('Статья была успешно удалена', 'Успех');
-                    this.setState({
-                        articles: this.state.articles.filter(({id}) => id !== articleId)
-                    });
+                this.setState({inProgress: true}, () => {
+                    ArticleService.delete(articleId)
+                        .then(() => {
+                            NotificationManager.success('Статья была успешно удалена', 'Успех');
+                            this.setState({
+                                articles: this.state.articles.filter(({id}) => id !== articleId)
+                            });
+                        })
+                        .catch(() => this.setState({inProgress: false}));
                 });
             });
         }
@@ -137,16 +143,25 @@ export default class ProjectPage extends Component {
     handleChangeSort = (sort) => {
         const newState = this.state;
 
-        newState.filters.sort = sort.type && `${sort.dir === SORT_DIR.ASC ? '-' : ''}${sort.type}`;
-        newState.articles = [];
+        newState.filters.sort = sort;
         newState.pagination = defaultPagination;
+        newState.articles = [];
         newState.inProgress = true;
 
         this.setState(newState, this.getArticles);
     };
 
+    handleImportArticlesSubmit = () => {
+        this.setState({
+            pagination: defaultPagination,
+            filters: defaultFilters,
+            articles: [],
+            inProgress: true
+        }, this.getArticles);
+    };
+
     getArticles = (isPagination = false) => {
-        const {pagination, filters} = this.state;
+        const {pagination, filters: {sort, search}} = this.state;
         const columns = this.projectTable.getColumns();
         const form = {
             project: this.projectId,
@@ -156,13 +171,15 @@ export default class ProjectPage extends Component {
                 .map(type => COLUMN_TYPE_FIELD[type])
         };
 
-        if (filters.search) {
+        if (search) {
             columns.forEach(columnName => {
-                form[`query[${columnName}]`] = filters.search;
+                form[`query[${columnName}]`] = search;
             });
         }
 
-        if (filters.sort) form.sort = filters.sort;
+        if (sort && sort.type) {
+            form.sort = sort.type && `${sort.dir === SORT_DIR.ASC ? '-' : ''}${COLUMN_TYPE_SORT[sort.type]}`;
+        }
 
         ArticleService
             .getList(form)
@@ -285,6 +302,7 @@ export default class ProjectPage extends Component {
                         onChangeColumns={this.handleChangeColumns}
                         onChangeSort={this.handleChangeSort}
                         onDeleteArticle={this.handleDeleteArticle}
+                        sort={filters.sort}
                         selectedIds={selectedItemIds}
                         projectId={this.projectId}
                         articles={articles}
@@ -313,6 +331,7 @@ export default class ProjectPage extends Component {
                 {showImportArticlesModal && (
                     <ArticlesImportModal
                         onClose={() => this.setState({showImportArticlesModal: false})}
+                        onSubmit={this.handleImportArticlesSubmit}
                         projectId={this.projectId}
                     />
                 )}

@@ -8,7 +8,7 @@ import './project-table.scss';
 import './ProjectTableHeader/project-table-header.scss';
 import DropDownMenuIcon from '../../../Shared/SvgIcons/DropDownMenuIcon';
 import ProjectTableSettingsModal from './ProjectTableSettingsModal/ProjectTableSettingsModal';
-import {DEFAULT_COLUMNS, COLUMN_TYPE, COLUMN_NAME, COLUMN_TYPE_SORT, getColumnsFromStorage} from './Columns';
+import {DEFAULT_COLUMNS, COLUMN_TYPE, COLUMN_NAME, getColumnsFromStorage} from './Columns';
 import SettingsIcon from '../../../Shared/SvgIcons/SettingsIcon';
 import SortArrow from './ProjectTableHeader/ProjectTableHeaderSortArrow';
 import {InitScrollbar} from '../../../../helpers/Tools';
@@ -22,6 +22,7 @@ export default class ProjectTable extends Component {
         articles: PropTypes.array,
         selectedIds: PropTypes.array,
         onChangeSelected: PropTypes.func,
+        sort: PropTypes.object,
         onChangeSort: PropTypes.func,
         onChangeColumns: PropTypes.func.isRequired,
         onDeleteArticle: PropTypes.func,
@@ -37,20 +38,10 @@ export default class ProjectTable extends Component {
         onClickArticle: () => {}
     };
 
-    constructor() {
-        super();
-
-        const storageColumns = getColumnsFromStorage();
-
-        this.state = {
-            columns: storageColumns || [...DEFAULT_COLUMNS],
-            showColumnSettingsModal: false,
-            sort: {
-                type: null,
-                dir: null
-            }
-        };
-    }
+    state = {
+        columns: getColumnsFromStorage() || [...DEFAULT_COLUMNS],
+        showColumnSettingsModal: false
+    };
 
     componentDidMount() {
         InitScrollbar(this.bodyRef);
@@ -67,7 +58,7 @@ export default class ProjectTable extends Component {
     };
 
     handleChangeSort = (sortType) => {
-        let {sort} = this.state;
+        let {sort} = this.props;
 
         if (sort.type === sortType) {
             if (sort.dir === SORT_DIR.ASC) {
@@ -82,7 +73,7 @@ export default class ProjectTable extends Component {
             sort.dir = SORT_DIR.DESC;
         }
 
-        this.setState({sort}, () => this.props.onChangeSort(sort));
+        this.props.onChangeSort(sort);
     };
 
     handleSelectArticle = (articleId) => {
@@ -146,16 +137,11 @@ export default class ProjectTable extends Component {
 
     articleDropDown = {};
 
-    defaultSort = {
-        type: null,
-        dir: null
-    };
-
     headerCellRef = {};
 
     renderHeader = () => {
-        const {articles, selectedIds} = this.props;
-        const {columns, sort} = this.state;
+        const {articles, selectedIds, sort} = this.props;
+        const {columns} = this.state;
 
         return (
             <section {...headerClasses()} ref={node => this.headerRef = node}>
@@ -175,7 +161,7 @@ export default class ProjectTable extends Component {
                             key={key}
                             ref={node => this.headerCellRef[key] = node}
                             {...headerClasses('cell', {[key]: true, active})}
-                            onClick={() => this.handleChangeSort(COLUMN_TYPE_SORT[key])}
+                            onClick={() => this.handleChangeSort(COLUMN_TYPE[key])}
                         >
                             {COLUMN_NAME[key]}
                             {active && <SortArrow classes={headerClasses} dir={sort.dir}/>}

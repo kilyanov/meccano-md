@@ -5,8 +5,6 @@ import './articles-import-modal.scss';
 import RadioButton from '../../Form/RadioButton/RadioButton';
 import InputFile from '../../Form/InputFile/InputFile';
 import {ProjectService} from '../../../services';
-import store from '../../../redux/store';
-import { getArticlesByProject } from '../../../redux/actions/article/index';
 import Loader from '../../Shared/Loader/Loader';
 import TransferService from '../../../services/TransferService';
 import Select from '../../Form/Select/Select';
@@ -67,8 +65,8 @@ export default class ArticlesImportModal extends Component {
                     formData.append('import', form.type);
 
                     ProjectService.importArticles(this.props.projectId, formData).then(() => {
-                        store.dispatch(getArticlesByProject(this.props.projectId));
                         this.setState({inProgress: false});
+                        this.props.onSubmit();
                         this.props.onClose();
                     }).catch(() => this.setState({inProgress: false}));
                 });
