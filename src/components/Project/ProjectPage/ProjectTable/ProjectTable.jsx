@@ -48,6 +48,7 @@ export default class ProjectTable extends Component {
     }
 
     componentDidUpdate = () => {
+        InitScrollbar(this.bodyRef);
         this.setColumnWidth();
     };
 
@@ -74,6 +75,7 @@ export default class ProjectTable extends Component {
         }
 
         this.props.onChangeSort(sort);
+        this.bodyRef.scrollTop = 0;
     };
 
     handleSelectArticle = (articleId) => {
