@@ -77,7 +77,7 @@ export default class ArticlesImportModal extends Component {
     render() {
         const {onClose} = this.props;
         const {form, types, inProgress} = this.state;
-        const selectedType = types.find(({id}) => id === form.typeId);
+        const selectedType = types.find(({id}) => id === form.typeId) || {};
 
         return (
             <ConfirmModal
@@ -108,7 +108,7 @@ export default class ArticlesImportModal extends Component {
                             <InputFile
                                 {...classes('input-file')}
                                 onChange={this.handleChangeFiles}
-                                // accept={`*.${selectedType.type}`}
+                                accept={selectedType.fileTypes}
                             />
                         </div>
                     </div>

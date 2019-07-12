@@ -9,7 +9,7 @@ const classes = new Bem('input-file');
 
 export default class InputFile extends Component {
     static propTypes = {
-        accept: PropTypes.string,
+        accept: PropTypes.oneOfType([PropTypes.string, PropTypes.array]),
         className: PropTypes.string,
         required: PropTypes.bool,
         files: PropTypes.array,
@@ -74,8 +74,9 @@ export default class InputFile extends Component {
     );
 
     render() {
-        const {className, required, validateErrorMessage} = this.props;
-        const {accept, files, error} = this.state;
+        const {accept, className, required, validateErrorMessage} = this.props;
+        const {files, error} = this.state;
+        const acceptMIME = accept instanceof Array ? accept.join(', ') : accept;
 
         return (
             <div {...classes('', {error}, {
@@ -96,7 +97,7 @@ export default class InputFile extends Component {
                     {...classes('field')}
                     ref={node => this.inputFile = node}
                     type="file"
-                    accept={accept}
+                    accept={acceptMIME}
                     onChange={this.handleChange}
                 />
 
