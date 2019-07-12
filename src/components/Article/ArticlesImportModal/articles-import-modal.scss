@@ -3,6 +3,15 @@
         font-weight: 500;
     }
 
+    &__radio-button {
+        margin-bottom: 5px;
+    }
+
+    &__input-file,
+    &__row {
+        margin-bottom: 0 !important;
+    }
+
     .confirm-modal__header {
         padding-bottom: 24px;
     }

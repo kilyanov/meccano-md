@@ -9,6 +9,7 @@ const classes = new Bem('input-file');
 
 export default class InputFile extends Component {
     static propTypes = {
+        accept: PropTypes.string,
         className: PropTypes.string,
         required: PropTypes.bool,
         files: PropTypes.array,
@@ -21,6 +22,7 @@ export default class InputFile extends Component {
     };
 
     state = {
+        accept: '',
         error: false,
         files: this.props.files || [],
         inProgress: false
@@ -73,7 +75,7 @@ export default class InputFile extends Component {
 
     render() {
         const {className, required, validateErrorMessage} = this.props;
-        const {files, error} = this.state;
+        const {accept, files, error} = this.state;
 
         return (
             <div {...classes('', {error}, {
@@ -91,9 +93,10 @@ export default class InputFile extends Component {
                 <div {...classes('file-list')}>{files.map(this.renderFile)}</div>
 
                 <input
+                    {...classes('field')}
                     ref={node => this.inputFile = node}
                     type="file"
-                    {...classes('field')}
+                    accept={accept}
                     onChange={this.handleChange}
                 />
 

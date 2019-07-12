@@ -213,6 +213,7 @@ export default class ProjectPage extends Component {
         link: `/project/${this.projectId}/article`
     }, {
         title: 'Импорт статей',
+        closeOnClick: true,
         onClick: () => this.setState({showImportArticlesModal: true})
     }];
 

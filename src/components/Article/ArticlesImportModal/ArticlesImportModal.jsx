@@ -7,7 +7,6 @@ import InputFile from '../../Form/InputFile/InputFile';
 import {ProjectService} from '../../../services';
 import Loader from '../../Shared/Loader/Loader';
 import TransferService from '../../../services/TransferService';
-import Select from '../../Form/Select/Select';
 
 const classes = new Bem('articles-import-modal');
 
@@ -20,10 +19,11 @@ export default class ArticlesImportModal extends Component {
     state = {
         form: {
             files: [],
-            type: null,
+            typeId: null,
             service: null
         },
         types: [],
+        selectedTypeId: null,
         inProgress: true
     };
 
@@ -32,7 +32,7 @@ export default class ArticlesImportModal extends Component {
             .get()
             .then(response => {
                 this.setState({
-                    types: response.data.map(({id, name}) => ({name, value: id})),
+                    types: response.data,
                     inProgress: false
                 });
             })
@@ -49,8 +49,8 @@ export default class ArticlesImportModal extends Component {
         this.setState(prev => prev.form.files = files);
     };
 
-    handleChangeType = ({value}) => {
-        this.setState(prev => prev.form.type = value);
+    handleChangeType = (typeId) => {
+        this.setState(prev => prev.form.typeId = typeId);
     };
 
     handleSubmitForm = () => {
@@ -62,7 +62,7 @@ export default class ArticlesImportModal extends Component {
                     const formData = new FormData();
 
                     formData.append('file', file);
-                    formData.append('import', form.type);
+                    formData.append('import', form.typeId);
 
                     ProjectService.importArticles(this.props.projectId, formData).then(() => {
                         this.setState({inProgress: false});
@@ -77,7 +77,7 @@ export default class ArticlesImportModal extends Component {
     render() {
         const {onClose} = this.props;
         const {form, types, inProgress} = this.state;
-        const selectedType = types.find(({value}) => value === form.type);
+        const selectedType = types.find(({id}) => id === form.typeId);
 
         return (
             <ConfirmModal
@@ -86,26 +86,31 @@ export default class ArticlesImportModal extends Component {
                 onClose={onClose}
                 onSubmit={this.handleSubmitForm}
                 submitText='Импорт'
-                submitDisabled={!form.service && (!form.files.length || !form.type)}
+                submitDisabled={!form.service && (!form.files.length || !form.typeId)}
             >
                 <div {...classes('row', '', 'row')}>
                     <div {...classes('col', '', 'col-md-4')}>
                         <h3 {...classes('section-title')}>Импорт из файла:</h3>
 
-                        <InputFile
-                            ref={node => this.inputFile = node}
-                            onChange={this.handleChangeFiles}
-                        />
-
-                        {!!form.files.length && (
-                            <Select
-                                label='Шаблон'
-                                options={types}
-                                selected={selectedType}
-                                onChange={this.handleChangeType}
-                                fixedPosList
+                        {types.map(type => (
+                            <RadioButton
+                                {...classes('radio-button')}
+                                key={type.id}
+                                label={type.name}
+                                name='type'
+                                value={type.id}
+                                checked={type.id === form.typeId}
+                                onChange={() => this.handleChangeType(type.id)}
                             />
-                        )}
+                        ))}
+
+                        <div style={{visibility: form.typeId && selectedType ? 'visible' : 'hidden'}}>
+                            <InputFile
+                                {...classes('input-file')}
+                                onChange={this.handleChangeFiles}
+                                // accept={`*.${selectedType.type}`}
+                            />
+                        </div>
                     </div>
                     <div {...classes('col', '', ['col-md-8', 'd-none'])}>
                         <h3 {...classes('section-title')}>Импорт из сервиса:</h3>
