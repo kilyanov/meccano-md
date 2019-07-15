@@ -7,7 +7,6 @@ import Form from '../../Form/Form/Form';
 import TextArea from '../../Form/TextArea/TextArea';
 import RichEditor from '../../Form/RichEditor/RichEditor';
 import Loader from '../../Shared/Loader/Loader';
-import BackButton from '../../Shared/BackButton/BackButton';
 import ArrowIcon from '../../Shared/SvgIcons/ArrowIcon';
 import Button from '../../Shared/Button/Button';
 import ArticleViewSettings from './ArticleViewSettings/ArticleViewSettings';
@@ -33,27 +32,29 @@ export default class ArticleCreatePage extends Component {
 
         this.articleId = props.match.params.articleId;
         this.projectId = props.match.params.projectId;
+        this.defaultForm = {
+            title: '',
+            source_id: null,
+            date: new Date(),
+            media: '',
+            url: '',
+            projectId: this.projectId,
+            section_main_id: null,
+            section_sub_id: null,
+            section_three_id: null,
+            authors: [],
+            number: '',
+            annotation: '',
+            text: ''
+        };
         this.state = {
             articleId: this.articleId,
             articles: [],
             fields: [],
             sources: [],
             articleIndex: 0,
-            form: {
-                title: '',
-                source_id: null,
-                date: new Date(),
-                media: '',
-                url: '',
-                projectId: this.projectId,
-                section_main_id: null,
-                section_sub_id: null,
-                section_three_id: null,
-                authors: [],
-                number: '',
-                annotation: '',
-                text: ''
-            },
+            prevForm: _.clone(this.defaultForm),
+            form: _.clone(this.defaultForm),
             selectedMedia: {},
             viewType: StorageService.get(STORAGE_KEY.ARTICLE_VIEW_TYPE) || 1,
             showViewSettings: false,
@@ -96,6 +97,7 @@ export default class ArticleCreatePage extends Component {
                     articles,
                     fields: form.project.fields,
                     sections,
+                    prevForm: _.cloneDeep(form),
                     form,
                     sources,
                     articleIndex: articles.findIndex(({id}) => id === this.articleId),
@@ -172,7 +174,9 @@ export default class ArticleCreatePage extends Component {
             prevArticle = articles[articles.length - 1];
         }
 
-        EventEmitter.emit(EVENTS.REDIRECT, `/project/${this.projectId}/article/${prevArticle.id}`);
+        this.checkFormChanges().then(() => {
+            EventEmitter.emit(EVENTS.REDIRECT, `/project/${this.projectId}/article/${prevArticle.id}`);
+        });
     };
 
     handleNextArticle = () => {
@@ -184,7 +188,15 @@ export default class ArticleCreatePage extends Component {
             nextArticle = articles[0];
         }
 
-        EventEmitter.emit(EVENTS.REDIRECT, `/project/${this.projectId}/article/${nextArticle.id}`);
+        this.checkFormChanges().then(() => {
+            EventEmitter.emit(EVENTS.REDIRECT, `/project/${this.projectId}/article/${nextArticle.id}`);
+        });
+    };
+
+    handleClickBackButton = () => {
+        this.checkFormChanges().then(() => {
+            EventEmitter.emit(EVENTS.REDIRECT, `/project/${this.projectId}`);
+        });
     };
 
     handleEndSort = (sortedKeys) => {
@@ -241,17 +253,19 @@ export default class ArticleCreatePage extends Component {
         form.project_id = this.projectId;
 
         const submitForm = () => {
-            this.setState({inProgress: true}, () => {
-                ArticleService[isUpdate ? 'update' : 'create'](form, form.id).then(() => {
-                    OperatedNotification.success({
-                        title: `${isUpdate ? 'Обновление' : 'Создание'} статьи`,
-                        message: `Статья успешно ${isUpdate ? 'обновлена' : 'создана'}`,
-                        submitButtonText: '← Перейти ко всем статьям',
-                        timeOut: 10000,
-                        onSubmit: () => EventEmitter.emit(EVENTS.REDIRECT, `/project/${this.projectId}`)
-                    });
-                    this.setState({inProgress: false});
-                }).catch(() => this.setState({inProgress: false}));
+            return new Promise(resolve => {
+                this.setState({inProgress: true}, () => {
+                    ArticleService[isUpdate ? 'update' : 'create'](form, form.id).then(() => {
+                        OperatedNotification.success({
+                            title: `${isUpdate ? 'Обновление' : 'Создание'} статьи`,
+                            message: `Статья успешно ${isUpdate ? 'обновлена' : 'создана'}`,
+                            submitButtonText: '← Перейти ко всем статьям',
+                            timeOut: 10000,
+                            onSubmit: () => EventEmitter.emit(EVENTS.REDIRECT, `/project/${this.projectId}`)
+                        });
+                        this.setState({inProgress: false}, resolve);
+                    }).catch(() => this.setState({inProgress: false}, resolve));
+                });
             });
         };
 
@@ -265,7 +279,7 @@ export default class ArticleCreatePage extends Component {
             });
         }
 
-        submitForm();
+        return submitForm();
     };
 
     getArticle = () => {
@@ -368,6 +382,32 @@ export default class ArticleCreatePage extends Component {
         ProjectService.put(this.projectId, {fields});
     };
 
+    checkFormChanges = () => {
+        const {prevForm, form} = this.state;
+
+        return new Promise((resolve) => {
+            const prevFormClone = _.clone(prevForm);
+            const formClone = _.clone(form);
+
+            delete prevFormClone.project;
+            delete formClone.project;
+
+            if (!_.isEqual(prevFormClone, formClone)) {
+                return OperatedNotification.warning({
+                    title: 'Внимание',
+                    message: 'Есть несохраненные изменния.\nПродолжить без сохранения?',
+                    submitButtonText: 'Продолжить',
+                    cancelButtonText: 'Сохранять',
+                    closeOnClick: true,
+                    onSubmit: () => resolve(),
+                    onCancel: () => this.handleSubmit().then(resolve)
+                });
+            }
+
+            return resolve();
+        });
+    };
+
     article = null;
 
     render() {
@@ -463,11 +503,10 @@ export default class ArticleCreatePage extends Component {
         return (
             <Page withBar {...classes()}>
                 <section {...classes('header')}>
-                    <BackButton
+                    <a
                         {...classes('back-button')}
-                        to={`/project/${this.projectId}`}
-                        force
-                    />
+                        onClick={this.handleClickBackButton}
+                    ><i>‹</i> Назад к проекту</a>
 
                     <div {...classes('title-wrap')}>
                         {articles.length > 1 && (

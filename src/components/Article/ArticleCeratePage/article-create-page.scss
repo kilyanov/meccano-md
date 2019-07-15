@@ -13,7 +13,16 @@ $namespace: '.article-create-page';
   }
 
   &__back-button {
+    background: none;
+    border: none;
+    font-weight: 300;
+    font-size: 15px;
+    color: #008bfb;
     margin-right: 50px;
+
+    i {
+      font-size: 18px;
+    }
   }
 
   &__title-wrap {

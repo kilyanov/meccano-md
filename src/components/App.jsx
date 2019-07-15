@@ -80,6 +80,7 @@ export default class App extends Component {
                         submitButtonText={notification.submitButtonText}
                         cancelButtonText={notification.cancelButtonText}
                         type={notification.type}
+                        closeOnClick={notification.closeOnClick}
                         timeOut={notification.timeOut}
                     />
                 )}

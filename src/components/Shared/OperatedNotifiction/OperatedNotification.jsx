@@ -22,7 +22,8 @@ export default class OperatedNotification extends Component {
         timeOut: PropTypes.number,
         onSubmit: PropTypes.func.isRequired,
         onCancel: PropTypes.func,
-        type: PropTypes.oneOf(Object.keys(types))
+        type: PropTypes.oneOf(Object.keys(types)),
+        closeOnClick: PropTypes.bool
     };
 
     static defaultProps = {
@@ -41,7 +42,7 @@ export default class OperatedNotification extends Component {
     }
 
     handleClick = () => {
-        if (POSITIVE_TYPES.includes(this.props.type)) {
+        if (POSITIVE_TYPES.includes(this.props.type) || this.props.closeOnClick) {
             EventEmitter.emit(EVENTS.OPERATED_NOTIFICATION.HIDE);
         }
     };

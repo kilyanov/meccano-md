@@ -17,7 +17,12 @@ $buttonHeight: 40px;
   cursor: pointer;
   opacity: .9;
   z-index: 999;
-  transition: opacity .3s ease;
+
+  animation-name: pulse_animation;
+  animation-duration: 800ms;
+  transform-origin: 70% 70%;
+  animation-iteration-count: 1;
+  animation-timing-function: linear;
 
   &:before {
     content: "";
@@ -99,12 +104,13 @@ $buttonHeight: 40px;
     color: #fff;
     font-size: 1em;
     line-height: 1.2em;
-    font-weight: bold;
+    font-weight: 500;
   }
 
   &__message {
     margin-top: 0;
     font-size: 14px;
+    font-weight: 300;
     line-height: 16px;
     white-space: pre-wrap;
   }
@@ -123,6 +129,7 @@ $buttonHeight: 40px;
     border: none;
     color: #fff;
     font-size: 12px;
+    font-weight: 3000;
     transition: background-color .3s ease, color .3s ease;
 
     &:hover {
@@ -136,5 +143,16 @@ $buttonHeight: 40px;
     & + & {
       border-left: 1px solid rgba(255, 255, 255, 0.3);
     }
+  }
+
+  @keyframes pulse_animation {
+    0% { transform: scale(1); }
+    30% { transform: scale(1.08); }
+    40% { transform: scale(1); }
+    50% { transform: scale(1); }
+    60% { transform: scale(1); }
+    70% { transform: scale(1.05); }
+    80% { transform: scale(1); }
+    100% { transform: scale(1); }
   }
 }
