@@ -139,6 +139,11 @@ export default class ProjectTable extends Component {
 
     articleDropDown = {};
 
+    defaultSort = {
+        type: null,
+        dir: null
+    };
+
     headerCellRef = {};
 
     renderHeader = () => {
