@@ -91,7 +91,7 @@ export default class SettingsCity extends Component {
             style: 'danger'
         }).then(() => {
             this.setState({inProgress: true}, () => {
-                LocationService.federal.delete(item.id).then(() => {
+                LocationService.city.delete(item.id).then(() => {
                     const items = this.state.items.filter(({id}) => id !== item.id);
 
                     NotificationManager.success('Успешно удалено', 'Удаление');
