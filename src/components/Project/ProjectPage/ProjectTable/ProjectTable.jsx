@@ -8,10 +8,11 @@ import './project-table.scss';
 import './ProjectTableHeader/project-table-header.scss';
 import DropDownMenuIcon from '../../../Shared/SvgIcons/DropDownMenuIcon';
 import ProjectTableSettingsModal from './ProjectTableSettingsModal/ProjectTableSettingsModal';
-import {DEFAULT_COLUMNS, COLUMN_TYPE, COLUMN_NAME, getColumnsFromStorage} from './Columns';
+import {getColumnsFromStorage, getColumnsFromFields} from './Columns';
 import SettingsIcon from '../../../Shared/SvgIcons/SettingsIcon';
 import SortArrow from './ProjectTableHeader/ProjectTableHeaderSortArrow';
 import {InitScrollbar} from '../../../../helpers/Tools';
+import {FIELD_TYPE} from '../../../../constants/FieldType';
 
 const classes = new Bem('project-table');
 const headerClasses = new Bem('project-table-header');
@@ -28,7 +29,8 @@ export default class ProjectTable extends Component {
         onDeleteArticle: PropTypes.func,
         projectId: PropTypes.string.isRequired,
         pagination: PropTypes.object.isRequired,
-        onScrollToEnd: PropTypes.func.isRequired
+        onScrollToEnd: PropTypes.func.isRequired,
+        fields: PropTypes.array.isRequired
     };
 
     static defaultProps = {
@@ -38,10 +40,17 @@ export default class ProjectTable extends Component {
         onClickArticle: () => {}
     };
 
-    state = {
-        columns: getColumnsFromStorage() || [...DEFAULT_COLUMNS],
-        showColumnSettingsModal: false
-    };
+    constructor(props) {
+        super(props);
+
+        const projectColumns = getColumnsFromFields(props.fields);
+
+        this.state = {
+            selectedColumns: getColumnsFromStorage(props.projectId, projectColumns),
+            projectColumns,
+            showColumnSettingsModal: false
+        };
+    }
 
     componentDidMount() {
         InitScrollbar(this.bodyRef);
@@ -93,8 +102,8 @@ export default class ProjectTable extends Component {
         this.setState({showColumnSettingsModal: true});
     };
 
-    handleChangeColumns = (columns) => {
-        this.setState({columns}, () => this.props.onChangeColumns(columns));
+    handleChangeColumns = (selectedColumns) => {
+        this.setState({selectedColumns}, () => this.props.onChangeColumns(selectedColumns));
     };
 
     handleBodyScroll = (e) => {
@@ -109,13 +118,13 @@ export default class ProjectTable extends Component {
     };
 
     getColumns = () => {
-        return this.state.columns;
+        return this.state.selectedColumns;
     };
 
     setColumnWidth = () => {
-        const {columns} = this.state;
+        const {selectedColumns} = this.state;
 
-        columns.forEach(key => {
+        selectedColumns.forEach(key => {
             const headerColumn = document.querySelector(`.project-table-header__cell--${key}`);
             const bodyColumns = document.querySelectorAll(`.project-table__cell--${key}`);
 
@@ -147,8 +156,8 @@ export default class ProjectTable extends Component {
     headerCellRef = {};
 
     renderHeader = () => {
-        const {articles, selectedIds, sort} = this.props;
-        const {columns} = this.state;
+        const {articles, selectedIds, sort, fields} = this.props;
+        const {selectedColumns} = this.state;
 
         return (
             <section {...headerClasses()} ref={node => this.headerRef = node}>
@@ -160,17 +169,18 @@ export default class ProjectTable extends Component {
                     />
                 </div>
 
-                {columns.map(key => {
-                    const active = sort.type === COLUMN_TYPE[key];
+                {selectedColumns.map(column => {
+                    const active = sort.type === column;
+                    const currentField = fields.find(({code}) => code === column);
 
                     return (
                         <div
-                            key={key}
-                            ref={node => this.headerCellRef[key] = node}
-                            {...headerClasses('cell', {[key]: true, active})}
-                            onClick={() => this.handleChangeSort(COLUMN_TYPE[key])}
+                            key={column}
+                            ref={node => this.headerCellRef[column] = node}
+                            {...headerClasses('cell', {[column]: true, active})}
+                            onClick={() => this.handleChangeSort(column)}
                         >
-                            {COLUMN_NAME[key]}
+                            {_.get(currentField, 'name')}
                             {active && <SortArrow classes={headerClasses} dir={sort.dir}/>}
                         </div>
                     );
@@ -180,8 +190,8 @@ export default class ProjectTable extends Component {
     };
 
     renderRow = (article) => {
-        const {selectedIds, projectId} = this.props;
-        const {columns} = this.state;
+        const {selectedIds, projectId, fields} = this.props;
+        const {selectedColumns} = this.state;
         const menuItems = [{
             title: 'Изменить',
             link: `/project/${projectId}/article/${article.id}`
@@ -203,25 +213,41 @@ export default class ProjectTable extends Component {
                     />
                 </div>
 
-                {columns.map(key => {
+                {selectedColumns.map(column => {
+                    const currentField = fields.find(({code}) => code === column);
+                    const relation = currentField && currentField.relation;
+
+                    let columnValue = _.get(article, relation, article[column]);
+
+                    if (currentField && currentField.type) {
+                        switch (currentField.type) {
+                            case FIELD_TYPE.ARRAY:
+                                columnValue = columnValue.map(({name}) => name).join(', ');
+                                break;
+                            case FIELD_TYPE.DATE:
+                                columnValue = moment(columnValue).format('DD.MM.YYYY');
+                                break;
+                            case FIELD_TYPE.DATETIME:
+                                columnValue = moment(columnValue).format('DD.MM.YYYY HH:mm');
+                                break;
+                            case FIELD_TYPE.TIME:
+                                columnValue = moment(columnValue).format('HH:mm');
+                                break;
+                            case FIELD_TYPE.TEXT:
+                                columnValue = columnValue.replace(/<[^>]*>?/gm, '');
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+
                     return (
                         <Link
                             to={`/project/${projectId}/article/${article.id}`}
-                            key={key}
-                            {...classes('cell', key)}
+                            key={column}
+                            {...classes('cell', column)}
                         >
-                            <span {...classes('cell-text')}>
-                                {key === 'date' && moment(article.date).format('DD.MM.YYYY')}
-                                {key === 'source' && article.source && article.source.name}
-                                {key === 'title' && article.title}
-                                {key === 'annotation' && article.annotation}
-                                {key === 'authors' && article.authors && article.authors.map(({name}) => name).join(', ')}
-                                {key === 'city' && _.get(article, 'source.city.name')}
-                                {key === 'region' && _.get(article, 'source.region.name')}
-                                {key === 'federalDistrict' && _.get(article, 'source.federalDistrict.name')}
-                                {key === 'typeSource' && _.get(article, 'source.type.name')}
-                                {key === 'text' && article.text.replace(/<[^>]*>?/gm, '')}
-                            </span>
+                            <span {...classes('cell-text')}>{columnValue}</span>
                         </Link>
                     );
                 })}
@@ -243,7 +269,7 @@ export default class ProjectTable extends Component {
     };
 
     render() {
-        const {className, articles} = this.props;
+        const {className, articles, projectId, fields} = this.props;
         const {showColumnSettingsModal} = this.state;
 
         return (
@@ -281,6 +307,8 @@ export default class ProjectTable extends Component {
                     <ProjectTableSettingsModal
                         onChange={this.handleChangeColumns}
                         onClose={() => this.setState({showColumnSettingsModal: false})}
+                        projectId={projectId}
+                        projectFields={fields}
                     />
                 )}
             </div>

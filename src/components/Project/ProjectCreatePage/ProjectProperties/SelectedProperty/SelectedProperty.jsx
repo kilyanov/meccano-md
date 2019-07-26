@@ -22,7 +22,7 @@ const SelectedProperty = ({
 
         <CheckBox
             {...classes('checkbox')}
-            label='Обязтельное поле'
+            label='Обязательное поле'
             checked={item.required}
             onChange={() => {
                 item.required = !item.required;

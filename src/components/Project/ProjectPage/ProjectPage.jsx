@@ -10,15 +10,13 @@ import ProjectTable from './ProjectTable/ProjectTable';
 import PromiseDialogModal from '../../Shared/PromiseDialogModal/PromiseDialogModal';
 import ArticleCreateModal from '../../Article/ArticleCreateModal/ArticleCreateModal';
 import ArticlesUploadModal from '../../Article/ArticlesUploadModal/ArticlesUploadModal';
-import { ProjectService } from '../../../services/ProjectService';
-import { ArticleService } from '../../../services/ArticleService';
-import { NotificationManager } from 'react-notifications';
+import {ArticleService, ProjectService} from '../../../services';
+import {NotificationManager} from 'react-notifications';
 import DropDownButton from '../../Shared/DropDownButton/DropDownButton';
 import ArticlesImportModal from '../../Article/ArticlesImportModal/ArticlesImportModal';
 import Page from '../../Shared/Page/Page';
 import Loader from '../../Shared/Loader/Loader';
 import {SORT_DIR} from '../../../constants';
-import {COLUMN_TYPE_FIELD, COLUMN_TYPE_SORT} from './ProjectTable/Columns';
 
 const classes = new Bem('project-page');
 const defaultPagination = {page: 1, pageCount: 1};
@@ -40,8 +38,7 @@ export default class ProjectPage extends Component {
     };
 
     componentDidMount() {
-        this.getProject(this.projectId);
-        this.getArticles();
+        this.getProject(this.projectId).then(this.getArticles);
     }
 
     handleChangeFilter = (filter, value) => {
@@ -161,24 +158,26 @@ export default class ProjectPage extends Component {
     };
 
     getArticles = (isPagination = false) => {
-        const {pagination, filters: {sort, search}} = this.state;
-        const columns = this.projectTable.getColumns();
+        const {pagination, project, filters: {sort, search}} = this.state;
+        const selectedColumns = this.projectTable.getColumns();
         const form = {
             project: this.projectId,
             page: pagination.page,
-            expand: Object.keys(COLUMN_TYPE_FIELD)
-                .filter(type => columns.includes(type))
-                .map(type => COLUMN_TYPE_FIELD[type])
+            expand: project.fields
+                .filter(({code}) => selectedColumns.includes(code))
+                .map(field => field.relation || field.code)
         };
 
         if (search) {
-            columns.forEach(columnName => {
+            selectedColumns.forEach(columnName => {
                 form[`query[${columnName}]`] = search;
             });
         }
 
         if (sort && sort.type) {
-            form.sort = sort.type && `${sort.dir === SORT_DIR.ASC ? '-' : ''}${COLUMN_TYPE_SORT[sort.type]}`;
+            const field = project.fields.find(({code}) => code === sort.type);
+
+            form.sort = sort.type && `${sort.dir === SORT_DIR.ASC ? '-' : ''}${field.relation || sort.type}`;
         }
 
         ArticleService
@@ -201,8 +200,8 @@ export default class ProjectPage extends Component {
     };
 
     getProject = (projectId) => {
-        ProjectService.get({expand: 'fields'}, projectId).then(response => {
-            this.setState({project: response.data});
+        return ProjectService.get({expand: 'fields'}, projectId).then(response => {
+            return this.setState({project: response.data});
         });
     };
 
@@ -266,14 +265,14 @@ export default class ProjectPage extends Component {
                     />
 
                     <IconButton
-                        {...classes('filter-item')}
+                        {...classes('filter-item', '', 'd-none')}
                         iconComponent={<ServicesIcon/>}
                         text='Сгруппировать'
                         disabled={!hasSelectedItems}
                     />
 
                     <IconButton
-                        {...classes('filter-item')}
+                        {...classes('filter-item', '', 'd-none')}
                         iconComponent={<StarIcon/>}
                         text='Добавить в избранное'
                         disabled={!hasSelectedItems}
@@ -309,6 +308,7 @@ export default class ProjectPage extends Component {
                         articles={articles}
                         pagination={pagination}
                         onScrollToEnd={this.handleScrollToEndArticles}
+                        fields={_.get(project, 'fields', [])}
                     />
                 </div>
 

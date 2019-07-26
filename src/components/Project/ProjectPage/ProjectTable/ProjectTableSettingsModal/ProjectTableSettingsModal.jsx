@@ -2,49 +2,51 @@ import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import './project-table-settings-modal.scss';
 import ConfirmModal from '../../../../Shared/ConfirmModal/ConfirmModal';
-import {COLUMN_TYPE, COLUMN_NAME, DEFAULT_COLUMNS, getColumnsFromStorage} from '../Columns';
+import {getColumnsFromStorage, getColumnsFromFields, setColumnsToStorage} from '../Columns';
 import CheckBox from '../../../../Form/CheckBox/CheckBox';
-import {StorageService} from '../../../../../services/StorageService';
-import {STORAGE_KEY} from '../../../../../constants/LocalStorageKeys';
 
 const classes = new Bem('project-table-settings-modal');
 
 export default class ProjectTableSettingsModal extends Component {
     static propTypes = {
+        projectId: PropTypes.string.isRequired,
+        projectFields: PropTypes.array.isRequired,
         onClose: PropTypes.func.isRequired,
         onChange: PropTypes.func.isRequired
     };
 
-    constructor() {
-        super();
+    constructor(props) {
+        super(props);
 
-        const storageColumns = getColumnsFromStorage();
+        const projectColumns = getColumnsFromFields(props.projectFields);
+        const selectedColumns = getColumnsFromStorage(props.projectId, projectColumns);
 
         this.state = {
-            columns: storageColumns || [...DEFAULT_COLUMNS]
+            projectColumns,
+            selectedColumns
         };
     }
 
     handleChangeColumns = (checked, column) => {
-        let { columns } = this.state;
+        let {selectedColumns} = this.state;
 
-        if (checked) columns.push(column);
-        else columns = columns.filter(key => key !== column);
+        if (checked) selectedColumns.push(column);
+        else selectedColumns = selectedColumns.filter(key => key !== column);
 
-        this.setState({columns});
+        this.setState({selectedColumns});
     };
 
     handleSubmit = () => {
-        const {columns} = this.state;
+        const {selectedColumns, projectColumns} = this.state;
 
-        StorageService.set(STORAGE_KEY.PROJECT_TABLE_COLUMNS, JSON.stringify(columns));
-
-        this.props.onChange(columns);
+        setColumnsToStorage(selectedColumns, projectColumns, this.props.projectId);
+        this.props.onChange(selectedColumns);
         this.props.onClose();
     };
 
     render() {
-        const {columns} = this.state;
+        const {projectFields} = this.props;
+        const {projectColumns, selectedColumns} = this.state;
 
         return (
             <ConfirmModal
@@ -54,12 +56,12 @@ export default class ProjectTableSettingsModal extends Component {
                 width='small'
             >
                 <div {...classes('items')}>
-                    {Object.keys(COLUMN_TYPE).map(key => (
-                        <div {...classes('item')} key={key}>
+                    {projectColumns.map(column => (
+                        <div {...classes('item')} key={column}>
                             <CheckBox
-                                checked={columns.includes(key)}
-                                label={COLUMN_NAME[key]}
-                                onChange={checked => this.handleChangeColumns(checked, key)}
+                                checked={selectedColumns.includes(column)}
+                                label={_.get(projectFields.find(({code}) => code === column), 'name')}
+                                onChange={checked => this.handleChangeColumns(checked, column)}
                             />
                         </div>
                     ))}
