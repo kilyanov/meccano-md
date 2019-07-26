@@ -15,6 +15,7 @@ export default class Select extends Component {
         selected: PropTypes.oneOfType([
             PropTypes.object,
             PropTypes.array,
+            PropTypes.string,
             PropTypes.instanceOf(undefined)
         ]),
         options: PropTypes.array,
@@ -203,6 +204,13 @@ export default class Select extends Component {
                 name: _.get(option, 'name'),
                 value: _.get(option, 'id')
             }));
+
+            // Если вдруг нам пришел id попытаемся его найти
+            if (_.isString(this.props.selected) && this.props.selected.length) {
+                const selectedObject = options.find(({value}) => value === this.props.selected);
+
+                if (selectedObject) this.handleSelect(selectedObject);
+            }
 
             this.setState({
                 options: isPagination ? this.state.options.concat(options) : options,

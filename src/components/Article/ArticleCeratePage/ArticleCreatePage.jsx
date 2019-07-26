@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import Page from '../../Shared/Page/Page';
-import {ArticleService, ProjectService, SourceService, StorageService} from '../../../services';
+import {ArticleService, LocationService, ProjectService, SourceService, StorageService} from '../../../services';
 import './article-create-page.scss';
 import Form from '../../Form/Form/Form';
 import TextArea from '../../Form/TextArea/TextArea';
@@ -66,12 +66,10 @@ export default class ArticleCreatePage extends Component {
         if (this.articleId) {
             Promise.all([
                 ArticleService.get(this.articleId, {expand: 'project.fields,project.sections'}),
-                ArticleService.getList({project: this.projectId}),
-                SourceService.get()
-            ]).then(([articleResponse, listResponse, sourceResponse]) => {
+                ArticleService.getList({project: this.projectId})
+            ]).then(([articleResponse, listResponse]) => {
                 const form = articleResponse.data;
                 const articles = listResponse.data;
-                const sources = sourceResponse.data;
                 const sections = form.project.sections;
 
                 this.article = _.cloneDeep(form);
@@ -87,22 +85,15 @@ export default class ArticleCreatePage extends Component {
                     }
                 });
 
-                if (form.source_id && sources.length) {
-                    const currentSource = sources.find(({id}) => id === form.source_id);
-
-                    if (currentSource) form.source_id = {name: currentSource.name, value: currentSource.id};
-                }
-
                 this.setState({
                     articles,
                     fields: form.project.fields,
                     sections,
                     prevForm: _.cloneDeep(form),
                     form,
-                    sources,
                     articleIndex: articles.findIndex(({id}) => id === this.articleId),
                     inProgress: false
-                }, this.getAdditionalDataFields);
+                }); // , this.getAdditionalDataFields
             }).catch(() => this.setState({inProgress: false}));
         } else {
             ProjectService.get({expand: 'fields,sections'}, this.projectId).then(response => {
@@ -113,7 +104,7 @@ export default class ArticleCreatePage extends Component {
                         sections: project.sections,
                         fields: project.fields,
                         inProgress: false
-                    }, this.getAdditionalDataFields);
+                    }); // , this.getAdditionalDataFields
                 }
             }).catch(() => this.setState({inProgress: false}));
         }
@@ -123,20 +114,6 @@ export default class ArticleCreatePage extends Component {
         if (prevProps.match.params.articleId !== this.props.match.params.articleId) {
             this.articleId = this.props.match.params.articleId;
             this.getArticle();
-        }
-
-        if (
-            this.state.form.source_id &&
-            _.isString(this.state.form.source_id) &&
-            this.state.sources.length
-        ) {
-            const currentSource = this.state.sources.find(({id}) => id === this.state.form.source_id);
-
-            if (currentSource) {
-                this.setState(prev => {
-                    return prev.form.source_id = {name: currentSource.name, value: currentSource.id};
-                });
-            }
         }
     }
 
@@ -318,36 +295,6 @@ export default class ArticleCreatePage extends Component {
         return dataSectionFields;
     };
 
-    getAdditionalDataFields = () => {
-        const {fields} = this.state;
-        const stackRequest = {};
-
-        if (fields.find(({code}) => code === 'type_id') && !this.state.types) {
-            stackRequest.types = ArticleService.types();
-        }
-
-        if (fields.find(({code}) => code === 'genre_id') && !this.state.genres) {
-            stackRequest.genres = ArticleService.genre();
-        }
-
-        if (fields.find(({code}) => code === 'heading_id') && !this.state.headings) {
-            stackRequest.headings = ArticleService.heading();
-        }
-
-        if (!_.isEmpty(stackRequest)) {
-            Promise.all(_.values(stackRequest)).then((stackResponse) => {
-                const newState = this.state;
-                const keys = Object.keys(stackRequest);
-
-                stackResponse.map((data, index) => {
-                    newState[keys[index]] = data.data.map(({id, name}) => ({name, value: id}));
-                });
-
-                this.setState(newState);
-            });
-        }
-    };
-
     findSectionById = (sectionId, sections) => {
         const r = (items) => {
             let found = null;
@@ -455,6 +402,22 @@ export default class ArticleCreatePage extends Component {
                         case 'rating_id':
                             field.requestService = ArticleService.rating;
                             field.requestCancelService = ArticleService.cancelLast;
+                            break;
+                        case 'country_id':
+                            field.requestService = LocationService.country.get;
+                            field.requestCancelService = LocationService.cancelLast;
+                            break;
+                        case 'federal_district_id':
+                            field.requestService = LocationService.federal.get;
+                            field.requestCancelService = LocationService.cancelLast;
+                            break;
+                        case 'region_id':
+                            field.requestService = LocationService.region.get;
+                            field.requestCancelService = LocationService.cancelLast;
+                            break;
+                        case 'city_id':
+                            field.requestService = LocationService.city.get;
+                            field.requestCancelService = LocationService.cancelLast;
                             break;
                         case 'authors':
                             field.tags = form.authors;

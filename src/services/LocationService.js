@@ -9,7 +9,7 @@ let source;
 
 export const LocationService = {
     country: {
-        get(id = '', form) {
+        get(form, id = '') {
             source = CancelToken.source();
             return API.get(`${ApiList.country}${id ? `/${id}` : ''}${ParseToRequest(form)}`, {
                 cancelToken: source.token
@@ -20,7 +20,7 @@ export const LocationService = {
         update: (form, id) => API.put(`${ApiList.country}/${id}`, form)
     },
     federal: {
-        get(id = '', form) {
+        get(form, id = '') {
             source = CancelToken.source();
             return API.get(`${ApiList.federal}${id ? `/${id}` : ''}${ParseToRequest(form)}`, {
                 cancelToken: source.token
@@ -31,7 +31,7 @@ export const LocationService = {
         update: (form, id) => API.put(`${ApiList.federal}/${id}`, form)
     },
     region: {
-        get(id = '', form) {
+        get(form, id = '') {
             source = CancelToken.source();
             return API.get(`${ApiList.region}${id ? `/${id}` : ''}${ParseToRequest(form)}`, {
                 cancelToken: source.token
@@ -42,7 +42,7 @@ export const LocationService = {
         update: (form, id) => API.put(`${ApiList.region}/${id}`, form)
     },
     city: {
-        get(id = '', form) {
+        get(form, id = '') {
             source = CancelToken.source();
             return API.get(`${ApiList.city}${id ? `/${id}` : ''}${ParseToRequest(form)}`, {
                 cancelToken: source.token

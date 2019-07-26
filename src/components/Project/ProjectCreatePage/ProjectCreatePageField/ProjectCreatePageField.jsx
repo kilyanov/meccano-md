@@ -31,7 +31,7 @@ const ProjectCreateField = ({field, value, onChange, className}) => {
                     placeholder={field.placeholder}
                     label={field.name}
                     options={field.options || []}
-                    selected={_.isObject(value) ? value : {}}
+                    selected={value}
                     onChange={val => onChange(val, field.code)}
                     requestService={field.requestService}
                     requestCancelService={field.requestCancelService}

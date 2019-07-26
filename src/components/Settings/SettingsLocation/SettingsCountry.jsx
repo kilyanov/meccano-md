@@ -158,7 +158,7 @@ export default class SettingsCountry extends Component {
         this.setState({inProgress: true}, () => {
             LocationService.cancelLast();
             LocationService.country
-                .get('', {'query[name]': value})
+                .get({'query[name]': value})
                 .then(response => {
                     this.setState({
                         inProgress: false,

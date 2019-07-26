@@ -40,17 +40,9 @@ export default class ProjectTable extends Component {
         onClickArticle: () => {}
     };
 
-    constructor(props) {
-        super(props);
-
-        const projectColumns = getColumnsFromFields(props.fields);
-
-        this.state = {
-            selectedColumns: getColumnsFromStorage(props.projectId, projectColumns),
-            projectColumns,
-            showColumnSettingsModal: false
-        };
-    }
+    state = {
+        showColumnSettingsModal: false
+    };
 
     componentDidMount() {
         InitScrollbar(this.bodyRef);
@@ -103,7 +95,7 @@ export default class ProjectTable extends Component {
     };
 
     handleChangeColumns = (selectedColumns) => {
-        this.setState({selectedColumns}, () => this.props.onChangeColumns(selectedColumns));
+        this.props.onChangeColumns(selectedColumns);
     };
 
     handleBodyScroll = (e) => {
@@ -118,13 +110,11 @@ export default class ProjectTable extends Component {
     };
 
     getColumns = () => {
-        return this.state.selectedColumns;
+        return this.selectedColumns;
     };
 
     setColumnWidth = () => {
-        const {selectedColumns} = this.state;
-
-        selectedColumns.forEach(key => {
+        this.selectedColumns.forEach(key => {
             const headerColumn = document.querySelector(`.project-table-header__cell--${key}`);
             const bodyColumns = document.querySelectorAll(`.project-table__cell--${key}`);
 
@@ -155,9 +145,13 @@ export default class ProjectTable extends Component {
 
     headerCellRef = {};
 
+    selectedColumns = [];
+
     renderHeader = () => {
-        const {articles, selectedIds, sort, fields} = this.props;
-        const {selectedColumns} = this.state;
+        const {articles, selectedIds, sort, fields, projectId} = this.props;
+        const projectColumns = getColumnsFromFields(fields);
+
+        this.selectedColumns = getColumnsFromStorage(projectId, projectColumns);
 
         return (
             <section {...headerClasses()} ref={node => this.headerRef = node}>
@@ -169,7 +163,7 @@ export default class ProjectTable extends Component {
                     />
                 </div>
 
-                {selectedColumns.map(column => {
+                {this.selectedColumns.map(column => {
                     const active = sort.type === column;
                     const currentField = fields.find(({code}) => code === column);
 
@@ -191,7 +185,6 @@ export default class ProjectTable extends Component {
 
     renderRow = (article) => {
         const {selectedIds, projectId, fields} = this.props;
-        const {selectedColumns} = this.state;
         const menuItems = [{
             title: 'Изменить',
             link: `/project/${projectId}/article/${article.id}`
@@ -213,7 +206,7 @@ export default class ProjectTable extends Component {
                     />
                 </div>
 
-                {selectedColumns.map(column => {
+                {this.selectedColumns.map(column => {
                     const currentField = fields.find(({code}) => code === column);
                     const relation = currentField && currentField.relation;
 
@@ -222,7 +215,7 @@ export default class ProjectTable extends Component {
                     if (currentField && currentField.type) {
                         switch (currentField.type) {
                             case FIELD_TYPE.ARRAY:
-                                columnValue = columnValue.map(({name}) => name).join(', ');
+                                columnValue = (columnValue || []).map(({name}) => name).join(', ');
                                 break;
                             case FIELD_TYPE.DATE:
                                 columnValue = moment(columnValue).format('DD.MM.YYYY');
@@ -234,7 +227,7 @@ export default class ProjectTable extends Component {
                                 columnValue = moment(columnValue).format('HH:mm');
                                 break;
                             case FIELD_TYPE.TEXT:
-                                columnValue = columnValue.replace(/<[^>]*>?/gm, '');
+                                columnValue = columnValue && columnValue.replace(/<[^>]*>?/gm, '');
                                 break;
                             default:
                                 break;
