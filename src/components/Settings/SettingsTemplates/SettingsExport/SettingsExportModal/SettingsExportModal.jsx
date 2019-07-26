@@ -173,17 +173,17 @@ export default class SettingsExportModal extends Component {
             <div {...classes('rule-row', '', 'row')}>
                 <div {...classes('item', '', 'col-xs-6')}>
                     <InputText
-                        autoFocus
-                        label='Элемент'
-                        value={replace.search}
-                        onChange={val => this.handleChangeReplace(val, 'search', replaceIndex)}
+                        label='Замена'
+                        value={replace.replace}
+                        onChange={val => this.handleChangeReplace(val, 'replace', replaceIndex)}
                     />
                 </div>
                 <div {...classes('item', '', 'col-xs-6')}>
                     <InputText
-                        label='Замена'
-                        value={replace.replace}
-                        onChange={val => this.handleChangeReplace(val, 'replace', replaceIndex)}
+                        autoFocus
+                        label='Элемент'
+                        value={replace.search}
+                        onChange={val => this.handleChangeReplace(val, 'search', replaceIndex)}
                     />
                 </div>
             </div>
