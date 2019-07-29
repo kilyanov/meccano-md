@@ -30,8 +30,8 @@ httpService.interceptors.response.use(
             AuthService.logOut();
         }
 
-        if (!axios.isCancel(error) && error.message) {
-            Notify.error(error.message, 'Ошибка');
+        if (!axios.isCancel(error) && _.get(error, 'response.data.message')) {
+            Notify.error(error.response.data.message, 'Ошибка');
         }
 
         return Promise.reject(error.response);

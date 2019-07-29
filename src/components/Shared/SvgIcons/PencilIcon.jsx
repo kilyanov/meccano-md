@@ -1,7 +1,12 @@
 import React from 'react';
 
-const PencilIcon = ({className, size = {width: 40, height: 40}}) => (
+const PencilIcon = ({
+    className,
+    onClick = () => {},
+    size = {width: 40, height: 40}
+}) => (
     <svg
+        onClick={onClick}
         className={className}
         xmlns="http://www.w3.org/2000/svg"
         width={size.width}

@@ -21,6 +21,34 @@
         margin: 0;
     }
 
+    &__title-container {
+        display: flex;
+        align-items: center;
+        cursor: pointer;
+    }
+
+    &__title-edit-icon {
+        margin-left: 5px;
+    }
+
+    &__title-input-container {
+        display: flex;
+        align-items: center;
+    }
+
+    &__title-input {
+        background: none;
+        border: 1px solid $gray;
+        font-size: 22px;
+        font-weight: 700;
+        line-height: 28px;
+    }
+
+    &__title-input-button {
+        margin-bottom: 0 !important;
+        margin-left: 10px;
+    }
+
     &__step {
         height: 100%;
         margin-bottom: 0;

@@ -3,7 +3,7 @@ const config = {
         apiURL: 'https://api.meccano.mel-meccano.ru/v1'
     },
     development: {
-        apiURL: 'https://api.meccano.test/v1'
+        apiURL: 'https://api.meccano.paterm.tk/v1' // 'https://api.meccano.test/v1'
     }
 };
 

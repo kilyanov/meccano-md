@@ -10,6 +10,9 @@ import {NotificationManager} from 'react-notifications';
 import {EventEmitter} from '../../../helpers';
 import ProjectProperties from './ProjectProperties/ProjectProperties';
 import {EVENTS} from '../../../constants/Events';
+import PencilIcon from "../../Shared/SvgIcons/PencilIcon";
+import InlineButton from "../../Shared/InlineButton/InlineButton";
+import {KEY_CODE} from "../../../constants";
 
 const classes = new Bem('project-create-page');
 
@@ -17,10 +20,13 @@ export default class ProjectCreatePage extends Component {
     state = {
         step: 1,
         projectId: this.props.match.params.id,
+        project: null,
         fields: [],
         allFields: [],
         sections: [],
         isEdit: false,
+        isEditTitle: false,
+        editTitleValue: '',
         inProgress: true
     };
 
@@ -37,11 +43,28 @@ export default class ProjectCreatePage extends Component {
             this.setState({
                 fields,
                 allFields, // allFields.filter(({code}) => !fields.find(f => f.code === code))
+                project: response.data,
                 isEdit: createdAt !== updatedAt,
                 inProgress: false
             });
         });
+        document.addEventListener('click', this.handleClickOutside, true);
     }
+
+    componentWillUnmount() {
+        document.removeEventListener('click', this.handleClickOutside, true);
+    }
+
+    handleClickOutside = (event) => {
+        const isInnerClick = this.titleInputContainer && this.titleInputContainer.contains(event.target);
+
+        if (this.state.isEditTitle && !isInnerClick) {
+            this.setState({
+                editTitleValue: '',
+                isEditTitle: false
+            });
+        }
+    };
 
     handleChangeSelectedFields = (fields) => {
         this.setState({fields});
@@ -56,6 +79,45 @@ export default class ProjectCreatePage extends Component {
 
     handleChangeSections = (sections) => {
         this.setState({sections});
+    };
+
+    handleStartEditTile = () => {
+        this.setState({
+            isEditTitle: true,
+            editTitleValue: this.state.project.name
+        });
+    };
+
+    handleEditTitle = (event) => {
+        const value = event.target.value;
+
+        this.setState({editTitleValue: value});
+    };
+
+    handleEndEditTitle = () => {
+        const newState = {...this.state};
+
+        newState.project.name = newState.editTitleValue;
+        newState.editTitleValue = '';
+        newState.isEditTitle = false;
+
+        this.setState(newState);
+    };
+
+    handleInputKeyDown = (event) => {
+        switch (event.keyCode) {
+            case KEY_CODE.esc:
+                this.setState({
+                    editTitleValue: '',
+                    isEditTitle: false
+                });
+                break;
+            case KEY_CODE.enter:
+                this.handleEndEditTitle();
+                break;
+            default:
+                break;
+        }
     };
 
     handleSubmit = () => {
@@ -115,8 +177,17 @@ export default class ProjectCreatePage extends Component {
     project = null;
 
     render() {
-        const { step, fields, allFields, sections, isEdit, inProgress } = this.state;
-        const project = this.project;
+        const {
+            step,
+            fields,
+            allFields,
+            sections,
+            isEdit,
+            project,
+            isEditTitle,
+            editTitleValue,
+            inProgress
+        } = this.state;
         const backButtonLabel = step === 2 ? 'Назад' :
             isEdit ? 'Удалить проект' : 'Отменить создание';
 
@@ -133,7 +204,35 @@ export default class ProjectCreatePage extends Component {
                                 'Шаг 1 - Настройка полей' : 'Шаг 2: Создание структуры'}
                         </div>
 
-                        {project && <h2 {...classes('title')}>{this.project.name}</h2>}
+                        {project && (
+                            isEditTitle ?
+                                <div
+                                    {...classes('title-input-container')}
+                                    ref={ref => this.titleInputContainer = ref}
+                                >
+                                    <input
+                                        autoFocus
+                                        type='text'
+                                        {...classes('title-input')}
+                                        onChange={this.handleEditTitle}
+                                        onKeyDown={this.handleInputKeyDown}
+                                        value={editTitleValue}
+                                    />
+                                    <InlineButton
+                                        {...classes('title-input-button')}
+                                        text='Переименовать'
+                                        onClick={this.handleEndEditTitle}
+                                        disabled={!project.name.length}
+                                    />
+                                </div> :
+                                <div {...classes('title-container')} onClick={this.handleStartEditTile}>
+                                    <h2 {...classes('title')}>{project.name}</h2>
+                                    <PencilIcon
+                                        {...classes('title-edit-icon')}
+                                        size={{width: 20, height: 20}}
+                                    />
+                                </div>
+                        )}
                     </div>
                 </section>
 
