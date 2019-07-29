@@ -13,6 +13,7 @@ import {EVENTS} from '../../../constants/Events';
 import PencilIcon from "../../Shared/SvgIcons/PencilIcon";
 import InlineButton from "../../Shared/InlineButton/InlineButton";
 import {KEY_CODE} from "../../../constants";
+import {OperatedNotification} from '../../../helpers/Tools';
 
 const classes = new Bem('project-create-page');
 
@@ -121,37 +122,67 @@ export default class ProjectCreatePage extends Component {
     };
 
     handleSubmit = () => {
-        if (this.state.step === 1) {
-            this.setState({inProgress: true}, () => {
-                const fields = this.state.fields.map((field, index) => {
-                    field.order = index;
-                    return field;
+        if (this.state.step === 1) this.saveFields();
+        else this.saveSections();
+    };
+
+    saveFields = () => {
+        this.setState({inProgress: true}, () => {
+            const fields = this.state.fields.map((field, index) => {
+                field.order = index;
+                return field;
+            });
+
+            ProjectService.put(this.state.projectId, {fields}).then(() => {
+                // Проверяем на наличие полей sections
+                const found = this.state.fields.find(({code}) => {
+                    return ['section_main_id', 'section_sub_id', 'section_three_id'].includes(code);
                 });
 
-                ProjectService.put(this.state.projectId, {fields}).then(() => {
-                    // Проверяем на наличие полей sections
-                    const found = this.state.fields.find(({code}) => {
-                        return ['section_main_id', 'section_sub_id', 'section_three_id'].includes(code);
-                    });
+                if (!found) {
+                    return EventEmitter.emit(EVENTS.REDIRECT, `/project/${this.projectId}`);
+                }
 
-                    if (!found) {
-                        return EventEmitter.emit(EVENTS.REDIRECT, `/project/${this.projectId}`);
-                    }
+                this.setState({step: 2, inProgress: false});
+            }).catch(() => this.setState({inProgress: false}));
+        });
+    };
 
-                    this.setState({step: 2, inProgress: false});
-                }).catch(() => this.setState({inProgress: false}));
-            });
-        } else {
-            const {sections} = this.state;
+    saveSections = () => {
+        const {step, sections, project} = this.state;
 
-            if (!sections || !sections.length) return;
+        if (step === 2 && (!sections || !sections.length)) return;
 
-            this.setState({inProgress: true}, () => {
-                ProjectService.createSections(this.projectId, sections).then(() => {
-                    setTimeout(() => EventEmitter.emit(EVENTS.REDIRECT, `/project/${this.projectId}`), 2000);
-                }).catch(() => this.setState({inProgress: false}));
-            });
-        }
+        this.setState({inProgress: true}, () => {
+            ProjectService.createSections(
+                this.projectId,
+                {sections, name: project.name}
+            ).then(() => {
+                setTimeout(() =>
+                    EventEmitter.emit(EVENTS.REDIRECT, `/project/${this.projectId}`),
+                2000);
+            }).catch(() => this.setState({inProgress: false}));
+        });
+    };
+
+    saveProject = () => {
+        const {project, fields} = this.state;
+
+        project.fields = fields;
+
+        this.setState({inProgress: true}, () => {
+            ProjectService.put(this.state.projectId, project).then(() => {
+                OperatedNotification.success({
+                    title: 'Обновление проекта',
+                    message: 'Проект успешно обновлен',
+                    submitButtonText: 'Перейти к проекту →',
+                    cancelButtonText: 'Продолжить',
+                    timeOut: 10000,
+                    onSubmit: () => EventEmitter.emit(EVENTS.REDIRECT, `/project/${this.projectId}`)
+                });
+                this.setState({inProgress: false});
+            }).catch(() => this.setState({inProgress: false}));
+        });
     };
 
     deleteProject = () => {
@@ -266,6 +297,15 @@ export default class ProjectCreatePage extends Component {
                             viewType='inline'
                             text={backButtonLabel}
                         />
+
+                        {(step === 1 && isEdit) && (
+                            <Button
+                                onClick={() => this.saveProject()}
+                                {...classes('submit-button', 'margin-left-auto')}
+                                style='inline'
+                                text='Сохранить'
+                            />
+                        )}
                         <Button
                             onClick={this.handleSubmit}
                             {...classes('submit-button')}

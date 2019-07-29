@@ -29,7 +29,6 @@ export default class OperatedNotification extends Component {
     static defaultProps = {
         message: '',
         submitButtonText: 'Ок',
-        cancelButtonText: 'Отмена',
         type: 'info'
     };
 
@@ -76,15 +75,15 @@ export default class OperatedNotification extends Component {
                         {submitButtonText}
                     </button>
 
-                    {onCancel && (
+                    {(onCancel || cancelButtonText) && (
                         <button
                             {...classes('button', 'cancel')}
                             onClick={() => {
                                 EventEmitter.emit(EVENTS.OPERATED_NOTIFICATION.HIDE);
-                                onCancel();
+                                if (onCancel) onCancel();
                             }}
                         >
-                            {cancelButtonText}
+                            {cancelButtonText || 'Отмена'}
                         </button>
                     )}
                 </div>
