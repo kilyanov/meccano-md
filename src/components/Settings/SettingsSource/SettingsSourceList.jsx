@@ -228,7 +228,7 @@ export default class SettingsSourceList extends Component {
     getRegions = (countryId) => {
         LocationService
             .region
-            .get('', {'query[country_id]': countryId})
+            .get({'query[country_id]': countryId})
             .then(response => {
                 this.setState({
                     regionItems: response.data.map(({id, name}) => ({name, value: id})),
@@ -240,7 +240,7 @@ export default class SettingsSourceList extends Component {
     getCities = (regionId) => {
         LocationService
             .city
-            .get('', {'query[region_id]': regionId})
+            .get({'query[region_id]': regionId})
             .then(response => {
                 this.setState({
                     cityItems: response.data.map(({id, name}) => ({name, value: id})),

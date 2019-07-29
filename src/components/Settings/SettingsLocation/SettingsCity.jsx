@@ -144,7 +144,8 @@ export default class SettingsCity extends Component {
                 this.setState({
                     items,
                     form: {name: ''},
-                    showItemModal: false
+                    showItemModal: false,
+                    modalInProgress: false
                 });
             }).catch(() => this.setState({modalInProgress: false}));
         });

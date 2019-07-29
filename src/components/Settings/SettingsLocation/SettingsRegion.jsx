@@ -199,7 +199,7 @@ export default class SettingsRegion extends Component {
     getFederalItems = (countryId = this.state.form.country_id) => {
         LocationService
             .federal
-            .get('', {'query[country_id]': countryId})
+            .get({'query[country_id]': countryId})
             .then(response => {
                 this.setState({
                     federalItems: response.data.map(({id, name}) => ({name, value: id})),
