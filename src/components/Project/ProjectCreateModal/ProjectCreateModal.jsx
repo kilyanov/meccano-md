@@ -39,7 +39,10 @@ export default class ProjectCreateModal extends Component {
 
         this.setState({inProgress: true}, () => {
             ProjectService.post(form).then(response => {
-                NotificationManager.success(`Проект успешно ${project ? 'отредактирован' : 'создан'}`, 'Успех');
+                NotificationManager.success(
+                    `Проект успешно ${project ? 'отредактирован' : 'создан'}`,
+                    `${project ? 'Создание проекта' : 'Редактирование проекта'}`
+                );
                 EventEmitter.emit(EVENTS.REDIRECT, `/project-create/${response.data.id}`);
                 this.setState({inProgress: false});
                 this.props.onClose();

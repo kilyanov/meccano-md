@@ -35,6 +35,7 @@ const ProjectCreateField = ({field, value, onChange, className}) => {
                     onChange={val => onChange(val, field.code)}
                     requestService={field.requestService}
                     requestCancelService={field.requestCancelService}
+                    depended={field.depended}
                     withSearch
                 />
             </div>;

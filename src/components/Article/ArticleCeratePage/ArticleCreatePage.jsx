@@ -119,7 +119,7 @@ export default class ArticleCreatePage extends Component {
 
     handleChangeForm = (value, option) => {
         this.setState(({form}) => {
-            form[option] = value;
+            form[option] = _.get(value, 'value', value); // if object and has "value"
 
             if (option === 'section_main_id') {
                 form.section_sub_id = null;
@@ -191,9 +191,6 @@ export default class ArticleCreatePage extends Component {
         form.date = moment(form.date).format();
 
         delete form.project;
-
-        if (form.source_id) form.source_id = form.source_id.value;
-        if (form.genre_id) form.genre_id = form.genre_id.value;
 
         ['section_main_id', 'section_sub_id', 'section_three_id']
             .forEach(option => {
@@ -333,8 +330,8 @@ export default class ArticleCreatePage extends Component {
         const {prevForm, form} = this.state;
 
         return new Promise((resolve) => {
-            const prevFormClone = _.clone(prevForm);
-            const formClone = _.clone(form);
+            const prevFormClone = _.cloneDeep(prevForm);
+            const formClone = _.cloneDeep(form);
 
             delete prevFormClone.project;
             delete formClone.project;
@@ -347,7 +344,7 @@ export default class ArticleCreatePage extends Component {
                     cancelButtonText: 'Сохранять',
                     closeOnClick: true,
                     onSubmit: () => resolve(),
-                    onCancel: () => this.handleSubmit().then(resolve)
+                    onCancel: () => this.handleSubmit()
                 });
             }
 
@@ -361,6 +358,7 @@ export default class ArticleCreatePage extends Component {
         const {articles, articleIndex, form, showViewSettings, sections, viewType, inProgress} = this.state;
         const isUpdate = !!this.articleId;
         const dataSectionFields = this.getDataSectionFields();
+        const getValue = (prop) => _.isObject(prop) ? prop.value : prop;
         const sectionData = (
             <Sortable
                 {...classes('section', 'sortable')}
@@ -410,14 +408,29 @@ export default class ArticleCreatePage extends Component {
                         case 'federal_district_id':
                             field.requestService = LocationService.federal.get;
                             field.requestCancelService = LocationService.cancelLast;
+                            field.depended = [{
+                                name: 'query[country_id]',
+                                value: getValue(form.country_id)
+                            }];
                             break;
                         case 'region_id':
                             field.requestService = LocationService.region.get;
                             field.requestCancelService = LocationService.cancelLast;
+                            field.depended = [{
+                                name: 'query[federal_district_id]',
+                                value: getValue(form.federal_district_id)
+                            }, {
+                                name: 'query[country_id]',
+                                value: getValue(form.country_id)
+                            }];
                             break;
                         case 'city_id':
                             field.requestService = LocationService.city.get;
                             field.requestCancelService = LocationService.cancelLast;
+                            field.depended = [{
+                                name: 'query[region_id]',
+                                value: getValue(form.region_id)
+                            }];
                             break;
                         case 'authors':
                             field.tags = form.authors;

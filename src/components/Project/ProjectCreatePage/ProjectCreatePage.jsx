@@ -197,7 +197,7 @@ export default class ProjectCreatePage extends Component {
             submitText: isEdit ? 'Удалить' : 'Отменить создание'
         }).then(() => {
             ProjectService.delete(this.projectId).then(() => {
-                NotificationManager.success('Проект был удален', 'Успех');
+                NotificationManager.success('Проект был удален', 'Удаление проекта');
                 EventEmitter.emit(EVENTS.REDIRECT, '/');
             });
         });

@@ -29,7 +29,8 @@ export default class Select extends Component {
         fixedPosList: PropTypes.bool,
         requestService: PropTypes.func,
         requestCancelService: PropTypes.func,
-        validateErrorMessage: PropTypes.string
+        validateErrorMessage: PropTypes.string,
+        depended: PropTypes.array // Зависимый фильтр (вставляется в форму запроса)
     };
 
     static defaultProps = {
@@ -47,7 +48,7 @@ export default class Select extends Component {
             page: 1,
             perPage: 10
         },
-        inProgress: false
+        inProgress: !!this.props.requestService && !this.props.depended
     };
 
     componentDidMount() {
@@ -57,6 +58,20 @@ export default class Select extends Component {
 
         document.addEventListener('click', this.handleClickOutside, true);
         EventEmitter.on(EVENTS.FORM.ON_VALIDATE, this.validate);
+    }
+
+    componentDidUpdate(prevProps) {
+        if (!this.props.depended) return;
+
+        if (!_.isEqual(this.props.depended, prevProps.depended)) {
+            this.setState({
+                inProgress: true,
+                options: null
+            }, () => {
+                this.props.onChange(this.isMultiple ? [] : '');
+                this.getList();
+            });
+        }
     }
 
     componentWillUnmount() {
@@ -190,10 +205,29 @@ export default class Select extends Component {
     getList = (isPagination = false) => {
         if (!this.props.requestService) return;
 
-        this.props.requestService({
+        const {depended} = this.props;
+        const form = {
             page: this.state.pagination.page,
             'per-page': this.state.pagination.perPage
-        }).then(response => {
+        };
+
+        if (depended && depended.length) {
+            let dependedIsEmpty = false;
+
+            depended.forEach(filter => {
+                if (filter.value) {
+                    form[filter.name] = filter.value;
+                } else if (filter.required) {
+                    dependedIsEmpty = true;
+                }
+            });
+
+            if (dependedIsEmpty) {
+                return this.props.onChange(this.isMultiple ? [] : '');
+            }
+        }
+
+        this.props.requestService(form).then(response => {
             const pagination = {
                 pageCount: +_.get(response.headers, 'x-pagination-page-count'),
                 page: +_.get(response.headers, 'x-pagination-current-page'),
@@ -269,6 +303,8 @@ export default class Select extends Component {
         return EventEmitter.emit(invalid ? EVENTS.FORM.ON_VALIDATE_FAILURE : EVENTS.FORM.ON_VALIDATE_SUCCESS);
     };
 
+    depended = null;
+
     debouncedSearch = _.debounce((value) => {
         if (this.props.requestCancelService) this.props.requestCancelService();
 
@@ -289,7 +325,6 @@ export default class Select extends Component {
         const {
             placeholder,
             label,
-            selected,
             disabled,
             required,
             withSearch,
@@ -298,9 +333,11 @@ export default class Select extends Component {
             className
         } = this.props;
         const {opened, searchString, searchFocused, inProgress, error} = this.state;
+        const options = this.state.searchOptions || this.state.options || this.props.options;
+        const selected = _.isString(this.props.selected) &&
+            options.find(({value}) => value === this.props.selected) || this.props.selected;
         const isMultiple = selected instanceof Array;
         const selectedName = isMultiple ? _.get(selected, '[0].name', '') : _.get(selected, 'name');
-        const options = this.state.searchOptions || this.state.options || this.props.options;
 
         return (
             <div
@@ -314,99 +351,109 @@ export default class Select extends Component {
                     validated: required,
                     [className]: !!className
                 })}
-                ref={node => this.domNode = node}
             >
                 <label {...classes('label', '', 'drag-handle')}>
                     <span {...classes('label-text', '', 'drag-handle')}>{label}</span>
                 </label>
 
-                <div {...classes('container', {opened})} onClick={() => this.toggle()}>
-                    {(placeholder && !selectedName && !searchString.length) && (
-                        <span {...classes('placeholder')}>{searchFocused ? 'Начните вводить...' :
-                            options.length ? placeholder : 'Нет элементов для выбора'}</span>
-                    )}
+                <div ref={node => this.domNode = node}>
+                    <div {...classes('container', {opened})} onClick={() => this.toggle()}>
+                        {(placeholder && !selectedName && !searchString.length) && (
+                            <span {...classes('placeholder')}>{searchFocused ? 'Начните вводить...' :
+                                options.length ? placeholder : 'Нет элементов для выбора'}</span>
+                        )}
 
-                    {withSearch && (
-                        <div {...classes('search-wrapper')}>
-                            <input
-                                {...classes('search-field')}
-                                type='text'
-                                onChange={this.handleSearch}
-                                onFocus={this.handleSearchFocus}
-                                onBlur={this.handleSearchBlur}
-                                onKeyDown={this.handleSearchKeyDown}
-                                value={searchString}
-                                ref={ref => this.searchRef = ref}
-                            />
-                        </div>
-                    )}
-
-                    {(selectedName && !searchString.length) && (
-                        <span {...classes('selected-name')}>
-                            <span>{selectedName}</span> {(isMultiple && selected.length > 1) && <i>+{selected.length - 1}</i>}
-                        </span>
-                    )}
-
-                    {!!searchString.length || selectedName  && (
-                        <button
-                            type='button'
-                            {...classes('search-clear-button')}
-                            onClick={this.handleClearValue}
-                        >✕</button>
-                    )}
-                </div>
-
-                {opened && (
-                    <div
-                        {...classes('list-container', {fixed: fixedPosList})}
-                        style={fixedPosList ? {width: this.domNode.offsetWidth} : null}
-                    >
-                        {this.isMobileView && (
-                            <div {...classes('list-header')}>
-                                <h3 {...classes('list-title')}>{label}</h3>
-                                <a
-                                    rel='button'
-                                    {...classes('list-close-button')}
-                                    onClick={() => this.close()}
-                                >✕</a>
+                        {withSearch && (
+                            <div {...classes('search-wrapper')}>
+                                <input
+                                    {...classes('search-field')}
+                                    type='text'
+                                    onChange={this.handleSearch}
+                                    onFocus={this.handleSearchFocus}
+                                    onBlur={this.handleSearchBlur}
+                                    onKeyDown={this.handleSearchKeyDown}
+                                    value={searchString}
+                                    ref={ref => this.searchRef = ref}
+                                />
                             </div>
                         )}
 
-                        <ul
-                            {...classes('list')}
-                            ref={ref => this.listRef = ref}
-                            onKeyDown={this.handleListKeyDown}
-                            onScroll={this.handleListScroll}
-                        >
-                            {options.map((item, itemIndex) => {
-                                const active = isMultiple ?
-                                    selected && selected.find(({value}) => value === item.value) :
-                                    _.get(selected, 'value') === item.value;
+                        {(selectedName && !searchString.length) && (
+                            <span {...classes('selected-name')}>
+                                <span>{selectedName}</span> {(isMultiple && selected.length > 1) &&
+                                <i>+{selected.length - 1}</i>}
+                            </span>
+                        )}
 
-                                return (
-                                    <li
-                                        tabIndex={0}
-                                        key={itemIndex}
-                                        {...classes('list-item', {active})}
-                                        onClick={() => this.handleSelect(item)}
-                                        data-index={itemIndex}
-                                    >
-                                        {isMultiple ? (
-                                            <CheckBox
-                                                label={this.state.searchOptions ?
-                                                    this.highlight(item.name, searchString) : item.name}
-                                                onChange={() => null}
-                                                checked={active}
-                                            />
-                                        ) : this.state.searchOptions ? this.highlight(item.name, searchString) : item.name}
-                                    </li>
-                                );
-                            })}
-                        </ul>
+                        {!!searchString.length || selectedName  && (
+                            <button
+                                type='button'
+                                {...classes('search-clear-button')}
+                                onClick={this.handleClearValue}
+                            >✕</button>
+                        )}
 
-                        {inProgress &&  <Loader radius={8} strokeWidth={3}/>}
+                        {(!opened && inProgress) && (
+                            <Loader
+                                {...classes('small-loader')}
+                                radius={8}
+                                strokeWidth={3}
+                            />
+                        )}
                     </div>
-                )}
+
+                    {opened && (
+                        <div
+                            {...classes('list-container', {fixed: fixedPosList})}
+                            style={fixedPosList ? {width: this.domNode.offsetWidth} : null}
+                        >
+                            {this.isMobileView && (
+                                <div {...classes('list-header')}>
+                                    <h3 {...classes('list-title')}>{label}</h3>
+                                    <a
+                                        rel='button'
+                                        {...classes('list-close-button')}
+                                        onClick={() => this.close()}
+                                    >✕</a>
+                                </div>
+                            )}
+
+                            <ul
+                                {...classes('list')}
+                                ref={ref => this.listRef = ref}
+                                onKeyDown={this.handleListKeyDown}
+                                onScroll={this.handleListScroll}
+                            >
+                                {options.map((item, itemIndex) => {
+                                    const active = isMultiple ?
+                                        selected && selected.find(({value}) => value === item.value) :
+                                        _.get(selected, 'value') === item.value;
+
+                                    return (
+                                        <li
+                                            tabIndex={0}
+                                            key={itemIndex}
+                                            {...classes('list-item', {active})}
+                                            onClick={() => this.handleSelect(item)}
+                                            data-index={itemIndex}
+                                        >
+                                            {isMultiple ? (
+                                                <CheckBox
+                                                    label={this.state.searchOptions ?
+                                                        this.highlight(item.name, searchString) : item.name}
+                                                    onChange={() => null}
+                                                    checked={active}
+                                                />
+                                            ) : this.state.searchOptions ? this.highlight(item.name, searchString) : item.name}
+                                        </li>
+                                    );
+                                })}
+                            </ul>
+
+                            {inProgress &&  <Loader radius={8} strokeWidth={3}/>}
+                        </div>
+                    )}
+                </div>
 
                 {error && (
                     <span {...classes('message')}>{validateErrorMessage}</span>

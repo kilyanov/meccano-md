@@ -70,7 +70,7 @@ export default class ProjectPage extends Component {
                 this.setState({inProgress: true}, () => {
                     Promise.all(requestStack)
                         .then(() => {
-                            NotificationManager.success('Выбранные статьи успешно удалены', 'Успех');
+                            NotificationManager.success('Выбранные статьи успешно удалены', 'Удаление');
 
                             this.setState({
                                 articles: this.state.articles.filter(({id}) => !selectedItemIds.includes(id)),
@@ -102,7 +102,7 @@ export default class ProjectPage extends Component {
                 this.setState({inProgress: true}, () => {
                     ArticleService.delete(articleId)
                         .then(() => {
-                            NotificationManager.success('Статья была успешно удалена', 'Успех');
+                            NotificationManager.success('Статья была успешно удалена', 'Удаление статьи');
                             this.setState({
                                 articles: this.state.articles.filter(({id}) => id !== articleId)
                             });
