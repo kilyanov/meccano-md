@@ -169,9 +169,11 @@ export default class ProjectPage extends Component {
         };
 
         if (search) {
-            selectedColumns.forEach(columnName => {
-                form[`query[${columnName}]`] = search;
-            });
+            project.fields
+                .filter(({code}) => selectedColumns.includes(code))
+                .forEach(field => {
+                    form[`query[${field.relation || field.code}]`] = search;
+                });
         }
 
         if (sort && sort.type) {

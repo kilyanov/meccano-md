@@ -195,7 +195,7 @@ export default class ProjectTable extends Component {
         }];
 
         return (
-            <div
+            <article
                 {...classes('row')}
                 key={article.id}
             >
@@ -257,7 +257,7 @@ export default class ProjectTable extends Component {
                         ref={node => this.articleDropDown[article.id] = node}
                     />
                 </button>
-            </div>
+            </article>
         );
     };
 
