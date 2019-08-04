@@ -6,6 +6,7 @@
     "start": "webpack-dev-server --config ./webpack.config.js --mode development --open",
     "build": "webpack --mode production",
     "develop": "webpack --mode development",
+    "local": "webpack-dev-server --config ./webpack.config.js --mode none --open",
     "watch": "webpack --w",
     "test": "jest",
     "test:watch": "jest -- --watch"
