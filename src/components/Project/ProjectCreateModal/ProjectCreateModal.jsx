@@ -8,6 +8,7 @@ import { ProjectService } from '../../../services/ProjectService';
 import { NotificationManager } from 'react-notifications';
 import { EventEmitter } from '../../../helpers';
 import {EVENTS} from '../../../constants/Events';
+import Loader from '../../Shared/Loader/Loader';
 
 const classes = new Bem('project-create-modal');
 
@@ -43,16 +44,18 @@ export default class ProjectCreateModal extends Component {
                     `Проект успешно ${project ? 'отредактирован' : 'создан'}`,
                     `${project ? 'Создание проекта' : 'Редактирование проекта'}`
                 );
-                EventEmitter.emit(EVENTS.REDIRECT, `/project-create/${response.data.id}`);
-                this.setState({inProgress: false});
-                this.props.onClose();
+
+                this.setState({inProgress: false}, () => {
+                    this.props.onClose();
+                    EventEmitter.emit(EVENTS.REDIRECT, `/project-create/${response.data.id}`);
+                });
             });
         });
     };
 
     render() {
         const {project, onClose} = this.props;
-        const {form} = this.state;
+        const {form, inProgress} = this.state;
 
         return (
             <ConfirmModal
@@ -70,6 +73,7 @@ export default class ProjectCreateModal extends Component {
                     <div {...classes('row', '', 'row')}>
                         <div {...classes('col', '', 'col-md-9')}>
                             <InputText
+                                autoFocus
                                 label='Наименование'
                                 name='name'
                                 required
@@ -88,6 +92,8 @@ export default class ProjectCreateModal extends Component {
                         </div>
                     </div>
                 </Form>
+
+                {inProgress && <Loader/>}
             </ConfirmModal>
         );
     }

@@ -3,11 +3,17 @@ import PropTypes from 'prop-types';
 import './loader.scss';
 
 const classes = new Bem('loader');
-const Loader = ({className, fixed, radius = 20, strokeWidth = 5}) => {
+const Loader = ({
+    className,
+    fixed,
+    rightBottom,
+    radius = 20,
+    strokeWidth = 5
+}) => {
     const d = radius * 2 + 10;
 
     return (
-        <div {...classes('', {fixed}, className)} >
+        <div {...classes('', {fixed, rightBottom}, className)} >
             <svg
                 width={d}
                 height={d}

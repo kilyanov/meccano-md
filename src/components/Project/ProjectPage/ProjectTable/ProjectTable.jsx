@@ -183,7 +183,7 @@ export default class ProjectTable extends Component {
         );
     };
 
-    renderRow = (article) => {
+    renderArticle = (article, articleKey) => {
         const {selectedIds, projectId, fields} = this.props;
         const menuItems = [{
             title: 'Изменить',
@@ -197,7 +197,7 @@ export default class ProjectTable extends Component {
         return (
             <article
                 {...classes('row')}
-                key={article.id}
+                key={`${article.id}-${articleKey}`}
             >
                 <div {...classes('cell', 'check')}>
                     <CheckBox
@@ -274,7 +274,7 @@ export default class ProjectTable extends Component {
                     ref={ref => this.bodyRef = ref}
                     onScroll={this.handleBodyScroll}
                 >
-                    {articles.map(article => this.renderRow(article))}
+                    {articles.map((article, articleKey) => this.renderArticle(article, articleKey))}
 
                     {!articles.length && (
                         <div {...classes('empty-message')}>Статей пока нет</div>

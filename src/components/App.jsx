@@ -7,7 +7,7 @@ import {Redirect} from 'react-router-dom';
 import '../assets/styles/main.scss';
 import {storeMainActions} from '../redux/storeMainActions';
 import {InitScrollbar} from '../helpers/Tools';
-import {Push} from '../services/PushService';
+// import {Push} from '../services/PushService';
 import {EVENTS} from '../constants/Events';
 import OperatedNotification from './Shared/OperatedNotifiction/OperatedNotification';
 
@@ -48,7 +48,7 @@ export default class App extends Component {
             InitScrollbar(this.bodyRef);
         }
 
-        window.addEventListener('load', () => Push.init());
+        // window.addEventListener('load', () => Push.init());
     }
 
     componentWillUnmount() {

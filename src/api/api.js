@@ -25,13 +25,15 @@ httpService.removeToken = () => {
 httpService.interceptors.response.use(
     response => response,
     error => {
-        if (error.response && error.response.status === 401) {
+        const response = error.response;
+
+        if (response && response.status === 401) {
             console.error('unauthorized, logging out ...');
             AuthService.logOut();
         }
 
-        if (!axios.isCancel(error) && _.get(error, 'response.data.message')) {
-            Notify.error(error.response.data.message, 'Ошибка');
+        if (!axios.isCancel(error) && _.get(response, 'data', []).length) {
+            response.data.forEach(msg => Notify.error(msg.message, 'Ошибка'));
         }
 
         return Promise.reject(error.response);

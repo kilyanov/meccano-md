@@ -17,9 +17,10 @@ import ArticlesImportModal from '../../Article/ArticlesImportModal/ArticlesImpor
 import Page from '../../Shared/Page/Page';
 import Loader from '../../Shared/Loader/Loader';
 import {SORT_DIR} from '../../../constants';
+import RightLoader from '../../Shared/Loader/RightLoader/RightLoader';
 
 const classes = new Bem('project-page');
-const defaultPagination = {page: 1, pageCount: 1};
+const defaultPagination = {page: 1, pageCount: 1, inProgress: false};
 const defaultSort = {type: null, dir: null};
 const defaultFilters = {search: '', sort: defaultSort};
 
@@ -130,10 +131,15 @@ export default class ProjectPage extends Component {
     };
 
     handleScrollToEndArticles = (page) => {
-        const {inProgress} = this.state;
+        const {inProgress, pagination} = this.state;
 
-        if (!inProgress) {
-            this.setState(prev => prev.pagination.page = page, () => this.getArticles(true));
+        if (!inProgress && !pagination.inProgress) {
+            const newState = this.state;
+
+            newState.pagination.page = page;
+            newState.pagination.inProgress = true;
+
+            this.setState(newState, () => this.getArticles(true));
         }
     };
 
@@ -189,7 +195,8 @@ export default class ProjectPage extends Component {
                     pageCount: +_.get(response.headers, 'x-pagination-page-count'),
                     page: +_.get(response.headers, 'x-pagination-current-page'),
                     perPage: +_.get(response.headers, 'x-pagination-per-page'),
-                    totalCount: +_.get(response.headers, 'x-pagination-total-count')
+                    totalCount: +_.get(response.headers, 'x-pagination-total-count'),
+                    inProgress: false
                 };
 
                 this.setState({
@@ -342,6 +349,8 @@ export default class ProjectPage extends Component {
                 <PromiseDialogModal ref={node => this.promiseDialogModal = node}/>
 
                 {inProgress && <Loader fixed/>}
+
+                {pagination.inProgress && <RightLoader/>}
             </Page>
         );
     }
