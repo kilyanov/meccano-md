@@ -10,7 +10,7 @@ let source;
 export const ArticleService = {
     get: (id = '', form) => API.get(`${ApiList.article.article}${id ? `/${id}` : ''}${ParseToRequest(form)}`),
     getList: (form) => API.get(`${ApiList.article.article}${ParseToRequest(form)}`),
-    delete: (id) => API.delete(`${ApiList.article.article}/${id}`),
+    delete: (form, projectId) => API.delete(`${ApiList.article.article}?project=${projectId}`, {data: form}),
     create: (form) => API.post(ApiList.article.article, form),
     update: (form, id) => API.put(`${ApiList.article.article}/${id}`, form),
 

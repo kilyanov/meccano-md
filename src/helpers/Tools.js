@@ -44,6 +44,19 @@ export const arrayMove = (array, from, to) => {
     return newArray;
 };
 
+export const Plural = (n, base, words) => {
+    const number = Math.abs(parseInt(n));
+
+    let resultWord = words[0];
+
+    if (number % 100 > 10 && number % 100 < 20) resultWord = words[2];
+    else if (number % 10 === 1) resultWord = words[0];
+    else if (number % 10 >= 2 && number % 10 <= 4) resultWord = words[1];
+    else resultWord = words[2];
+
+    return base + resultWord;
+};
+
 export const OperatedNotification = {
     container: document.getElementById('operated-notifications'),
     info: (notification) => EventEmitter.emit(EVENTS.OPERATED_NOTIFICATION.SHOW, {...notification, type: 'info'}),

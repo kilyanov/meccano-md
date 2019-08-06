@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, {Fragment, Component} from 'react';
 import './project-page.scss';
 import Button from '../../Shared/Button/Button';
 import IconButton from '../../Shared/IconButton/IconButton';
@@ -18,6 +18,8 @@ import Page from '../../Shared/Page/Page';
 import Loader from '../../Shared/Loader/Loader';
 import {SORT_DIR} from '../../../constants';
 import RightLoader from '../../Shared/Loader/RightLoader/RightLoader';
+import {Plural} from '../../../helpers/Tools';
+import InlineButton from '../../Shared/InlineButton/InlineButton';
 
 const classes = new Bem('project-page');
 const defaultPagination = {page: 1, pageCount: 1, inProgress: false};
@@ -29,6 +31,7 @@ export default class ProjectPage extends Component {
         articles: [],
         activeArticle: null,
         selectedItemIds: [],
+        isAllArticlesSelected: false,
         pagination: defaultPagination,
         project: null,
         filters: defaultFilters,
@@ -53,36 +56,8 @@ export default class ProjectPage extends Component {
     };
 
     handleChangeSelected = (selectedItemIds) => {
-        this.setState({selectedItemIds});
-    };
-
-    handleDeleteArticles = () => {
-        const {selectedItemIds} = this.state;
-
-        if (selectedItemIds.length) {
-            this.promiseDialogModal.open({
-                title: 'Удаление статей',
-                content: 'Вы уверены, что хотите удалить выделенные статьи?',
-                submitText: 'Удалить',
-                style: 'danger'
-            }).then(() => {
-                const requestStack = selectedItemIds.map(articleId => ArticleService.delete(articleId));
-
-                this.setState({inProgress: true}, () => {
-                    Promise.all(requestStack)
-                        .then(() => {
-                            NotificationManager.success('Выбранные статьи успешно удалены', 'Удаление');
-
-                            this.setState({
-                                articles: this.state.articles.filter(({id}) => !selectedItemIds.includes(id)),
-                                selectedItemIds: [],
-                                inProgress: false
-                            });
-                        })
-                        .catch(() => this.setState({inProgress: false}));
-                });
-            });
-        }
+        if (!selectedItemIds.length) this.handleClearSelected();
+        else this.setState({selectedItemIds});
     };
 
     handleChangeColumns = () => {
@@ -90,7 +65,7 @@ export default class ProjectPage extends Component {
     };
 
     handleDeleteArticle = (articleId) => {
-        const {articles} = this.state;
+        const {articles, project} = this.state;
         const article = articles.find(({id}) => id === articleId);
 
         if (articleId && article) {
@@ -101,11 +76,43 @@ export default class ProjectPage extends Component {
                 style: 'danger'
             }).then(() => {
                 this.setState({inProgress: true}, () => {
-                    ArticleService.delete(articleId)
+                    ArticleService.delete([articleId], project.id)
                         .then(() => {
                             NotificationManager.success('Статья была успешно удалена', 'Удаление статьи');
                             this.setState({
                                 articles: this.state.articles.filter(({id}) => id !== articleId)
+                            });
+                        })
+                        .catch(() => this.setState({inProgress: false}));
+                });
+            });
+        }
+    };
+
+    handleDeleteArticles = () => {
+        const {articles, selectedItemIds, isAllArticlesSelected, pagination, project} = this.state;
+        const countSelected = isAllArticlesSelected ? pagination.totalCount : selectedItemIds.length;
+
+        if (countSelected) {
+            this.promiseDialogModal.open({
+                title: 'Удаление статей',
+                content: `Вы уверены, что хотите удалить  ${Plural(
+                    countSelected, 
+                    `${countSelected} `,
+                    ['статью', 'статьи', 'статей'])}?`,
+                submitText: 'Удалить',
+                style: 'danger'
+            }).then(() => {
+                this.setState({inProgress: true}, () => {
+                    ArticleService.delete(isAllArticlesSelected ? {all: true} : {ids: selectedItemIds}, project.id)
+                        .then(() => {
+                            NotificationManager.success('Выбранные статьи успешно удалены', 'Удаление');
+
+                            this.setState({
+                                articles: isAllArticlesSelected ? [] : articles.filter(({id}) => !selectedItemIds.includes(id)),
+                                selectedItemIds: [],
+                                isAllArticlesSelected: false,
+                                inProgress: false
                             });
                         })
                         .catch(() => this.setState({inProgress: false}));
@@ -161,6 +168,13 @@ export default class ProjectPage extends Component {
             articles: [],
             inProgress: true
         }, this.getArticles);
+    };
+
+    handleClearSelected = () => {
+        this.setState({
+            selectedItemIds: [],
+            isAllArticlesSelected: false
+        });
     };
 
     getArticles = (isPagination = false) => {
@@ -229,6 +243,7 @@ export default class ProjectPage extends Component {
         const {
             activeArticle,
             selectedItemIds,
+            isAllArticlesSelected,
             filters,
             project,
             showArticleModal,
@@ -237,6 +252,7 @@ export default class ProjectPage extends Component {
             showImportArticlesModal,
             inProgress
         } = this.state;
+        const countSelected = isAllArticlesSelected ? pagination.totalCount : selectedItemIds.length;
         const hasSelectedItems = !!selectedItemIds.length;
         const articles = _.cloneDeep(this.state.articles)
             .map(article => {
@@ -262,6 +278,7 @@ export default class ProjectPage extends Component {
                         {...classes('filter-item')}
                         iconComponent={<TrashIcon/>}
                         text='Удалить'
+                        danger
                         disabled={!hasSelectedItems}
                         onClick={this.handleDeleteArticles}
                     />
@@ -286,6 +303,35 @@ export default class ProjectPage extends Component {
                         text='Добавить в избранное'
                         disabled={!hasSelectedItems}
                     />
+
+                    {!!selectedItemIds.length && (
+                        <Fragment>
+                            <span>
+                                {Plural(countSelected, '', ['Выбрана', 'Выбраны', 'Выбраны'])}
+                                {Plural(
+                                    countSelected,
+                                    ` ${countSelected} `,
+                                    ['статья', 'статьи', 'статей']
+                                )}
+                            </span>
+
+                            {(countSelected < pagination.totalCount && !isAllArticlesSelected) && (
+                                <InlineButton
+                                    {...classes('filter-item')}
+                                    small
+                                    onClick={() => this.setState({isAllArticlesSelected: true})}
+                                >
+                                    Выбрать все статьи в проекте
+                                </InlineButton>
+                            )}
+
+                            <InlineButton
+                                {...classes('filter-item')}
+                                small
+                                onClick={this.handleClearSelected}
+                            >Снять выделение</InlineButton>
+                        </Fragment>
+                    )}
 
                     <SearchFilter
                         {...classes('filter-item')}
@@ -313,6 +359,7 @@ export default class ProjectPage extends Component {
                         onDeleteArticle={this.handleDeleteArticle}
                         sort={filters.sort}
                         selectedIds={selectedItemIds}
+                        isAllSelected={isAllArticlesSelected}
                         projectId={this.projectId}
                         articles={articles}
                         pagination={pagination}

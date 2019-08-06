@@ -30,7 +30,8 @@ export default class ProjectTable extends Component {
         projectId: PropTypes.string.isRequired,
         pagination: PropTypes.object.isRequired,
         onScrollToEnd: PropTypes.func.isRequired,
-        fields: PropTypes.array.isRequired
+        fields: PropTypes.array.isRequired,
+        isAllSelected: PropTypes.bool
     };
 
     static defaultProps = {
@@ -159,7 +160,7 @@ export default class ProjectTable extends Component {
                     <CheckBox
                         {...headerClasses('checkbox')}
                         onChange={checked => this.handleSelectAllArticles(checked)}
-                        checked={articles.length && selectedIds.length === articles.length}
+                        checked={articles.length && selectedIds.length === articles.length || this.props.isAllSelected}
                     />
                 </div>
 
@@ -201,7 +202,7 @@ export default class ProjectTable extends Component {
             >
                 <div {...classes('cell', 'check')}>
                     <CheckBox
-                        checked={selectedIds.includes(article.id)}
+                        checked={selectedIds.includes(article.id) || this.props.isAllSelected}
                         onChange={() => this.handleSelectArticle(article.id)}
                     />
                 </div>

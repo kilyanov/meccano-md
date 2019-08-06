@@ -9,6 +9,7 @@ const IconButton = ({
     to,
     className = '',
     iconComponent,
+    danger,
     disabled,
     onClick = () => {},
     text,
@@ -16,7 +17,7 @@ const IconButton = ({
 }) => {
     return to ? (
         <Link
-            {...classes('', {disabled}, className)}
+            {...classes('', {disabled, danger}, className)}
             to={to}
             disabled={disabled}
         >
@@ -25,7 +26,7 @@ const IconButton = ({
         </Link>
     ) : (
         <button
-            {...classes('', {disabled}, className)}
+            {...classes('', {disabled, danger}, className)}
             type={type}
             onClick={onClick}
             disabled={disabled}
@@ -39,6 +40,7 @@ const IconButton = ({
 IconButton.propTypes = {
     className: PropTypes.string,
     disabled: PropTypes.bool,
+    danger: PropTypes.bool,
     iconComponent: PropTypes.node.isRequired,
     to: PropTypes.string,
     text: PropTypes.string.isRequired,

@@ -32,6 +32,14 @@
     box-shadow: none;
   }
 
+  &--danger:hover {
+    color: $strawberry;
+
+    svg {
+      fill: $strawberry;
+    }
+  }
+
   &__label {
     padding: 0 7px;
   }
