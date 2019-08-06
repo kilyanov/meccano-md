@@ -18,6 +18,10 @@
   cursor: move;
 }
 
+.jodit_container:not(.jodit_inline) .jodit_wysiwyg {
+  outline: 1px solid transparent !important;
+}
+
 .ps__rail-y,
 .ps__rail-x {
   z-index: 1;

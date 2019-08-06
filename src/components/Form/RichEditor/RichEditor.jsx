@@ -26,6 +26,21 @@ export default class RichEditor extends Component {
         showXPathInStatusbar: false,
         allowResizeX: true,
         allowResizeY: true,
+
+        beautifyHTML: false,
+        beautifyHTMLCDNUrlsJS: [],
+        cleanHTML: {
+            timeout: 300,
+            removeEmptyElements: false,
+            fillEmptyParagraph: false,
+            replaceNBSP: false,
+            cleanOnPaste: false,
+            replaceOldTags: {},
+            allowTags: false,
+            denyTags: false
+        },
+        spellcheck: false,
+
         language: 'ru',
         i18n: {
             ru: {

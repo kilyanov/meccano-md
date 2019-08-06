@@ -336,6 +336,14 @@ export default class ArticleCreatePage extends Component {
             delete prevFormClone.project;
             delete formClone.project;
 
+            prevFormClone.text = prevFormClone.text && prevFormClone.text.replace(/<[^>]*>?/gm, '');
+            formClone.text = formClone.text && formClone.text.replace(/<[^>]*>?/gm, '');
+
+            if (prevFormClone.date) {
+                prevFormClone.date = prevFormClone.date.toString();
+                formClone.date = formClone.date.toString();
+            }
+
             if (!_.isEqual(prevFormClone, formClone)) {
                 return OperatedNotification.warning({
                     title: 'Внимание',
