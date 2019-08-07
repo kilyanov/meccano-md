@@ -1,17 +1,19 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
-import './articles-upload-modal.scss';
 import ConfirmModal from '../../Shared/ConfirmModal/ConfirmModal';
 import Loader from '../../Shared/Loader/Loader';
 import {ExportService} from '../../../services';
 import TransferService from '../../../services/TransferService';
 import RadioButton from '../../Form/RadioButton/RadioButton';
+import {saveAs} from 'file-saver';
+import './articles-export-modal.scss';
 
-const classes = new Bem('articles-upload-modal');
+const classes = new Bem('articles-export-modal');
 
-export default class ArticlesUploadModal extends Component {
+export default class ArticlesExportModal extends Component {
     static propTypes= {
         projectId: PropTypes.string.isRequired,
+        selectedArticleIds: PropTypes.oneOfType([PropTypes.array, PropTypes.string]),
         onClose: PropTypes.func.isRequired
     };
 
@@ -35,7 +37,12 @@ export default class ArticlesUploadModal extends Component {
     }
 
     handleSelectType = (selectedType) => {
-        this.setState({selectedType, selectedTemplateId: null});
+        const {templates} = this.state;
+
+        this.setState({
+            selectedType,
+            selectedTemplateId: templates[selectedType].length === 1 ? templates[selectedType][0].id  : null
+        });
     };
 
     handleSelectTemplate = (selectedTemplateId) => {
@@ -43,23 +50,27 @@ export default class ArticlesUploadModal extends Component {
     };
 
     handleSubmit = () => {
+        const {projectId, selectedArticleIds} = this.props;
         const {selectedTemplateId} = this.state;
 
         if (selectedTemplateId) {
             this.setState({inProgress: true}, () => {
-                const link = document.createElement('a');
+                const articleIds = _.isBoolean(selectedArticleIds) ? null :
+                    selectedArticleIds.length ? selectedArticleIds : null;
 
-                link.href = ExportService.getLink(this.props.projectId, selectedTemplateId);
-                link.download = 'Выгрузка.xlsx';
-                link.target = '_blank';
+                ExportService
+                    .articles(
+                        projectId,
+                        selectedTemplateId,
+                        articleIds
+                    )
+                    .then(response => {
+                        const blob = new Blob([response.data], {type: 'application/octet-stream'});
 
-                document.body.appendChild(link);
-
-                link.click();
-
-                document.body.removeChild(link);
-
-                this.setState({inProgress: false}, this.props.onClose);
+                        saveAs(blob, response.headers['x-filename']);
+                        this.setState({inProgress: false}, this.props.onClose);
+                    })
+                    .catch(() => this.setState({inProgress: false}));
             });
         }
     };
@@ -74,6 +85,7 @@ export default class ArticlesUploadModal extends Component {
                 title='Выгрузка статей'
                 onClose={onClose}
                 submitDisabled={!selectedTemplateId}
+                submitText='Экспорт'
                 onSubmit={this.handleSubmit}
             >
                 <div {...classes('row', '', 'row')}>

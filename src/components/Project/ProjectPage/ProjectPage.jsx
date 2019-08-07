@@ -9,7 +9,7 @@ import SearchFilter from '../../Shared/SearchFilter/SearchFilter';
 import ProjectTable from './ProjectTable/ProjectTable';
 import PromiseDialogModal from '../../Shared/PromiseDialogModal/PromiseDialogModal';
 import ArticleCreateModal from '../../Article/ArticleCreateModal/ArticleCreateModal';
-import ArticlesUploadModal from '../../Article/ArticlesUploadModal/ArticlesUploadModal';
+import ArticlesExportModal from '../../Article/ArticlesExportModal/ArticlesExportModal';
 import {ArticleService, ProjectService} from '../../../services';
 import {NotificationManager} from 'react-notifications';
 import DropDownButton from '../../Shared/DropDownButton/DropDownButton';
@@ -76,7 +76,7 @@ export default class ProjectPage extends Component {
                 style: 'danger'
             }).then(() => {
                 this.setState({inProgress: true}, () => {
-                    ArticleService.delete([articleId], project.id)
+                    ArticleService.delete({articleIds: [articleId]}, project.id)
                         .then(() => {
                             NotificationManager.success('Статья была успешно удалена', 'Удаление статьи');
                             this.setState({
@@ -104,7 +104,7 @@ export default class ProjectPage extends Component {
                 style: 'danger'
             }).then(() => {
                 this.setState({inProgress: true}, () => {
-                    ArticleService.delete(isAllArticlesSelected ? {all: true} : {ids: selectedItemIds}, project.id)
+                    ArticleService.delete(isAllArticlesSelected ? {all: true} : {articleIds: selectedItemIds}, project.id)
                         .then(() => {
                             NotificationManager.success('Выбранные статьи успешно удалены', 'Удаление');
 
@@ -379,8 +379,9 @@ export default class ProjectPage extends Component {
                 )}
 
                 {showUploadArticlesModal && (
-                    <ArticlesUploadModal
+                    <ArticlesExportModal
                         projectId={this.projectId}
+                        selectedArticleIds={isAllArticlesSelected || selectedItemIds}
                         onClose={() => this.setState({showUploadArticlesModal: false})}
                     />
                 )}

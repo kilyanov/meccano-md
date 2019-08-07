@@ -27,10 +27,7 @@ export default {
     user: {
         profile: '/user/profile'
     },
-    export: {
-        export: '/export',
-        xlsx: '/export/xlsx'
-    },
+    export:  '/export',
     transfer: {
         import: '/transfer/import',
         export: '/transfer/export',
