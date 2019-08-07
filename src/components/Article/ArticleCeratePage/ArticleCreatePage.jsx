@@ -213,12 +213,8 @@ export default class ArticleCreatePage extends Component {
 
         // Check new properties
         Object.keys(form).forEach(key => {
-            if (!form[key]) delete form[key];
-
-            if (isUpdate) {
-                if (form[key] === this.article[key] && key !== 'id') {
-                    delete form[key];
-                }
+            if (isUpdate && form[key] === this.article[key] && key !== 'id') {
+                delete form[key];
             }
         });
 
