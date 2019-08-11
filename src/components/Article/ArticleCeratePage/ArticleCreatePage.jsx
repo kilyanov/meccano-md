@@ -10,12 +10,10 @@ import Loader from '../../Shared/Loader/Loader';
 import ArrowIcon from '../../Shared/SvgIcons/ArrowIcon';
 import Button from '../../Shared/Button/Button';
 import ArticleViewSettings from './ArticleViewSettings/ArticleViewSettings';
-import {EventEmitter} from '../../../helpers';
 import ProjectCreateField from '../../Project/ProjectCreatePage/ProjectCreatePageField/ProjectCreatePageField';
 import Sortable from 'react-sortablejs';
 import {OperatedNotification} from '../../../helpers/Tools';
 import {STORAGE_KEY} from '../../../constants/LocalStorageKeys';
-import {EVENTS} from '../../../constants/Events';
 
 const classes = new Bem('article-create-page');
 
@@ -25,6 +23,10 @@ export default class ArticleCreatePage extends Component {
         city: PropTypes.array,
         federal: PropTypes.array,
         region: PropTypes.array
+    };
+
+    static contextTypes = {
+        router: PropTypes.object
     };
 
     constructor(props) {
@@ -48,7 +50,6 @@ export default class ArticleCreatePage extends Component {
             text: ''
         };
         this.state = {
-            articleId: this.articleId,
             articles: [],
             fields: [],
             sources: [],
@@ -118,20 +119,20 @@ export default class ArticleCreatePage extends Component {
     }
 
     handleChangeForm = (value, option) => {
-        this.setState(({form}) => {
-            form[option] = _.get(value, 'value', value); // if object and has "value"
+        const newState = this.state;
 
-            if (option === 'section_main_id') {
-                form.section_sub_id = null;
-                form.section_three_id = null;
-            }
+        newState.form[option] = _.get(value, 'value', value); // if object and has "value"
 
-            if (option === 'section_sub_id') {
-                form.section_three_id = null;
-            }
+        if (option === 'section_main_id') {
+            newState.form.section_sub_id = null;
+            newState.form.section_three_id = null;
+        }
 
-            return form;
-        });
+        if (option === 'section_sub_id') {
+            newState.form.section_three_id = null;
+        }
+
+        this.setState(newState);
     };
 
     handleShowViewSettings = () => {
@@ -152,7 +153,7 @@ export default class ArticleCreatePage extends Component {
         }
 
         this.checkFormChanges().then(() => {
-            EventEmitter.emit(EVENTS.REDIRECT, `/project/${this.projectId}/article/${prevArticle.id}`);
+            this.context.router.history.push(`/project/${this.projectId}/article/${prevArticle.id}`);
         });
     };
 
@@ -166,13 +167,13 @@ export default class ArticleCreatePage extends Component {
         }
 
         this.checkFormChanges().then(() => {
-            EventEmitter.emit(EVENTS.REDIRECT, `/project/${this.projectId}/article/${nextArticle.id}`);
+            this.context.router.history.push(`/project/${this.projectId}/article/${nextArticle.id}`);
         });
     };
 
     handleClickBackButton = () => {
         this.checkFormChanges().then(() => {
-            EventEmitter.emit(EVENTS.REDIRECT, `/project/${this.projectId}`);
+            this.context.router.history.push(`/project/${this.projectId}`);
         });
     };
 
@@ -231,7 +232,7 @@ export default class ArticleCreatePage extends Component {
                             message: `Статья успешно ${isUpdate ? 'обновлена' : 'создана'}`,
                             submitButtonText: '← Перейти ко всем статьям',
                             timeOut: 10000,
-                            onSubmit: () => EventEmitter.emit(EVENTS.REDIRECT, `/project/${this.projectId}`)
+                            onSubmit: () => this.context.router.history.push(`/project/${this.projectId}`)
                         });
                         this.setState({inProgress: false}, resolve);
                     }).catch(() => this.setState({inProgress: false}, resolve));
@@ -266,6 +267,7 @@ export default class ArticleCreatePage extends Component {
                     fields: form.project.fields,
                     articleIndex: articles.findIndex(({id}) => id === this.articleId),
                     form,
+                    prevForm: _.cloneDeep(form),
                     inProgress: false
                 });
             }).catch(() => this.setState({inProgress: false}));
@@ -329,6 +331,8 @@ export default class ArticleCreatePage extends Component {
             const prevFormClone = _.cloneDeep(prevForm);
             const formClone = _.cloneDeep(form);
 
+            let isEqual = true;
+
             delete prevFormClone.project;
             delete formClone.project;
 
@@ -340,7 +344,14 @@ export default class ArticleCreatePage extends Component {
                 formClone.date = formClone.date.toString();
             }
 
-            if (!_.isEqual(prevFormClone, formClone)) {
+            Object.keys(prevFormClone).forEach(key => {
+                if (prevFormClone[key] !== formClone[key]) {
+                    console.log(key, prevFormClone[key]);
+                    isEqual = false;
+                }
+            });
+
+            if (!isEqual) {
                 return OperatedNotification.warning({
                     title: 'Внимание',
                     message: 'Есть несохраненные изменния.\nПродолжить без сохранения?',
@@ -355,6 +366,8 @@ export default class ArticleCreatePage extends Component {
             return resolve();
         });
     };
+
+    articleId = this.props.match.params.articleId;
 
     article = null;
 

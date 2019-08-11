@@ -64,3 +64,12 @@ export const OperatedNotification = {
     warning: (notification) => EventEmitter.emit(EVENTS.OPERATED_NOTIFICATION.SHOW, {...notification, type: 'warning'}),
     error: (notification) => EventEmitter.emit(EVENTS.OPERATED_NOTIFICATION.SHOW, {...notification, type: 'error'})
 };
+
+export const QueueManager = {
+    push(message) {
+        EventEmitter.emit(EVENTS.QUEUE_MANAGER.PUSH, message);
+    },
+    remove(id) {
+        EventEmitter.emit(EVENTS.QUEUE_MANAGER.REMOVE, id);
+    }
+};

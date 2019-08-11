@@ -8,5 +8,9 @@ export const EVENTS = {
     OPERATED_NOTIFICATION: {
         SHOW: 'operated_notification_show',
         HIDE: 'operated_notification_hide'
+    },
+    QUEUE_MANAGER: {
+        PUSH: 'queue_manager_push',
+        REMOVE: 'queue_manager_remove'
     }
 };

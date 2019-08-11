@@ -10,6 +10,7 @@ import {InitScrollbar} from '../helpers/Tools';
 // import {Push} from '../services/PushService';
 import {EVENTS} from '../constants/Events';
 import OperatedNotification from './Shared/OperatedNotifiction/OperatedNotification';
+import QueueManager from './Shared/QueeManager/QueueManager';
 
 export default class App extends Component {
     static propTypes = {
@@ -66,8 +67,10 @@ export default class App extends Component {
             <Redirect push to={redirect}/>
         ) : (
             <div className='app' ref={node => this.containerRef = node}>
-                {children}
                 <NotificationContainer/>
+                <QueueManager/>
+
+                {children}
 
                 {notification && (
                     <OperatedNotification
@@ -84,6 +87,7 @@ export default class App extends Component {
                         timeOut={notification.timeOut}
                     />
                 )}
+
             </div>
         );
     }

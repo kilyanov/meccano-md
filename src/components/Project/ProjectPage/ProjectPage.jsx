@@ -18,11 +18,11 @@ import Page from '../../Shared/Page/Page';
 import Loader from '../../Shared/Loader/Loader';
 import {SORT_DIR} from '../../../constants';
 import RightLoader from '../../Shared/Loader/RightLoader/RightLoader';
-import {Plural} from '../../../helpers/Tools';
+import {Plural, QueueManager} from '../../../helpers/Tools';
 import InlineButton from '../../Shared/InlineButton/InlineButton';
 
 const classes = new Bem('project-page');
-const defaultPagination = {page: 1, pageCount: 1, inProgress: false};
+const defaultPagination = {page: 1, pageCount: 1};
 const defaultSort = {type: null, dir: null};
 const defaultFilters = {search: '', sort: defaultSort};
 
@@ -43,6 +43,10 @@ export default class ProjectPage extends Component {
 
     componentDidMount() {
         this.getProject(this.projectId).then(this.getArticles);
+    }
+
+    componentWillUnmount() {
+        this.isMounted = false;
     }
 
     handleChangeFilter = (filter, value) => {
@@ -80,8 +84,9 @@ export default class ProjectPage extends Component {
                         .then(() => {
                             NotificationManager.success('Статья была успешно удалена', 'Удаление статьи');
                             this.setState({
+
                                 articles: this.state.articles.filter(({id}) => id !== articleId)
-                            });
+                            }, this.getTotalCountArticles);
                         })
                         .catch(() => this.setState({inProgress: false}));
                 });
@@ -106,14 +111,15 @@ export default class ProjectPage extends Component {
                 this.setState({inProgress: true}, () => {
                     ArticleService.delete(isAllArticlesSelected ? {all: true} : {articleIds: selectedItemIds}, project.id)
                         .then(() => {
+                            pagination.page = 1;
                             NotificationManager.success('Выбранные статьи успешно удалены', 'Удаление');
 
                             this.setState({
+                                pagination,
                                 articles: isAllArticlesSelected ? [] : articles.filter(({id}) => !selectedItemIds.includes(id)),
                                 selectedItemIds: [],
-                                isAllArticlesSelected: false,
-                                inProgress: false
-                            });
+                                isAllArticlesSelected: false
+                            }, this.getArticles);
                         })
                         .catch(() => this.setState({inProgress: false}));
                 });
@@ -138,14 +144,14 @@ export default class ProjectPage extends Component {
     };
 
     handleScrollToEndArticles = (page) => {
-        const {inProgress, pagination} = this.state;
+        const {inProgress} = this.state;
 
-        if (!inProgress && !pagination.inProgress) {
+        if (!inProgress) {
             const newState = this.state;
 
             newState.pagination.page = page;
-            newState.pagination.inProgress = true;
 
+            QueueManager.push(this.queueMessage);
             this.setState(newState, () => this.getArticles(true));
         }
     };
@@ -162,6 +168,8 @@ export default class ProjectPage extends Component {
     };
 
     handleImportArticlesSubmit = () => {
+        if (!this.isMounted) return;
+
         this.setState({
             pagination: defaultPagination,
             filters: defaultFilters,
@@ -209,10 +217,10 @@ export default class ProjectPage extends Component {
                     pageCount: +_.get(response.headers, 'x-pagination-page-count'),
                     page: +_.get(response.headers, 'x-pagination-current-page'),
                     perPage: +_.get(response.headers, 'x-pagination-per-page'),
-                    totalCount: +_.get(response.headers, 'x-pagination-total-count'),
-                    inProgress: false
+                    totalCount: +_.get(response.headers, 'x-pagination-total-count')
                 };
 
+                QueueManager.remove(this.queueMessage.id);
                 this.setState({
                     articles: isPagination ? this.state.articles.concat(response.data) : response.data,
                     pagination: responsePagination,
@@ -228,6 +236,19 @@ export default class ProjectPage extends Component {
         });
     };
 
+    getTotalCountArticles = () => {
+        ArticleService
+            .getList({project: this.projectId})
+            .then(response => {
+                const newState = this.state;
+
+                newState.pagination.totalCount = +_.get(response.headers, 'x-pagination-total-count');
+                this.setState(newState);
+            });
+    };
+
+    queueMessage = {id: 'articles', text: 'Загрузка статей...'};
+
     projectId = this.props.match.params.id;
 
     addMenuItems = [{
@@ -238,6 +259,8 @@ export default class ProjectPage extends Component {
         closeOnClick: true,
         onClick: () => this.setState({showImportArticlesModal: true})
     }];
+
+    isMounted = true;
 
     render() {
         const {
@@ -388,7 +411,9 @@ export default class ProjectPage extends Component {
 
                 {showImportArticlesModal && (
                     <ArticlesImportModal
-                        onClose={() => this.setState({showImportArticlesModal: false})}
+                        onClose={() => {
+                            if (this.isMounted) this.setState({showImportArticlesModal: false});
+                        }}
                         onSubmit={this.handleImportArticlesSubmit}
                         projectId={this.projectId}
                     />

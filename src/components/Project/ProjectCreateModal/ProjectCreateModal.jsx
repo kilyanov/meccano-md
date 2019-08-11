@@ -1,13 +1,11 @@
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import ConfirmModal from '../../Shared/ConfirmModal/ConfirmModal';
 import InputText from '../../Form/InputText/InputText';
 import './project-create-modal.scss';
 import Form from '../../Form/Form/Form';
-import { ProjectService } from '../../../services/ProjectService';
-import { NotificationManager } from 'react-notifications';
-import { EventEmitter } from '../../../helpers';
-import {EVENTS} from '../../../constants/Events';
+import {ProjectService} from '../../../services/ProjectService';
+import {NotificationManager} from 'react-notifications';
 import Loader from '../../Shared/Loader/Loader';
 
 const classes = new Bem('project-create-modal');
@@ -16,6 +14,10 @@ export default class ProjectCreateModal extends Component {
     static propTypes = {
         project: PropTypes.object,
         onClose: PropTypes.func
+    };
+
+    static contextTypes = {
+        router: PropTypes.object
     };
 
     state = {
@@ -47,7 +49,7 @@ export default class ProjectCreateModal extends Component {
 
                 this.setState({inProgress: false}, () => {
                     this.props.onClose();
-                    EventEmitter.emit(EVENTS.REDIRECT, `/project-create/${response.data.id}`);
+                    this.context.router.history.push(`/project-create/${response.data.id}`);
                 });
             });
         });

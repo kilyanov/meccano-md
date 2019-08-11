@@ -1,0 +1,30 @@
+@import "../../../../assets/styles/variables";
+
+.queue-manager-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #fff;
+  border: 1px solid $gray;
+  box-shadow: 5px 5px 10px rgba(0, 0, 0, .1);
+  padding: 10px;
+
+  & + & {
+    margin-top: 10px;
+  }
+
+  &__loader {
+    position: static;
+    display: flex;
+    align-items: center;
+    height: 100%;
+    margin-left: 20px;
+    background: none;
+    opacity: .6;
+  }
+
+  &__text {
+    color: $fontGrey;
+    font-size: 14px;
+  }
+}

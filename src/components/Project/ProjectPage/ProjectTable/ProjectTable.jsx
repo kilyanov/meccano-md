@@ -46,11 +46,11 @@ export default class ProjectTable extends Component {
     };
 
     componentDidMount() {
-        InitScrollbar(this.bodyRef);
+        this.initScrollbar();
     }
 
     componentDidUpdate = () => {
-        InitScrollbar(this.bodyRef);
+        this.initScrollbar();
         this.setColumnWidth();
     };
 
@@ -147,6 +147,15 @@ export default class ProjectTable extends Component {
     headerCellRef = {};
 
     selectedColumns = [];
+
+    initScrollbar = () => {
+        const scroll = InitScrollbar(this.bodyRef, {
+            suppressScrollX: true
+        });
+
+        if (scroll) this.scrollBar = scroll;
+        else if (this.scrollBar) this.scrollBar.update();
+    };
 
     renderHeader = () => {
         const {articles, selectedIds, sort, fields, projectId} = this.props;

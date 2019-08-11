@@ -6,11 +6,11 @@ import Button from "../../Shared/Button/Button";
 
 import './login-page.scss';
 import {EventEmitter} from "../../../helpers";
+import {EVENTS} from '../../../constants/Events';
 import Loader from '../../Shared/Loader/Loader';
 import Logo from '../../Shared/Logo/Logo';
 import InputText from '../../Form/InputText/InputText';
 import {STORAGE_KEY} from '../../../constants/LocalStorageKeys';
-import {EVENTS} from '../../../constants/Events';
 
 class LoginPage extends Component {
     constructor() {

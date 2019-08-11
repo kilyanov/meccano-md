@@ -12,14 +12,27 @@ export default class RichEditor extends Component {
         className: PropTypes.string,
         content: PropTypes.string,
         label: PropTypes.string,
-        onChange: PropTypes.func
+        onChange: PropTypes.func,
+        onAfterChange: PropTypes.func
     };
 
     static defaultProps = {
-        onChange: () => {}
+        onChange: () => {},
+        onAfterChange: () => {}
+    };
+
+    componentDidMount() {
+        if (this.jodit) {
+            console.log(this.jodit);
+        }
+    }
+
+    handleP = (e) => {
+        console.log(e);
     };
 
     config = {
+        _that: this,
         readonly: false,
         showCharsCounter: false,
         showWordsCounter: false,
@@ -40,6 +53,13 @@ export default class RichEditor extends Component {
             denyTags: false
         },
         spellcheck: false,
+        events: {
+            afterGetValueFromEditor: (jodit, _that = this) => {
+                _that.props.onAfterChange(jodit.value);
+            }
+
+        },
+        // afterInit: e => console.log(e),
 
         language: 'ru',
         i18n: {
@@ -78,6 +98,7 @@ export default class RichEditor extends Component {
                 {label && <span {...classes('label')}>{label}</span>}
 
                 <Editor
+                    ref={ref => this.jodit = ref}
                     value={content}
                     config={this.config}
                     onChange={value => this.props.onChange(value)}

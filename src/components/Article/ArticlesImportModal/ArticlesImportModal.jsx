@@ -7,6 +7,8 @@ import InputFile from '../../Form/InputFile/InputFile';
 import {ProjectService} from '../../../services';
 import Loader from '../../Shared/Loader/Loader';
 import TransferService from '../../../services/TransferService';
+import {QueueManager} from '../../../helpers/Tools';
+import {NotificationManager} from 'react-notifications';
 
 const classes = new Bem('articles-import-modal');
 
@@ -39,6 +41,10 @@ export default class ArticlesImportModal extends Component {
             .catch(() => this.setState({inProgress: false}));
     }
 
+    componentWillUnmount() {
+        this.isMounted = false;
+    }
+
     handleSelectService = (isChecked, service) => {
         if (isChecked) {
             this.setState(prev => prev.form.service = service);
@@ -55,6 +61,7 @@ export default class ArticlesImportModal extends Component {
 
     handleSubmitForm = () => {
         const {form} = this.state;
+        const loadingMessage = {id: 'import', text: 'Идет импорт статей...'};
 
         if (form.files) {
             this.setState({inProgress: true}, () => {
@@ -64,15 +71,30 @@ export default class ArticlesImportModal extends Component {
                     formData.append('file', file);
                     formData.append('import', form.typeId);
 
+                    setTimeout(() => {
+                        if (this.state.inProgress) {
+                            QueueManager.push(loadingMessage);
+                            this.props.onClose();
+                        }
+                    }, 2000);
+
                     ProjectService.importArticles(this.props.projectId, formData).then(() => {
-                        this.setState({inProgress: false});
+                        QueueManager.remove(loadingMessage.id);
+                        NotificationManager.success('Импорт успешно завршен', 'Импорт статей');
+
+                        if (this.isMounted) this.setState({inProgress: false});
+
                         this.props.onSubmit();
                         this.props.onClose();
-                    }).catch(() => this.setState({inProgress: false}));
+                    }).catch(() => {
+                        if (this.isMounted) this.setState({inProgress: false});
+                    });
                 });
             });
         }
     };
+
+    isMounted = true;
 
     render() {
         const {onClose} = this.props;

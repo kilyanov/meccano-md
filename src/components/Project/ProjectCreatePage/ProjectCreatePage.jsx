@@ -1,4 +1,5 @@
 import React, {Component} from 'react';
+import PropTypes from 'prop-types';
 import Page from '../../Shared/Page/Page';
 import Button from '../../Shared/Button/Button';
 import './project-create-page.scss';
@@ -7,9 +8,7 @@ import Loader from '../../Shared/Loader/Loader';
 import {ProjectService} from '../../../services';
 import PromiseDialogModal from '../../Shared/PromiseDialogModal/PromiseDialogModal';
 import {NotificationManager} from 'react-notifications';
-import {EventEmitter} from '../../../helpers';
 import ProjectProperties from './ProjectProperties/ProjectProperties';
-import {EVENTS} from '../../../constants/Events';
 import PencilIcon from "../../Shared/SvgIcons/PencilIcon";
 import InlineButton from "../../Shared/InlineButton/InlineButton";
 import {KEY_CODE} from "../../../constants";
@@ -18,6 +17,10 @@ import {OperatedNotification} from '../../../helpers/Tools';
 const classes = new Bem('project-create-page');
 
 export default class ProjectCreatePage extends Component {
+    static contextTypes = {
+        router: PropTypes.object
+    };
+
     state = {
         step: 1,
         projectId: this.props.match.params.id,
@@ -140,7 +143,7 @@ export default class ProjectCreatePage extends Component {
                 });
 
                 if (!found) {
-                    return EventEmitter.emit(EVENTS.REDIRECT, `/project/${this.projectId}`);
+                    return this.context.router.history.push(`/project/${this.projectId}`);
                 }
 
                 this.setState({step: 2, inProgress: false});
@@ -159,7 +162,7 @@ export default class ProjectCreatePage extends Component {
                 {sections, name: project.name}
             ).then(() => {
                 setTimeout(() =>
-                    EventEmitter.emit(EVENTS.REDIRECT, `/project/${this.projectId}`),
+                    this.context.router.history.push(`/project/${this.projectId}`),
                 2000);
             }).catch(() => this.setState({inProgress: false}));
         });
@@ -178,7 +181,7 @@ export default class ProjectCreatePage extends Component {
                     submitButtonText: 'Перейти к проекту →',
                     cancelButtonText: 'Продолжить',
                     timeOut: 10000,
-                    onSubmit: () => EventEmitter.emit(EVENTS.REDIRECT, `/project/${this.projectId}`)
+                    onSubmit: () => this.context.router.history.push(`/project/${this.projectId}`)
                 });
                 this.setState({inProgress: false});
             }).catch(() => this.setState({inProgress: false}));
@@ -198,7 +201,7 @@ export default class ProjectCreatePage extends Component {
         }).then(() => {
             ProjectService.delete(this.projectId).then(() => {
                 NotificationManager.success('Проект был удален', 'Удаление проекта');
-                EventEmitter.emit(EVENTS.REDIRECT, '/');
+                this.context.router.history.push('/');
             });
         });
     };
