@@ -1,4 +1,6 @@
-export default {
+import {ParseToRequest} from '../helpers/Tools';
+
+const List = {
     article: {
         article: '/article',
         type: '/article/type',
@@ -34,3 +36,54 @@ export default {
         type: '/transfer/type'
     }
 };
+
+export const createURLGenerator = (serviceName) => {
+    if (!List.hasOwnProperty(serviceName)) {
+        return console.error(`Имя сервиса ${serviceName} не найдено в списке`, 'apiList.js');
+    }
+
+    return property => {
+        if (_.isObject(List[serviceName]) && !List[serviceName].hasOwnProperty(serviceName)) {
+            return console.error(`Свойство ${property} не найдено в списке`, 'apiList.js');
+        }
+
+        let url = '';
+
+        if (_.isObject(List[serviceName])) {
+            const isFoundPrpp = List[serviceName].hasOwnProperty(serviceName);
+
+            if (!isFoundPrpp) return console.error(`Свойство ${property} не найдено в списке`, 'apiList.js');
+
+            url += List[serviceName][property];
+        }
+
+        if (_.isString(List[serviceName])) {
+            url += List[serviceName];
+        }
+
+        /*
+            args:
+                form <Object>
+                id <String>
+         */
+        return (...args) => {
+            let form = null;
+
+            let id = null;
+
+            args.forEach(arg => {
+                if (_.isObject(arg)) form = arg;
+                if (_.isString(arg)) id = arg;
+            });
+
+            let result = url;
+
+            if (id) result += `/${id}`;
+            if (form) result += ParseToRequest(form);
+
+            return result;
+        };
+    };
+};
+
+export default List;

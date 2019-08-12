@@ -165,7 +165,7 @@
             }
         ],
         "newline-after-var": [
-            1,
+            0,
             "always"
         ],
         "brace-style": [

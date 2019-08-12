@@ -61,6 +61,8 @@ export default class Select extends Component {
     }
 
     componentDidUpdate(prevProps) {
+        const options = this.state.searchOptions || this.state.options || this.props.options;
+
         if (!this.props.depended) return;
 
         if (!_.isEqual(this.props.depended, prevProps.depended)) {
@@ -71,6 +73,10 @@ export default class Select extends Component {
                 this.props.onChange(this.isMultiple ? [] : '');
                 this.getList();
             });
+        }
+
+        if (this.props.selected !== prevProps.selected && options.length) {
+            this.checkSelected();
         }
     }
 
@@ -239,19 +245,39 @@ export default class Select extends Component {
                 value: _.get(option, 'id')
             }));
 
-            // Если вдруг нам пришел id попытаемся его найти
-            if (_.isString(this.props.selected) && this.props.selected.length) {
-                const selectedObject = options.find(({value}) => value === this.props.selected);
-
-                if (selectedObject) this.handleSelect(selectedObject);
-            }
-
             this.setState({
-                options: isPagination ? this.state.options.concat(options) : options,
+                options: isPagination ? _.uniqBy(this.state.options.concat(options), 'value') : options,
                 pagination,
                 inProgress: false
-            });
-        });
+            }, this.checkSelected);
+        }).catch(() => this.setState({inProgress: false}));
+    };
+
+    checkSelected = () => {
+        const {selected} = this.props;
+        const options = this.state.searchOptions || this.state.options || this.props.options;
+
+        if (!options.length) return;
+
+        let result = selected;
+
+        if (_.isString(result)) {
+            result = options.find(({value}) => value === result);
+
+            if (result) this.props.onChange(result);
+        } else if (_.isObject(result)) {
+            result = options.find(({value}) => value === result.value);
+        }
+
+        // Если выбранный элемент не найден в списке подсказок, запросим его с сервера
+        if (!result && options.length && this.props.requestService) {
+            this.props.requestService(null, _.isString(selected) ? selected : _.get(selected, 'value'))
+                .then(response => {
+                    options.push({name: _.get(response.data, 'name'), value: _.get(response.data, 'id')});
+
+                    this.setState({options});
+                });
+        }
     };
 
     open = () => {

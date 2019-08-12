@@ -66,7 +66,7 @@ export default class ArticleCreatePage extends Component {
     componentDidMount() {
         if (this.articleId) {
             Promise.all([
-                ArticleService.get(this.articleId, {expand: 'project.fields,project.sections'}),
+                ArticleService.get(this.articleId, {expand: 'project.fields,project.sections,source'}),
                 ArticleService.getList({project: this.projectId})
             ]).then(([articleResponse, listResponse]) => {
                 const form = articleResponse.data;
@@ -75,6 +75,7 @@ export default class ArticleCreatePage extends Component {
 
                 this.article = _.cloneDeep(form);
                 form.date = new Date(form.date);
+                form.source = {name: _.get(form, 'source.name'), value: _.get(form, 'source.id')};
 
                 ['section_main_id', 'section_sub_id', 'section_three_id'].forEach(option => {
                     if (form[option]) {
@@ -257,7 +258,7 @@ export default class ArticleCreatePage extends Component {
         this.setState({inProgress: true}, () => {
             const {articles} = this.state;
 
-            ArticleService.get(this.articleId, {expand: 'project.fields'}).then(response => {
+            ArticleService.get(this.articleId, {expand: 'project.fields,source'}).then(response => {
                 const form = response.data;
 
                 form.date = new Date(form.date);
