@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import Page from '../../Shared/Page/Page';
 import Button from '../../Shared/Button/Button';
 import './project-create-page.scss';
-import ProjectCreateSecondStep from './ProjectCreateSecondStep';
+import ProjectSections from './ProjectSections/ProjectSections';
 import Loader from '../../Shared/Loader/Loader';
 import {ProjectService} from '../../../services';
 import PromiseDialogModal from '../../Shared/PromiseDialogModal/PromiseDialogModal';
@@ -13,6 +13,7 @@ import PencilIcon from "../../Shared/SvgIcons/PencilIcon";
 import InlineButton from "../../Shared/InlineButton/InlineButton";
 import {KEY_CODE} from "../../../constants";
 import {OperatedNotification} from '../../../helpers/Tools';
+import ProjectKeyWords from './ProjectKeyWords/ProjectKeyWords';
 
 const classes = new Bem('project-create-page');
 
@@ -28,6 +29,7 @@ export default class ProjectCreatePage extends Component {
         fields: [],
         allFields: [],
         sections: [],
+        wordSearch: [],
         isEdit: false,
         isEditTitle: false,
         editTitleValue: '',
@@ -126,7 +128,18 @@ export default class ProjectCreatePage extends Component {
 
     handleSubmit = () => {
         if (this.state.step === 1) this.saveFields();
-        else this.saveSections();
+        if (this.state.step === 2) this.saveSections();
+
+        switch (this.state.step) {
+            case 1:
+                this.saveFields();
+                break;
+            case 2:
+                this.saveSections();
+                break;
+            default:
+                this.context.router.history.push(`/project/${this.projectId}`);
+        }
     };
 
     saveFields = () => {
@@ -142,11 +155,7 @@ export default class ProjectCreatePage extends Component {
                     return ['section_main_id', 'section_sub_id', 'section_three_id'].includes(code);
                 });
 
-                if (!found) {
-                    return this.context.router.history.push(`/project/${this.projectId}`);
-                }
-
-                this.setState({step: 2, inProgress: false});
+                this.setState({step: found ? 2 : 3, inProgress: false});
             }).catch(() => this.setState({inProgress: false}));
         });
     };
@@ -157,13 +166,11 @@ export default class ProjectCreatePage extends Component {
         if (step === 2 && (!sections || !sections.length)) return;
 
         this.setState({inProgress: true}, () => {
-            ProjectService.createSections(
+            ProjectService.sections.create(
                 this.projectId,
                 {sections, name: project.name}
             ).then(() => {
-                setTimeout(() =>
-                    this.context.router.history.push(`/project/${this.projectId}`),
-                2000);
+                this.setState({step: 3, inProgress: false});
             }).catch(() => this.setState({inProgress: false}));
         });
     };
@@ -282,12 +289,16 @@ export default class ProjectCreatePage extends Component {
                     )}
 
                     {(this.project && step === 2) && (
-                        <ProjectCreateSecondStep
+                        <ProjectSections
                             projectId={this.projectId}
                             classes={classes}
                             sections={sections}
                             onChange={this.handleChangeSections}
                         />
+                    )}
+
+                    {(this.project && step === 3) && (
+                        <ProjectKeyWords projectId={this.projectId}/>
                     )}
                 </section>
 
@@ -301,7 +312,7 @@ export default class ProjectCreatePage extends Component {
                             text={backButtonLabel}
                         />
 
-                        {(step === 1 && isEdit) && (
+                        {((step === 1 || step === 2) && isEdit) && (
                             <Button
                                 onClick={() => this.saveProject()}
                                 {...classes('submit-button', 'margin-left-auto')}
@@ -314,7 +325,7 @@ export default class ProjectCreatePage extends Component {
                             {...classes('submit-button')}
                             disabled={step === 2 && !sections.length}
                             style='success'
-                            text='Далее'
+                            text={step === 3 ? 'Сохранить' : 'Далее'}
                         />
                     </div>
                 </section>

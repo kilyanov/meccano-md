@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import './input-text.scss';
 import {EventEmitter} from '../../../helpers';
 import {EVENTS} from '../../../constants/Events';
+import {KEY_CODE} from '../../../constants';
 
 const classes = new Bem('input-text');
 
@@ -20,6 +21,7 @@ export default class InputText extends Component {
         ]).isRequired,
         onChange: PropTypes.func,
         onClick: PropTypes.func,
+        onEnter: PropTypes.func,
         disabled: PropTypes.bool,
         controlled: PropTypes.bool,
         clearable: PropTypes.bool,
@@ -36,6 +38,7 @@ export default class InputText extends Component {
         type: 'text',
         onClick: () => {},
         onChange: () => {},
+        onEnter: () => {},
         validateErrorMessage: 'Поле обязательно для заполнения',
         controlled: true
     };
@@ -80,6 +83,12 @@ export default class InputText extends Component {
             }
         } else {
             this.setValue('');
+        }
+    };
+
+    handleKeyDown = (event) => {
+        if (event.keyCode === KEY_CODE.enter) {
+            this.props.onEnter(this.getValue());
         }
     };
 
@@ -203,6 +212,7 @@ export default class InputText extends Component {
                         name={name}
                         value={value}
                         onChange={this.handleChange}
+                        onKeyDown={this.handleKeyDown}
                         onSubmit={() => this.validate()}
                         onClick={onClick}
                         data-error={isError || (required && !value)}

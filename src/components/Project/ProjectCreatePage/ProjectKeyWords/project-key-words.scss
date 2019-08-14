@@ -1,0 +1,50 @@
+@import "../../../../assets/styles/variables";
+
+$namespace: '.project-key-words';
+
+#{$namespace} {
+  padding: 40px 0;
+
+  &__list {
+    margin: 0;
+    padding: 0;
+    border-top: 1px solid $gray;
+  }
+
+  &__list-item {
+    display: flex;
+    position: relative;
+    align-items: center;
+    height: 64px;
+    padding: 0 20px;
+    border-bottom: 1px solid $gray;
+  }
+
+  &__list-item-buttons {
+    margin-left: auto;
+  }
+
+  &__list-item-button {
+    padding: 5px;
+    background: none;
+    border: none;
+
+    &:hover {
+      #{$namespace}__list-item-icon {
+        fill: $emerald;
+
+        &--trash {
+          fill: $strawberry;
+        }
+      }
+    }
+  }
+
+  &__list-item-icon {
+    width: 32px;
+    height: 32px;
+    fill: #b2b2b2;
+    color: #b2b2b2;
+    overflow: hidden;
+  }
+}

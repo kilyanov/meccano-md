@@ -24,7 +24,8 @@ const List = {
     project: {
         project: '/project',
         sections: '/project/section',
-        fieldValue: '/project/field-value'
+        fieldValue: '/project/field-value',
+        wordSearch: '/project/word-search'
     },
     user: {
         profile: '/user/profile'

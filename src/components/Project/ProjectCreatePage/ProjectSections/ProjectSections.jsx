@@ -1,10 +1,10 @@
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import PropTypes from 'prop-types';
-import {ProjectService} from '../../../services';
-import SectionTree from '../../Shared/SectionTree/SectionTree';
-import Loader from '../../Shared/Loader/Loader';
+import {ProjectService} from '../../../../services';
+import SectionTree from '../../../Shared/SectionTree/SectionTree';
+import Loader from '../../../Shared/Loader/Loader';
 
-export default class ProjectCreateSecondStep extends Component {
+export default class ProjectSections extends Component {
     static propTypes = {
         classes: PropTypes.func.isRequired,
         projectId: PropTypes.string.isRequired,

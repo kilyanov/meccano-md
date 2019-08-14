@@ -21,11 +21,16 @@ export default class InlineButton extends Component {
         }
     };
 
+    focus = () => {
+        this.inlineButton.focus();
+    };
+
     render() {
         const {className, onClick, text, children, small} = this.props;
 
         return (
             <a
+                ref={ref => this.inlineButton = ref}
                 {...classes('', {small}, className)}
                 role='button'
                 onClick={onClick}

@@ -40,7 +40,7 @@ export default class SectionTree extends Component {
 
             this.setState({selectedSection: null});
         } else {
-            data.push({name, sectionsTwo: []});
+            data.push({id: _.uniqueId(), name, sectionsTwo: []});
             this.setState({data});
         }
 
@@ -64,27 +64,20 @@ export default class SectionTree extends Component {
     };
 
     handleDeleteSection = (section, parent) => {
-        this.dialogModal.open({
-            title: 'Удаление',
-            content: `Вы уверены, что хотите удалить раздел "${section.name}"?`,
-            submitText: 'Удалить',
-            style: 'danger'
-        }).then(() => {
-            if (!parent) {
-                return this.setState({
-                    data: this.state.data.filter(({name}) => name !== section.name)
-                });
-            }
+        if (!parent) {
+            const data = this.state.data.filter(({id}) => id !== section.id);
 
-            if (parent.hasOwnProperty('sectionsTwo')) {
-                parent.sectionsTwo = parent.sectionsTwo.filter(({name}) => name !== section.name);
-            } else {
-                parent.sectionsThree = parent.sectionsThree.filter(({name}) => name !== section.name);
-            }
+            return this.props.onChange(data);
+        }
 
-            this.forceUpdate();
-            this.updateParent();
-        });
+        if (parent.hasOwnProperty('sectionsTwo')) {
+            parent.sectionsTwo = parent.sectionsTwo.filter(({id}) => id !== section.id);
+        } else {
+            parent.sectionsThree = parent.sectionsThree.filter(({id}) => id !== section.id);
+        }
+
+        this.forceUpdate();
+        this.updateParent();
     };
 
     updateParent = () => {

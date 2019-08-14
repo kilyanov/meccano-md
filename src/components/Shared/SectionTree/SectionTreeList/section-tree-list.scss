@@ -86,6 +86,18 @@ $namespace: '.section-tree-list';
     padding: 5px;
     background: none;
     border: none;
+
+    &:hover {
+      #{$namespace}__item-icon {
+        fill: $emerald;
+        color: $emerald;
+
+        &--trash {
+          fill: $strawberry;
+          color: $strawberry;
+        }
+      }
+    }
   }
 
   &__item-icon {

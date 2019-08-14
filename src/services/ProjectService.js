@@ -1,26 +1,39 @@
 import API from '../api/api';
-import ApiList from '../api/apiList';
+import ApiList, {createURLGenerator} from '../api/apiList';
 import {ParseToRequest} from '../helpers/Tools';
 import axios from 'axios';
 
 const CancelToken = axios.CancelToken;
+const urlGenerator = createURLGenerator('project');
+// const url = urlGenerator('project');
 
 let source;
 
 export const ProjectService = {
     get: (params, id = '') => {
         source = CancelToken.source();
-        return API.get(`${ApiList.project.project}${id ? `/${id}` : ''}${ParseToRequest(params)}`);
+        return API.get(urlGenerator('project')(params, id));
     },
-    delete: (id) => API.delete(`${ApiList.project.project}/${id}`),
-    post: (form) => API.post(ApiList.project.project, form),
+    delete: (id) => API.delete(urlGenerator('project')(id)),
+    post: (form) => API.post(urlGenerator('project')(), form),
     put: (id, form) => {
         source = CancelToken.source();
-        return API.put(`${ApiList.project.project}/${id}`, form);
+        return API.put(urlGenerator('project')(id), form);
     },
     importArticles: (projectId, form) => API.post(`${ApiList.project.project}/${projectId}/import`, form),
-    getSections: (projectId) => API.get(`${ApiList.project.sections}${ParseToRequest({projectId})}`),
-    createSections: (projectId, form) => API.post(`${ApiList.project.sections}${ParseToRequest({projectId})}`, form),
-    getFields: (projectId) => API.get(`${ApiList.project.fieldValue}?id=${projectId}`),
-    cancelLast: () => source && source.cancel('Operation canceled by the user.')
+    sections: {
+        get: (project) => API.get(urlGenerator('sections')({project})),
+        create: (project, form) => API.post(urlGenerator('sections')({project}), form),
+        update: (project, form) => API.put(urlGenerator('sections')({project}), form)
+    },
+    getSections: (project) => API.get(`${ApiList.project.sections}${ParseToRequest({project})}`),
+    createSections: (project, form) => API.post(`${ApiList.project.sections}${ParseToRequest({project})}`, form),
+    getFields: (project) => API.get(`${ApiList.project.fieldValue}?id=${project}`),
+    cancelLast: () => source && source.cancel('Operation canceled by the user.'),
+    wordSearch: {
+        get: (form, id) => API.get(urlGenerator('wordSearch')(form, id)),
+        create: form => API.post(urlGenerator('wordSearch')(), form),
+        update: (form, id) =>  API.put(urlGenerator('wordSearch')(id), form),
+        delete: id => API.delete(urlGenerator('wordSearch')(id))
+    }
 };
