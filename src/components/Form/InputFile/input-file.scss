@@ -25,6 +25,28 @@ $namespace: '.input-file';
         align-items: center;
     }
 
+    &__file-name {
+        position: relative;
+        cursor: pointer;
+
+        &--downloading:hover {
+            text-decoration: underline;
+
+            #{$namespace}__download-icon {
+                display: inline-block;
+            }
+        }
+    }
+
+    &__download-icon {
+        position: absolute;
+        display: none;
+        left: -20px;
+        width: 15px;
+        height: 15px;
+        color: $fontGrey;
+    }
+
     &__file-button {
         margin-left: 5px;
         padding: 5px;

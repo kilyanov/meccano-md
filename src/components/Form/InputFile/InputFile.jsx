@@ -4,6 +4,9 @@ import Button from '../../Shared/Button/Button';
 import './input-file.scss';
 import {EventEmitter} from '../../../helpers';
 import {EVENTS} from '../../../constants/Events';
+import DownloadIcon from '../../Shared/SvgIcons/DownloadIcon';
+import {saveAs} from 'file-saver';
+import {FileService} from '../../../services/FileService';
 
 const classes = new Bem('input-file');
 
@@ -51,6 +54,20 @@ export default class InputFile extends Component {
         this.setState({files, error: false});
     };
 
+    handleDownloadFile = (file) => {
+        this.setState({inProgress: true}, () => {
+            FileService
+                .download({id: file.id, isTemplate: 1})
+                .then(response => {
+                    const blob = new Blob([response.data], {type: 'application/octet-stream'});
+
+                    saveAs(blob, response.headers['x-filename']);
+                    this.setState({inProgress: false});
+                })
+                .catch(() => this.setState({inProgress: false}));
+        });
+    };
+
     validate = () => {
         const invalid = this.props.required && !this.state.files.length;
 
@@ -58,16 +75,20 @@ export default class InputFile extends Component {
         return EventEmitter.emit(invalid ? EVENTS.FORM.ON_VALIDATE_FAILURE : EVENTS.FORM.ON_VALIDATE_SUCCESS);
     };
 
-    upload = () => {
-        this.setState({inProgress: true});
-    };
-
     renderFile = (file, fileIndex) => (
         <div {...classes('file')} key={fileIndex}>
-            <span {...classes('file-name')}>{file.name}</span>
+            <span
+                {...classes('file-name', {'downloading': !!file.url})}
+                title='Скачать файл'
+                onClick={() => this.handleDownloadFile(file)}
+            >
+                <DownloadIcon {...classes('download-icon')}/>
+                {file.name}
+            </span>
             <button
                 type='button'
                 {...classes('file-button')}
+                title='Удалить файл'
                 onClick={() => this.handleDelete(fileIndex)}
             >✕</button>
         </div>

@@ -1,15 +1,11 @@
 import React, {Component} from 'react';
 import {LocationService, SourceService} from '../../../services';
 import PromiseDialogModal from '../../Shared/PromiseDialogModal/PromiseDialogModal';
-import ConfirmModal from '../../Shared/ConfirmModal/ConfirmModal';
 import PropertiesTable from '../../Shared/PropertiesTable/PropertiesTable';
 import SettingsPage from '../SettingsPage/SettingsPage';
-import InputText from '../../Form/InputText/InputText';
 import {NotificationManager} from 'react-notifications';
-import Loader from '../../Shared/Loader/Loader';
-import Select from '../../Form/Select/Select';
 import ListEndedStub from '../../Shared/ListEndedStub/ListEndedStub';
-import Form from '../../Form/Form/Form';
+import SettingsSourceModal from './SettingsSourceModal';
 
 const columnSettings = {
     name: {
@@ -117,21 +113,9 @@ export default class SettingsSourceList extends Component {
     };
 
     handleEditItem = (item) => {
-        const hasCountry = !!item.country_id;
-        const hasRegion = !!item.region_id;
-
         this.setState({
-            form: item,
-            modalInProgress: hasCountry || hasRegion,
+            selectedItem: item,
             showItemModal: true
-        }, () => {
-            if (hasCountry && !hasRegion) {
-                this.getRegions(item.country_id);
-            }
-
-            if (hasRegion) {
-                this.getCities(item.region_id);
-            }
         });
     };
 
@@ -173,41 +157,17 @@ export default class SettingsSourceList extends Component {
         });
     };
 
-    handleSubmit = () => {
-        const {form} = this.state;
-        const method = form.id ? 'update' : 'create';
-        const requestForm = _.pick(form, [
-            'name',
-            'city_id',
-            'country_id',
-            'region_id',
-            'source_type_id',
-            'category'
-        ]);
+    handleSubmit = (newItem) => {
+        const {selectedItem} = this.state;
+        let items = [...this.state.items];
 
-        if (!requestForm.name.length) {
-            NotificationManager.error('Название не может быть пустым', 'Ошибка');
+        if (selectedItem) {
+            items = items.map(item => item.id === selectedItem.id ? newItem : item);
+        } else {
+            items.push(newItem);
         }
 
-        this.setState({modalInProgress: true}, () => {
-            SourceService[method](requestForm, form.id).then(response => {
-                let items = [...this.state.items];
-
-                if (form.id) {
-                    items = items.map(item => item.id === form.id ? response.data : item);
-                } else {
-                    items.push(response.data);
-                }
-
-                NotificationManager.success('Успешно сохранено', 'Сохранено');
-                this.setState({
-                    items,
-                    form: {name: ''},
-                    modalInProgress: false,
-                    showItemModal: false
-                });
-            }).catch(() => this.setState({modalInProgress: false}));
-        });
+        this.setState({items, showItemModal: false});
     };
 
     getSources = () => {
@@ -223,30 +183,6 @@ export default class SettingsSourceList extends Component {
                 inProgress: false
             });
         });
-    };
-
-    getRegions = (countryId) => {
-        LocationService
-            .region
-            .get({'query[country_id]': countryId})
-            .then(response => {
-                this.setState({
-                    regionItems: response.data.map(({id, name}) => ({name, value: id})),
-                    modalInProgress: false
-                });
-            }).catch(() => this.setState({modalInProgress: false}));
-    };
-
-    getCities = (regionId) => {
-        LocationService
-            .city
-            .get({'query[region_id]': regionId})
-            .then(response => {
-                this.setState({
-                    cityItems: response.data.map(({id, name}) => ({name, value: id})),
-                    modalInProgress: false
-                });
-            }).catch(() => this.setState({modalInProgress: false}));
     };
 
     debouncedSearch = _.debounce((value) => {
@@ -270,8 +206,8 @@ export default class SettingsSourceList extends Component {
 
     render() {
         const {
-            form,
             items,
+            selectedItem,
             pagination,
             typeItems,
             countryItems,
@@ -279,13 +215,8 @@ export default class SettingsSourceList extends Component {
             cityItems,
             showItemModal,
             searchQuery,
-            inProgress,
-            modalInProgress
+            inProgress
         } = this.state;
-        const selectedType = typeItems.find(({value}) => value === form.source_type_id);
-        const selectedCountry = countryItems.find(({value}) => value === form.country_id);
-        const selectedRegion = regionItems.find(({value}) => value === form.region_id);
-        const selectedCity = cityItems.find(({value}) => value === form.city_id);
 
         return (
             <SettingsPage
@@ -311,68 +242,15 @@ export default class SettingsSourceList extends Component {
                 )}
 
                 {showItemModal && (
-                    <ConfirmModal
-                        title={form.id ? 'Изменить' : 'Добавить'}
-                        width='small'
+                    <SettingsSourceModal
+                        item={selectedItem}
                         onClose={this.handleCloseModal}
-                        onSubmit={() => this.form.submit()}
-                    >
-                        <Form
-                            validate
-                            onSubmit={this.handleSubmit}
-                            ref={ref => this.form = ref}
-                        >
-                            <InputText
-                                autoFocus
-                                required
-                                label='Название'
-                                value={form.name}
-                                onChange={value => this.handleChangeForm(value, 'name')}
-                            />
-
-                            <Select
-                                label='Тип источника'
-                                required
-                                options={typeItems}
-                                selected={selectedType}
-                                onChange={({value}) => this.handleChangeForm(value, 'source_type_id')}
-                                fixedPosList
-                            />
-
-                            <Select
-                                label='Страна'
-                                required
-                                options={countryItems}
-                                selected={selectedCountry}
-                                onChange={({value}) => this.handleChangeForm(value, 'country_id')}
-                                fixedPosList
-                            />
-
-                            {!!form.country_id && (
-                                <Select
-                                    label='Регион'
-                                    required
-                                    options={regionItems}
-                                    selected={selectedRegion}
-                                    onChange={({value}) => this.handleChangeForm(value, 'region_id')}
-                                    fixedPosList
-                                />
-                            )}
-
-                            {!!form.region_id && (
-                                <Select
-                                    label='Город'
-                                    required
-                                    options={cityItems}
-                                    selected={selectedCity}
-                                    onChange={({value}) => this.handleChangeForm(value, 'city_id')}
-                                    fixedPosList
-                                />
-                            )}
-                        </Form>
-
-                        {modalInProgress && <Loader/>}
-                    </ConfirmModal>
+                        onSubmit={this.handleSubmit}
+                        typeItems={typeItems}
+                        countryItems={countryItems}
+                        regionItems={regionItems}
+                        cityItems={cityItems}
+                    />
                 )}
 
                 <PromiseDialogModal ref={node => this.dialogModal = node}/>

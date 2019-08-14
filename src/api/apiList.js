@@ -35,6 +35,9 @@ const List = {
         import: '/transfer/import',
         export: '/transfer/export',
         type: '/transfer/type'
+    },
+    file: {
+        download: '/file/download'
     }
 };
 
@@ -44,14 +47,14 @@ export const createURLGenerator = (serviceName) => {
     }
 
     return property => {
-        if (_.isObject(List[serviceName]) && !List[serviceName].hasOwnProperty(serviceName)) {
+        if (_.isObject(List[serviceName]) && !List[serviceName].hasOwnProperty(property)) {
             return console.error(`Свойство ${property} не найдено в списке`, 'apiList.js');
         }
 
         let url = '';
 
         if (_.isObject(List[serviceName])) {
-            const isFoundPrpp = List[serviceName].hasOwnProperty(serviceName);
+            const isFoundPrpp = List[serviceName].hasOwnProperty(property);
 
             if (!isFoundPrpp) return console.error(`Свойство ${property} не найдено в списке`, 'apiList.js');
 
