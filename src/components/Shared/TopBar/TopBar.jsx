@@ -13,7 +13,8 @@ const classes = new Bem('top-bar');
 class TopBar extends PureComponent {
     static propTypes = {
         className: PropTypes.string,
-        profile: PropTypes.object
+        profile: PropTypes.object,
+        static: PropTypes.bool
     };
 
     profileMenuItems = [{
@@ -21,18 +22,12 @@ class TopBar extends PureComponent {
         onClick: AuthService.logOut
     }];
 
-    // {
-    //     title: 'Профиль',
-    //     onClick: () => {},
-    //     closeOnClick: true
-    // },
-
     render() {
         const {profile} = this.props;
         const profileIsOpen = this.dropdown && this.dropdown.isOpen();
 
         return (
-            <section {...classes('', '', this.props.className)}>
+            <section {...classes('', {static: this.props.static}, this.props.className)}>
                 <div {...classes('container', '', 'container')}>
                     <Logo/>
                     <div {...classes('profile', {opened: profileIsOpen})}>

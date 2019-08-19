@@ -1,13 +1,20 @@
-.page {
+$namespace: '.page';
+
+#{$namespace} {
     display: flex;
     flex-direction: column;
     height: 100%;
 
     &--with-bar {
-        padding-top: 100px;
+        padding-top: 90px;
+
+        #{$namespace}__content {
+            padding-top: 0;
+        }
     }
 
     &__content {
         flex: 1;
+        padding-top: 30px;
     }
 }

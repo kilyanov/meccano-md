@@ -495,7 +495,7 @@ export default class ArticleCreatePage extends Component {
         );
 
         return (
-            <Page withBar {...classes()}>
+            <Page withBar staticBar {...classes()}>
                 <section {...classes('header')}>
                     <a
                         {...classes('back-button')}

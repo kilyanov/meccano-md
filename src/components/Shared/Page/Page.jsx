@@ -11,6 +11,7 @@ export default class Page extends Component {
         className: PropTypes.string,
         children: PropTypes.node,
         withBar: PropTypes.bool,
+        staticBar: PropTypes.bool,
         withContainerClass: PropTypes.bool
     };
 
@@ -27,15 +28,15 @@ export default class Page extends Component {
     }
 
     render() {
-        const {className, children, withBar, withContainerClass} = this.props;
+        const {className, children, withBar, staticBar, withContainerClass} = this.props;
 
         return (
             <div
-                {...classes('', {'with-bar': withBar})}
+                {...classes('', {'with-bar': withBar && !staticBar})}
                 ref={node => this.pageRef = node}
             >
                 {withBar && (
-                    <TopBar/>
+                    <TopBar static={staticBar}/>
                 )}
 
                 <div
