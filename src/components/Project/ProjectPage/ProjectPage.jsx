@@ -288,12 +288,14 @@ export default class ProjectPage extends Component {
             <Page {...classes()} withBar>
                 <section {...classes('title-wrapper')}>
                     <h2 {...classes('title')}>{_.get(project, 'name')}</h2>
-                    <Button
-                        text='Выгрузить все'
-                        {...classes('upload-btn')}
-                        style='success'
-                        onClick={() => this.setState({showUploadArticlesModal: true})}
-                    />
+                    {!!articles.length && (
+                        <Button
+                            text='Выгрузить все'
+                            {...classes('upload-btn')}
+                            style='success'
+                            onClick={() => this.setState({showUploadArticlesModal: true})}
+                        />
+                    )}
                 </section>
 
                 <section {...classes('filters')}>
@@ -370,6 +372,7 @@ export default class ProjectPage extends Component {
                         {...classes('article-add-btn')}
                         buttonText='Добавить'
                         dropDownItems={this.addMenuItems}
+                        dropDownRight
                     />
                 </section>
 

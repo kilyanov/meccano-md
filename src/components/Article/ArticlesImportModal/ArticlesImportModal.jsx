@@ -7,7 +7,7 @@ import InputFile from '../../Form/InputFile/InputFile';
 import {ProjectService} from '../../../services';
 import Loader from '../../Shared/Loader/Loader';
 import TransferService from '../../../services/TransferService';
-import {QueueManager} from '../../../helpers/Tools';
+import {OperatedNotification, QueueManager} from '../../../helpers/Tools';
 import {NotificationManager} from 'react-notifications';
 
 const classes = new Bem('articles-import-modal');
@@ -80,9 +80,19 @@ export default class ArticlesImportModal extends Component {
 
                     ProjectService.importArticles(this.props.projectId, formData).then(() => {
                         QueueManager.remove(loadingMessage.id);
-                        NotificationManager.success('Импорт успешно завршен', 'Импорт статей');
 
-                        if (this.isMounted) this.setState({inProgress: false});
+                        if (this.isMounted) {
+                            NotificationManager.success('Импорт успешно завршен', 'Импорт статей');
+                            this.setState({inProgress: false});
+                        } else {
+                            OperatedNotification.success({
+                                title: 'Импорт статей',
+                                message: 'Импорт успешно завршен',
+                                submitButtonText: 'Перейти к проекту →',
+                                cancelButtonText: 'Закрыть',
+                                onSubmit: () => this.context.router.history.push(`/project/${this.props.projectId}`)
+                            });
+                        }
 
                         this.props.onSubmit();
                         this.props.onClose();

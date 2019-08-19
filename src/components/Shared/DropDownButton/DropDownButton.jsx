@@ -10,6 +10,7 @@ let dropDownRef = null;
 
 const DropDownButton = ({
     dropDownItems,
+    dropDownRight,
     onClickButton = () => {},
     buttonText,
     buttonStyle = 'default'
@@ -20,7 +21,7 @@ const DropDownButton = ({
             style={buttonStyle}
             onClick={() => {
                 onClickButton();
-                dropDownRef.toggle();
+                dropDownRef.toggle(dropDownRight && {style: {right: 0}});
             }}
         />
         <DropDown
@@ -32,6 +33,7 @@ const DropDownButton = ({
 
 DropDownButton.propTypes = {
     dropDownItems: PropTypes.array,
+    dropDownRight: PropTypes.bool,
     dropDownStyle: PropTypes.object,
     onClickButton: PropTypes.func,
     buttonText: PropTypes.string,
