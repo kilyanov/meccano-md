@@ -7,6 +7,8 @@ import TransferService from '../../../services/TransferService';
 import RadioButton from '../../Form/RadioButton/RadioButton';
 import {saveAs} from 'file-saver';
 import './articles-export-modal.scss';
+import {QueueManager} from '../../../helpers/Tools';
+import {NotificationManager} from 'react-notifications';
 
 const classes = new Bem('articles-export-modal');
 
@@ -36,6 +38,10 @@ export default class ArticlesExportModal extends Component {
             .catch(() => this.setState({inProgress: false}));
     }
 
+    componentWillUnmount() {
+        this.isMount = false;
+    }
+
     handleSelectType = (selectedType) => {
         const {templates} = this.state;
 
@@ -52,11 +58,19 @@ export default class ArticlesExportModal extends Component {
     handleSubmit = () => {
         const {projectId, selectedArticleIds} = this.props;
         const {selectedTemplateId} = this.state;
+        const loadingMessage = {id: 'export', text: 'Идет экспорт статей...'};
 
         if (selectedTemplateId) {
             this.setState({inProgress: true}, () => {
                 const articleIds = _.isBoolean(selectedArticleIds) ? null :
                     selectedArticleIds.length ? selectedArticleIds : null;
+
+                setTimeout(() => {
+                    if (this.state.inProgress) {
+                        QueueManager.push(loadingMessage);
+                        this.props.onClose();
+                    }
+                }, 2000);
 
                 ExportService
                     .articles(
@@ -68,12 +82,19 @@ export default class ArticlesExportModal extends Component {
                         const blob = new Blob([response.data], {type: 'application/octet-stream'});
 
                         saveAs(blob, response.headers['x-filename']);
-                        this.setState({inProgress: false}, this.props.onClose);
+                        NotificationManager.success('Экспорт успешно завршен', 'Экспорт статей');
+                        QueueManager.remove(loadingMessage.id);
+                        if (this.isMount) this.setState({inProgress: false}, this.props.onClose);
                     })
-                    .catch(() => this.setState({inProgress: false}));
+                    .catch(() => {
+                        QueueManager.remove(loadingMessage.id);
+                        if (this.isMount) this.setState({inProgress: false});
+                    });
             });
         }
     };
+
+    isMount = true;
 
     render() {
         const {onClose} = this.props;

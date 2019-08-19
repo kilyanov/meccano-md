@@ -81,6 +81,7 @@ export default class Select extends Component {
     }
 
     componentWillUnmount() {
+        this.isMount = false;
         document.removeEventListener('click', this.handleClickOutside, true);
         EventEmitter.off(EVENTS.FORM.ON_VALIDATE, this.validate);
     }
@@ -245,6 +246,8 @@ export default class Select extends Component {
                 value: _.get(option, 'id')
             }));
 
+            if (!this.isMount) return;
+
             this.setState({
                 options: isPagination ? _.uniqBy(this.state.options.concat(options), 'value') : options,
                 pagination,
@@ -275,7 +278,7 @@ export default class Select extends Component {
                 .then(response => {
                     options.push({name: _.get(response.data, 'name'), value: _.get(response.data, 'id')});
 
-                    this.setState({options});
+                    if (this.isMount) this.setState({options});
                 });
         }
     };
@@ -335,6 +338,8 @@ export default class Select extends Component {
         if (this.props.requestCancelService) this.props.requestCancelService();
 
         this.props.requestService({'query[name]': value}).then(response => {
+            if (!this.isMount) return;
+
             this.setState({
                 inProgress: false,
                 searchOptions: response.data,
@@ -346,6 +351,8 @@ export default class Select extends Component {
     isMobileView = isMobileScreen();
 
     isMultiple = this.props.selected instanceof Array;
+
+    isMount = true;
 
     render() {
         const {

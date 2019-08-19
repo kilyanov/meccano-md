@@ -87,6 +87,7 @@ export default class ArticlesImportModal extends Component {
                         this.props.onSubmit();
                         this.props.onClose();
                     }).catch(() => {
+                        QueueManager.remove(loadingMessage.id);
                         if (this.isMounted) this.setState({inProgress: false});
                     });
                 });
