@@ -161,14 +161,14 @@ export default class ProjectCreatePage extends Component {
     };
 
     saveSections = () => {
-        const {step, sections, project} = this.state;
+        const {step, sections} = this.state;
 
         if (step === 2 && (!sections || !sections.length)) return;
 
         this.setState({inProgress: true}, () => {
             ProjectService.sections.create(
                 this.projectId,
-                {sections, name: project.name}
+                sections
             ).then(() => {
                 this.setState({step: 3, inProgress: false});
             }).catch(() => this.setState({inProgress: false}));
@@ -314,7 +314,7 @@ export default class ProjectCreatePage extends Component {
 
                         {((step === 1 || step === 2) && isEdit) && (
                             <Button
-                                onClick={() => this.saveProject()}
+                                onClick={() => step === 1 ? this.saveProject() : this.saveSections()}
                                 {...classes('submit-button', 'margin-left-auto')}
                                 style='inline'
                                 text='Сохранить'

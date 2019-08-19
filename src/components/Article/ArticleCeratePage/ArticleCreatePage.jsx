@@ -125,11 +125,14 @@ export default class ArticleCreatePage extends Component {
         newState.form[option] = _.get(value, 'value', value); // if object and has "value"
 
         if (option === 'section_main_id') {
+            newState.sectionsTwo = value.sectionsTwo;
+            newState.sectionsThree = [];
             newState.form.section_sub_id = null;
             newState.form.section_three_id = null;
         }
 
         if (option === 'section_sub_id') {
+            newState.sectionsThree = value.sectionsThree;
             newState.form.section_three_id = null;
         }
 
@@ -276,15 +279,15 @@ export default class ArticleCreatePage extends Component {
     };
 
     getDataSectionFields = () => {
-        const {form, fields} = this.state;
+        const {form, sectionsTwo, sectionsThree, fields} = this.state;
 
         let dataSectionFields = _.cloneDeep(fields).filter(({code}) => code !== 'annotation' && code !== 'text');
 
-        if (!form.section_main_id || !_.get(form.section_main_id, 'sectionsTwo', []).length) {
+        if (!form.section_main_id || !sectionsTwo.length) {
             dataSectionFields = dataSectionFields.filter(({code}) => code !== 'section_sub_id');
         }
 
-        if (!form.section_sub_id || !!_.get(form.section_sub_id, 'sectionsThree.length', []).length) {
+        if (!form.section_sub_id || !sectionsThree.length) {
             dataSectionFields = dataSectionFields.filter(({code}) => code !== 'section_three_id');
         }
 
@@ -373,7 +376,17 @@ export default class ArticleCreatePage extends Component {
     article = null;
 
     render() {
-        const {articles, articleIndex, form, showViewSettings, sections, viewType, inProgress} = this.state;
+        const {
+            articles,
+            articleIndex,
+            form,
+            showViewSettings,
+            sections,
+            sectionsTwo,
+            sectionsThree,
+            viewType,
+            inProgress
+        } = this.state;
         const isUpdate = !!this.articleId;
         const dataSectionFields = this.getDataSectionFields();
         const getValue = (prop) => _.isObject(prop) ? prop.value : prop;
@@ -393,15 +406,21 @@ export default class ArticleCreatePage extends Component {
                             field.requestCancelService = SourceService.cancelLast;
                             break;
                         case 'section_main_id':
-                            field.options = sections.map(({name, id, sectionsTwo}) => ({name, value: id, sectionsTwo}));
+                            field.options = sections.map(section => ({
+                                name: section.name,
+                                value: section.id,
+                                sectionsTwo: section.sectionsTwo
+                            }));
                             break;
                         case 'section_sub_id':
-                            field.options = _.get(form, 'section_main_id.sectionsTwo', [])
-                                .map(({name, id, sectionsThree}) => ({name, value: id, sectionsThree}));
+                            field.options = sectionsTwo.map(section => ({
+                                name: section.name,
+                                value: section.id,
+                                sectionsThree: section.sectionsThree
+                            }));
                             break;
                         case 'section_three_id':
-                            field.options = _.get(form, 'section_sub_id.sectionsThree', [])
-                                .map(({name, id}) => ({name, value: id}));
+                            field.options = sectionsThree.map(({name, id}) => ({name, value: id}));
                             break;
                         case 'genre_id':
                             field.requestService = ArticleService.genre;
