@@ -283,11 +283,11 @@ export default class ArticleCreatePage extends Component {
 
         let dataSectionFields = _.cloneDeep(fields).filter(({code}) => code !== 'annotation' && code !== 'text');
 
-        if (!form.section_main_id || !sectionsTwo.length) {
+        if (!form.section_main_id || !sectionsTwo || !sectionsTwo.length) {
             dataSectionFields = dataSectionFields.filter(({code}) => code !== 'section_sub_id');
         }
 
-        if (!form.section_sub_id || !sectionsThree.length) {
+        if (!form.section_sub_id || !sectionsThree || !sectionsThree.length) {
             dataSectionFields = dataSectionFields.filter(({code}) => code !== 'section_three_id');
         }
 
