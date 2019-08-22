@@ -21,16 +21,6 @@ export default class RichEditor extends Component {
         onAfterChange: () => {}
     };
 
-    componentDidMount() {
-        if (this.jodit) {
-            console.log(this.jodit);
-        }
-    }
-
-    handleP = (e) => {
-        console.log(e);
-    };
-
     config = {
         _that: this,
         readonly: false,

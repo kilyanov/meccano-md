@@ -343,6 +343,12 @@ export default class ArticleCreatePage extends Component {
             prevFormClone.text = prevFormClone.text && prevFormClone.text.replace(/<[^>]*>?/gm, '');
             formClone.text = formClone.text && formClone.text.replace(/<[^>]*>?/gm, '');
 
+            prevFormClone.section_main_id = _.get(prevFormClone.section_main_id, 'value');
+            formClone.section_main_id = _.get(formClone.section_main_id, 'value');
+
+            prevFormClone.source = _.get(prevFormClone.source, 'value');
+            formClone.source = _.get(formClone.source, 'value');
+
             if (prevFormClone.date) {
                 prevFormClone.date = prevFormClone.date.toString();
                 formClone.date = formClone.date.toString();
@@ -350,7 +356,7 @@ export default class ArticleCreatePage extends Component {
 
             Object.keys(prevFormClone).forEach(key => {
                 if (prevFormClone[key] !== formClone[key]) {
-                    console.log(key, prevFormClone[key]);
+                    console.log(key, prevFormClone[key], formClone[key]);
                     isEqual = false;
                 }
             });
