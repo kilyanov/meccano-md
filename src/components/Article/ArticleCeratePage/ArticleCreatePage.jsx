@@ -340,8 +340,8 @@ export default class ArticleCreatePage extends Component {
             delete prevFormClone.project;
             delete formClone.project;
 
-            prevFormClone.text = prevFormClone.text && prevFormClone.text.replace(/<[^>]*>?/gm, '');
-            formClone.text = formClone.text && formClone.text.replace(/<[^>]*>?/gm, '');
+            prevFormClone.text = this.clearString(prevFormClone.text);
+            formClone.text = this.clearString(formClone.text);
 
             prevFormClone.section_main_id = _.get(prevFormClone.section_main_id, 'value');
             formClone.section_main_id = _.get(formClone.section_main_id, 'value');
@@ -375,6 +375,16 @@ export default class ArticleCreatePage extends Component {
 
             return resolve();
         });
+    };
+
+    clearString = (value) => {
+        let newValue = value;
+
+        if (!_.isString(newValue)) {
+            newValue = '';
+        }
+
+        return newValue.replace(/<[^>]*>?/gm, '');
     };
 
     articleId = this.props.match.params.articleId;
