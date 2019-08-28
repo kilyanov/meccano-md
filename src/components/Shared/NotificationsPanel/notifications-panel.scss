@@ -1,0 +1,59 @@
+@import "../../../assets/styles/variables";
+
+$panelWidth: 400px;
+
+.notifications-panel {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  right: -$panelWidth;
+  width: $panelWidth;
+  color: $white;
+  transition: right .3s ease-in-out;
+  z-index: 1;
+
+  &--open {
+    right: 0;
+  }
+
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 30px;
+    background-color: rgba(0, 0, 0, .8);
+  }
+
+  &__header-title {
+    margin: 0;
+    color: $white;
+  }
+
+  &__header-time {
+    font-size: 24px;
+  }
+
+  &__current-date {
+    font-size: 12px;
+    color: $gray-two;
+  }
+
+  &__button-close {
+    position: absolute;
+    left: -30px;
+    top: 0;
+    border: none;
+    background: none;
+    padding: 0;
+    font-size: 24px;
+  }
+
+  &__notifications {
+    background: rgba(81, 81, 81, 0.8);
+  }
+
+  &__footer {
+    height: 100%;
+    background-color: rgba(0, 0, 0, .8);
+  }
+}

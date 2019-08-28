@@ -11,6 +11,7 @@ import {InitScrollbar} from '../helpers/Tools';
 import {EVENTS} from '../constants/Events';
 import OperatedNotification from './Shared/OperatedNotifiction/OperatedNotification';
 import QueueManager from './Shared/QueeManager/QueueManager';
+import NotificationsPanel from './Shared/NotificationsPanel/NotificationsPanel';
 
 export default class App extends Component {
     static propTypes = {
@@ -88,6 +89,7 @@ export default class App extends Component {
                     />
                 )}
 
+                <NotificationsPanel/>
             </div>
         );
     }

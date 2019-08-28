@@ -1,9 +1,9 @@
 import {applyMiddleware, compose, createStore} from 'redux';
-// import {createLogger} from 'redux-logger';
+import {createLogger} from 'redux-logger';
 import requestMiddleware from './middleware/request';
 import reducers from './reducers';
 
-// const logger = createLogger();
+const logger = createLogger();
 const initialState = {
     articles: [],
     profile: {},
@@ -12,7 +12,15 @@ const initialState = {
     country: [],
     federal: [],
     region: [],
-    source: []
+    source: [],
+    notificationsPanel: {
+        notifications: [
+            {id: '1', title: 'Уведомление', message: 'Болльшой текст уведомления'},
+            {id: '2', title: 'Экспорт статей', message: 'Идет экспорт статей проекта "Первый"'},
+            {id: '3', title: 'Импорт статей', message: 'Идет импорт статей в проект "Первый"'}
+        ],
+        open: false
+    }
 };
 
 /* eslint-disable no-underscore-dangle */
@@ -23,7 +31,7 @@ const composeEnhancers =
         window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__({}) : compose;
 /* eslint-enable */
 
-const middleware = applyMiddleware(requestMiddleware); // const middleware = applyMiddleware(requestMiddleware, logger);
+const middleware = applyMiddleware(requestMiddleware, logger);
 const store = createStore(reducers, initialState, composeEnhancers(middleware));
 
 export default store;

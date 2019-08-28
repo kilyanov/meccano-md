@@ -1,6 +1,8 @@
 @import "../../../assets/styles/variables";
 
-.top-bar {
+$namespace: '.top-bar';
+
+#{$namespace} {
   position: fixed;
   top: 0;
   left: 0;
@@ -29,6 +31,7 @@
   &__profile {
     position: relative;
     height: 100%;
+    //margin-left: auto;
     border-left: 1px solid $gray;
     border-right: 1px solid $gray;
 
@@ -46,11 +49,27 @@
     height: 100%;
     padding: 0 16px;
     cursor: pointer;
+    transition: background-color .3s, color .3s;
+
+    &:hover {
+      background-color: $shamrock;
+      color: #fff;
+
+      #{$namespace}__drop-arrow,
+      #{$namespace}__profile-icon {
+        fill: #fff;
+      }
+
+      #{$namespace}__profile-username {
+        color: #fff;
+      }
+    }
   }
 
   &__profile-icon {
     width: 25px;
     height: 25px;
+    transition: fill .3s;
   }
 
   &__profile-data {
@@ -64,6 +83,7 @@
     font-size: 13px;
     line-height: 24px;
     color: $brownGreyColor;
+    transition: color .3s;
   }
 
   &__drop-arrow {
@@ -72,5 +92,35 @@
     margin-left: auto;
     fill: $gray;
     transform: rotate(90deg);
+    transition: fill .3s;
+  }
+
+  &__button {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: auto;
+    height: 100%;
+    padding: 0 20px;
+    border-left: 1px solid $gray;
+    cursor: pointer;
+    transition: background-color .3s;
+
+    &:hover {
+      background-color: $shamrock;
+
+      #{$namespace}__button-icon {
+        fill: #fff;
+      }
+    }
+  }
+
+  &__button-icon {
+    transition: fill .3s;
+  }
+
+  &__notifications-count {
+
   }
 }

@@ -364,7 +364,7 @@ export default class ArticleCreatePage extends Component {
             if (!isEqual) {
                 return OperatedNotification.warning({
                     title: 'Внимание',
-                    message: 'Есть несохраненные изменния.\nПродолжить без сохранения?',
+                    message: 'Есть несохраненные изменения.\nПродолжить без сохранения?',
                     submitButtonText: 'Продолжить',
                     cancelButtonText: 'Сохранять',
                     closeOnClick: true,

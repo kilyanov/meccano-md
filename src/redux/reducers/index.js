@@ -7,6 +7,7 @@ import {country} from './country';
 import {federal} from './federal';
 import {region} from './region';
 import {source} from './source';
+import {notificationsPanel} from './notificationsPanel';
 
 const reducer = combineReducers({
     profile,
@@ -16,7 +17,8 @@ const reducer = combineReducers({
     country,
     federal,
     region,
-    source
+    source,
+    notificationsPanel
 });
 
 export default reducer;

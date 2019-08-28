@@ -7,6 +7,7 @@ import ProfileIcon from '../SvgIcons/ProfileIcon';
 import ArrowIcon from '../SvgIcons/ArrowIcon';
 import DropDown from '../DropDown/DropDown';
 import {AuthService} from '../../../services';
+import NotificationsButton from './NotificationsButton/NotificationsButton';
 
 const classes = new Bem('top-bar');
 
@@ -30,6 +31,9 @@ class TopBar extends PureComponent {
             <section {...classes('', {static: this.props.static}, this.props.className)}>
                 <div {...classes('container', '', 'container')}>
                     <Logo/>
+
+                    <NotificationsButton {...classes('button', 'notifications')}/>
+
                     <div {...classes('profile', {opened: profileIsOpen})}>
                         <div
                             {...classes('profile-button')}
