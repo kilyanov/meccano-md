@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import './home-page.scss';
 import {connect} from 'react-redux';
 import PromiseDialogModal from '../../Shared/PromiseDialogModal/PromiseDialogModal';
-import Logo from '../../Shared/Logo/Logo';
 import EarthIcon from '../../Shared/SvgIcons/EarthIcon';
 import ProjectsIcon from '../../Shared/SvgIcons/ProjectsIcon';
 import UsersIcon from '../../Shared/SvgIcons/UsersIcon';
@@ -12,6 +11,7 @@ import ProjectCreateModal from '../../Project/ProjectCreateModal/ProjectCreateMo
 import VerticalMenu from '../../Shared/VerticalMenu/VerticalMenu';
 import {ProjectService} from '../../../services';
 import Loader from '../../Shared/Loader/Loader';
+import Page from '../../Shared/Page/Page';
 
 class HomePage extends Component {
     static propTypes = {
@@ -79,11 +79,7 @@ class HomePage extends Component {
         const menu = this.getMenu();
 
         return (
-            <div {...classes('', '', ['container', 'page'])}>
-                <div {...classes('logo')}>
-                    <Logo/>
-                </div>
-
+            <Page {...classes()} withBar>
                 <h1 {...classes('title')}>Добро пожаловать, {_.get(profile, 'username', '')}!</h1>
                 <h5 {...classes('sub-title')}>
                     Выберите ваш текущий проект, или
@@ -110,7 +106,7 @@ class HomePage extends Component {
                 <PromiseDialogModal ref={node => this.dialogModal = node}/>
 
                 {inProgress && <Loader/>}
-            </div>
+            </Page>
         );
     }
 }

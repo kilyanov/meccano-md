@@ -8,9 +8,10 @@ $panelWidth: 400px;
   bottom: 0;
   right: -$panelWidth;
   width: $panelWidth;
+  max-width: 100%;
   color: $white;
   transition: right .3s ease-in-out;
-  z-index: 1;
+  z-index: 4;
 
   &--open {
     right: 0;
@@ -49,7 +50,7 @@ $panelWidth: 400px;
   }
 
   &__notifications {
-    background: rgba(81, 81, 81, 0.8);
+    background: rgba(81, 81, 81, .8);
   }
 
   &__footer {

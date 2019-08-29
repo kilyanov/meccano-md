@@ -13,6 +13,12 @@ $namespace: '.page';
         }
     }
 
+    &--blur {
+        filter: blur(5px);
+        user-select: none;
+        pointer-events: none;
+    }
+
     &__content {
         flex: 1;
         padding-top: 30px;

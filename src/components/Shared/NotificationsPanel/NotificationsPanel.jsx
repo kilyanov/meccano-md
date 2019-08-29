@@ -18,29 +18,24 @@ class NotificationsPanel extends Component {
     };
 
     componentDidMount() {
+        document.addEventListener('click', this.handleClickOutside);
         this.currentDateTimeInterval = setInterval(() => {
             this.setState({currentDateTime: moment()});
         }, 30000);
     }
 
-    componentDidUpdate(prevProps) {
-        if (!prevProps.notificationsPanel.open) {
-            document.addEventListener('click', this.handleClickOutside);
-        } else {
-            document.removeEventListener('click', this.handleClickOutside);
-        }
-    }
-
     componentWillUnmount() {
+        this.hasListener = false;
         document.removeEventListener('click', this.handleClickOutside);
         this.currentDateTimeInterval = null;
     }
 
     handleClickOutside = (event) => {
-        const {notificationsPanel} = this.props;
-        const isInnerClick = this.domNode && this.domNode.contains(event.target);
+        const isInnerClick = this.domNode &&
+            this.domNode.contains(event.target) ||
+            event.target.classList.contains('panel-notification__button');
 
-        if (!isInnerClick && notificationsPanel.open) {
+        if (!isInnerClick && this.isOpen()) {
             store.dispatch(closeNotificationPanel());
         }
     };
@@ -49,14 +44,61 @@ class NotificationsPanel extends Component {
         store.dispatch(deleteNotification(id));
     };
 
+    handleTouchStart = (event) => {
+        const firstTouch = event.touches[0];
+
+        this.xDown = firstTouch.clientX;
+        this.yDown = firstTouch.clientY;
+    };
+
+    handleTouchMove = (event) => {
+        if (!this.xDown || !this.yDown) return;
+
+        const firstTouch = event.touches[0];
+
+        const xUp = firstTouch.clientX;
+        const yUp = firstTouch.clientY;
+
+        const xDiff = this.xDown - xUp;
+        const yDiff = this.yDown - yUp;
+
+        if (Math.abs(xDiff) > Math.abs(yDiff) && xDiff < 0) {
+            store.dispatch(closeNotificationPanel());
+        }
+    };
+
+    handleTouchEnd = () => {
+        /* reset values */
+        this.xDown = null;
+        this.yDown = null;
+    };
+
+    isOpen = () => {
+        const style = window.getComputedStyle(this.domNode);
+
+        return parseInt(style.right) === 0;
+    };
+
+    hasListener = false;
+
     currentDateTimeInterval = null;
+
+    xDown = null;
+
+    yDown = null;
 
     render() {
         const {notificationsPanel} = this.props;
         const {currentDateTime} = this.state;
 
         return (
-            <aside {...classes('', {open: notificationsPanel.open})} ref={ref => this.domNode = ref}>
+            <aside
+                {...classes('', {open: notificationsPanel.open})}
+                ref={ref => this.domNode = ref}
+                onTouchStart={this.handleTouchStart}
+                onTouchMove={this.handleTouchMove}
+                onTouchEnd={this.handleTouchEnd}
+            >
                 <section {...classes('header')}>
                     <div {...classes('header-column')}>
                         <h3 {...classes('header-title')}>Уведомления</h3>

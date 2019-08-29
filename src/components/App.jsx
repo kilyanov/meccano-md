@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, {Component, Fragment} from 'react';
 import PropTypes from 'prop-types';
 import {AuthService} from "../services";
 import {EventEmitter} from "../helpers";
@@ -7,11 +7,12 @@ import {Redirect} from 'react-router-dom';
 import '../assets/styles/main.scss';
 import {storeMainActions} from '../redux/storeMainActions';
 import {InitScrollbar} from '../helpers/Tools';
-// import {Push} from '../services/PushService';
 import {EVENTS} from '../constants/Events';
 import OperatedNotification from './Shared/OperatedNotifiction/OperatedNotification';
 import QueueManager from './Shared/QueeManager/QueueManager';
 import NotificationsPanel from './Shared/NotificationsPanel/NotificationsPanel';
+
+const classes = new Bem('app');
 
 export default class App extends Component {
     static propTypes = {
@@ -49,8 +50,6 @@ export default class App extends Component {
         if (this.containerRef) {
             InitScrollbar(this.bodyRef);
         }
-
-        // window.addEventListener('load', () => Push.init());
     }
 
     componentWillUnmount() {
@@ -67,30 +66,34 @@ export default class App extends Component {
         return redirect ? (
             <Redirect push to={redirect}/>
         ) : (
-            <div className='app' ref={node => this.containerRef = node}>
-                <NotificationContainer/>
-                <QueueManager/>
+            <Fragment>
+                <div
+                    {...classes('', {blur: false})}
+                    ref={node => this.containerRef = node}
+                >
+                    <NotificationContainer/>
+                    <QueueManager/>
 
-                {children}
+                    {children}
 
-                {notification && (
-                    <OperatedNotification
-                        /* eslint-disable */
-                        onSubmit={notification.onSubmit}
-                        onCancel={notification.onCancel}
-                        /* eslint-enable */
-                        message={notification.message}
-                        title={notification.title}
-                        submitButtonText={notification.submitButtonText}
-                        cancelButtonText={notification.cancelButtonText}
-                        type={notification.type}
-                        closeOnClick={notification.closeOnClick}
-                        timeOut={notification.timeOut}
-                    />
-                )}
-
+                    {notification && (
+                        <OperatedNotification
+                            /* eslint-disable */
+                            onSubmit={notification.onSubmit}
+                            onCancel={notification.onCancel}
+                            /* eslint-enable */
+                            message={notification.message}
+                            title={notification.title}
+                            submitButtonText={notification.submitButtonText}
+                            cancelButtonText={notification.cancelButtonText}
+                            type={notification.type}
+                            closeOnClick={notification.closeOnClick}
+                            timeOut={notification.timeOut}
+                        />
+                    )}
+                </div>
                 <NotificationsPanel/>
-            </div>
+            </Fragment>
         );
     }
 }
