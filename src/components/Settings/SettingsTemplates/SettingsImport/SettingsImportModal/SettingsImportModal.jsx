@@ -158,6 +158,7 @@ export default class SettingsImportModal extends Component {
             </div>
             <div {...classes('rule-buttons')}>
                 <button
+                    type='button'
                     {...classes('button', 'remove')}
                     onClick={() => this.handleDeleteRule(ruleIndex)}
                 >✕</button>
@@ -186,6 +187,7 @@ export default class SettingsImportModal extends Component {
             </div>
             <div {...classes('rule-buttons')}>
                 <button
+                    type='button'
                     {...classes('button', 'remove')}
                     onClick={() => this.handleDeleteJoin(joinIndex)}
                 >✕</button>
