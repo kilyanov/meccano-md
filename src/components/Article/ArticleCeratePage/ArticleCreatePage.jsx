@@ -355,7 +355,7 @@ export default class ArticleCreatePage extends Component {
             }
 
             Object.keys(prevFormClone).forEach(key => {
-                if (_.isEqual(prevFormClone[key],  formClone[key])) {
+                if (!_.isEqual(prevFormClone[key],  formClone[key])) {
                     console.log(key, prevFormClone[key], formClone[key]);
                     isEqual = false;
                 }
