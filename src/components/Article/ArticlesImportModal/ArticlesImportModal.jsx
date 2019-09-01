@@ -82,12 +82,12 @@ export default class ArticlesImportModal extends Component {
                         QueueManager.remove(loadingMessage.id);
 
                         if (this.isMounted) {
-                            NotificationManager.success('Импорт успешно завршен', 'Импорт статей');
+                            NotificationManager.success('Импорт успешно завершен', 'Импорт статей');
                             this.setState({inProgress: false});
                         } else {
                             OperatedNotification.success({
                                 title: 'Импорт статей',
-                                message: 'Импорт успешно завршен',
+                                message: 'Импорт успешно завершен',
                                 submitButtonText: 'Перейти к проекту →',
                                 cancelButtonText: 'Закрыть',
                                 onSubmit: () => this.context.router.history.push(`/project/${this.props.projectId}`)
