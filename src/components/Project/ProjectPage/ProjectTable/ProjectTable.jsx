@@ -149,9 +149,7 @@ export default class ProjectTable extends Component {
     selectedColumns = [];
 
     initScrollbar = () => {
-        const scroll = InitScrollbar(this.bodyRef, {
-            suppressScrollX: true
-        });
+        const scroll = InitScrollbar(this.bodyRef);
 
         if (scroll) this.scrollBar = scroll;
         else if (this.scrollBar) this.scrollBar.update();
