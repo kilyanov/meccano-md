@@ -173,7 +173,7 @@ export default class SettingsCity extends Component {
         this.setState({inProgress: true}, () => {
             LocationService.cancelLast();
             LocationService.city
-                .get('', {'query[name]': value})
+                .get({'query[name]': value})
                 .then(response => {
                     this.setState({
                         inProgress: false,

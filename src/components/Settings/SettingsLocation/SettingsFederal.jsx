@@ -171,7 +171,7 @@ export default class SettingsFederal extends Component {
         this.setState({inProgress: true}, () => {
             LocationService.cancelLast();
             LocationService.federal
-                .get('', {'query[name]': value})
+                .get({'query[name]': value})
                 .then(response => {
                     this.setState({
                         inProgress: false,

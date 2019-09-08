@@ -43,6 +43,7 @@ export const LocationService = {
     },
     city: {
         get(form, id = '') {
+            console.log(ParseToRequest(form));
             source = CancelToken.source();
             return API.get(`${ApiList.city}${id ? `/${id}` : ''}${ParseToRequest(form)}`, {
                 cancelToken: source.token
