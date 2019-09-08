@@ -86,6 +86,7 @@ export default class ProjectProperties extends Component {
                             {...classes('list', 'left')}
                             options={{
                                 animation: 150,
+                                filter: '.ps__rail-y',
                                 group: {
                                     name: 'fields',
                                     put: 'allFields'
@@ -118,7 +119,7 @@ export default class ProjectProperties extends Component {
                                     pull: 'clone'
                                 },
                                 sort: false,
-                                filter: `.${classSelected}`,
+                                filter: `.${classSelected}, .ps__rail-y`,
                                 onClone: (evt) => {
                                     evt.clone.ondblclick = event =>
                                         this.handleDblClick(event.currentTarget.dataset.id);
