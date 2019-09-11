@@ -421,6 +421,10 @@ export default class ArticleCreatePage extends Component {
                             field.requestService = SourceService.get;
                             field.requestCancelService = SourceService.cancelLast;
                             break;
+                        case 'source_type_id':
+                            field.requestService = SourceService.type.get;
+                            field.requestCancelService = SourceService.cancelLast;
+                            break;
                         case 'section_main_id':
                             field.options = sections.map(section => ({
                                 name: section.name,
