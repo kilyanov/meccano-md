@@ -1,6 +1,5 @@
 import API from '../api/api';
 import ApiList, {createURLGenerator} from '../api/apiList';
-import {ParseToRequest} from '../helpers/Tools';
 import axios from 'axios';
 
 const CancelToken = axios.CancelToken;
@@ -20,13 +19,11 @@ export const SourceService = {
     create: (form) => API.post(url(), form),
     update: (form, id) => API.put(url(id), form),
     type: {
-        get: (form) => {
+        get: (form, id) => {
             const typeUrl = urlGenerator('type');
 
-            console.log(typeUrl(form));
-
             source = CancelToken.source();
-            return API.get(`${ApiList.source.type}${ParseToRequest(form)}`, {
+            return API.get(typeUrl(form, id), {
                 cancelToken: source.token
             });
         },

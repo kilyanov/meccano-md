@@ -7,5 +7,6 @@ export const FIELD_TYPE = {
     DATETIME: 'datetime',
     DATE: 'date',
     TIME: 'time',
-    UUID: 'uuid'
+    UUID: 'uuid',
+    UUID_EXT: 'uuidExt'
 };

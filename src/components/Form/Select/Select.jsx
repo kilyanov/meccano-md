@@ -9,6 +9,7 @@ import {EventEmitter} from '../../../helpers';
 import {EVENTS} from '../../../constants/Events';
 
 const classes = new Bem('select');
+const NEW_VALUE = 'new';
 
 export default class Select extends Component {
     static propTypes = {
@@ -30,6 +31,7 @@ export default class Select extends Component {
         requestService: PropTypes.func,
         requestCancelService: PropTypes.func,
         validateErrorMessage: PropTypes.string,
+        canAddNewValue: PropTypes.bool,
         depended: PropTypes.array // Зависимый фильтр (вставляется в форму запроса)
     };
 
@@ -154,8 +156,26 @@ export default class Select extends Component {
         this.setState({searchFocused: true});
     };
 
-    handleSearchBlur = () => {
-        this.setState({searchFocused: false});
+    handleSearchBlur = (event) => {
+        const {target: {value}} = event;
+        const {canAddNewValue, onChange} = this.props;
+        const newState = this.state;
+        const newOption = {};
+
+        if (canAddNewValue && value) {
+            newOption.name = value;
+            newOption.value = value;
+            newOption.isNew = true;
+            newState.searchOptions = null;
+            newState.options.push(newOption);
+        }
+
+        newState.searchFocused = false;
+        newState.searchString = '';
+
+        this.setState(newState, () => {
+            if (canAddNewValue && value) onChange(newOption);
+        });
     };
 
     handleSearchKeyDown = (event) => {
@@ -176,6 +196,16 @@ export default class Select extends Component {
     };
 
     handleClearValue = () => {
+        const {canAddNewValue} = this.props;
+        const newState = this.state;
+        const options = this.state.searchOptions || this.state.options || this.props.options;
+        const selected = _.isString(this.props.selected) &&
+            options.find(({value}) => value === this.props.selected) || this.props.selected;
+
+        if (canAddNewValue && selected.isNew) {
+            newState.options = newState.options.filter(option => !option.isNew);
+        }
+
         this.setState({searchString: ''});
         this.props.onChange(this.isMultiple ? [] : {});
     };
@@ -258,7 +288,7 @@ export default class Select extends Component {
 
     checkSelected = () => {
         const {selected} = this.props;
-        const options = this.state.searchOptions || this.state.options || this.props.options;
+        let options = this.state.searchOptions || this.state.options || this.props.options;
 
         if (!options.length) return;
 
@@ -273,10 +303,17 @@ export default class Select extends Component {
         }
 
         // Если выбранный элемент не найден в списке подсказок, запросим его с сервера
-        if (!result && options.length && this.props.requestService) {
+        if (!result && options.length && this.props.requestService && selected) {
             this.props.requestService(null, _.isString(selected) ? selected : _.get(selected, 'value'))
                 .then(response => {
-                    options.push({name: _.get(response.data, 'name'), value: _.get(response.data, 'id')});
+                    const item = Array.isArray(response.data) ? response.data[0] : response.data;
+
+                    options.push({
+                        name: _.get(item, 'name'),
+                        value: _.get(item, 'id')
+                    });
+
+                    options = _.uniqBy(options, 'value');
 
                     if (this.isMount) this.setState({options});
                 });
@@ -342,7 +379,7 @@ export default class Select extends Component {
 
             this.setState({
                 inProgress: false,
-                searchOptions: response.data,
+                searchOptions: response.data.length ? response.data : null,
                 opened: !!response.data.length
             });
         });
@@ -363,7 +400,8 @@ export default class Select extends Component {
             withSearch,
             fixedPosList,
             validateErrorMessage,
-            className
+            className,
+            canAddNewValue
         } = this.props;
         const {opened, searchString, searchFocused, inProgress, error} = this.state;
         const options = this.state.searchOptions || this.state.options || this.props.options;
@@ -379,7 +417,7 @@ export default class Select extends Component {
                     multiple: isMultiple,
                     mobile: this.isMobileView,
                     succeed: isMultiple && selected.length || !_.isEmpty(selected),
-                    disabled: disabled || !options.length
+                    disabled: disabled || !options.length && !canAddNewValue
                 }, {
                     validated: required,
                     [className]: !!className

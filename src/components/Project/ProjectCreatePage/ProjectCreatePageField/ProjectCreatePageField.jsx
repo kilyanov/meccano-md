@@ -39,6 +39,21 @@ const ProjectCreateField = ({field, value, onChange, className}) => {
                     withSearch
                 />
             </div>;
+        case FIELD_TYPE.UUID_EXT:
+            return <div {...classes('field', [field.code, field.type], className)} data-id={field.code}>
+                <Select
+                    placeholder={field.placeholder}
+                    label={field.name}
+                    options={field.options || []}
+                    selected={value}
+                    onChange={val => onChange(val, field.code)}
+                    requestService={field.requestService}
+                    requestCancelService={field.requestCancelService}
+                    depended={field.depended}
+                    withSearch
+                    canAddNewValue
+                />
+            </div>;
         case FIELD_TYPE.URL:
             return <div {...classes('field', [field.code, field.type], className)} data-id={field.code}>
                 <InputLink
