@@ -2,17 +2,11 @@ import {applyMiddleware, compose, createStore} from 'redux';
 import {createLogger} from 'redux-logger';
 import requestMiddleware from './middleware/request';
 import reducers from './reducers';
+import {THEME_TYPE} from '../constants/ThemeType';
 
 const logger = createLogger();
 const initialState = {
-    articles: [],
     profile: {},
-    projects: [],
-    city: [],
-    country: [],
-    federal: [],
-    region: [],
-    source: [],
     notificationsPanel: {
         notifications: [
             {id: '1', title: 'Уведомление', message: 'Болльшой текст уведомления'},
@@ -20,7 +14,8 @@ const initialState = {
             {id: '3', title: 'Импорт статей', message: 'Идет импорт статей в проект "Первый"'}
         ],
         open: false
-    }
+    },
+    theme: THEME_TYPE.LIGHT
 };
 
 /* eslint-disable no-underscore-dangle */

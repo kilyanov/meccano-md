@@ -1,24 +1,12 @@
 import {combineReducers} from 'redux';
-import {profile} from './user';
-import {projects} from './project';
-import {articles} from './article';
-import {city} from './city';
-import {country} from './country';
-import {federal} from './federal';
-import {region} from './region';
-import {source} from './source';
+import {profile} from './profile';
 import {notificationsPanel} from './notificationsPanel';
+import {theme} from './theme';
 
 const reducer = combineReducers({
     profile,
-    projects,
-    articles,
-    city,
-    country,
-    federal,
-    region,
-    source,
-    notificationsPanel
+    notificationsPanel,
+    theme
 });
 
 export default reducer;

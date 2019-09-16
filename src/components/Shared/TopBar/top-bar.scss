@@ -95,12 +95,17 @@ $namespace: '.top-bar';
     transition: fill .3s;
   }
 
+  &__buttons {
+    display: flex;
+    height: 100%;
+    margin-left: auto;
+  }
+
   &__button {
     position: relative;
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-left: auto;
     height: 100%;
     padding: 0 20px;
     border-left: 1px solid $gray;
@@ -110,13 +115,14 @@ $namespace: '.top-bar';
     &:hover {
       background-color: $shamrock;
 
-      #{$namespace}__button-icon {
+      svg {
         fill: #fff;
       }
     }
   }
 
   &__button-icon {
+    fill: #fff;
     transition: fill .3s;
   }
 

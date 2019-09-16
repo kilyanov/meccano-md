@@ -1,6 +1,6 @@
 @import "../../../../assets/styles/variables";
 
-$namespace: '.notifications-button';
+$namespace: '.theme-button';
 
 #{$namespace} {
   position: relative;
@@ -19,23 +19,6 @@ $namespace: '.notifications-button';
     #{$namespace}__icon {
       fill: #fff;
     }
-  }
-
-  &__count {
-    position: absolute;
-    top: 15px;
-    right: 18px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 14px;
-    height: 14px;
-    background-color: red;
-    border-radius: 50%;
-    font-style: normal;
-    font-size: 10px;
-    color: #fff;
-    text-align: center;
   }
 
   &__icon {

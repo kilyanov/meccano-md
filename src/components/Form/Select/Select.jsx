@@ -9,7 +9,6 @@ import {EventEmitter} from '../../../helpers';
 import {EVENTS} from '../../../constants/Events';
 
 const classes = new Bem('select');
-const NEW_VALUE = 'new';
 
 export default class Select extends Component {
     static propTypes = {
