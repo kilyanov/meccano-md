@@ -156,37 +156,23 @@ export default class Select extends Component {
     };
 
     handleSearchBlur = (event) => {
-        const {target: {value}} = event;
-        const {canAddNewValue, onChange} = this.props;
-        const newState = this.state;
-        const newOption = {};
-
-        if (canAddNewValue && value) {
-            newOption.name = value;
-            newOption.value = value;
-            newOption.isNew = true;
-            newState.searchOptions = null;
-            newState.options.push(newOption);
-        }
-
-        newState.searchFocused = false;
-        newState.searchString = '';
-
-        this.setState(newState, () => {
-            if (canAddNewValue && value) onChange(newOption);
-        });
+        this.submitNewItem(event);
     };
 
     handleSearchKeyDown = (event) => {
-        if (!this.listRef) return;
-
         switch (event.keyCode) {
             case KEY_CODE.arrows.down:
+                if (!this.listRef) return;
                 this.listRef.querySelector('li:first-child').focus();
                 event.preventDefault();
                 break;
             case KEY_CODE.arrows.up:
+                if (!this.listRef) return;
                 this.listRef.querySelector('li:last-child').focus();
+                event.preventDefault();
+                break;
+            case KEY_CODE.enter:
+                this.submitNewItem(event);
                 event.preventDefault();
                 break;
             default:
@@ -317,6 +303,28 @@ export default class Select extends Component {
                     if (this.isMount) this.setState({options});
                 });
         }
+    };
+
+    submitNewItem = (event) => {
+        const {target: {value}} = event;
+        const {canAddNewValue, onChange} = this.props;
+        const newState = this.state;
+        const newOption = {};
+
+        if (canAddNewValue && value) {
+            newOption.name = value;
+            newOption.value = value;
+            newOption.isNew = true;
+            newState.searchOptions = null;
+            newState.options.push(newOption);
+        }
+
+        newState.searchFocused = false;
+        newState.searchString = '';
+
+        this.setState(newState, () => {
+            if (canAddNewValue && value) onChange(newOption);
+        });
     };
 
     open = () => {
