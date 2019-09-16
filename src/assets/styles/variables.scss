@@ -1,8 +1,10 @@
 /* Breakpoints */
-$device-xs: calc(540px + 2em);
-$device-sm: calc(768px + 2em);
-$device-md: calc(992px + 2em);
-$device-lg: calc(1200px + 2em);
+$device-margin: 32px;
+
+$device-xs: #{540px + $device-margin};
+$device-sm: #{768px + $device-margin};
+$device-md: #{992px + $device-margin};
+$device-lg: #{1200px + $device-margin};
 
 $grid-breakpoints: (
   xs: 0,
