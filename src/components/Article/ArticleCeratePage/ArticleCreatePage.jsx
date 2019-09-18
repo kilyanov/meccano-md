@@ -12,7 +12,7 @@ import Button from '../../Shared/Button/Button';
 import ArticleViewSettings from './ArticleViewSettings/ArticleViewSettings';
 import ProjectCreateField from '../../Project/ProjectCreatePage/ProjectCreatePageField/ProjectCreatePageField';
 import Sortable from 'react-sortablejs';
-import {OperatedNotification} from '../../../helpers/Tools';
+import {isMobileScreen, OperatedNotification} from '../../../helpers/Tools';
 import {STORAGE_KEY} from '../../../constants/LocalStorageKeys';
 
 const classes = new Bem('article-create-page');
@@ -412,6 +412,7 @@ export default class ArticleCreatePage extends Component {
             <Sortable
                 {...classes('section', 'sortable')}
                 options={{
+                    disabled: isMobileScreen(),
                     animation: 150,
                     handle: '.drag-handle'
                 }}

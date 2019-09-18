@@ -8,6 +8,8 @@
   z-index: 1;
   user-select: none;
   cursor: pointer;
+  background: none;
+  border: none;
 
   @include media('mobile') {
     display: block;

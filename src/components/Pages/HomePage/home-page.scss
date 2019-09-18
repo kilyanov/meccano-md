@@ -1,7 +1,13 @@
+@import "../../../assets/styles/mixins";
+
 .home-page {
   align-items: center;
   justify-content: flex-start;
   margin-top: 72px;
+
+  @include media('mobile') {
+    margin-top: 40px;
+  }
 
   &__logo {
     margin-top: 72px;
@@ -13,6 +19,10 @@
     font-size: 32px;
     line-height: 40px;
     text-align: center;
+
+    @include media('mobile') {
+      font-size: 24px;
+    }
   }
 
   &__sub-title {
