@@ -11,6 +11,8 @@ const assetsPluginInstance = new AssetsPlugin({
 });
 
 module.exports = (env, argv) => {
+    const productionMode = argv.mode === 'production';
+
     return {
         entry: './src/index.js',
         module: {
@@ -18,7 +20,7 @@ module.exports = (env, argv) => {
                 {
                     test: /\.(js|jsx)$/,
                     exclude: /node_modules/,
-                    use: ['babel-loader', 'eslint-loader']
+                    use: productionMode ? 'babel-loader' : ['babel-loader', 'eslint-loader']
                 },
                 {
                     test: /\.(css|scss)$/,
@@ -70,7 +72,7 @@ module.exports = (env, argv) => {
                 ]
             }),
             new webpack.HotModuleReplacementPlugin(),
-            new MiniCssExtractPlugin({filename: `styles${argv.mode === 'production' ? '-[hash]' : ''}.css`}),
+            new MiniCssExtractPlugin({filename: `styles${productionMode ? '-[hash]' : ''}.css`}),
             new webpack.DefinePlugin({'process.env.NODE_ENV': JSON.stringify(argv.mode)}),
             new HtmlWebpackPlugin({
                 inject: false,
