@@ -16,6 +16,11 @@ import {OperatedNotification} from '../../../helpers/Tools';
 import ProjectKeyWords from './ProjectKeyWords/ProjectKeyWords';
 
 const classes = new Bem('project-create-page');
+const STEP_DESCRIPTION = {
+    1: 'Настройка полей',
+    2: 'Создание структуры',
+    3: 'Настройка ключевых слов'
+};
 
 export default class ProjectCreatePage extends Component {
     static contextTypes = {
@@ -241,8 +246,7 @@ export default class ProjectCreatePage extends Component {
                 <section {...classes('header')}>
                     <div {...classes('container', '', 'container')}>
                         <div {...classes('breadcrumbs')}>
-                            {isEdit ? 'Редактирование' : 'Создание'} проекта: {this.step === 1 ?
-                                'Шаг 1 - Настройка полей' : 'Шаг 2: Создание структуры'}
+                            {isEdit ? 'Редактирование' : 'Создание'} проекта: {`Шаг ${step} - ${STEP_DESCRIPTION[step]}`}
                         </div>
 
                         {project && (

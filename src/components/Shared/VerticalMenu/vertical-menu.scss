@@ -112,6 +112,7 @@ $namespace: '.vertical-menu';
     display: flex;
     align-items: center;
     height: 48px;
+    transition: background-color .3s ease;
 
     &--active {
       background-color: $gray-two;
@@ -135,5 +136,63 @@ $namespace: '.vertical-menu';
 
   &__item-button {
     padding: 16px 20px;
+  }
+}
+
+/* Dark Theme */
+
+.app--dark #{$namespace} {
+  border-color: $brown-grey;
+
+  &__item {
+    border-color: $brown-grey;
+    color: $white-dark;
+
+    &--open {
+      #{$namespace}__item-caption:hover {
+        color: $white-dark;
+        background-color: $background-dark;
+
+        #{$namespace}__arrow-icon {
+          fill: $gray;
+        }
+
+        #{$namespace}__item-icon {
+          fill: $emerald;
+        }
+
+        #{$namespace}__item-link {
+          color: $white-dark;
+        }
+      }
+    }
+  }
+
+  &__item-caption:hover {
+    background-color: $emerald;
+  }
+
+  &__item-icon {
+    fill: $emerald
+  }
+
+  &__item-link {
+    color: $white-dark;
+  }
+
+  &__item-button {
+    svg {
+      fill: $white-dark
+    }
+  }
+
+  &__sub-list-item {
+    &:hover,
+    &:focus {
+      background-color: $emerald;
+    }
+    &--active {
+      background-color: $superLightBackground-dark;
+    }
   }
 }

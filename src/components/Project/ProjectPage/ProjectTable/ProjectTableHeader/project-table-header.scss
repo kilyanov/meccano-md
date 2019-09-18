@@ -1,7 +1,8 @@
 @import "../../../../../assets/styles/variables";
 @import "../project-table-settings";
+$namespace: '.project-table-header';
 
-.project-table-header {
+#{$namespace} {
   position: sticky;
   position: -webkit-sticky;
   top: 0;
@@ -10,6 +11,7 @@
   align-items: center;
   margin-bottom: 16px;
   overflow-x: hidden;
+  transition: background-color .3s ease;
   z-index: 1;
 
   &__cell {
@@ -29,6 +31,7 @@
     text-align: left;
     user-select: none;
     cursor: pointer;
+    transition: background-color .3s ease;
 
     &--active:not(&--check),
     &:not(&--check):hover {
@@ -63,5 +66,22 @@
   &__sort-arrow {
     margin-top: -5px;
     margin-left: 5px;
+  }
+}
+
+.app--dark #{$namespace} {
+  background-color: $background-dark;
+  color: $white-dark;
+
+  &__cell {
+    background-color: $background-dark;
+    color: $white-dark;
+    border-color: $border-color-dark;
+
+    &--active:not(&--check),
+    &:not(&--check):hover {
+      background-color: $lightBackground-dark;
+      color: $white-dark;
+    }
   }
 }

@@ -1,6 +1,7 @@
 @import '../../../assets/styles/variables';
+$namespace: '.project-create-page';
 
-.project-create-page {
+#{$namespace} {
     flex: 1;
     display: flex;
     flex-direction: column;
@@ -50,8 +51,10 @@
     }
 
     &__step {
+        position: relative;
         height: 100%;
         margin-bottom: 0;
+        z-index: 1;
 
         &--second {
             padding: 40px 0;
@@ -71,7 +74,7 @@
             bottom: 0;
             left: 50%;
             background-color: $gray-four;
-            z-index: -1;
+            z-index: 0;
         }
     }
 
@@ -110,5 +113,32 @@
         &--margin-left-auto {
             margin-left: auto;
         }
+    }
+}
+
+/* Dark Theme */
+
+.app--dark #{$namespace} {
+    &__header {
+        background-color: $superLightBackground-dark;
+        border-color: transparent;
+        color: $white-dark;
+    }
+
+    &__title-edit-icon {
+        fill: $white-dark
+    }
+
+    &__title-input {
+        color: $white-dark;
+    }
+
+    &__body:after {
+        background-color: $lightBackground-dark;
+    }
+
+    &__footer {
+        border-top: none;
+        box-shadow: 0 -4px 12px 0 rgba(0, 0, 0, 0.5);
     }
 }

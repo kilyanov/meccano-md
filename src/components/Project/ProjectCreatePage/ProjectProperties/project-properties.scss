@@ -1,5 +1,9 @@
+@import "../../../../assets/styles/variables";
+
 .project-properties {
+  position: relative;
   height: 100%;
+  z-index: 1;
 
   &__row {
     height: 100%;
@@ -12,7 +16,6 @@
     & + & {
       padding-left: 20px;
       padding-right: 0;
-      border-left: 1px solid #d9d9d9;
     }
   }
 
@@ -32,5 +35,13 @@
 
   .sortable-ghost {
     opacity: .4;
+  }
+}
+
+/* Dark Theme */
+
+.app--dark .project-properties {
+  &__column  + &__column{
+    border-color: $border-color-dark !important;
   }
 }

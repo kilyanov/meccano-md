@@ -41,7 +41,7 @@ export default class ProjectSections extends Component {
                     onChange={this.handleChangeSections}
                 />
 
-                {inProgress && <Loader/>}
+                {inProgress && <Loader fixed />}
             </div>
         );
     }

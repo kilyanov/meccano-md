@@ -1,6 +1,8 @@
 @import "../../../assets/styles/variables";
 
-.logo {
+$namespace: '.logo';
+
+#{$namespace} {
   display: flex;
   align-items: center;
   height: 42px;
@@ -25,5 +27,28 @@
 
   &__title {
     margin-bottom: 0;
+  }
+
+  .cls-1{
+    fill:#663334;
+  }
+  .cls-2{
+    fill:#ffbf3b;
+  }
+  .cls-3{
+    fill:#fff;
+  }
+  .cls-4,
+  .cls-5{
+    fill:#b3b3b3;
+  }
+  .cls-4{
+    fill-rule: evenodd;
+  }
+}
+
+.app--dark #{$namespace} {
+  &__divider {
+    background-color: $brown-grey;
   }
 }

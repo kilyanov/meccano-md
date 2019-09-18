@@ -1,9 +1,12 @@
+@import "../../../assets/styles/variables";
 $namespace: '.page';
 
 #{$namespace} {
     display: flex;
     flex-direction: column;
     height: 100%;
+    background-color: #fff;
+    transition: background-color .3s ease;
 
     &--with-bar {
         padding-top: 90px;
@@ -24,4 +27,9 @@ $namespace: '.page';
         max-height: 100%;
         padding-top: 30px;
     }
+}
+
+.app--dark #{$namespace} {
+    background-color: $background-dark;
+    color: #fff;
 }

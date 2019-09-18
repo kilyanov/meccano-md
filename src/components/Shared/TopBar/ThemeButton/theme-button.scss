@@ -25,3 +25,11 @@ $namespace: '.theme-button';
     transition: fill .3s;
   }
 }
+
+/* Dark Theme */
+
+.app--dark #{$namespace} {
+  &:hover {
+    background-color: $emerald;
+  }
+}

@@ -1,0 +1,23 @@
+@import "../../../../assets/styles/mixins";
+
+.left-sidebar {
+  background-color: #fff;
+  transition: right .3s ease-in-out;
+
+  @include media('mobile') {
+    position: absolute;
+    right: -100%;
+    width: 100%;
+    z-index: 1;
+  }
+
+  &--open {
+    right: 0;
+  }
+}
+
+/* Dark Theme */
+
+.app--dark .left-sidebar {
+  background-color: $background-dark;
+}

@@ -5,6 +5,7 @@ import './input-text.scss';
 import {EventEmitter} from '../../../helpers';
 import {EVENTS} from '../../../constants/Events';
 import {KEY_CODE} from '../../../constants';
+import EarthIcon from '../../Shared/SvgIcons/EarthIcon';
 
 const classes = new Bem('input-text');
 
@@ -221,7 +222,7 @@ export default class InputText extends Component {
 
                     {(isLink && !isError) &&
                         <a href={value} target='_blank'>
-                            <img {...classes('earth-icon')} src={require('./img/earth-icon.svg')}/>
+                            <EarthIcon {...classes('earth-icon')} />
                         </a>
                     }
 

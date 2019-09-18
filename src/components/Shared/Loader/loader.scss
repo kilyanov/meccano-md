@@ -51,3 +51,13 @@
     stroke-dashoffset: -124;
   }
 }
+
+/* Dark Theme */
+
+.app--dark .loader {
+  background-color: rgba(0, 0, 0, .5);
+
+  svg .path {
+    stroke: $emerald;
+  }
+}

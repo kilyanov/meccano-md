@@ -1,7 +1,8 @@
 @import "../../../assets/styles/variables";
+$namespace: '.button';
 
-.button {
-  background-color: transparent;
+#{$namespace} {
+  background-color: #fff;
   border: 1px solid $blackColor;
   border-radius: 100px;
   padding: 0 30px;
@@ -11,38 +12,39 @@
   line-height: 24px;
   text-align: center;
   user-select: none;
+  transition: background-color .3s ease;
 
   &--success {
-    background-color: $greenColor;
-    border-color: $greenColor;
+    background-color: $greenColor !important;
+    border-color: $greenColor !important;
     color: #fff;
   }
 
   &--error {
-    background-color: $strawberry;
-    border-color: $strawberry;
+    background-color: $strawberry !important;
+    border-color: $strawberry !important;
     color: #fff;
   }
 
   &--inline {
     padding: 0;
     border: none;
-    color: $linkColor;
-    background-color: transparent;
+    color: $linkColor !important;
+    background-color: transparent !important;
 
     &.button--success {
-      color: $greenColor;
+      color: $greenColor !important;
     }
 
     &.button--error {
-      color: $strawberry;
+      color: $strawberry !important;
     }
   }
 
   &--disabled {
-    background-color: #F2F2F2;
-    border-color: #D9D9D9;
-    color: $fontGrey;
+    background-color: #F2F2F2 !important;
+    border-color: #D9D9D9 !important;
+    color: $fontGrey !important;
     cursor: not-allowed;
     pointer-events: none;
     box-shadow: none;
@@ -50,5 +52,18 @@
 
   &:hover {
     opacity: .8;
+  }
+}
+
+/* Dark Theme */
+
+.app--dark #{$namespace} {
+  background-color: $background-dark;
+  border-color: $white-dark;
+  color: $white-dark;
+
+  &--success {
+    background-color: $emerald !important;
+    border-color: $emerald !important;
   }
 }

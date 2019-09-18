@@ -113,3 +113,10 @@ $namespace: '.selected-property';
 [data-react-beatiful-dnd-placeholder] {
     background-color: red !important;
 }
+
+/* Dark Theme */
+
+.app--dark #{$namespace} {
+    background-color: $background-dark;
+    color: $white-dark;
+}

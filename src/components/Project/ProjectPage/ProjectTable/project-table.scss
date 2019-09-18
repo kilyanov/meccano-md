@@ -1,10 +1,14 @@
 @import "project-table-settings";
 @import "../../../../assets/styles/variables";
 
-.project-table {
+$namespace: '.project-table';
+
+#{$namespace} {
   max-width: 100%;
   min-width: 768px;
   height: 100%;
+  background-color: #fff;
+  transition: background-color .3s ease;
 
   &__body {
     margin-bottom: 40px;
@@ -107,10 +111,50 @@
     background: #fff;
     border: none;
     z-index: 1;
+    transition: background-color .3s ease;
 
     svg {
       width: 24px;
       height: 24px;
     }
+  }
+}
+
+/* Dark Theme */
+
+.app--dark #{$namespace} {
+  background-color: $background-dark;
+  color: $white-dark;
+
+  &__settings-button {
+    background: $background-dark;
+  }
+
+  &__cell {
+    color: $white-dark;
+    border-color: $brown-grey;
+  }
+
+  &__row {
+    position: relative;
+    display: flex;
+
+    &:last-child {
+      #{$namespace}__cell {
+        border-bottom: 1px solid $brown-grey;
+      }
+    }
+
+    &:hover {
+      background-color: $lightBackground-dark;
+    }
+  }
+
+  &__menu-button {
+    background-color: $lightBackground-dark;
+  }
+
+  svg {
+    fill: $white-dark;
   }
 }

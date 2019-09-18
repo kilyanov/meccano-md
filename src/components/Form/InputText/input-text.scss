@@ -72,6 +72,7 @@ $namespace: '.input-text';
     font-size: 15px;
     line-height: 24px;
     outline: 0;
+    transition: background-color .3s ease;
   }
 
   &__clear {
@@ -102,5 +103,20 @@ $namespace: '.input-text';
     position: absolute;
     bottom: 10px;
     right: 16px;
+    width: 20px;
+    height: 20px;
+  }
+}
+
+/* Dark Theme */
+
+.app--dark #{$namespace} {
+  &__field {
+    background-color: $background-dark;
+    color: $white-dark;
+  }
+
+  &__earth-icon {
+    fill: $border-color-dark
   }
 }

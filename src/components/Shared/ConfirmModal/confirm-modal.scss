@@ -84,3 +84,14 @@ $namespace: '.confirm-modal';
         justify-content: flex-end;
     }
 }
+
+/* Dark Theme */
+
+.app--dark #{$namespace} {
+    background-color: rgba(0, 0, 0, .7);
+
+    &__container {
+        background-color: $superLightBackground-dark;
+        color: $white-dark;
+    }
+}

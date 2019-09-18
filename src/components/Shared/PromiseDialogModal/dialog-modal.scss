@@ -1,6 +1,7 @@
 @import "../../../assets/styles/variables";
+$namespace: '.dialog-modal';
 
-.dialog-modal {
+#{$namespace} {
   position: fixed;
   top: 0;
   left: 0;
@@ -96,4 +97,17 @@
   70% { transform: scale(1.05); }
   80% { transform: scale(1); }
   100% { transform: scale(1); }
+}
+
+/* Dark Theme */
+
+.app--dark #{$namespace} {
+  &--opened {
+    background-color: rgba(0,0,0,.7);
+  }
+
+  &__container {
+    background-color: $background-dark;
+    color: $white-dark;
+  }
 }

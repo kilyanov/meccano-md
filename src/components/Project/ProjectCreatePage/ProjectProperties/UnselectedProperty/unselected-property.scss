@@ -56,3 +56,18 @@ $namespace: '.unselected-property';
     }
   }
 }
+
+/* Dark Theme */
+
+.app--dark #{$namespace} {
+  background-color: $background-dark;
+  color: $white-dark;
+
+  &--selected {
+    background-color: $superLightBackground-dark;
+  }
+
+  &__selected-icon {
+    background-color: $emerald;
+  }
+}

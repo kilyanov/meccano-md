@@ -1,4 +1,7 @@
-.search-filter {
+@import "../../../assets/styles/variables";
+$namespace: '.search-filter';
+
+#{$namespace} {
   display: inline-flex;
 
   &__label {
@@ -14,5 +17,18 @@
     border: none;
     padding: 0;
     font-size: 15px;
+    background-color: #fff;
+    transition: background-color .3s ease;
+  }
+}
+
+.app--dark #{$namespace} {
+  &__icon {
+    fill: $fontGrey;
+  }
+
+  &__field {
+    background-color: $background-dark;
+    color: #fff;
   }
 }

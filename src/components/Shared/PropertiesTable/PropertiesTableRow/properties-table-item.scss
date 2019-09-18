@@ -63,3 +63,19 @@ $namespace: '.properties-table-item';
     }
   }
 }
+
+/* Dark Theme */
+
+.app--dark #{$namespace} {
+  border-color: $brown-grey;
+  color: $white-dark;
+
+  &:hover {
+    background-color: $superLightBackground-dark;
+  }
+
+  &__buttons,
+  &__button {
+    background-color: $superLightBackground-dark;
+  }
+}

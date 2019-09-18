@@ -3,7 +3,9 @@
 $namespace: '.project-key-words';
 
 #{$namespace} {
+  position: relative;
   padding: 40px 0;
+  z-index: 1;
 
   &__list {
     margin: 0;
@@ -46,5 +48,13 @@ $namespace: '.project-key-words';
     fill: #b2b2b2;
     color: #b2b2b2;
     overflow: hidden;
+  }
+}
+
+/* Dark Theme */
+
+.app--dark #{$namespace} {
+  &__list {
+    background-color: $background-dark;
   }
 }

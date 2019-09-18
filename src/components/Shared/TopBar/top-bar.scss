@@ -13,7 +13,8 @@ $namespace: '.top-bar';
   height: 60px;
   background-color: #fff;
   box-shadow: 0 4px 12px 0 rgba(0, 0, 0, 0.1);
-  z-index: 1;
+  transition: background-color .3s ease;
+  z-index: 5;
 
   &--static {
     position: static;
@@ -125,8 +126,27 @@ $namespace: '.top-bar';
     fill: #fff;
     transition: fill .3s;
   }
+}
 
-  &__notifications-count {
+/* Dark Theme */
 
+.app--dark #{$namespace} {
+  background-color: $background-dark;
+  box-shadow: 0 4px 12px 0 rgba(0, 0, 0, 0.4);
+  color: $white-dark;
+
+  &__profile,
+  &__button {
+    border-color: $brown-grey;
+  }
+
+  &__profile-button:hover,
+  &__button:hover {
+    background-color: $emerald;
+    color: $white-dark;
+  }
+
+  svg {
+    fill: $white-dark;
   }
 }

@@ -1,6 +1,15 @@
 @import './variables.scss';
 @import './mixins.scss';
 
+.app--dark {
+  background-color: $background-dark;
+  color: $white-dark;
+
+  h1, h2, h3, h4, h5, h6 {
+    color: $white-dark;
+  }
+}
+
 .notification .title {
     color: #fff;
 }

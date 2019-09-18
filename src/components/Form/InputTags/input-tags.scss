@@ -55,12 +55,34 @@ $namespace: '.input-tags';
     background: none;
     top: 32px;
     left: auto;
-    right: 3px;
+    right: 10px;
   }
 
   .react-tags {
     min-height: 40px;
     padding: 2px 17px 0;
     border: 1px solid $brownGreyColor;
+  }
+
+  .react-tags__selected-tag,
+  .react-tags__search input {
+    transition: background-color .3s ease;
+  }
+}
+
+/* Dark Theme */
+
+.app--dark #{$namespace} {
+  .react-tags__selected-tag {
+    background-color: $superLightBackground-dark;
+  }
+
+  .react-tags__search input {
+    background-color: $background-dark;
+    color: $white-dark;
+  }
+
+  .input-tags__loader {
+    background: none;
   }
 }

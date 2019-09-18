@@ -115,3 +115,15 @@ $namespace: '.section-tree-list';
     }
   }
 }
+
+/* Dark Theme */
+
+.app--dark #{$namespace} {
+  background-color: $background-dark;
+
+  &__item-name:hover {
+    background-color: $superLightBackground-dark;
+    color: $white-dark;
+  }
+}
+

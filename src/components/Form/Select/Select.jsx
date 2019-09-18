@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import './select.scss';
-import {isMobileScreen} from '../../../helpers/Tools';
+import {InitScrollbar, isMobileScreen} from '../../../helpers/Tools';
 import CheckBox from '../CheckBox/CheckBox';
 import {KEY_CODE} from '../../../constants';
 import Loader from '../../Shared/Loader/Loader';
@@ -59,6 +59,7 @@ export default class Select extends Component {
 
         document.addEventListener('click', this.handleClickOutside, true);
         EventEmitter.on(EVENTS.FORM.ON_VALIDATE, this.validate);
+        this.initScrollBar();
     }
 
     componentDidUpdate(prevProps) {
@@ -79,6 +80,8 @@ export default class Select extends Component {
         if (this.props.selected !== prevProps.selected && options.length) {
             this.checkSelected();
         }
+
+        this.initScrollBar();
     }
 
     componentWillUnmount() {
@@ -96,6 +99,7 @@ export default class Select extends Component {
     };
 
     handleListScroll = (event) => {
+        event.preventDefault();
         const {target} = event;
         const {pagination, inProgress} = this.state;
         const isEndPage = target.scrollTop === target.scrollHeight - target.clientHeight;
@@ -267,7 +271,10 @@ export default class Select extends Component {
                 options: isPagination ? _.uniqBy(this.state.options.concat(options), 'value') : options,
                 pagination,
                 inProgress: false
-            }, this.checkSelected);
+            }, () => {
+                this.checkSelected();
+                this.initScrollBar();
+            });
         }).catch(() => this.setState({inProgress: false}));
     };
 
@@ -300,7 +307,7 @@ export default class Select extends Component {
 
                     options = _.uniqBy(options, 'value');
 
-                    if (this.isMount) this.setState({options});
+                    if (this.isMount) this.setState({options}, this.initScrollBar);
                 });
         }
     };
@@ -332,6 +339,8 @@ export default class Select extends Component {
             if (_.isEmpty(this.props.selected) && this.searchRef) {
                 this.searchRef.focus();
             }
+
+            this.initScrollBar();
         });
     };
 
@@ -340,7 +349,7 @@ export default class Select extends Component {
             opened: false,
             searchString: '',
             searchOptions: null
-        });
+        }, this.initScrollBar);
     };
 
     toggle = () => {
@@ -374,6 +383,15 @@ export default class Select extends Component {
 
         this.setState({error: invalid, opened: false});
         return EventEmitter.emit(invalid ? EVENTS.FORM.ON_VALIDATE_FAILURE : EVENTS.FORM.ON_VALIDATE_SUCCESS);
+    };
+
+    initScrollBar = () => {
+        if (!this.listRef) return;
+
+        const scroll = InitScrollbar(this.listRef);
+
+        if (scroll) this.scrollBar = scroll;
+        else if (this.scrollBar) this.scrollBar.update();
     };
 
     depended = null;

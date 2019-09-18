@@ -10,14 +10,14 @@ $namespace: '.checkbox';
 
   &:not(&--disabled):hover {
     #{$namespace}__box {
-      border-color: $greenColor;
+      border-color: $shamrock;
     }
   }
 
   &--checked {
     #{$namespace}__box{
-      background-color: $greenColor;
-      border-color: $greenColor;
+      background-color: $shamrock;
+      border-color: $shamrock;
 
       &:after {
         opacity: 1;
@@ -80,5 +80,21 @@ $namespace: '.checkbox';
     display: flex;
     align-items: center;
     cursor: pointer;
+  }
+}
+
+/* Dark Theme */
+.app--dark #{$namespace} {
+  &:not(&--disabled):hover {
+    #{$namespace}__box {
+      border-color: $emerald;
+    }
+  }
+
+  &--checked {
+    #{$namespace}__box {
+      background-color: $emerald;
+      border-color: $emerald;
+    }
   }
 }

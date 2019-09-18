@@ -15,6 +15,7 @@ $namespace: '.article-create-page';
     padding: 10px 0;
     flex-wrap: wrap;
     background-color: #fff;
+    transition: background-color .3s ease;
     z-index: 4;
   }
 
@@ -53,9 +54,10 @@ $namespace: '.article-create-page';
   &__title-button {
     width: 40px;
     height: 40px;
-    background: $gray-three;
+    background-color: $gray-three;
     border: none;
     border-radius: 50%;
+    transition: background-color .3s ease;
 
     &--left {
       transform: rotate(-180deg);
@@ -151,6 +153,7 @@ $namespace: '.article-create-page';
     flex-shrink: 0;
     flex-basis: 250px;
     background-color: #fff;
+    transition: background-color .3s ease;
 
     &--title {
       flex-basis: 100%;
@@ -159,5 +162,30 @@ $namespace: '.article-create-page';
     &--array {
       flex-basis: 45%;
     }
+  }
+}
+
+/* Dark Theme */
+
+.app--dark #{$namespace} {
+  &__header {
+    background-color: $background-dark;
+  }
+
+  &__title-button {
+    background-color: $superLightBackground-dark;
+  }
+
+  &__view-button {
+    color: $white-dark;
+  }
+
+  &__view-button-icon i {
+    border-color: $white-dark;
+  }
+
+  &__field {
+    background-color: $background-dark;
+    color: $white-dark;
   }
 }

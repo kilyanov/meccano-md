@@ -1,11 +1,12 @@
 import React, {useRef, useEffect} from 'react';
 import Page from '../../Shared/Page/Page';
-import SettingsMenu from './SettingsMenu/SettingsMenu';
 import {InitScrollbar} from '../../../helpers/Tools';
 import './settings-page.scss';
 import Button from '../../Shared/Button/Button';
 import Loader from '../../Shared/Loader/Loader';
 import InputText from '../../Form/InputText/InputText';
+import MenuHamburger from '../../Shared/MenuHamburger/MenuHamburger';
+import SettingsLeftSidebar from './SettingsLeftSidebar/SettingsLeftSidebar';
 
 const classes = new Bem('settings-page');
 
@@ -35,12 +36,14 @@ const SettingsPage = ({
 
     return (
         <Page withBar {...classes()}>
-            <h2 {...classes('title')}>Настройки</h2>
+            <div {...classes('header')}>
+                <h2 {...classes('title')}>Настройки</h2>
+
+                <MenuHamburger />
+            </div>
 
             <section {...classes('content')}>
-                <aside {...classes('left-sidebar')}>
-                    <SettingsMenu/>
-                </aside>
+                <SettingsLeftSidebar />
 
                 <div
                     {...classes('body', {empty: !children})}

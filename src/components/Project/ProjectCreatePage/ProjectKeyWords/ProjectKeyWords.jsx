@@ -156,7 +156,7 @@ export default class ProjectKeyWords extends Component {
 
                 {showCreateModal && (
                     <ConfirmModal
-                        {...classes()}
+                        {...classes('modal')}
                         onClose={this.handleCloseCreateModal}
                         submitText={selectedWord ? 'Обновить' : 'Добавить'}
                         onSubmit={this.handleSubmit}
@@ -177,7 +177,7 @@ export default class ProjectKeyWords extends Component {
 
                 <PromiseDialogModal ref={ref => this.dialogModal = ref} />
 
-                {inProgress && <Loader/>}
+                {inProgress && <Loader fixed/>}
             </div>
         );
     }

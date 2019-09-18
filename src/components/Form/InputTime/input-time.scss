@@ -155,3 +155,24 @@ $namespace: '.input-time';
     }
   }
 }
+
+/* Dark Theme */
+
+.app--dark #{$namespace} {
+  &__picker,
+  &__field {
+    border-color: $brown-grey;
+    background-color: $background-dark;
+    color: $white-dark;
+  }
+
+  &__picker-list-item {
+    &--active,
+    &:hover,
+    &:focus {
+      background: $superLightBackground-dark;
+      color: #2db7f5;
+    }
+  }
+
+}

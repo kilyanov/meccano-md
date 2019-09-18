@@ -218,7 +218,7 @@ $namespace: '.select';
     &__search-clear-button {
         position: absolute;
         top: 5px;
-        right: 45px;
+        right: 40px;
         background: none;
         border: none;
         padding: 8px;
@@ -242,5 +242,39 @@ $namespace: '.select';
 
     .checkbox__box {
         margin-right: 15px;
+    }
+}
+
+/* Dark Theme */
+
+.app--dark #{$namespace} {
+    &__search-clear-button {
+        color: $border-color-dark;
+    }
+
+    &__list {
+        background: $background-dark;
+    }
+
+    &__list-item {
+        &:focus,
+        &:hover {
+            background-color: $superLightBackground-dark;
+        }
+    }
+
+    &__container {
+        &:after {
+            border-color: $border-color-dark transparent transparent transparent;
+        }
+
+        &--opened:after {
+            border-color: transparent transparent $border-color-dark transparent;
+            margin-top: -7.5px;
+        }
+    }
+
+    &--succeed .select__label-text:before {
+        color: $superLightBackground-dark;
     }
 }

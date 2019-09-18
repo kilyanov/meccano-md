@@ -1,6 +1,7 @@
 @import '../../../assets/styles/variables.scss';
+$namespace: '.dropdown';
 
-.dropdown {
+#{$namespace} {
   position: absolute;
   top: 100%;
   min-width: 150px;
@@ -43,6 +44,25 @@
     &:hover {
       background-color: #f2f2f2;
       text-decoration: none;
+    }
+  }
+}
+
+/* Dark Theme */
+
+.app--dark #{$namespace} {
+  background-color: $lightBackground-dark;
+  color: $white-dark;
+
+  &__list-item {
+    color: $white-dark;
+
+    &:not(:last-child) {
+      border-bottom: 1px solid $brown-grey;
+    }
+    &:active,
+    &:hover {
+      background-color: $superLightBackground-dark;
     }
   }
 }

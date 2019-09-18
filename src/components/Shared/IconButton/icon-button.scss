@@ -1,6 +1,7 @@
 @import "../../../assets/styles/variables";
+$namespace: '.icon-button';
 
-.icon-button {
+#{$namespace} {
   display: inline-flex;
   align-items: center;
   border: none;
@@ -47,5 +48,14 @@
   &__wrapper {
     display: flex;
     align-items: center;
+  }
+}
+
+.app--dark #{$namespace} {
+  fill: #fff;
+  color: #fff;
+
+  &--disabled {
+    color: $fontGrey;
   }
 }

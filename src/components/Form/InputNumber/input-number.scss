@@ -98,3 +98,12 @@ $namespace: '.input-number';
     right: 16px;
   }
 }
+
+/* Dark Theme */
+
+.app--dark #{$namespace} {
+  &__field {
+    background-color: $background-dark;
+    color: $white-dark;
+  }
+}

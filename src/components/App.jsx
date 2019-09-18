@@ -1,6 +1,6 @@
 import React, {Component, Fragment} from 'react';
 import PropTypes from 'prop-types';
-import {AuthService} from "../services";
+import {AuthService, StorageService} from "../services";
 import {EventEmitter} from "../helpers";
 import {NotificationContainer} from 'react-notifications';
 import {Redirect} from 'react-router-dom';
@@ -11,6 +11,9 @@ import {EVENTS} from '../constants/Events';
 import OperatedNotification from './Shared/OperatedNotifiction/OperatedNotification';
 import QueueManager from './Shared/QueeManager/QueueManager';
 import NotificationsPanel from './Shared/NotificationsPanel/NotificationsPanel';
+import store from '../redux/store';
+import {switchTheme} from '../redux/actions/theme';
+import {THEME_TYPE} from '../constants/ThemeType';
 
 const classes = new Bem('app');
 
@@ -19,8 +22,8 @@ export default class App extends Component {
         children: PropTypes.node
     };
 
-    constructor() {
-        super();
+    constructor(props) {
+        super(props);
 
         const self = this;
 
@@ -39,7 +42,8 @@ export default class App extends Component {
 
     state = {
         redirect: false,
-        notification: null
+        notification: null,
+        theme: ''
     };
 
     componentDidMount() {
@@ -50,6 +54,20 @@ export default class App extends Component {
         if (this.containerRef) {
             InitScrollbar(this.bodyRef);
         }
+
+        const storeState = this.getCurrentStateFromStore();
+
+        if (storeState.theme) {
+            this.setState({theme: storeState.theme});
+        }
+
+        this.unsubscribeStore = store.subscribe(this.updateStateFromStore);
+
+        const theme = StorageService.get('theme');
+
+        if (theme && theme !== THEME_TYPE.LIGHT) {
+            store.dispatch(switchTheme());
+        }
     }
 
     componentWillUnmount() {
@@ -57,18 +75,33 @@ export default class App extends Component {
         EventEmitter.off(EVENTS.OPERATED_NOTIFICATION.SHOW, null);
         EventEmitter.off(EVENTS.OPERATED_NOTIFICATION.HIDE, null);
         window.removeEventListener('load', () => {});
+        this.unsubscribeStore();
     }
+
+    getCurrentStateFromStore = () => {
+        return {
+            theme: store.getState().theme
+        };
+    };
+
+    updateStateFromStore = () => {
+        const currentState = this.getCurrentStateFromStore();
+
+        if (this.state.theme !== currentState.theme) {
+            this.setState({theme: currentState.theme});
+        }
+    };
 
     render() {
         const {children} = this.props;
-        const {redirect, notification} = this.state;
+        const {redirect, notification, theme} = this.state;
 
         return redirect ? (
             <Redirect push to={redirect}/>
         ) : (
             <Fragment>
                 <div
-                    {...classes('', {blur: false})}
+                    {...classes('', {blur: false, [theme]: !!theme})}
                     ref={node => this.containerRef = node}
                 >
                     <NotificationContainer/>

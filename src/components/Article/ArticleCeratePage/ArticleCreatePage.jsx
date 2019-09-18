@@ -120,6 +120,7 @@ export default class ArticleCreatePage extends Component {
     }
 
     handleChangeForm = (value, option) => {
+        console.log(value, option);
         const newState = this.state;
 
         newState.form[option] = _.get(value, 'value', value); // if object and has "value"
@@ -196,6 +197,7 @@ export default class ArticleCreatePage extends Component {
         form.date = moment(form.date).format();
 
         delete form.project;
+        delete form.source;
 
         ['section_main_id', 'section_sub_id', 'section_three_id']
             .forEach(option => {

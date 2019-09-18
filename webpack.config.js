@@ -20,7 +20,7 @@ module.exports = (env, argv) => {
                 {
                     test: /\.(js|jsx)$/,
                     exclude: /node_modules/,
-                    use: productionMode ? 'babel-loader' : ['babel-loader', 'eslint-loader']
+                    use: 'babel-loader' // ['babel-loader', 'eslint-loader']
                 },
                 {
                     test: /\.(css|scss)$/,

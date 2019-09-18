@@ -55,15 +55,19 @@ const menu = [{
     }]
 }];
 
-const SettingsMenu = () => {
+export const getActive = () => {
     const href = location.href;
-    const activeId =  href.substring(href.lastIndexOf('/') + 1);
 
+    return href.substring(href.lastIndexOf('/') + 1);
+};
+
+const SettingsMenu = ({onClick}) => {
     return (
         <VerticalMenu
             {...classes()}
-            activeId={activeId}
+            activeId={getActive()}
             list={menu}
+            onClick={() => onClick(getActive())}
             autoOpen
             replaceHistory
         />

@@ -1,13 +1,21 @@
 @import "../../../assets/styles/variables";
-
+@import "../../../assets/styles/mixins";
+$namespace: '.settings-page';
 $sidebar-width: 300px;
 
-.settings-page {
+#{$namespace} {
   display: flex;
   flex-direction: column;
 
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
   &__title {
     flex-shrink: 0;
+    margin: 0;
   }
 
   &__body-header {
@@ -58,10 +66,23 @@ $sidebar-width: 300px;
   &__left-sidebar {
     flex: 0 0 $sidebar-width;
     border-right: 1px solid $gray;
+
+    @include media('mobile') {
+      position: fixed;
+      top: 0;
+      flex: 0 0 100%;
+      width: 100%;
+      border-right: none;
+    }
   }
 
   &__loader {
     left: $sidebar-width;
+
+    @include media('mobile') {
+      position: fixed;
+      left: 0;
+    }
   }
 
   &__body {
@@ -90,5 +111,25 @@ $sidebar-width: 300px;
     h5 {
       font-weight: 300;
     }
+  }
+}
+
+/* Dark Theme */
+
+.app--dark #{$namespace} {
+  &__stub {
+    background-color: $superLightBackground-dark;
+  }
+
+  &__body {
+    border-color: $brown-grey;
+
+    &--empty {
+      background-color: $superLightBackground-dark;
+    }
+  }
+
+  &__left-sidebar {
+    border-color: $brown-grey;
   }
 }

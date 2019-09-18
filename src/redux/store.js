@@ -13,6 +13,9 @@ const initialState = {
             {id: '2', title: 'Экспорт статей', message: 'Идет экспорт статей проекта "Первый"'},
             {id: '3', title: 'Импорт статей', message: 'Идет импорт статей в проект "Первый"'}
         ],
+        settingsMenu: {
+            open: false
+        },
         open: false
     },
     theme: THEME_TYPE.LIGHT
