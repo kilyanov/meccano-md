@@ -1,4 +1,6 @@
 .settings-menu {
+  max-height: 100%;
   border-left: none;
   border-right: none;
+  overflow-y: auto;
 }
