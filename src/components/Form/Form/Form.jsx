@@ -72,12 +72,12 @@ export default class Form extends Component {
     };
 
     render() {
-        const classes = new Bem('form');
+        const cls = new Bem('form');
 
         return (
             <form
                 ref={node => this.form = node}
-                {...classes('', '', this.props.className)}
+                {...cls('', '', this.props.className)}
                 onSubmit={this.handleOnSubmit}
             >
                 {this.props.children}

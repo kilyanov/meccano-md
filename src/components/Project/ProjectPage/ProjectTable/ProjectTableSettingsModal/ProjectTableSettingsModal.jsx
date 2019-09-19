@@ -5,7 +5,7 @@ import ConfirmModal from '../../../../Shared/ConfirmModal/ConfirmModal';
 import {getColumnsFromStorage, getColumnsFromFields, setColumnsToStorage} from '../Columns';
 import CheckBox from '../../../../Form/CheckBox/CheckBox';
 
-const classes = new Bem('project-table-settings-modal');
+const cls = new Bem('project-table-settings-modal');
 
 export default class ProjectTableSettingsModal extends Component {
     static propTypes = {
@@ -55,9 +55,9 @@ export default class ProjectTableSettingsModal extends Component {
                 onSubmit={this.handleSubmit}
                 width='small'
             >
-                <div {...classes('items')}>
+                <div {...cls('items')}>
                     {projectColumns.map(column => (
-                        <div {...classes('item')} key={column}>
+                        <div {...cls('item')} key={column}>
                             <CheckBox
                                 checked={selectedColumns.includes(column)}
                                 label={_.get(projectFields.find(({code}) => code === column), 'name')}

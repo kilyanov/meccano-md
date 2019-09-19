@@ -12,7 +12,7 @@ import Loader from '../../Shared/Loader/Loader';
 import Select from '../../Form/Select/Select';
 import RichEditor from '../../Form/RichEditor/RichEditor';
 
-const classes = new Bem('article-create-modal');
+const cls = new Bem('article-create-modal');
 
 export default class ArticleCreateModal extends Component {
     static propTypes = {
@@ -135,7 +135,7 @@ export default class ArticleCreateModal extends Component {
 
         return (
             <ConfirmModal
-                {...classes()}
+                {...cls()}
                 title={_.get(article, 'title', 'Новая статья')}
                 onClose={onClose}
                 onSubmit={() => this.form.submit()}
@@ -143,22 +143,22 @@ export default class ArticleCreateModal extends Component {
                 width='wide'
             >
                 <Form onSubmit={this.handleSubmit} ref={node => this.form = node}>
-                    <div {...classes('row', '', 'row')}>
-                        <div {...classes('field', '', 'col-lg-7')}>
+                    <div {...cls('row', '', 'row')}>
+                        <div {...cls('field', '', 'col-lg-7')}>
                             <InputText
                                 label='Название'
                                 value={form.title || ''}
                                 onChange={value => this.handleChangeForm(value, 'title')}
                             />
                         </div>
-                        <div {...classes('field', '', 'col-lg-2')}>
+                        <div {...cls('field', '', 'col-lg-2')}>
                             <InputDatePicker
                                 label='Дата'
                                 value={form.date}
                                 onChange={value => this.handleChangeForm(value, 'date')}
                             />
                         </div>
-                        <div {...classes('field', '', 'col-lg-3')}>
+                        <div {...cls('field', '', 'col-lg-3')}>
                             <Select
                                 placeholder='Выберите источник...'
                                 label='Источник'
@@ -169,10 +169,10 @@ export default class ArticleCreateModal extends Component {
                         </div>
                     </div>
 
-                    <div {...classes('row', '', 'row')}>
-                        <div {...classes('col', '', 'col-lg-6')}>
-                            <div {...classes('row', '', 'row')}>
-                                <div {...classes('col', '', 'col-lg-12')}>
+                    <div {...cls('row', '', 'row')}>
+                        <div {...cls('col', '', 'col-lg-6')}>
+                            <div {...cls('row', '', 'row')}>
+                                <div {...cls('col', '', 'col-lg-12')}>
                                     <InputText
                                         label='URL'
                                         validateType='link'
@@ -183,22 +183,22 @@ export default class ArticleCreateModal extends Component {
                                 </div>
                             </div>
 
-                            <div {...classes('row', '', 'row')}>
-                                <div {...classes('col', '', 'col-lg-4')}>
+                            <div {...cls('row', '', 'row')}>
+                                <div {...cls('col', '', 'col-lg-4')}>
                                     <InputText
                                         label='Раздел 1'
                                         value={form.sectionFirst || ''}
                                         onChange={value => this.handleChangeForm(value, 'sectionFirst')}
                                     />
                                 </div>
-                                <div {...classes('col', '', 'col-lg-4')}>
+                                <div {...cls('col', '', 'col-lg-4')}>
                                     <InputText
                                         label='Раздел 2'
                                         value={form.sectionSecond || ''}
                                         onChange={value => this.handleChangeForm(value, 'sectionSecond')}
                                     />
                                 </div>
-                                <div {...classes('col', '', 'col-lg-4')}>
+                                <div {...cls('col', '', 'col-lg-4')}>
                                     <InputText
                                         label='Раздел 3'
                                         value={form.sectionThird || ''}
@@ -207,15 +207,15 @@ export default class ArticleCreateModal extends Component {
                                 </div>
                             </div>
 
-                            <div {...classes('row', '', 'row')}>
-                                <div {...classes('col', '', 'col-lg-6')}>
+                            <div {...cls('row', '', 'row')}>
+                                <div {...cls('col', '', 'col-lg-6')}>
                                     <InputText
                                         label='Автор'
                                         value={form.author || ''}
                                         onChange={value => this.handleChangeForm(value, 'author')}
                                     />
                                 </div>
-                                <div {...classes('col', '', 'col-lg-6')}>
+                                <div {...cls('col', '', 'col-lg-6')}>
                                     <InputText
                                         label='Город'
                                         value='' // {form.city}
@@ -223,14 +223,14 @@ export default class ArticleCreateModal extends Component {
                                 </div>
                             </div>
 
-                            <div {...classes('row', '', 'row')}>
-                                <div {...classes('col', '', 'col-lg-6')}>
+                            <div {...cls('row', '', 'row')}>
+                                <div {...cls('col', '', 'col-lg-6')}>
                                     <InputText
                                         label='Область/край'
                                         value='' // {form.region}
                                     />
                                 </div>
-                                <div {...classes('col', '', 'col-lg-6')}>
+                                <div {...cls('col', '', 'col-lg-6')}>
                                     <InputText
                                         label='Федеральный округ'
                                         value='' // {form.federalDistrict}
@@ -238,14 +238,14 @@ export default class ArticleCreateModal extends Component {
                                 </div>
                             </div>
 
-                            <div {...classes('row', '', 'row')}>
-                                <div {...classes('col', '', 'col-lg-6')}>
+                            <div {...cls('row', '', 'row')}>
+                                <div {...cls('col', '', 'col-lg-6')}>
                                     <InputText
                                         label='Код СМИ'
                                         value=''
                                     />
                                 </div>
-                                <div {...classes('col', '', 'col-lg-6')}>
+                                <div {...cls('col', '', 'col-lg-6')}>
                                     <InputText
                                         label='Вид СМИ'
                                         value=''
@@ -253,15 +253,15 @@ export default class ArticleCreateModal extends Component {
                                 </div>
                             </div>
 
-                            <div {...classes('row', '', 'row')}>
-                                <div {...classes('col', '', 'col-lg-6')}>
+                            <div {...cls('row', '', 'row')}>
+                                <div {...cls('col', '', 'col-lg-6')}>
                                     <InputText
                                         label='Ноиер'
                                         value={form.number || ''}
                                         onChange={value => this.handleChangeForm(value, 'number')}
                                     />
                                 </div>
-                                <div {...classes('col', '', 'col-lg-6')}>
+                                <div {...cls('col', '', 'col-lg-6')}>
                                     <InputText
                                         label='Еще поле по СМИ'
                                         value=''
@@ -270,7 +270,7 @@ export default class ArticleCreateModal extends Component {
                             </div>
                         </div>
 
-                        <div {...classes('col', '', 'col-lg-6')}>
+                        <div {...cls('col', '', 'col-lg-6')}>
                             <TextArea
                                 label='Аннотация'
                                 value={form.annotation || ''}
@@ -278,7 +278,7 @@ export default class ArticleCreateModal extends Component {
                             />
 
                             <RichEditor
-                                {...classes('field', 'textarea')}
+                                {...cls('field', 'textarea')}
                                 label='Текст статьи'
                                 content={form.text}
                                 onChange={value => this.handleChangeForm(value, 'text')}

@@ -8,7 +8,7 @@ import {ProjectService} from '../../../services/ProjectService';
 import {NotificationManager} from 'react-notifications';
 import Loader from '../../Shared/Loader/Loader';
 
-const classes = new Bem('project-create-modal');
+const cls = new Bem('project-create-modal');
 
 export default class ProjectCreateModal extends Component {
     static propTypes = {
@@ -61,7 +61,7 @@ export default class ProjectCreateModal extends Component {
 
         return (
             <ConfirmModal
-                {...classes()}
+                {...cls()}
                 title={`${project ? 'Редактирование' : 'Создание'} проекта`}
                 onClose={onClose}
                 onSubmit={() => this.form.submit()}
@@ -72,8 +72,8 @@ export default class ProjectCreateModal extends Component {
                     ref={node => this.form = node}
                     validate
                 >
-                    <div {...classes('row', '', 'row')}>
-                        <div {...classes('col', '', 'col-md-9')}>
+                    <div {...cls('row', '', 'row')}>
+                        <div {...cls('col', '', 'col-md-9')}>
                             <InputText
                                 autoFocus
                                 label='Наименование'
@@ -84,7 +84,7 @@ export default class ProjectCreateModal extends Component {
                             />
                         </div>
 
-                        <div {...classes('col', '', 'col-md-3')}>
+                        <div {...cls('col', '', 'col-md-3')}>
                             <InputText
                                 label='Код проекта'
                                 name='slug'

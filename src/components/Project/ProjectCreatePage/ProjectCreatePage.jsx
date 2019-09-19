@@ -15,7 +15,7 @@ import {KEY_CODE} from "../../../constants";
 import {OperatedNotification} from '../../../helpers/Tools';
 import ProjectKeyWords from './ProjectKeyWords/ProjectKeyWords';
 
-const classes = new Bem('project-create-page');
+const cls = new Bem('project-create-page');
 const STEP_DESCRIPTION = {
     1: 'Настройка полей',
     2: 'Создание структуры',
@@ -241,39 +241,39 @@ export default class ProjectCreatePage extends Component {
             <Page
                 withBar
                 withContainerClass={false}
-                {...classes()}
+                {...cls()}
             >
-                <section {...classes('header')}>
-                    <div {...classes('container', '', 'container')}>
-                        <div {...classes('breadcrumbs')}>
+                <section {...cls('header')}>
+                    <div {...cls('container', '', 'container')}>
+                        <div {...cls('breadcrumbs')}>
                             {isEdit ? 'Редактирование' : 'Создание'} проекта: {`Шаг ${step} - ${STEP_DESCRIPTION[step]}`}
                         </div>
 
                         {project && (
                             isEditTitle ?
                                 <div
-                                    {...classes('title-input-container')}
+                                    {...cls('title-input-container')}
                                     ref={ref => this.titleInputContainer = ref}
                                 >
                                     <input
                                         autoFocus
                                         type='text'
-                                        {...classes('title-input')}
+                                        {...cls('title-input')}
                                         onChange={this.handleEditTitle}
                                         onKeyDown={this.handleInputKeyDown}
                                         value={editTitleValue}
                                     />
                                     <InlineButton
-                                        {...classes('title-input-button')}
+                                        {...cls('title-input-button')}
                                         text='Переименовать'
                                         onClick={this.handleEndEditTitle}
                                         disabled={!project.name.length}
                                     />
                                 </div> :
-                                <div {...classes('title-container')} onClick={this.handleStartEditTile}>
-                                    <h2 {...classes('title')}>{project.name}</h2>
+                                <div {...cls('title-container')} onClick={this.handleStartEditTile}>
+                                    <h2 {...cls('title')}>{project.name}</h2>
                                     <PencilIcon
-                                        {...classes('title-edit-icon')}
+                                        {...cls('title-edit-icon')}
                                         size={{width: 20, height: 20}}
                                     />
                                 </div>
@@ -281,7 +281,7 @@ export default class ProjectCreatePage extends Component {
                     </div>
                 </section>
 
-                <section {...classes('body')}>
+                <section {...cls('body')}>
                     {(this.project && step === 1 && (fields.length || allFields.length)) && (
                         <ProjectProperties
                             classes={classes}
@@ -306,11 +306,11 @@ export default class ProjectCreatePage extends Component {
                     )}
                 </section>
 
-                <section {...classes('footer')}>
-                    <div {...classes('container', '', 'container')}>
+                <section {...cls('footer')}>
+                    <div {...cls('container', '', 'container')}>
                         <Button
                             onClick={this.handleClickBackButton}
-                            {...classes('cancel-button')}
+                            {...cls('cancel-button')}
                             style={isEdit && step !== 2 ? 'error' : 'default'}
                             viewType='inline'
                             text={backButtonLabel}
@@ -319,14 +319,14 @@ export default class ProjectCreatePage extends Component {
                         {((step === 1 || step === 2) && isEdit) && (
                             <Button
                                 onClick={() => step === 1 ? this.saveProject() : this.saveSections()}
-                                {...classes('submit-button', 'margin-left-auto')}
+                                {...cls('submit-button', 'margin-left-auto')}
                                 style='inline'
                                 text='Сохранить'
                             />
                         )}
                         <Button
                             onClick={this.handleSubmit}
-                            {...classes('submit-button')}
+                            {...cls('submit-button')}
                             disabled={step === 2 && !sections.length}
                             style='success'
                             text={step === 3 ? 'Сохранить' : 'Далее'}

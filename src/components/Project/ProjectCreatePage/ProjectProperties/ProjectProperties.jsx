@@ -6,7 +6,7 @@ import {InitScrollbar} from '../../../../helpers/Tools';
 import SelectedProperty from './SelectedProperty/SelectedProperty';
 import UnselectedProperty from './UnselectedProperty/UnselectedProperty';
 
-const classes = new Bem('project-properties');
+const cls = new Bem('project-properties');
 const classSelected = 'unselected-property--selected';
 
 export default class ProjectProperties extends Component {
@@ -76,14 +76,14 @@ export default class ProjectProperties extends Component {
         const {fields, allFields} = this.props;
 
         return (
-            <div {...classes('', '', 'container')}>
-                <div {...classes('row', '', 'row')}>
-                    <div {...classes('column', '', 'col-xs-6')}>
+            <div {...cls('', '', 'container')}>
+                <div {...cls('row', '', 'row')}>
+                    <div {...cls('column', '', 'col-xs-6')}>
                         <h3>Выбранные поля</h3>
 
                         <Sortable
                             ref={ref => this.leftList = ref}
-                            {...classes('list', 'left')}
+                            {...cls('list', 'left')}
                             options={{
                                 animation: 150,
                                 filter: '.ps__rail-y',
@@ -105,12 +105,12 @@ export default class ProjectProperties extends Component {
                             ))}
                         </Sortable>
                     </div>
-                    <div {...classes('column', '', 'col-xs-6')}>
+                    <div {...cls('column', '', 'col-xs-6')}>
                         <h3>Добавление полей</h3>
 
                         <Sortable
                             ref={ref => this.rightList = ref}
-                            {...classes('list', 'right')}
+                            {...cls('list', 'right')}
                             onChange={() => true}
                             options={{
                                 animation: 150,

@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import './loader.scss';
 
-const classes = new Bem('loader');
+const cls = new Bem('loader');
 const Loader = ({
     className,
     fixed,
@@ -13,7 +13,7 @@ const Loader = ({
     const d = radius * 2 + 10;
 
     return (
-        <div {...classes('', {fixed, rightBottom}, className)} >
+        <div {...cls('', {fixed, rightBottom}, className)} >
             <svg
                 width={d}
                 height={d}

@@ -4,7 +4,7 @@ import ReactTags from 'react-tag-autocomplete';
 import './input-tags.scss';
 import Loader from '../../Shared/Loader/Loader';
 
-const classes = new Bem('input-tags');
+const cls = new Bem('input-tags');
 const Tag = ({classNames, tag, onDelete}) => (
     <div className={classNames.selectedTag} onClick={onDelete}>{tag.name}</div>
 );
@@ -70,12 +70,12 @@ export default class InputTags extends Component {
         const suggestions = this.props.suggestions || this.state.suggestions;
 
         return (
-            <div {...classes()}>
-                <label {...classes('label')}>
-                    {label && <span {...classes('label-text', '', 'drag-handle')}>{label}</span>}
+            <div {...cls()}>
+                <label {...cls('label')}>
+                    {label && <span {...cls('label-text', '', 'drag-handle')}>{label}</span>}
 
                     <ReactTags
-                        {...classes('field')}
+                        {...cls('field')}
                         autofocus={false}
                         tags={tags}
                         suggestions={suggestions}
@@ -92,7 +92,7 @@ export default class InputTags extends Component {
 
                 {inProgress && (
                     <Loader
-                        {...classes('loader')}
+                        {...cls('loader')}
                         radius={5}
                         strokeWidth={2}
                     />

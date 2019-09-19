@@ -15,7 +15,7 @@ import store from '../redux/store';
 import {switchTheme} from '../redux/actions/theme';
 import {THEME_TYPE} from '../constants/ThemeType';
 
-const classes = new Bem('app');
+const cls = new Bem('app');
 
 export default class App extends Component {
     static propTypes = {
@@ -101,7 +101,7 @@ export default class App extends Component {
         ) : (
             <Fragment>
                 <div
-                    {...classes('', {blur: false, [theme]: !!theme})}
+                    {...cls('', {blur: false, [theme]: !!theme})}
                     ref={node => this.containerRef = node}
                 >
                     <NotificationContainer/>

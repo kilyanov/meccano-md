@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import TopBar from '../TopBar/TopBar';
 import './page.scss';
 
-const classes = new Bem('page');
+const cls = new Bem('page');
 
 class Page extends Component {
     static propTypes = {
@@ -24,11 +24,11 @@ class Page extends Component {
         const {className, children, withBar, staticBar, withContainerClass, notificationsPanel} = this.props;
 
         return (
-            <div {...classes('', {'with-bar': withBar && !staticBar, blur: notificationsPanel.open})}>
+            <div {...cls('', {'with-bar': withBar && !staticBar, blur: notificationsPanel.open})}>
                 {withBar && <TopBar static={staticBar}/>}
 
                 <div
-                    {...classes('content', '', {
+                    {...cls('content', '', {
                         container: withContainerClass,
                         [className]: !!className
                     })}

@@ -14,7 +14,7 @@ import SortArrow from './ProjectTableHeader/ProjectTableHeaderSortArrow';
 import {InitScrollbar} from '../../../../helpers/Tools';
 import {FIELD_TYPE} from '../../../../constants/FieldType';
 
-const classes = new Bem('project-table');
+const cls = new Bem('project-table');
 const headerClasses = new Bem('project-table-header');
 
 export default class ProjectTable extends Component {
@@ -204,10 +204,10 @@ export default class ProjectTable extends Component {
 
         return (
             <article
-                {...classes('row')}
+                {...cls('row')}
                 key={`${article.id}-${articleKey}`}
             >
-                <div {...classes('cell', 'check')}>
+                <div {...cls('cell', 'check')}>
                     <CheckBox
                         checked={selectedIds.includes(article.id) || this.props.isAllSelected}
                         onChange={() => this.handleSelectArticle(article.id)}
@@ -246,20 +246,20 @@ export default class ProjectTable extends Component {
                         <Link
                             to={`/project/${projectId}/article/${article.id}`}
                             key={column}
-                            {...classes('cell', column)}
+                            {...cls('cell', column)}
                         >
-                            <span {...classes('cell-text')}>{columnValue}</span>
+                            <span {...cls('cell-text')}>{columnValue}</span>
                         </Link>
                     );
                 })}
 
                 <button
-                    {...classes('menu-button')}
+                    {...cls('menu-button')}
                     onClick={() => {
                         this.articleDropDown[article.id].toggle({style: {right: '10px'}});
                     }}
                 >
-                    <DropDownMenuIcon {...classes('menu-button-icon')}/>
+                    <DropDownMenuIcon {...cls('menu-button-icon')}/>
                     <DropDown
                         items={menuItems}
                         ref={node => this.articleDropDown[article.id] = node}
@@ -274,23 +274,23 @@ export default class ProjectTable extends Component {
         const {showColumnSettingsModal} = this.state;
 
         return (
-            <div {...classes('', '', className)}>
+            <div {...cls('', '', className)}>
                 {this.renderHeader()}
 
                 <section
-                    {...classes('body')}
+                    {...cls('body')}
                     ref={ref => this.bodyRef = ref}
                     onScroll={this.handleBodyScroll}
                 >
                     {articles.map((article, articleKey) => this.renderArticle(article, articleKey))}
 
                     {!articles.length && (
-                        <div {...classes('empty-message')}>Статей пока нет</div>
+                        <div {...cls('empty-message')}>Статей пока нет</div>
                     )}
                 </section>
 
                 <button
-                    {...classes('settings-button')}
+                    {...cls('settings-button')}
                     onClick={() => {
                         if (this.settingsMenuRef) {
                             this.settingsMenuRef.toggle({style: {right: '25px'}});

@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import {Link} from 'react-router-dom';
 import './icon-button.scss';
 
-const classes = new Bem('icon-button');
+const cls = new Bem('icon-button');
 
 const IconButton = ({
     to,
@@ -17,22 +17,22 @@ const IconButton = ({
 }) => {
     return to ? (
         <Link
-            {...classes('', {disabled, danger}, className)}
+            {...cls('', {disabled, danger}, className)}
             to={to}
             disabled={disabled}
         >
             {iconComponent && iconComponent}
-            <span {...classes('label')}>{text}</span>
+            <span {...cls('label')}>{text}</span>
         </Link>
     ) : (
         <button
-            {...classes('', {disabled, danger}, className)}
+            {...cls('', {disabled, danger}, className)}
             type={type}
             onClick={onClick}
             disabled={disabled}
         >
             {iconComponent && iconComponent}
-            <span {...classes('label')}>{text}</span>
+            <span {...cls('label')}>{text}</span>
         </button>
     );
 };

@@ -10,7 +10,7 @@ import './articles-export-modal.scss';
 import {QueueManager} from '../../../helpers/Tools';
 import {NotificationManager} from 'react-notifications';
 
-const classes = new Bem('articles-export-modal');
+const cls = new Bem('articles-export-modal');
 
 export default class ArticlesExportModal extends Component {
     static propTypes= {
@@ -102,22 +102,22 @@ export default class ArticlesExportModal extends Component {
 
         return (
             <ConfirmModal
-                {...classes()}
+                {...cls()}
                 title='Выгрузка статей'
                 onClose={onClose}
                 submitDisabled={!selectedTemplateId}
                 submitText='Экспорт'
                 onSubmit={this.handleSubmit}
             >
-                <div {...classes('row', '', 'row')}>
-                    <div {...classes('col', '', 'col-md-6')}>
-                        <h3 {...classes('block-title')}>Выберите формат:</h3>
+                <div {...cls('row', '', 'row')}>
+                    <div {...cls('col', '', 'col-md-6')}>
+                        <h3 {...cls('block-title')}>Выберите формат:</h3>
 
                         {Object.keys(templates).map(type =>
                             <RadioButton
                                 name='type'
                                 key={type}
-                                {...classes('field')}
+                                {...cls('field')}
                                 label={type}
                                 checked={selectedType === type}
                                 onChange={() => this.handleSelectType(type)}
@@ -125,14 +125,14 @@ export default class ArticlesExportModal extends Component {
                         )}
                     </div>
                     {selectedType && (
-                        <div {...classes('col', '', 'col-md-6')}>
-                            <h3 {...classes('block-title')}>Выберите шаблон:</h3>
+                        <div {...cls('col', '', 'col-md-6')}>
+                            <h3 {...cls('block-title')}>Выберите шаблон:</h3>
 
                             {templates[selectedType].map(template => (
                                 <RadioButton
                                     name='template'
                                     key={template.id}
-                                    {...classes('field')}
+                                    {...cls('field')}
                                     label={template.name}
                                     checked={selectedTemplateId === template.id}
                                     onChange={() => this.handleSelectTemplate(template.id)}

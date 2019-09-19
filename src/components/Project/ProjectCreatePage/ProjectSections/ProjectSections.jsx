@@ -33,7 +33,7 @@ export default class ProjectSections extends Component {
         const {inProgress} = this.state;
 
         return (
-            <div {...classes('step', 'second', 'container')}>
+            <div {...cls('step', 'second', 'container')}>
                 <h3>Структура документа</h3>
 
                 <SectionTree

@@ -3,7 +3,7 @@ import './dialog-modal.scss';
 import Button from '../Button/Button';
 import { KEY_CODE } from '../../../constants/KeyCode';
 
-const classes = new Bem('dialog-modal');
+const cls = new Bem('dialog-modal');
 
 export default class PromiseDialogModal extends PureComponent {
     state = {
@@ -51,19 +51,19 @@ export default class PromiseDialogModal extends PureComponent {
 
         return new Promise((resolve, reject) => {
             const modal = (
-                <div {...classes('container', {[style]: !!style})}>
-                    <div {...classes('header')}>
-                        <h3 {...classes('title')}>{title}</h3>
-                        {subTitle && <h6 {...classes('sub-title')}>{subTitle}</h6>}
+                <div {...cls('container', {[style]: !!style})}>
+                    <div {...cls('header')}>
+                        <h3 {...cls('title')}>{title}</h3>
+                        {subTitle && <h6 {...cls('sub-title')}>{subTitle}</h6>}
                     </div>
 
-                    <div {...classes('body')}>
+                    <div {...cls('body')}>
                         {content}
                     </div>
 
-                    <div {...classes('footer')}>
+                    <div {...cls('footer')}>
                         <Button
-                            {...classes('button', 'cancel')}
+                            {...cls('button', 'cancel')}
                             text={cancelText}
                             style='inline'
                             onClick={() => {
@@ -73,7 +73,7 @@ export default class PromiseDialogModal extends PureComponent {
                         />
 
                         <Button
-                            {...classes('button', 'submit')}
+                            {...cls('button', 'submit')}
                             text={submitText}
                             style='success'
                             onClick={() => {
@@ -100,8 +100,8 @@ export default class PromiseDialogModal extends PureComponent {
         const {opened, modal, pulse} = this.state;
 
         return (
-            <div {...classes('', {opened})} onClick={this.handleClick}>
-                <div {...classes('container-wrapper', {pulse})}>
+            <div {...cls('', {opened})} onClick={this.handleClick}>
+                <div {...cls('container-wrapper', {pulse})}>
                     {modal}
                 </div>
             </div>

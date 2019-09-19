@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import {InitScrollbar} from '../../../helpers/Tools';
 import './input-time.scss';
 
-const classes = new Bem('input-time');
+const cls = new Bem('input-time');
 
 export default class InputTime extends React.Component {
     static propTypes = {
@@ -278,7 +278,7 @@ export default class InputTime extends React.Component {
 
         return (
             <div
-                {...classes('', {
+                {...cls('', {
                     error: isError,
                     focused: isFocused,
                     succeed: isSucceed,
@@ -287,13 +287,13 @@ export default class InputTime extends React.Component {
                 title={label}
                 onClick={() => !isOpen && this.open()}
             >
-                <label {...classes('label')}>
-                    {label && <span {...classes('label-text', '', 'drag-handle')}>{label}</span>}
+                <label {...cls('label')}>
+                    {label && <span {...cls('label-text', '', 'drag-handle')}>{label}</span>}
 
                     <input
                         autoFocus={autoFocus}
                         placeholder={placeholder}
-                        {...classes('field', {active: focused})}
+                        {...cls('field', {active: focused})}
                         type='text'
                         ref={node => this.input = node}
                         value={value.format('HH:mm')}
@@ -309,22 +309,22 @@ export default class InputTime extends React.Component {
 
                     {(isError && !isEmpty) && (
                         <div
-                            {...classes('clear')}
+                            {...cls('clear')}
                             onClick={this.handleClear}
                         />
                     )}
 
                     {(isError && validateErrorMessage) && (
-                        <span {...classes('message')}>{validateErrorMessage}</span>
+                        <span {...cls('message')}>{validateErrorMessage}</span>
                     )}
 
                 </label>
 
                 {isOpen && (
-                    <div {...classes('picker')} ref={node => this.picker = node}>
-                        <div {...classes('picker-select-panel')}>
+                    <div {...cls('picker')} ref={node => this.picker = node}>
+                        <div {...cls('picker-select-panel')}>
                             <ul
-                                {...classes('picker-list')}
+                                {...cls('picker-list')}
                                 ref={node => this.hourList = node}
                                 tabIndex='0'
                             >
@@ -334,7 +334,7 @@ export default class InputTime extends React.Component {
                                     return (
                                         <li
                                             key={index}
-                                            {...classes('picker-list-item', {
+                                            {...cls('picker-list-item', {
                                                 active: isActive && !focused
                                             })}
                                             tabIndex='-1'
@@ -348,9 +348,9 @@ export default class InputTime extends React.Component {
                             </ul>
                         </div>
 
-                        <div {...classes('picker-select-panel')}>
+                        <div {...cls('picker-select-panel')}>
                             <ul
-                                {...classes('picker-list')}
+                                {...cls('picker-list')}
                                 ref={node => this.minuteList = node}
                                 tabIndex='0'
                             >
@@ -360,7 +360,7 @@ export default class InputTime extends React.Component {
                                     return (
                                         <li
                                             key={index}
-                                            {...classes('picker-list-item', {
+                                            {...cls('picker-list-item', {
                                                 active: isActive && !focused
                                             })}
                                             tabIndex='-1'

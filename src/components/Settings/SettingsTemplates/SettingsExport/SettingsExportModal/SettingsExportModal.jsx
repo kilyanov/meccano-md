@@ -14,7 +14,7 @@ import InlineButton from '../../../../Shared/InlineButton/InlineButton';
 import InputTags from '../../../../Form/InputTags/InputTags';
 import {ProjectService} from '../../../../../services';
 
-const classes = new Bem('settings-export-modal');
+const cls = new Bem('settings-export-modal');
 
 export default class SettingsExportModal extends Component {
     static propTypes = {
@@ -139,9 +139,9 @@ export default class SettingsExportModal extends Component {
     ];
 
     renderRule = (rule, ruleIndex) => (
-        <div {...classes('rule')}  key={ruleIndex}>
-            <div {...classes('rule-row', '', 'row')}>
-                <div {...classes('item', '', 'col-xs-6')}>
+        <div {...cls('rule')}  key={ruleIndex}>
+            <div {...cls('rule-row', '', 'row')}>
+                <div {...cls('item', '', 'col-xs-6')}>
                     <InputText
                         autoFocus
                         label='Селектор'
@@ -149,7 +149,7 @@ export default class SettingsExportModal extends Component {
                         onChange={val => this.handleChangeRule(val, 'selector', ruleIndex)}
                     />
                 </div>
-                <div {...classes('item', '', 'col-xs-6')}>
+                <div {...cls('item', '', 'col-xs-6')}>
                     <InputText
                         label='Элемент'
                         value={rule.element}
@@ -157,11 +157,11 @@ export default class SettingsExportModal extends Component {
                     />
                 </div>
             </div>
-            <div {...classes('rule-buttons')}>
+            <div {...cls('rule-buttons')}>
                 <button
                     tabIndex={-1}
                     type='button'
-                    {...classes('button', 'remove')}
+                    {...cls('button', 'remove')}
                     onClick={() => this.handleDeleteRule(ruleIndex)}
                 >✕</button>
             </div>
@@ -169,16 +169,16 @@ export default class SettingsExportModal extends Component {
     );
 
     renderReplace = (replace, replaceIndex) => (
-        <div {...classes('rule')}  key={replaceIndex}>
-            <div {...classes('rule-row', '', 'row')}>
-                <div {...classes('item', '', 'col-xs-6')}>
+        <div {...cls('rule')}  key={replaceIndex}>
+            <div {...cls('rule-row', '', 'row')}>
+                <div {...cls('item', '', 'col-xs-6')}>
                     <InputText
                         label='Замена'
                         value={replace.replace}
                         onChange={val => this.handleChangeReplace(val, 'replace', replaceIndex)}
                     />
                 </div>
-                <div {...classes('item', '', 'col-xs-6')}>
+                <div {...cls('item', '', 'col-xs-6')}>
                     <InputText
                         autoFocus
                         label='Элемент'
@@ -187,11 +187,11 @@ export default class SettingsExportModal extends Component {
                     />
                 </div>
             </div>
-            <div {...classes('rule-buttons')}>
+            <div {...cls('rule-buttons')}>
                 <button
                     tabIndex={-1}
                     type='button'
-                    {...classes('button', 'remove')}
+                    {...cls('button', 'remove')}
                     onClick={() => this.handleDeleteJoin(replaceIndex)}
                 >✕</button>
             </div>
@@ -214,8 +214,8 @@ export default class SettingsExportModal extends Component {
                     ref={ref => this.form = ref}
                     validate
                 >
-                    <div {...classes('row', '', 'row')}>
-                        <div {...classes('item', '', 'col-md-6')}>
+                    <div {...cls('row', '', 'row')}>
+                        <div {...cls('item', '', 'col-md-6')}>
                             <InputText
                                 autoFocus
                                 required
@@ -224,7 +224,7 @@ export default class SettingsExportModal extends Component {
                                 onChange={val => this.handleChangeForm(val, 'name')}
                             />
                         </div>
-                        <div {...classes('item', '', 'col-md-6')}>
+                        <div {...cls('item', '', 'col-md-6')}>
                             <Select
                                 label='Тип'
                                 options={this.types}
@@ -235,8 +235,8 @@ export default class SettingsExportModal extends Component {
                         </div>
                     </div>
 
-                    <div {...classes('row', '', 'row')}>
-                        <div {...classes('item', '', 'col-md-12')}>
+                    <div {...cls('row', '', 'row')}>
+                        <div {...cls('item', '', 'col-md-12')}>
                             <InputFile
                                 files={fileName}
                                 onChange={file => this.handleChangeForm(file, 'file')}
@@ -244,8 +244,8 @@ export default class SettingsExportModal extends Component {
                         </div>
                     </div>
 
-                    <div {...classes('row', '', 'row')}>
-                        <div {...classes('item', '', 'col-md-12')}>
+                    <div {...cls('row', '', 'row')}>
+                        <div {...cls('item', '', 'col-md-12')}>
                             <InputTags
                                 allowNew={false}
                                 label='Проект'
@@ -257,8 +257,8 @@ export default class SettingsExportModal extends Component {
                         </div>
                     </div>
 
-                    <section {...classes('rules')}>
-                        <h3 {...classes('title')}>Правила замены</h3>
+                    <section {...cls('rules')}>
+                        <h3 {...cls('title')}>Правила замены</h3>
 
                         {form.rules.map(this.renderRule)}
                         <InlineButton onClick={this.handleAddRule}>
@@ -266,8 +266,8 @@ export default class SettingsExportModal extends Component {
                         </InlineButton>
                     </section>
 
-                    <section {...classes('joins')}>
-                        <h3 {...classes('title')}>Список замен</h3>
+                    <section {...cls('joins')}>
+                        <h3 {...cls('title')}>Список замен</h3>
 
                         {form.replaces.map(this.renderReplace)}
                         <InlineButton onClick={this.handleAddReplace}>

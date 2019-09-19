@@ -3,15 +3,15 @@ import './properties-table-item.scss';
 import TrashIcon from '../../SvgIcons/TrashIcon';
 import PencilIcon from '../../SvgIcons/PencilIcon';
 
-const classes = new Bem('properties-table-item');
+const cls = new Bem('properties-table-item');
 const PropertiesTableRow = ({item, columnSettings, onEdit, onDelete, onClick}) => (
-    <div {...classes()} onClick={(e) => {
+    <div {...cls()} onClick={(e) => {
         if (!e.target.classList.contains(classes('button').className)) {
             onClick(item);
         }
     }}
     >
-        <div {...classes('cells')}>
+        <div {...cls('cells')}>
             {Object
                 .keys(columnSettings)
                 .filter(key => !['id', 'link'].includes(key))
@@ -23,7 +23,7 @@ const PropertiesTableRow = ({item, columnSettings, onEdit, onDelete, onClick}) =
                     return (
                         <span
                             key={key}
-                            {...classes('body-cell', key)}
+                            {...cls('body-cell', key)}
                             style={columnSettings[key] && columnSettings[key].style}
                         >
                             {value}
@@ -33,18 +33,18 @@ const PropertiesTableRow = ({item, columnSettings, onEdit, onDelete, onClick}) =
             }
         </div>
 
-        <div {...classes('buttons')}>
+        <div {...cls('buttons')}>
             <button
-                {...classes('button')}
+                {...cls('button')}
                 onClick={() => onEdit(item)}
             >
-                <PencilIcon {...classes('icon')}/>
+                <PencilIcon {...cls('icon')}/>
             </button>
             <button
-                {...classes('button')}
+                {...cls('button')}
                 onClick={() => onDelete(item)}
             >
-                <TrashIcon {...classes('icon')}/>
+                <TrashIcon {...cls('icon')}/>
             </button>
         </div>
     </div>

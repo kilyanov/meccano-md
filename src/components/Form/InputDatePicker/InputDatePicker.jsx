@@ -5,7 +5,7 @@ import CalendarIcon from '../../Shared/SvgIcons/CalendarIcon';
 import CloseIcon from '../../Shared/SvgIcons/CloseIcon';
 import './input-date-picker.scss';
 
-const classes = new Bem('input-date-picker');
+const cls = new Bem('input-date-picker');
 
 export default class InputDatePicker extends Component {
     static propTypes = {
@@ -35,9 +35,9 @@ export default class InputDatePicker extends Component {
         const {value} = this.state;
 
         return (
-            <div {...classes()}>
-                <label {...classes('label')}>
-                    {label && <span {...classes('label-text', '', 'drag-handle')}>{label}</span>}
+            <div {...cls()}>
+                <label {...cls('label')}>
+                    {label && <span {...cls('label-text', '', 'drag-handle')}>{label}</span>}
 
                     <DatePicker
                         calendarIcon={<CalendarIcon/>}

@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import './radio-button.scss';
 
-const classes = new Bem('radio-button');
+const cls = new Bem('radio-button');
 
 const RadioButton = ({
     className,
@@ -13,12 +13,12 @@ const RadioButton = ({
     value,
     onChange
 }) => (
-    <div {...classes('', {disabled, checked}, className)}>
-        <label {...classes('label')}>
-            <span {...classes('box')} />
+    <div {...cls('', {disabled, checked}, className)}>
+        <label {...cls('label')}>
+            <span {...cls('box')} />
 
             <input
-                {...classes('field')}
+                {...cls('field')}
                 type='radio'
                 disabled={disabled}
                 name={name}
@@ -27,7 +27,7 @@ const RadioButton = ({
                 onChange={() => onChange(!checked, value)}
             />
 
-            <span {...classes('label-text')}>{label}</span>
+            <span {...cls('label-text')}>{label}</span>
         </label>
     </div>
 );

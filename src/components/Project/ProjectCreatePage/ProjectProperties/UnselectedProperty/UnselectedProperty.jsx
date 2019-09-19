@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import './unselected-property.scss';
 import CheckIcon from '../../../../Shared/SvgIcons/CheckIcon';
 
-const classes = new Bem('unselected-property');
+const cls = new Bem('unselected-property');
 
 export default class UnselectedProperty extends Component {
     static propTypes = {
@@ -17,13 +17,13 @@ export default class UnselectedProperty extends Component {
 
         return (
             <div
-                {...classes('', {selected})}
+                {...cls('', {selected})}
                 data-id={item.code}
                 onDoubleClick={() => onDoubleClick(item.code)}
             >
                 {item.name}
 
-                <span {...classes('selected-icon')}>
+                <span {...cls('selected-icon')}>
                     <CheckIcon/>
                 </span>
             </div>

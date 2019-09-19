@@ -4,7 +4,7 @@ import ArrowIcon from '../../../../Shared/SvgIcons/ArrowIcon';
 import TrashIcon from '../../../../Shared/SvgIcons/TrashIcon';
 import CheckBox from '../../../../Form/CheckBox/CheckBox';
 
-const classes = new Bem('selected-property');
+const cls = new Bem('selected-property');
 
 const SelectedProperty = ({
     item,
@@ -12,16 +12,16 @@ const SelectedProperty = ({
     onChange = () => {},
     onDelete = () => {}
 }) => (
-    <div {...classes('', {required: item.required})} data-id={item.code}>
-        <div {...classes('arrows')}>
-            <ArrowIcon {...classes('arrow-top')}/>
-            <ArrowIcon {...classes('arrow-bottom')}/>
+    <div {...cls('', {required: item.required})} data-id={item.code}>
+        <div {...cls('arrows')}>
+            <ArrowIcon {...cls('arrow-top')}/>
+            <ArrowIcon {...cls('arrow-bottom')}/>
         </div>
 
-        <span {...classes('name')}>{item.name}</span>
+        <span {...cls('name')}>{item.name}</span>
 
         <CheckBox
-            {...classes('checkbox')}
+            {...cls('checkbox')}
             label='Обязательное поле'
             checked={item.required}
             onChange={() => {
@@ -30,12 +30,12 @@ const SelectedProperty = ({
             }}
         />
 
-        <div {...classes('buttons')}>
+        <div {...cls('buttons')}>
             <button
-                {...classes('remove-button')}
+                {...cls('remove-button')}
                 onClick={() => onDelete(index)}
             >
-                <TrashIcon {...classes('trash-icon')}/>
+                <TrashIcon {...cls('trash-icon')}/>
             </button>
         </div>
     </div>

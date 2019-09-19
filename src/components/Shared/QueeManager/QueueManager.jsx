@@ -4,7 +4,7 @@ import {EventEmitter} from '../../../helpers';
 import {EVENTS} from '../../../constants/Events';
 import './queue-manager.scss';
 
-const classes = new Bem('queue-manager');
+const cls = new Bem('queue-manager');
 
 export default class QueueManager extends Component {
     state = {
@@ -39,7 +39,7 @@ export default class QueueManager extends Component {
         const {queueItems} = this.state;
 
         return (
-            <section {...classes()}>
+            <section {...cls()}>
                 {queueItems.map((queue, key) =>
                     <QueueManagerItem
                         key={key}

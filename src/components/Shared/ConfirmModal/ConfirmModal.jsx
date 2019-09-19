@@ -4,7 +4,7 @@ import Button from "../Button/Button";
 import './confirm-modal.scss';
 import {KEY_CODE} from '../../../constants';
 
-const classes = new Bem('confirm-modal');
+const cls = new Bem('confirm-modal');
 const BUTTONS = {
     submit: 'submit',
     cancel: 'cancel'
@@ -66,25 +66,25 @@ export default class ConfirmModal extends PureComponent {
         } = this.props;
 
         return (
-            <div {...classes('', {[width]: true}, className)}>
-                <div {...classes('container')}>
-                    <section {...classes('header')}>
-                        <h2 {...classes('title')}>{title}</h2>
+            <div {...cls('', {[width]: true}, className)}>
+                <div {...cls('container')}>
+                    <section {...cls('header')}>
+                        <h2 {...cls('title')}>{title}</h2>
                         <button
                             onClick={onClose}
-                            {...classes('close-button')}
+                            {...cls('close-button')}
                         >✕</button>
                     </section>
 
-                    <section {...classes('body')}>
+                    <section {...cls('body')}>
                         {children}
                     </section>
 
                     {!!buttons.length && (
-                        <section {...classes('footer')}>
+                        <section {...cls('footer')}>
                             {buttons.includes(BUTTONS.cancel) && (
                                 <Button
-                                    {...classes('button', 'cancel')}
+                                    {...cls('button', 'cancel')}
                                     text={cancelText}
                                     style='inline'
                                     tabIndex={0}
@@ -97,7 +97,7 @@ export default class ConfirmModal extends PureComponent {
 
                             {buttons.includes(BUTTONS.submit) && (
                                 <Button
-                                    {...classes('button', 'cancel')}
+                                    {...cls('button', 'cancel')}
                                     text={submitText}
                                     type='submit'
                                     style='success'

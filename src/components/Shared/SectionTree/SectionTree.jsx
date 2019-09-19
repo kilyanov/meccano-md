@@ -6,7 +6,7 @@ import SectionTreeAddItem from './SectionTreeAddItem/SectionTreeAddItem';
 import PromiseDialogModal from '../PromiseDialogModal/PromiseDialogModal';
 import InlineButton from '../InlineButton/InlineButton';
 
-const classes = new Bem('section-tree');
+const cls = new Bem('section-tree');
 
 export default class SectionTree extends Component {
     static propTypes = {
@@ -88,7 +88,7 @@ export default class SectionTree extends Component {
         const {showAddModal, selectedSection, isEdit} = this.state;
 
         return (
-            <section {...classes()}>
+            <section {...cls()}>
                 <InlineButton
                     onClick={() => this.setState({showAddModal: true})}
                 >+ Добавить корневой раздел</InlineButton>

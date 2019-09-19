@@ -4,7 +4,7 @@ import SearchIcon from '../SvgIcons/SearchIcon';
 import './search-filter.scss';
 import {KEY_CODE} from '../../../constants';
 
-const classes = new Bem('search-filter');
+const cls = new Bem('search-filter');
 
 export default class SearchFilter extends Component {
     static propTypes = {
@@ -37,12 +37,12 @@ export default class SearchFilter extends Component {
         } = this.props;
 
         return (
-            <div {...classes('', '', className)}>
-                <label {...classes('label')}>
-                    <SearchIcon {...classes('icon')}/>
+            <div {...cls('', '', className)}>
+                <label {...cls('label')}>
+                    <SearchIcon {...cls('icon')}/>
                     <input
                         ref={ref => this.inputRef = ref}
-                        {...classes('field')}
+                        {...cls('field')}
                         type='text'
                         value={value}
                         onChange={e => onChange(e.target.value)}

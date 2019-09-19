@@ -9,11 +9,11 @@ import InputTags from '../../../Form/InputTags/InputTags';
 import InputTime from '../../../Form/InputTime/InputTime';
 import {FIELD_TYPE} from '../../../../constants/FieldType';
 
-const classes = new Bem('article-create-page');
+const cls = new Bem('article-create-page');
 const ProjectCreateField = ({field, value, onChange, className}) => {
     switch (field.type) {
         case FIELD_TYPE.ARRAY:
-            return <div {...classes('field', [field.code, field.type], className)} data-id={field.code}>
+            return <div {...cls('field', [field.code, field.type], className)} data-id={field.code}>
                 <InputTags
                     label={field.name}
                     tags={field.tags}
@@ -26,7 +26,7 @@ const ProjectCreateField = ({field, value, onChange, className}) => {
                 />
             </div>;
         case FIELD_TYPE.UUID:
-            return <div {...classes('field', [field.code, field.type], className)} data-id={field.code}>
+            return <div {...cls('field', [field.code, field.type], className)} data-id={field.code}>
                 <Select
                     placeholder={field.placeholder}
                     label={field.name}
@@ -40,7 +40,7 @@ const ProjectCreateField = ({field, value, onChange, className}) => {
                 />
             </div>;
         case FIELD_TYPE.UUID_EXT:
-            return <div {...classes('field', [field.code, field.type], className)} data-id={field.code}>
+            return <div {...cls('field', [field.code, field.type], className)} data-id={field.code}>
                 <Select
                     placeholder={field.placeholder}
                     label={field.name}
@@ -55,7 +55,7 @@ const ProjectCreateField = ({field, value, onChange, className}) => {
                 />
             </div>;
         case FIELD_TYPE.URL:
-            return <div {...classes('field', [field.code, field.type], className)} data-id={field.code}>
+            return <div {...cls('field', [field.code, field.type], className)} data-id={field.code}>
                 <InputLink
                     label={field.name}
                     onChange={val => onChange(val, field.code)}
@@ -64,7 +64,7 @@ const ProjectCreateField = ({field, value, onChange, className}) => {
             </div>;
         case FIELD_TYPE.FLOAT:
         case FIELD_TYPE.INT:
-            return <div {...classes('field', [field.code, field.type], className)} data-id={field.code}>
+            return <div {...cls('field', [field.code, field.type], className)} data-id={field.code}>
                 <InputNumber
                     label={field.name}
                     onChange={val => onChange(val, field.code)}
@@ -72,7 +72,7 @@ const ProjectCreateField = ({field, value, onChange, className}) => {
                 />
             </div>;
         case FIELD_TYPE.DATETIME:
-            return <div {...classes('field', [field.code, field.type], className)} data-id={field.code}>
+            return <div {...cls('field', [field.code, field.type], className)} data-id={field.code}>
                 <InputDatePicker
                     label={field.name}
                     value={value || ''}
@@ -80,7 +80,7 @@ const ProjectCreateField = ({field, value, onChange, className}) => {
                 />
             </div>;
         case FIELD_TYPE.DATE:
-            return <div {...classes('field', [field.code, field.type], className)} data-id={field.code}>
+            return <div {...cls('field', [field.code, field.type], className)} data-id={field.code}>
                 <InputDatePicker
                     label={field.name}
                     value={value || ''}
@@ -88,7 +88,7 @@ const ProjectCreateField = ({field, value, onChange, className}) => {
                 />
             </div>;
         case FIELD_TYPE.TIME:
-            return <div {...classes('field', [field.code, field.type], className)} data-id={field.code}>
+            return <div {...cls('field', [field.code, field.type], className)} data-id={field.code}>
                 <InputTime
                     label={field.name}
                     value={value}
@@ -96,7 +96,7 @@ const ProjectCreateField = ({field, value, onChange, className}) => {
             </div>;
         case FIELD_TYPE.TEXT:
         default:
-            return <div {...classes('field', [field.code, field.type], className)} data-id={field.code}>
+            return <div {...cls('field', [field.code, field.type], className)} data-id={field.code}>
                 <InputText
                     label={field.name}
                     value={value || ''}

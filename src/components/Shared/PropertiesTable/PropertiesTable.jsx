@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import './properties-table.scss';
 import PropertiesTableRow from './PropertiesTableRow/PropertiesTableRow';
 
-const classes = new Bem('properties-table');
+const cls = new Bem('properties-table');
 
 export default class PropertiesTable extends Component {
     static propTypes = {
@@ -18,21 +18,21 @@ export default class PropertiesTable extends Component {
         const {items, columnSettings} = this.props;
 
         return items.length ? (
-            <div {...classes()}>
-                <div {...classes('header')}>
+            <div {...cls()}>
+                <div {...cls('header')}>
                     {Object.keys(columnSettings).map(key => (
                         <div
-                            {...classes('header-cell')}
+                            {...cls('header-cell')}
                             key={key}
                             style={columnSettings[key].style}
                         >
                             {columnSettings[key].name}
                         </div>
                     ))}
-                    <div {...classes('header-cell', 'buttons')}/>
+                    <div {...cls('header-cell', 'buttons')}/>
                 </div>
 
-                <div {...classes('body')}>
+                <div {...cls('body')}>
                     {items.map((item, itemIndex) => (
                         <PropertiesTableRow
                             key={item.id || itemIndex}
@@ -45,6 +45,6 @@ export default class PropertiesTable extends Component {
                     ))}
                 </div>
             </div>
-        ) : <span {...classes('empty-message')}>Нет данных</span>;
+        ) : <span {...cls('empty-message')}>Нет данных</span>;
     }
 }

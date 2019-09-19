@@ -4,7 +4,7 @@ import Button from '../Button/Button';
 import DropDown from '../DropDown/DropDown';
 import './drop-down-button.scss';
 
-const classes = new Bem('drop-down-button');
+const cls = new Bem('drop-down-button');
 
 let dropDownRef = null;
 
@@ -15,7 +15,7 @@ const DropDownButton = ({
     buttonText,
     buttonStyle = 'default'
 }) => (
-    <div {...classes()}>
+    <div {...cls()}>
         <Button
             text={buttonText}
             style={buttonStyle}

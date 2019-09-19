@@ -4,7 +4,7 @@ import {Link} from 'react-router-dom';
 import PropTypes from 'prop-types';
 
 import './dropdown.scss';
-const classes = new Bem('dropdown');
+const cls = new Bem('dropdown');
 
 export default class DropDown extends PureComponent {
     static propTypes = {
@@ -67,8 +67,8 @@ export default class DropDown extends PureComponent {
         const {isOpen, styles} = this.state;
 
         return isOpen ? (
-            <div {...classes('', '', className)} style={styles}>
-                <div {...classes('list')} role='listbox'>
+            <div {...cls('', '', className)} style={styles}>
+                <div {...cls('list')} role='listbox'>
                     {items.map(({
                         link,
                         title,
@@ -79,14 +79,14 @@ export default class DropDown extends PureComponent {
                     }, itemIndex) => link ? (
                         <Link
                             key={itemIndex}
-                            {...classes('list-item', {disabled, danger})}
+                            {...cls('list-item', {disabled, danger})}
                             to={link}
                             role='option'
                         >{title}</Link>
                     ) : (
                         <div
                             key={itemIndex}
-                            {...classes('list-item', {disabled, danger})}
+                            {...cls('list-item', {disabled, danger})}
                             onClick={() => {
                                 onClick();
 

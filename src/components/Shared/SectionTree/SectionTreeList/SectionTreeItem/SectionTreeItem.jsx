@@ -35,40 +35,40 @@ export default class SectionTreeItem extends Component {
         if (item.hasOwnProperty('sectionsThree')) level = 1;
 
         return (
-            <li {...classes('item', `level-${level}`)}>
-                <div {...classes('item-name')}>
-                    <div {...classes('item-arrows')}>
-                        <ArrowIcon {...classes('item-arrow-top')}/>
-                        <ArrowIcon {...classes('item-arrow-bottom')}/>
+            <li {...cls('item', `level-${level}`)}>
+                <div {...cls('item-name')}>
+                    <div {...cls('item-arrows')}>
+                        <ArrowIcon {...cls('item-arrow-top')}/>
+                        <ArrowIcon {...cls('item-arrow-bottom')}/>
                     </div>
 
-                    <div {...classes('item-name-wrap')} onClick={this.handleClick}>
+                    <div {...cls('item-name-wrap')} onClick={this.handleClick}>
                         {item.name}
                     </div>
 
-                    <div {...classes('item-buttons')}>
+                    <div {...cls('item-buttons')}>
                         {level < 2 && (
                             <button
-                                {...classes('item-button', 'plus')}
+                                {...cls('item-button', 'plus')}
                                 onClick={() => onAddChild(item)}
                                 title='Добавить подраздел'
                             >
-                                <i {...classes('item-icon', 'plus')}>+</i>
+                                <i {...cls('item-icon', 'plus')}>+</i>
                             </button>
                         )}
                         <button
-                            {...classes('item-button', 'edit')}
+                            {...cls('item-button', 'edit')}
                             onClick={() => onEdit(item)}
                             title='Редактировать'
                         >
-                            <PencilIcon {...classes('item-icon', 'pencil')}/>
+                            <PencilIcon {...cls('item-icon', 'pencil')}/>
                         </button>
                         <button
-                            {...classes('item-button', 'remove')}
+                            {...cls('item-button', 'remove')}
                             onClick={() => onDelete(item, parent)}
                             title='Удалить'
                         >
-                            <TrashIcon {...classes('item-icon', 'trash')}/>
+                            <TrashIcon {...cls('item-icon', 'trash')}/>
                         </button>
                     </div>
                 </div>

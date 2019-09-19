@@ -6,7 +6,7 @@ import './article-view-settings.scss';
 import ActiveMark from '../../../Shared/ActiveMark/ActiveMark';
 import {STORAGE_KEY} from '../../../../constants/LocalStorageKeys';
 
-const classes = new Bem('article-view-settings');
+const cls = new Bem('article-view-settings');
 
 export default class ArticleViewSettings extends Component {
     static propTypes = {
@@ -35,21 +35,21 @@ export default class ArticleViewSettings extends Component {
                 buttons={[]}
                 width='wide'
             >
-                <div {...classes('cards')}>
+                <div {...cls('cards')}>
                     {[1, 2, 3, 4].map(key => (
                         <div
-                            {...classes('card')}
+                            {...cls('card')}
                             key={key}
                             onClick={() => this.handleChangeView(key)}
                         >
                             <img
-                                {...classes('card-image')}
+                                {...cls('card-image')}
                                 src={require(`./images/view-${key}.png`)}
                                 alt='view-type'
                             />
 
                             {this.state.active === key && (
-                                <ActiveMark {...classes('active-mark')}/>
+                                <ActiveMark {...cls('active-mark')}/>
                             )}
                         </div>
                     ))}

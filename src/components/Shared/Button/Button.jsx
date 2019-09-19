@@ -4,7 +4,7 @@ import {Link} from 'react-router-dom';
 
 import './button.scss';
 
-const classes = new Bem('button');
+const cls = new Bem('button');
 
 const Button = ({
     to,
@@ -19,7 +19,7 @@ const Button = ({
 }) => {
     return to ? (
         <Link
-            {...classes('', {
+            {...cls('', {
                 [style]: !!style,
                 [viewType]: !!viewType,
                 disabled
@@ -30,7 +30,7 @@ const Button = ({
         >{text}</Link>
     ) : (
         <button
-            {...classes('', {
+            {...cls('', {
                 [style]: !!style,
                 [viewType]: !!viewType,
                 disabled

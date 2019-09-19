@@ -10,7 +10,7 @@ import Loader from '../../../../Shared/Loader/Loader';
 import {NotificationManager} from 'react-notifications';
 import InlineButton from '../../../../Shared/InlineButton/InlineButton';
 
-const classes = new Bem('settings-import-modal');
+const cls = new Bem('settings-import-modal');
 
 export default class SettingsImportModal extends Component {
     static propTypes = {
@@ -138,9 +138,9 @@ export default class SettingsImportModal extends Component {
     };
 
     renderRule = (rule, ruleIndex) => (
-        <div {...classes('rule')}  key={ruleIndex}>
-            <div {...classes('rule-row', '', 'row')}>
-                <div {...classes('item', '', 'col-xs-6')}>
+        <div {...cls('rule')}  key={ruleIndex}>
+            <div {...cls('rule-row', '', 'row')}>
+                <div {...cls('item', '', 'col-xs-6')}>
                     <InputText
                         autoFocus
                         label='Элемент'
@@ -148,7 +148,7 @@ export default class SettingsImportModal extends Component {
                         onChange={val => this.handleChangeRule(val, 'field_name', ruleIndex)}
                     />
                 </div>
-                <div {...classes('item', '', 'col-xs-6')}>
+                <div {...cls('item', '', 'col-xs-6')}>
                     <InputText
                         label='Селектор'
                         value={rule.path_value}
@@ -156,10 +156,10 @@ export default class SettingsImportModal extends Component {
                     />
                 </div>
             </div>
-            <div {...classes('rule-buttons')}>
+            <div {...cls('rule-buttons')}>
                 <button
                     type='button'
-                    {...classes('button', 'remove')}
+                    {...cls('button', 'remove')}
                     onClick={() => this.handleDeleteRule(ruleIndex)}
                 >✕</button>
             </div>
@@ -167,9 +167,9 @@ export default class SettingsImportModal extends Component {
     );
 
     renderJoin = (join, joinIndex) => (
-        <div {...classes('rule')}  key={joinIndex}>
-            <div {...classes('rule-row', '', 'row')}>
-                <div {...classes('item', '', 'col-xs-6')}>
+        <div {...cls('rule')}  key={joinIndex}>
+            <div {...cls('rule-row', '', 'row')}>
+                <div {...cls('item', '', 'col-xs-6')}>
                     <InputText
                         autoFocus
                         label='Элемент'
@@ -177,7 +177,7 @@ export default class SettingsImportModal extends Component {
                         onChange={val => this.handleChangeJoin(val, 'name', joinIndex)}
                     />
                 </div>
-                <div {...classes('item', '', 'col-xs-6')}>
+                <div {...cls('item', '', 'col-xs-6')}>
                     <InputText
                         label='Значение'
                         value={join.value}
@@ -185,10 +185,10 @@ export default class SettingsImportModal extends Component {
                     />
                 </div>
             </div>
-            <div {...classes('rule-buttons')}>
+            <div {...cls('rule-buttons')}>
                 <button
                     type='button'
-                    {...classes('button', 'remove')}
+                    {...cls('button', 'remove')}
                     onClick={() => this.handleDeleteJoin(joinIndex)}
                 >✕</button>
             </div>
@@ -211,8 +211,8 @@ export default class SettingsImportModal extends Component {
                     ref={ref => this.form = ref}
                     validate
                 >
-                    <div {...classes('row', '', 'row')}>
-                        <div {...classes('item', '', 'col-md-6')}>
+                    <div {...cls('row', '', 'row')}>
+                        <div {...cls('item', '', 'col-md-6')}>
                             <InputText
                                 autoFocus
                                 required
@@ -221,7 +221,7 @@ export default class SettingsImportModal extends Component {
                                 onChange={val => this.handleChangeForm(val, 'name')}
                             />
                         </div>
-                        <div {...classes('item', '', 'col-md-6')}>
+                        <div {...cls('item', '', 'col-md-6')}>
                             <Select
                                 label='Тип файла'
                                 required
@@ -230,14 +230,14 @@ export default class SettingsImportModal extends Component {
                                 selected={selectedType}
                             />
                         </div>
-                        <div {...classes('item', '', 'col-md-6')}>
+                        <div {...cls('item', '', 'col-md-6')}>
                             <InputText
                                 label='Селектор для контейнера статей'
                                 value={form.itemsContainer}
                                 onChange={val => this.handleChangeForm(val, 'itemsContainer')}
                             />
                         </div>
-                        <div {...classes('item', '', 'col-md-6')}>
+                        <div {...cls('item', '', 'col-md-6')}>
                             <InputText
                                 label='Селектор для статьи'
                                 value={form.item}
@@ -246,8 +246,8 @@ export default class SettingsImportModal extends Component {
                         </div>
                     </div>
 
-                    <section {...classes('rules')}>
-                        <h3 {...classes('title')}>Правила</h3>
+                    <section {...cls('rules')}>
+                        <h3 {...cls('title')}>Правила</h3>
 
                         {form.rules.map(this.renderRule)}
                         <InlineButton onClick={this.handleAddRule}>
@@ -255,8 +255,8 @@ export default class SettingsImportModal extends Component {
                         </InlineButton>
                     </section>
 
-                    <section {...classes('joins')}>
-                        <h3 {...classes('title')}>Объединение полей</h3>
+                    <section {...cls('joins')}>
+                        <h3 {...cls('title')}>Объединение полей</h3>
 
                         {form.joins.map(this.renderJoin)}
                         <InlineButton onClick={this.handleAddJoin}>

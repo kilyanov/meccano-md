@@ -53,24 +53,24 @@ class LoginPage extends Component {
     };
 
     render() {
-        const classes = new Bem('login-page');
+        const cls = new Bem('login-page');
         const {username, password, inProgress} = this.state;
 
         return (
-            <div {...classes('', '', 'container page')}>
-                <div {...classes('logo')}>
+            <div {...cls('', '', 'container page')}>
+                <div {...cls('logo')}>
                     <Logo/>
                 </div>
 
                 <Form
-                    {...classes('form')}
+                    {...cls('form')}
                     onSubmit={this.handleSubmitForm}
                 >
                     <InputText
                         autoFocus
                         label='Логин'
                         name='login'
-                        {...classes('input', 'login')}
+                        {...cls('input', 'login')}
                         validateErrorMessage='Логин не может быть пустым'
                         validateType='notEmpty'
                         value={username}
@@ -80,7 +80,7 @@ class LoginPage extends Component {
                     <InputText
                         label='Пароль'
                         name='password'
-                        {...classes('input', 'password')}
+                        {...cls('input', 'password')}
                         type='password'
                         onValidate={value => value.length >= 3}
                         validateErrorMessage='Пароль не может быть меньше 3-х симоволов'
@@ -89,7 +89,7 @@ class LoginPage extends Component {
                     />
 
                     <Button
-                        {...classes('button', 'submit')}
+                        {...cls('button', 'submit')}
                         disabled={password.length < 3}
                         onClick={() => {}}
                         text='Войти'

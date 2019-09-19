@@ -21,7 +21,7 @@ import RightLoader from '../../Shared/Loader/RightLoader/RightLoader';
 import {Plural, QueueManager} from '../../../helpers/Tools';
 import InlineButton from '../../Shared/InlineButton/InlineButton';
 
-const classes = new Bem('project-page');
+const cls = new Bem('project-page');
 const defaultPagination = {page: 1, pageCount: 1};
 const defaultSort = {type: null, dir: null};
 const defaultFilters = {search: '', sort: defaultSort};
@@ -285,22 +285,22 @@ export default class ProjectPage extends Component {
             });
 
         return (
-            <Page {...classes()} withBar>
-                <section {...classes('title-wrapper')}>
-                    <h2 {...classes('title')}>{_.get(project, 'name')}</h2>
+            <Page {...cls()} withBar>
+                <section {...cls('title-wrapper')}>
+                    <h2 {...cls('title')}>{_.get(project, 'name')}</h2>
                     {!!articles.length && (
                         <Button
                             text='Выгрузить все'
-                            {...classes('upload-btn')}
+                            {...cls('upload-btn')}
                             style='success'
                             onClick={() => this.setState({showUploadArticlesModal: true})}
                         />
                     )}
                 </section>
 
-                <section {...classes('filters')}>
+                <section {...cls('filters')}>
                     <IconButton
-                        {...classes('filter-item')}
+                        {...cls('filter-item')}
                         iconComponent={<TrashIcon/>}
                         text='Удалить'
                         danger
@@ -309,21 +309,21 @@ export default class ProjectPage extends Component {
                     />
 
                     <IconButton
-                        {...classes('filter-item', '', 'd-none')}
+                        {...cls('filter-item', '', 'd-none')}
                         iconComponent={<TrashIcon/>}
                         text='Дублировать'
                         disabled={!hasSelectedItems}
                     />
 
                     <IconButton
-                        {...classes('filter-item', '', 'd-none')}
+                        {...cls('filter-item', '', 'd-none')}
                         iconComponent={<ServicesIcon/>}
                         text='Сгруппировать'
                         disabled={!hasSelectedItems}
                     />
 
                     <IconButton
-                        {...classes('filter-item', '', 'd-none')}
+                        {...cls('filter-item', '', 'd-none')}
                         iconComponent={<StarIcon/>}
                         text='Добавить в избранное'
                         disabled={!hasSelectedItems}
@@ -342,7 +342,7 @@ export default class ProjectPage extends Component {
 
                             {(countSelected < pagination.totalCount && !isAllArticlesSelected) && (
                                 <InlineButton
-                                    {...classes('filter-item')}
+                                    {...cls('filter-item')}
                                     small
                                     onClick={() => this.setState({isAllArticlesSelected: true})}
                                 >
@@ -351,7 +351,7 @@ export default class ProjectPage extends Component {
                             )}
 
                             <InlineButton
-                                {...classes('filter-item')}
+                                {...cls('filter-item')}
                                 small
                                 onClick={this.handleClearSelected}
                             >Снять выделение</InlineButton>
@@ -359,24 +359,24 @@ export default class ProjectPage extends Component {
                     )}
 
                     <SearchFilter
-                        {...classes('filter-item')}
+                        {...cls('filter-item')}
                         placeholder='Найти'
                         value={filters.search}
                         onChange={value => this.handleChangeFilter('search', value)}
                         onSearch={() => this.getArticles()}
                     />
 
-                    <span {...classes('articles-count')}>Всего статей: {pagination.totalCount || 0}</span>
+                    <span {...cls('articles-count')}>Всего статей: {pagination.totalCount || 0}</span>
 
                     <DropDownButton
-                        {...classes('article-add-btn')}
+                        {...cls('article-add-btn')}
                         buttonText='Добавить'
                         dropDownItems={this.addMenuItems}
                         dropDownRight
                     />
                 </section>
 
-                <div {...classes('project-table-wrapper')}>
+                <div {...cls('project-table-wrapper')}>
                     <ProjectTable
                         ref={ref => this.projectTable = ref}
                         onChangeSelected={this.handleChangeSelected}

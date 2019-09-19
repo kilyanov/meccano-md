@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import {KEY_CODE} from '../../../constants';
 import './inline-button.scss';
 
-const classes = new Bem('inline-button');
+const cls = new Bem('inline-button');
 
 export default class InlineButton extends Component {
     static propTypes = {
@@ -31,7 +31,7 @@ export default class InlineButton extends Component {
         return (
             <a
                 ref={ref => this.inlineButton = ref}
-                {...classes('', {small}, className)}
+                {...cls('', {small}, className)}
                 role='button'
                 onClick={onClick}
                 onKeyDown={this.handleKeyDown}

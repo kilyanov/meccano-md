@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import './section-tree-list.scss';
 import SectionTreeItem from './SectionTreeItem/SectionTreeItem';
 
-const classes = new Bem('section-tree-list');
+const cls = new Bem('section-tree-list');
 
 export default class SectionTreeList extends Component {
     static propTypes = {
@@ -19,7 +19,7 @@ export default class SectionTreeList extends Component {
         const {parent, items, level, onAddItemChild, onEditItem, onDeleteItem} = this.props;
 
         return (
-            <ul {...classes()}>
+            <ul {...cls()}>
                 {items.map((item, itemIndex) => (
                     <SectionTreeItem
                         parent={parent}

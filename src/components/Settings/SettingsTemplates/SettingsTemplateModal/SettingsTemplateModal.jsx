@@ -4,7 +4,7 @@ import ConfirmModal from '../../../Shared/ConfirmModal/ConfirmModal';
 import InputText from '../../../Form/InputText/InputText';
 import Select from '../../../Form/Select/Select';
 
-const classes = new Bem('settings-template-modal');
+const cls = new Bem('settings-template-modal');
 const types = [
     {name: 'HTML', value: 'html'},
     {name: 'EXCEL', value: 'xlsx'},
@@ -58,9 +58,9 @@ export default class SettingsTemplateModal extends Component {
                 onClose={onClose}
                 onSubmit={this.handleSubmit}
             >
-                <div {...classes('row', '', 'row')}>
+                <div {...cls('row', '', 'row')}>
                     <InputText
-                        {...classes('field', 'name', 'col-md-6')}
+                        {...cls('field', 'name', 'col-md-6')}
                         autoFocus
                         label='Нзвание'
                         value={form.name}
@@ -68,7 +68,7 @@ export default class SettingsTemplateModal extends Component {
                     />
 
                     <Select
-                        {...classes('field', 'type', 'col-md-6')}
+                        {...cls('field', 'type', 'col-md-6')}
                         label='Тип'
                         fixedPosList
                         options={types}

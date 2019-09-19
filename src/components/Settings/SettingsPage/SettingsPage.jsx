@@ -8,7 +8,7 @@ import InputText from '../../Form/InputText/InputText';
 import MenuHamburger from '../../Shared/MenuHamburger/MenuHamburger';
 import SettingsLeftSidebar from './SettingsLeftSidebar/SettingsLeftSidebar';
 
-const classes = new Bem('settings-page');
+const cls = new Bem('settings-page');
 
 const SettingsPage = ({
     title,
@@ -35,33 +35,33 @@ const SettingsPage = ({
     });
 
     return (
-        <Page withBar {...classes()}>
-            <div {...classes('header')}>
-                <h2 {...classes('title')}>Настройки</h2>
+        <Page withBar {...cls()}>
+            <div {...cls('header')}>
+                <h2 {...cls('title')}>Настройки</h2>
 
                 <MenuHamburger />
             </div>
 
-            <section {...classes('content')}>
+            <section {...cls('content')}>
                 <SettingsLeftSidebar />
 
                 <div
-                    {...classes('body', {empty: !children})}
+                    {...cls('body', {empty: !children})}
                     ref={bodyRef}
                     onScroll={handleScroll}
                 >
                     {!!children && (
-                        <div {...classes('body-header')}>
-                            <div {...classes('body-header-row')}>
-                                <div {...classes('body-title-wrapper')}>
-                                    <h2 {...classes('body-title')}>{title}</h2>
+                        <div {...cls('body-header')}>
+                            <div {...cls('body-header-row')}>
+                                <div {...cls('body-title-wrapper')}>
+                                    <h2 {...cls('body-title')}>{title}</h2>
 
-                                    {subtitle && <h5 {...classes('body-subtitle')}>{subtitle}</h5>}
+                                    {subtitle && <h5 {...cls('body-subtitle')}>{subtitle}</h5>}
                                 </div>
 
                                 {withAddButton && (
                                     <Button
-                                        {...classes('button', 'add')}
+                                        {...cls('button', 'add')}
                                         text={addButtonTitle}
                                         onClick={onAdd}
                                     />
@@ -70,7 +70,7 @@ const SettingsPage = ({
 
                             {!!onSearch && (
                                 <InputText
-                                    {...classes('search-field')}
+                                    {...cls('search-field')}
                                     placeholder='Поиск...'
                                     clearable
                                     onChange={onSearch}
@@ -83,14 +83,14 @@ const SettingsPage = ({
                     {children}
 
                     {!children && (
-                        <div {...classes('stub')}>
+                        <div {...cls('stub')}>
                             <h2>Настройки</h2>
                             <h5>Выберите пункт меню слева</h5>
                         </div>
                     )}
                 </div>
 
-                {inProgress && <Loader {...classes('loader')}/>}
+                {inProgress && <Loader {...cls('loader')}/>}
             </section>
         </Page>
     );

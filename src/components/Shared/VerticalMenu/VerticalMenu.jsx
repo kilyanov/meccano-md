@@ -5,7 +5,7 @@ import ArrowIcon from '../../Shared/SvgIcons/ArrowIcon';
 import './vertical-menu.scss';
 import PencilIcon from '../../Shared/SvgIcons/PencilIcon';
 
-const classes = new Bem('vertical-menu');
+const cls = new Bem('vertical-menu');
 
 export default class VerticalMenu extends PureComponent {
     static propTypes = {
@@ -49,18 +49,18 @@ export default class VerticalMenu extends PureComponent {
         }
 
         return (
-            <ul {...classes('', '', className)} ref={node => this.list = node}>
+            <ul {...cls('', '', className)} ref={node => this.list = node}>
                 {(list || []).map((item, itemKey) => (
                     <li
                         ref={node => this.itemRefs[itemKey] = node}
-                        {...classes('item', {active: !!activeId && activeId === item.id, open: item.open})}
+                        {...cls('item', {active: !!activeId && activeId === item.id, open: item.open})}
                         key={itemKey}
                         tabIndex={0}
                     >
                         {item.link ? (
                             <Link
                                 to={item.link}
-                                {...classes('item-caption')}
+                                {...cls('item-caption')}
                                 onClick={() => {
                                     item.open = !item.open;
                                     this.forceUpdate();
@@ -68,14 +68,14 @@ export default class VerticalMenu extends PureComponent {
                             >
                                 {item.icon && this.modifyChildren(item.icon)}
 
-                                <span {...classes('item-link')}>{item.name}</span>
+                                <span {...cls('item-link')}>{item.name}</span>
 
                                 {(item.children && !!item.children.length) &&
-                                <ArrowIcon {...classes('arrow-icon')}/>}
+                                <ArrowIcon {...cls('arrow-icon')}/>}
                             </Link>
                         ) : (
                             <div
-                                {...classes('item-caption')}
+                                {...cls('item-caption')}
                                 onClick={() => {
                                     item.open = !item.open;
                                     this.forceUpdate();
@@ -83,30 +83,30 @@ export default class VerticalMenu extends PureComponent {
                             >
                                 {item.icon && this.modifyChildren(item.icon)}
 
-                                <span {...classes('item-title')}>{item.name}</span>
+                                <span {...cls('item-title')}>{item.name}</span>
 
                                 {(item.children && !!item.children.length) &&
-                                <ArrowIcon {...classes('arrow-icon')}/>}
+                                <ArrowIcon {...cls('arrow-icon')}/>}
                             </div>
                         )}
 
-                        <ul {...classes('sub-list')}>
+                        <ul {...cls('sub-list')}>
                             {item.children && item.children.map((child, childIndex) => (
                                 <li
-                                    {...classes('sub-list-item', {active: activeId && activeId === child.id})}
+                                    {...cls('sub-list-item', {active: activeId && activeId === child.id})}
                                     key={childIndex}
                                     ref={node => this.childRefs[`${itemKey}${childIndex}`] = node}
                                     tabIndex={0}
                                 >
                                     <Link
                                         to={child.link}
-                                        {...classes('item-link')}
+                                        {...cls('item-link')}
                                     >
-                                        <span {...classes('child-title')}>{child.name}</span>
+                                        <span {...cls('child-title')}>{child.name}</span>
                                     </Link>
 
                                     {child.editLink && (
-                                        <Link to={child.editLink} {...classes('item-button')}>
+                                        <Link to={child.editLink} {...cls('item-button')}>
                                             <PencilIcon size={{width: 16, height: 16}}/>
                                         </Link>
                                     )}

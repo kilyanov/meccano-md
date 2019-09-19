@@ -5,7 +5,7 @@ import './notifications-button.scss';
 import store from '../../../../redux/store';
 import {toggleNotificationPanel} from '../../../../redux/actions/notificationsPanel';
 
-const classes = new Bem('notifications-button');
+const cls = new Bem('notifications-button');
 
 const NotificationsButton = ({
     className,
@@ -15,11 +15,11 @@ const NotificationsButton = ({
 
     return (
         <div
-            {...classes('', '', className)}
+            {...cls('', '', className)}
             onClick={() => store.dispatch(toggleNotificationPanel())}
         >
-            <NotificationIcon {...classes('icon')}/>
-            {!!notifications.length && <i {...classes('count')}>{notifications.length}</i>}
+            <NotificationIcon {...cls('icon')}/>
+            {!!notifications.length && <i {...cls('count')}>{notifications.length}</i>}
         </div>
     );
 };

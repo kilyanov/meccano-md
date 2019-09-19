@@ -10,7 +10,7 @@ import PromiseDialogModal from '../../../Shared/PromiseDialogModal/PromiseDialog
 import Loader from '../../../Shared/Loader/Loader';
 import './project-key-words.scss';
 
-const classes = new Bem('project-key-words');
+const cls = new Bem('project-key-words');
 
 export default class ProjectKeyWords extends Component {
     static propTypes = {
@@ -121,7 +121,7 @@ export default class ProjectKeyWords extends Component {
         } = this.state;
 
         return (
-            <div {...classes('', '', 'container')}>
+            <div {...cls('', '', 'container')}>
                 <h3>Ключевые слова</h3>
 
                 <InlineButton
@@ -129,25 +129,25 @@ export default class ProjectKeyWords extends Component {
                     onClick={() => this.setState({showCreateModal: true})}
                 >+ Добавить слово</InlineButton>
 
-                <ul {...classes('list')}>
+                <ul {...cls('list')}>
                     {keyWords.map((keyWord, key) => (
-                        <li {...classes('list-item')} key={key}>
-                            <span {...classes('list-item-name')}>{keyWord.name}</span>
+                        <li {...cls('list-item')} key={key}>
+                            <span {...cls('list-item-name')}>{keyWord.name}</span>
 
-                            <div {...classes('list-item-buttons')}>
+                            <div {...cls('list-item-buttons')}>
                                 <button
-                                    {...classes('list-item-button', 'edit')}
+                                    {...cls('list-item-button', 'edit')}
                                     onClick={() => this.handleSelectWord(keyWord)}
                                     title='Редактировать'
                                 >
-                                    <PencilIcon {...classes('list-item-icon', 'pencil')}/>
+                                    <PencilIcon {...cls('list-item-icon', 'pencil')}/>
                                 </button>
                                 <button
-                                    {...classes('list-item-button', 'remove')}
+                                    {...cls('list-item-button', 'remove')}
                                     onClick={() => this.handleDeleteWord(keyWord)}
                                     title='Удалить'
                                 >
-                                    <TrashIcon {...classes('list-item-icon', 'trash')}/>
+                                    <TrashIcon {...cls('list-item-icon', 'trash')}/>
                                 </button>
                             </div>
                         </li>
@@ -156,7 +156,7 @@ export default class ProjectKeyWords extends Component {
 
                 {showCreateModal && (
                     <ConfirmModal
-                        {...classes('modal')}
+                        {...cls('modal')}
                         onClose={this.handleCloseCreateModal}
                         submitText={selectedWord ? 'Обновить' : 'Добавить'}
                         onSubmit={this.handleSubmit}
@@ -164,7 +164,7 @@ export default class ProjectKeyWords extends Component {
                     >
                         <InputText
                             autoFocus
-                            {...classes('field')}
+                            {...cls('field')}
                             label='Название'
                             value={wordValue}
                             onChange={this.handleChangeInput}

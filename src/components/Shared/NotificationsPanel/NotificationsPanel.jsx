@@ -6,7 +6,7 @@ import store from '../../../redux/store';
 import {closeNotificationPanel, deleteNotification} from '../../../redux/actions/notificationsPanel';
 import PanelNotification from './PanelNotification/PanelNotification';
 
-const classes = new Bem('notifications-panel');
+const cls = new Bem('notifications-panel');
 
 class NotificationsPanel extends Component {
     static propTypes = {
@@ -93,23 +93,23 @@ class NotificationsPanel extends Component {
 
         return (
             <aside
-                {...classes('', {open: notificationsPanel.open})}
+                {...cls('', {open: notificationsPanel.open})}
                 ref={ref => this.domNode = ref}
                 onTouchStart={this.handleTouchStart}
                 onTouchMove={this.handleTouchMove}
                 onTouchEnd={this.handleTouchEnd}
             >
-                <section {...classes('header')}>
-                    <div {...classes('header-column')}>
-                        <h3 {...classes('header-title')}>Уведомления</h3>
-                        <span {...classes('current-date')}>{currentDateTime.format('[Сегодня] D MMMM')}</span>
+                <section {...cls('header')}>
+                    <div {...cls('header-column')}>
+                        <h3 {...cls('header-title')}>Уведомления</h3>
+                        <span {...cls('current-date')}>{currentDateTime.format('[Сегодня] D MMMM')}</span>
                     </div>
-                    <div {...classes('header-column')}>
-                        <span {...classes('header-time')}>{currentDateTime.format('HH:mm')}</span>
+                    <div {...cls('header-column')}>
+                        <span {...cls('header-time')}>{currentDateTime.format('HH:mm')}</span>
                     </div>
                 </section>
 
-                <section {...classes('notifications')}>
+                <section {...cls('notifications')}>
                     {notificationsPanel.notifications.map((notification) => (
                         <PanelNotification
                             key={notification.id}
@@ -119,9 +119,9 @@ class NotificationsPanel extends Component {
                     ))}
                 </section>
 
-                <section {...classes('footer')} />
+                <section {...cls('footer')} />
 
-                {/* <button {...classes('button-close')}>✕</button> */}
+                {/* <button {...cls('button-close')}>✕</button> */}
             </aside>
         );
     }

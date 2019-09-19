@@ -2,10 +2,10 @@ import React from 'react';
 import CheckIcon from '../SvgIcons/CheckIcon';
 import './active-mark.scss';
 
-const classes = new Bem('active-mark');
+const cls = new Bem('active-mark');
 const ActiveMark = ({className}) => (
-    <div {...classes('', '', className)}>
-        <CheckIcon {...classes('icon')}/>
+    <div {...cls('', '', className)}>
+        <CheckIcon {...cls('icon')}/>
     </div>
 );
 

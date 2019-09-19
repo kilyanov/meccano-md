@@ -6,7 +6,7 @@ import {closeSettingsMenu} from '../../../../redux/actions/settingsMenu';
 import {isMobileScreen} from '../../../../helpers/Tools';
 import './left-sidebar.scss';
 
-const classes = new Bem('left-sidebar');
+const cls = new Bem('left-sidebar');
 class SettingsLeftSidebar extends Component {
     componentDidMount() {
         store.dispatch(closeSettingsMenu())
@@ -17,7 +17,7 @@ class SettingsLeftSidebar extends Component {
         const isOpen = isMobileScreen() && settingsMenu.open;
 
         return (
-            <aside {...classes('', {open: isOpen})}>
+            <aside {...cls('', {open: isOpen})}>
                 <SettingsMenu />
             </aside>
         );

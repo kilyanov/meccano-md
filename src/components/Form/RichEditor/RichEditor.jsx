@@ -5,7 +5,7 @@ import Editor from 'jodit-react';
 import '../../../../node_modules/jodit/build/jodit.min.css';
 import './rich-editor.scss';
 
-const classes = new Bem('rich-editor');
+const cls = new Bem('rich-editor');
 
 export default class RichEditor extends Component {
     static propTypes = {
@@ -84,8 +84,8 @@ export default class RichEditor extends Component {
         const {content, label, className} = this.props;
 
         return (
-            <div {...classes('', '', className)}>
-                {label && <span {...classes('label')}>{label}</span>}
+            <div {...cls('', '', className)}>
+                {label && <span {...cls('label')}>{label}</span>}
 
                 <Editor
                     ref={ref => this.jodit = ref}

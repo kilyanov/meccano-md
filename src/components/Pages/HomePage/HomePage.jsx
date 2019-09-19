@@ -12,6 +12,7 @@ import VerticalMenu from '../../Shared/VerticalMenu/VerticalMenu';
 import {ProjectService} from '../../../services';
 import Loader from '../../Shared/Loader/Loader';
 import Page from '../../Shared/Page/Page';
+import DocumentIcon from '../../Shared/SvgIcons/DocumentIcon';
 
 class HomePage extends Component {
     static propTypes = {
@@ -61,6 +62,11 @@ class HomePage extends Component {
                 editLink: `/project-create/${id}`
             }))
         }, {
+            id: 'documents',
+            icon: <DocumentIcon/>,
+            name: 'Документы',
+            link: '/documents'
+        }, {
             id: 'users',
             icon: <UsersIcon/>,
             name: 'Пользователи'
@@ -73,26 +79,26 @@ class HomePage extends Component {
     );
 
     render() {
-        const classes = new Bem('home-page');
+        const cls = new Bem('home-page');
         const {profile} = this.props;
         const {showProjectCreateModal, inProgress} = this.state;
         const menu = this.getMenu();
 
         return (
-            <Page {...classes()} withBar>
-                <h1 {...classes('title')}>Добро пожаловать, {_.get(profile, 'username', '')}!</h1>
-                <h5 {...classes('sub-title')}>
+            <Page {...cls()} withBar>
+                <h1 {...cls('title')}>Добро пожаловать, {_.get(profile, 'username', '')}!</h1>
+                <h5 {...cls('sub-title')}>
                     Выберите ваш текущий проект, или
                     {' '}
                     <a
-                        {...classes('link')}
+                        {...cls('link')}
                         role='button'
                         onClick={() => this.setState({ showProjectCreateModal: true })}
                     >создайте новый</a>
                 </h5>
 
-                <div {...classes('row', '', ['row', 'row--align-h-center'])}>
-                    <div {...classes('column', '', 'col-md-6')}>
+                <div {...cls('row', '', ['row', 'row--align-h-center'])}>
+                    <div {...cls('column', '', 'col-md-6')}>
                         <VerticalMenu list={menu} onClick={this.handleClick}/>
                     </div>
                 </div>

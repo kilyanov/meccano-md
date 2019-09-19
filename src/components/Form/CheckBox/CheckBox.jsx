@@ -1,7 +1,7 @@
 import React from 'react';
 import './checkbox.scss';
 
-const classes = new Bem('checkbox');
+const cls = new Bem('checkbox');
 const CheckBox = ({
     checked = false,
     name = '',
@@ -11,12 +11,12 @@ const CheckBox = ({
     onChange = () => {},
     className
 }) => (
-    <div {...classes('', {disabled, checked}, className)}>
-        <label {...classes('label')}>
-            <span {...classes('box')} />
+    <div {...cls('', {disabled, checked}, className)}>
+        <label {...cls('label')}>
+            <span {...cls('box')} />
 
             <input
-                {...classes('field')}
+                {...cls('field')}
                 type="checkbox"
                 checked={checked}
                 required={required}
@@ -24,7 +24,7 @@ const CheckBox = ({
                 onChange={() => onChange(!checked)}
             />
 
-            <span {...classes('text')}>{label}</span>
+            <span {...cls('text')}>{label}</span>
         </label>
     </div>
 );

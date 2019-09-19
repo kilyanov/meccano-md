@@ -8,7 +8,7 @@ import Loader from '../../Shared/Loader/Loader';
 import {EventEmitter} from '../../../helpers';
 import {EVENTS} from '../../../constants/Events';
 
-const classes = new Bem('select');
+const cls = new Bem('select');
 
 export default class Select extends Component {
     static propTypes = {
@@ -437,7 +437,7 @@ export default class Select extends Component {
 
         return (
             <div
-                {...classes('', {
+                {...cls('', {
                     error,
                     multiple: isMultiple,
                     mobile: this.isMobileView,
@@ -448,21 +448,21 @@ export default class Select extends Component {
                     [className]: !!className
                 })}
             >
-                <label {...classes('label', '', 'drag-handle')}>
-                    <span {...classes('label-text', '', 'drag-handle')}>{label}</span>
+                <label {...cls('label', '', 'drag-handle')}>
+                    <span {...cls('label-text', '', 'drag-handle')}>{label}</span>
                 </label>
 
                 <div ref={node => this.domNode = node}>
-                    <div {...classes('container', {opened})} onClick={() => this.toggle()}>
+                    <div {...cls('container', {opened})} onClick={() => this.toggle()}>
                         {(placeholder && !selectedName && !searchString.length) && (
-                            <span {...classes('placeholder')}>{searchFocused ? 'Начните вводить...' :
+                            <span {...cls('placeholder')}>{searchFocused ? 'Начните вводить...' :
                                 options.length ? placeholder : 'Нет элементов для выбора'}</span>
                         )}
 
                         {withSearch && (
-                            <div {...classes('search-wrapper')}>
+                            <div {...cls('search-wrapper')}>
                                 <input
-                                    {...classes('search-field')}
+                                    {...cls('search-field')}
                                     type='text'
                                     onChange={this.handleSearch}
                                     onFocus={this.handleSearchFocus}
@@ -475,7 +475,7 @@ export default class Select extends Component {
                         )}
 
                         {(selectedName && !searchString.length) && (
-                            <span {...classes('selected-name')}>
+                            <span {...cls('selected-name')}>
                                 <span>{selectedName}</span> {(isMultiple && selected.length > 1) &&
                                 <i>+{selected.length - 1}</i>}
                             </span>
@@ -484,14 +484,14 @@ export default class Select extends Component {
                         {!!searchString.length || selectedName  && (
                             <button
                                 type='button'
-                                {...classes('search-clear-button')}
+                                {...cls('search-clear-button')}
                                 onClick={this.handleClearValue}
                             >✕</button>
                         )}
 
                         {(!opened && inProgress) && (
                             <Loader
-                                {...classes('small-loader')}
+                                {...cls('small-loader')}
                                 radius={8}
                                 strokeWidth={3}
                             />
@@ -500,22 +500,22 @@ export default class Select extends Component {
 
                     {opened && (
                         <div
-                            {...classes('list-container', {fixed: fixedPosList})}
+                            {...cls('list-container', {fixed: fixedPosList})}
                             style={fixedPosList ? {width: this.domNode.offsetWidth} : null}
                         >
                             {this.isMobileView && (
-                                <div {...classes('list-header')}>
-                                    <h3 {...classes('list-title')}>{label}</h3>
+                                <div {...cls('list-header')}>
+                                    <h3 {...cls('list-title')}>{label}</h3>
                                     <a
                                         rel='button'
-                                        {...classes('list-close-button')}
+                                        {...cls('list-close-button')}
                                         onClick={() => this.close()}
                                     >✕</a>
                                 </div>
                             )}
 
                             <ul
-                                {...classes('list')}
+                                {...cls('list')}
                                 ref={ref => this.listRef = ref}
                                 onKeyDown={this.handleListKeyDown}
                                 onScroll={this.handleListScroll}
@@ -529,7 +529,7 @@ export default class Select extends Component {
                                         <li
                                             tabIndex={0}
                                             key={itemIndex}
-                                            {...classes('list-item', {active})}
+                                            {...cls('list-item', {active})}
                                             onClick={() => this.handleSelect(item)}
                                             data-index={itemIndex}
                                         >
@@ -552,11 +552,11 @@ export default class Select extends Component {
                 </div>
 
                 {error && (
-                    <span {...classes('message')}>{validateErrorMessage}</span>
+                    <span {...cls('message')}>{validateErrorMessage}</span>
                 )}
 
                 {(this.isMobileView && opened) && (
-                    <div {...classes('overlay')} onClick={() => this.close()}/>
+                    <div {...cls('overlay')} onClick={() => this.close()}/>
                 )}
             </div>
         );

@@ -4,7 +4,7 @@ import './operated-notification.scss';
 import {EventEmitter} from '../../../helpers';
 import {EVENTS} from '../../../constants/Events';
 
-const classes = new Bem('operated-notification');
+const cls = new Bem('operated-notification');
 const types = {
     info: 'info',
     success: 'success',
@@ -58,15 +58,15 @@ export default class OperatedNotification extends Component {
         } = this.props;
 
         return (
-            <div {...classes(null, type)}>
-                <div {...classes('content')}  onClick={this.handleClick}>
-                    <h4 {...classes('title')}>{title}</h4>
-                    <p {...classes('message')}>{message}</p>
+            <div {...cls(null, type)}>
+                <div {...cls('content')}  onClick={this.handleClick}>
+                    <h4 {...cls('title')}>{title}</h4>
+                    <p {...cls('message')}>{message}</p>
                 </div>
 
-                <div {...classes('buttons-container')}>
+                <div {...cls('buttons-container')}>
                     <button
-                        {...classes('button', 'submit')}
+                        {...cls('button', 'submit')}
                         onClick={() => {
                             EventEmitter.emit(EVENTS.OPERATED_NOTIFICATION.HIDE);
                             onSubmit();
@@ -77,7 +77,7 @@ export default class OperatedNotification extends Component {
 
                     {(onCancel || cancelButtonText) && (
                         <button
-                            {...classes('button', 'cancel')}
+                            {...cls('button', 'cancel')}
                             onClick={() => {
                                 EventEmitter.emit(EVENTS.OPERATED_NOTIFICATION.HIDE);
                                 if (onCancel) onCancel();

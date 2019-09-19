@@ -7,7 +7,7 @@ import {EVENTS} from '../../../constants/Events';
 import {KEY_CODE} from '../../../constants';
 import EarthIcon from '../../Shared/SvgIcons/EarthIcon';
 
-const classes = new Bem('input-text');
+const cls = new Bem('input-text');
 
 export default class InputText extends Component {
     static propTypes = {
@@ -189,7 +189,7 @@ export default class InputText extends Component {
         return (
             <div
                 ref={this.props.ref}
-                {...classes('', {
+                {...cls('', {
                     error: isError,
                     focused: isFocused,
                     succeed: isSucceed,
@@ -201,11 +201,11 @@ export default class InputText extends Component {
                     [className]: !!className
                 })}
             >
-                <label {...classes('label')}>
-                    {label && <span {...classes('label-text', '', 'drag-handle')} title={label}>{label}</span>}
+                <label {...cls('label')}>
+                    {label && <span {...cls('label-text', '', 'drag-handle')} title={label}>{label}</span>}
 
                     <input
-                        {...classes("field")}
+                        {...cls("field")}
                         autoFocus={autoFocus}
                         placeholder={placeholder}
                         type={type}
@@ -222,19 +222,19 @@ export default class InputText extends Component {
 
                     {(isLink && !isError) &&
                         <a href={value} target='_blank'>
-                            <EarthIcon {...classes('earth-icon')} />
+                            <EarthIcon {...cls('earth-icon')} />
                         </a>
                     }
 
                     {((isError || clearable) && !isEmpty) && (
                         <div
-                            {...classes('clear')}
+                            {...cls('clear')}
                             onClick={this.handleClear}
                         >✕</div>
                     )}
 
                     {(isError && validateErrorMessage) && (
-                        <span {...classes('message')}>{validateErrorMessage}</span>
+                        <span {...cls('message')}>{validateErrorMessage}</span>
                     )}
                 </label>
 

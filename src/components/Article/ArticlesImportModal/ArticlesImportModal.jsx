@@ -10,7 +10,7 @@ import TransferService from '../../../services/TransferService';
 import {OperatedNotification, QueueManager} from '../../../helpers/Tools';
 import {NotificationManager} from 'react-notifications';
 
-const classes = new Bem('articles-import-modal');
+const cls = new Bem('articles-import-modal');
 
 export default class ArticlesImportModal extends Component {
     static propTypes = {
@@ -114,20 +114,20 @@ export default class ArticlesImportModal extends Component {
 
         return (
             <ConfirmModal
-                {...classes()}
+                {...cls()}
                 title='Импорт статей'
                 onClose={onClose}
                 onSubmit={this.handleSubmitForm}
                 submitText='Импорт'
                 submitDisabled={!form.service && (!form.files.length || !form.typeId)}
             >
-                <div {...classes('row', '', 'row')}>
-                    <div {...classes('col', '', 'col-md-4')}>
-                        <h3 {...classes('section-title')}>Импорт из файла:</h3>
+                <div {...cls('row', '', 'row')}>
+                    <div {...cls('col', '', 'col-md-4')}>
+                        <h3 {...cls('section-title')}>Импорт из файла:</h3>
 
                         {types.map(type => (
                             <RadioButton
-                                {...classes('radio-button')}
+                                {...cls('radio-button')}
                                 key={type.id}
                                 label={type.name}
                                 name='type'
@@ -139,14 +139,14 @@ export default class ArticlesImportModal extends Component {
 
                         <div style={{visibility: form.typeId && selectedType ? 'visible' : 'hidden'}}>
                             <InputFile
-                                {...classes('input-file')}
+                                {...cls('input-file')}
                                 onChange={this.handleChangeFiles}
                                 accept={selectedType.fileTypes}
                             />
                         </div>
                     </div>
-                    <div {...classes('col', '', ['col-md-8', 'd-none'])}>
-                        <h3 {...classes('section-title')}>Импорт из сервиса:</h3>
+                    <div {...cls('col', '', ['col-md-8', 'd-none'])}>
+                        <h3 {...cls('section-title')}>Импорт из сервиса:</h3>
 
                         <RadioButton
                             label='YoScan'

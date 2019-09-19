@@ -8,7 +8,7 @@ import DownloadIcon from '../../Shared/SvgIcons/DownloadIcon';
 import {saveAs} from 'file-saver';
 import {FileService} from '../../../services/FileService';
 
-const classes = new Bem('input-file');
+const cls = new Bem('input-file');
 
 export default class InputFile extends Component {
     static propTypes = {
@@ -76,18 +76,18 @@ export default class InputFile extends Component {
     };
 
     renderFile = (file, fileIndex) => (
-        <div {...classes('file')} key={fileIndex}>
+        <div {...cls('file')} key={fileIndex}>
             <span
-                {...classes('file-name', {'downloading': !!file.url})}
+                {...cls('file-name', {'downloading': !!file.url})}
                 title='Скачать файл'
                 onClick={() => this.handleDownloadFile(file)}
             >
-                <DownloadIcon {...classes('download-icon')}/>
+                <DownloadIcon {...cls('download-icon')}/>
                 {file.name}
             </span>
             <button
                 type='button'
-                {...classes('file-button')}
+                {...cls('file-button')}
                 title='Удалить файл'
                 onClick={() => this.handleDelete(fileIndex)}
             >✕</button>
@@ -100,22 +100,22 @@ export default class InputFile extends Component {
         const acceptMIME = accept instanceof Array ? accept.join(', ') : accept;
 
         return (
-            <div {...classes('', {error}, {
+            <div {...cls('', {error}, {
                 validated: required,
                 [className]: !!className
             })}
             >
                 <Button
-                    {...classes('button')}
+                    {...cls('button')}
                     text="Выберите файл"
                     style='inline'
                     onClick={() => this.inputFile.click()}
                 />
 
-                <div {...classes('file-list')}>{files.map(this.renderFile)}</div>
+                <div {...cls('file-list')}>{files.map(this.renderFile)}</div>
 
                 <input
-                    {...classes('field')}
+                    {...cls('field')}
                     ref={node => this.inputFile = node}
                     type="file"
                     accept={acceptMIME}
@@ -123,7 +123,7 @@ export default class InputFile extends Component {
                 />
 
                 {error && (
-                    <span {...classes('message')}>{validateErrorMessage}</span>
+                    <span {...cls('message')}>{validateErrorMessage}</span>
                 )}
             </div>
         );

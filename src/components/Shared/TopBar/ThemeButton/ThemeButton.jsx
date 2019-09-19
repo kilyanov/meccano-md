@@ -7,7 +7,7 @@ import './theme-button.scss';
 import {StorageService} from '../../../../services';
 import {THEME_TYPE} from '../../../../constants/ThemeType';
 
-const classes = new Bem('theme-button');
+const cls = new Bem('theme-button');
 
 const ThemeButton = ({ className, theme }) => {
     const handleClick = () => {
@@ -17,10 +17,10 @@ const ThemeButton = ({ className, theme }) => {
 
     return (
         <div
-            {...classes('', '', className)}
+            {...cls('', '', className)}
             onClick={handleClick}
         >
-            <HalfMoonIcon {...classes('icon', { [theme]: true})} />
+            <HalfMoonIcon {...cls('icon', { [theme]: true})} />
         </div>
     );
 };

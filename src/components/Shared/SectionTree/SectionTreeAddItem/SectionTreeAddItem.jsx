@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import ConfirmModal from '../../ConfirmModal/ConfirmModal';
 import InputText from '../../../Form/InputText/InputText';
 
-const classes = new Bem('section-tree-add-item');
+const cls = new Bem('section-tree-add-item');
 
 export default class SectionTreeAddItem extends Component {
     static propTypes = {
@@ -33,7 +33,7 @@ export default class SectionTreeAddItem extends Component {
 
         return (
             <ConfirmModal
-                {...classes()}
+                {...cls()}
                 onClose={onClose}
                 submitText={item ? 'Обновить' : 'Добавить'}
                 onSubmit={this.handleSubmit}
@@ -41,7 +41,7 @@ export default class SectionTreeAddItem extends Component {
             >
                 <InputText
                     autoFocus
-                    {...classes('field')}
+                    {...cls('field')}
                     label='Название'
                     value={name}
                     onChange={this.handleChange}

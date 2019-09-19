@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import './panel-notification.scss';
 
-const classes = new Bem('panel-notification');
+const cls = new Bem('panel-notification');
 
 export default class PanelNotification extends Component {
     static propTypes = {
@@ -13,14 +13,14 @@ export default class PanelNotification extends Component {
         const {notification, onClose} = this.props;
 
         return (
-            <div {...classes()}>
-                <div {...classes('data')}>
-                    <h4 {...classes('title')}>{notification.title}</h4>
-                    <p {...classes('message')}>{notification.message}</p>
+            <div {...cls()}>
+                <div {...cls('data')}>
+                    <h4 {...cls('title')}>{notification.title}</h4>
+                    <p {...cls('message')}>{notification.message}</p>
                 </div>
 
                 <button
-                    {...classes('button', 'close')}
+                    {...cls('button', 'close')}
                     onClick={() => onClose(notification)}
                 >✕</button>
             </div>

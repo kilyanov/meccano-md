@@ -3,10 +3,10 @@ import './not-found-page.scss';
 import Button from '../../Shared/Button/Button';
 
 const NotFoundPage = () => {
-    const classes = new Bem('not-found-page');
+    const cls = new Bem('not-found-page');
 
     return (
-        <div {...classes('', '', 'page')}>
+        <div {...cls('', '', 'page')}>
             <h1 data-content='404'>404</h1>
             <h3 data-content='Страница не найдена'>Страница не найдена</h3>
 

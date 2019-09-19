@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import './textarea.scss';
 
-const classes = new Bem('textarea');
+const cls = new Bem('textarea');
 
 export default class TextArea extends Component {
     static propTypes = {
@@ -92,17 +92,17 @@ export default class TextArea extends Component {
 
         return (
             <div
-                {...classes('', {
+                {...cls('', {
                     error: isError,
                     focused: isFocused,
                     succeed: isSucceed
                 }, className)}
             >
-                <label {...classes('label')}>
-                    {label && <span {...classes('label-text')}>{label}</span>}
+                <label {...cls('label')}>
+                    {label && <span {...cls('label-text')}>{label}</span>}
 
                     <textarea
-                        {...classes('field')}
+                        {...cls('field')}
                         name={name}
                         value={value}
                         onChange={this.handleChange}

@@ -15,7 +15,7 @@ import Sortable from 'react-sortablejs';
 import {isMobileScreen, OperatedNotification} from '../../../helpers/Tools';
 import {STORAGE_KEY} from '../../../constants/LocalStorageKeys';
 
-const classes = new Bem('article-create-page');
+const cls = new Bem('article-create-page');
 
 export default class ArticleCreatePage extends Component {
     static propTypes = {
@@ -410,7 +410,7 @@ export default class ArticleCreatePage extends Component {
         const getValue = (prop) => _.isObject(prop) ? prop.value : prop;
         const sectionData = (
             <Sortable
-                {...classes('section', 'sortable')}
+                {...cls('section', 'sortable')}
                 options={{
                     disabled: isMobileScreen(),
                     animation: 150,
@@ -515,9 +515,9 @@ export default class ArticleCreatePage extends Component {
         );
 
         const sectionAnnotation = (
-            <section {...classes('section')}>
+            <section {...cls('section')}>
                 <TextArea
-                    {...classes('field', 'annotation')}
+                    {...cls('field', 'annotation')}
                     label='Аннотация'
                     value={form.annotation || ''}
                     onChange={value => this.handleChangeForm(value, 'annotation')}
@@ -526,9 +526,9 @@ export default class ArticleCreatePage extends Component {
         );
 
         const sectionText = (
-            <section {...classes('section')}>
+            <section {...cls('section')}>
                 <RichEditor
-                    {...classes('field', 'textarea')}
+                    {...cls('field', 'textarea')}
                     label='Текст статьи'
                     content={form.text || ''}
                     onChange={value => this.handleChangeForm(value, 'text')}
@@ -537,39 +537,39 @@ export default class ArticleCreatePage extends Component {
         );
 
         return (
-            <Page withBar staticBar {...classes()}>
-                <section {...classes('header')}>
+            <Page withBar staticBar {...cls()}>
+                <section {...cls('header')}>
                     <a
-                        {...classes('back-button')}
+                        {...cls('back-button')}
                         onClick={this.handleClickBackButton}
                     ><i>‹</i> Назад к проекту</a>
 
-                    <div {...classes('title-wrap')}>
+                    <div {...cls('title-wrap')}>
                         {articles.length > 1 && (
                             <button
-                                {...classes('title-button', 'left')}
+                                {...cls('title-button', 'left')}
                                 onClick={this.handlePrevArticle}
-                            ><ArrowIcon {...classes('title-arrow')}/></button>
+                            ><ArrowIcon {...cls('title-arrow')}/></button>
                         )}
 
-                        <h2 {...classes('title')}>
+                        <h2 {...cls('title')}>
                             {isUpdate ? 'Статья' : 'Новая статья'}
                             {!!articles.length && ` ${articleIndex + 1} из ${articles.length}`}
                         </h2>
 
                         {articles.length > 1 && (
                             <button
-                                {...classes('title-button', 'right')}
+                                {...cls('title-button', 'right')}
                                 onClick={this.handleNextArticle}
-                            ><ArrowIcon {...classes('title-arrow')}/></button>
+                            ><ArrowIcon {...cls('title-arrow')}/></button>
                         )}
                     </div>
 
                     <button
-                        {...classes('view-button')}
+                        {...cls('view-button')}
                         onClick={this.handleShowViewSettings}
                     >
-                        <div {...classes('view-button-icon')}>
+                        <div {...cls('view-button-icon')}>
                             <i/><i/><i/>
                         </div>
 
@@ -577,7 +577,7 @@ export default class ArticleCreatePage extends Component {
                     </button>
 
                     <Button
-                        {...classes('submit-button')}
+                        {...cls('submit-button')}
                         text={isUpdate ? 'Обновить' : 'Создать'}
                         onClick={() => this.form.submit()}
                     />
@@ -585,12 +585,12 @@ export default class ArticleCreatePage extends Component {
 
                 <Form onSubmit={this.handleSubmit} ref={node => this.form = node}>
                     {viewType === 1 && (
-                        <div {...classes('row', '', 'row')}>
-                            <div {...classes('col', '', 'col-lg-6')}>
+                        <div {...cls('row', '', 'row')}>
+                            <div {...cls('col', '', 'col-lg-6')}>
                                 {sectionData}
                             </div>
 
-                            <div {...classes('col', '', 'col-lg-6')}>
+                            <div {...cls('col', '', 'col-lg-6')}>
                                 {sectionAnnotation}
                                 {sectionText}
                             </div>
@@ -598,25 +598,25 @@ export default class ArticleCreatePage extends Component {
                     )}
 
                     {viewType === 2 && (
-                        <div {...classes('row', '', 'row')}>
-                            <div {...classes('col', '', 'col-lg-6')}>
+                        <div {...cls('row', '', 'row')}>
+                            <div {...cls('col', '', 'col-lg-6')}>
                                 {sectionAnnotation}
                                 {sectionText}
                             </div>
 
-                            <div {...classes('col', '', 'col-lg-6')}>
+                            <div {...cls('col', '', 'col-lg-6')}>
                                 {sectionData}
                             </div>
                         </div>
                     )}
 
                     {viewType === 3 && (
-                        <div {...classes('row', '', 'row')}>
-                            <div {...classes('col', '', 'col-lg-6')}>
+                        <div {...cls('row', '', 'row')}>
+                            <div {...cls('col', '', 'col-lg-6')}>
                                 {sectionText}
                             </div>
 
-                            <div {...classes('col', '', 'col-lg-6')}>
+                            <div {...cls('col', '', 'col-lg-6')}>
                                 {sectionData}
                                 {sectionAnnotation}
                             </div>
@@ -624,8 +624,8 @@ export default class ArticleCreatePage extends Component {
                     )}
 
                     {viewType === 4 && (
-                        <div {...classes('row', '', 'row')}>
-                            <div {...classes('col', '', 'col-xs-12')}>
+                        <div {...cls('row', '', 'row')}>
+                            <div {...cls('col', '', 'col-xs-12')}>
                                 {sectionData}
                                 {sectionAnnotation}
                                 {sectionText}

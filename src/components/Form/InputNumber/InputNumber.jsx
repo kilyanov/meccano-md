@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import './input-number.scss';
 
-const classes = new Bem('input-number');
+const cls = new Bem('input-number');
 
 export default class InputNumber extends Component {
     static propTypes = {
@@ -32,18 +32,18 @@ export default class InputNumber extends Component {
 
         return (
             <div
-                {...classes('', {
+                {...cls('', {
                     error: isError,
                     focused: isFocused,
                     succeed: isSucceed,
                     empty: isEmpty
                 }, className)}
             >
-                <label {...classes('label')}>
-                    {label && <span {...classes('label-text', '', 'drag-handle')}>{label}</span>}
+                <label {...cls('label')}>
+                    {label && <span {...cls('label-text', '', 'drag-handle')}>{label}</span>}
 
                     <input
-                        {...classes('field')}
+                        {...cls('field')}
                         type='text'
                         pattern='[0-9]*'
                         onChange={this.handleChange}

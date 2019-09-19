@@ -5,7 +5,7 @@ import ImportExportIcon from '../../../Shared/SvgIcons/ImportExportIcon';
 import EarthIcon from '../../../Shared/SvgIcons/EarthIcon';
 import LoudSpeaker from '../../../Shared/SvgIcons/LoudSpeaker';
 
-const classes = new Bem('settings-menu');
+const cls = new Bem('settings-menu');
 const menu = [{
     id: 'io',
     icon: <ImportExportIcon/>,
@@ -64,7 +64,7 @@ export const getActive = () => {
 const SettingsMenu = ({onClick}) => {
     return (
         <VerticalMenu
-            {...classes()}
+            {...cls()}
             activeId={getActive()}
             list={menu}
             onClick={() => onClick(getActive())}

@@ -10,7 +10,7 @@ import {AuthService} from '../../../services';
 import NotificationsButton from './NotificationsButton/NotificationsButton';
 import ThemeButton from './ThemeButton/ThemeButton';
 
-const classes = new Bem('top-bar');
+const cls = new Bem('top-bar');
 
 class TopBar extends PureComponent {
     static propTypes = {
@@ -29,26 +29,26 @@ class TopBar extends PureComponent {
         const profileIsOpen = this.dropdown && this.dropdown.isOpen();
 
         return (
-            <section {...classes('', {static: this.props.static}, this.props.className)}>
-                <div {...classes('container', '', 'container')}>
+            <section {...cls('', {static: this.props.static}, this.props.className)}>
+                <div {...cls('container', '', 'container')}>
                     <Logo/>
 
-                    <section {...classes('buttons')}>
-                        <ThemeButton {...classes('button', 'notifications')} />
-                        <NotificationsButton {...classes('button', 'notifications')} />
+                    <section {...cls('buttons')}>
+                        <ThemeButton {...cls('button', 'notifications')} />
+                        <NotificationsButton {...cls('button', 'notifications')} />
                     </section>
 
-                    <div {...classes('profile', {opened: profileIsOpen})}>
+                    <div {...cls('profile', {opened: profileIsOpen})}>
                         <div
-                            {...classes('profile-button')}
+                            {...cls('profile-button')}
                             onClick={() => this.dropdown.toggle({style: {right: 0, width: '100%'}})}
                         >
-                            <ProfileIcon {...classes('profile-icon')}/>
-                            <div {...classes('profile-data', '', 'd-none d-md-flex')}>
-                                <span {...classes('profile-name')}>{profile.username}</span>
-                                <span {...classes('profile-username')}>{profile.email}</span>
+                            <ProfileIcon {...cls('profile-icon')}/>
+                            <div {...cls('profile-data', '', 'd-none d-md-flex')}>
+                                <span {...cls('profile-name')}>{profile.username}</span>
+                                <span {...cls('profile-username')}>{profile.email}</span>
                             </div>
-                            <ArrowIcon {...classes('drop-arrow')}/>
+                            <ArrowIcon {...cls('drop-arrow')}/>
                         </div>
 
                         <DropDown

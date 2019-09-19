@@ -6,7 +6,7 @@ const Cell = ({classes, type, sort, onChangeSort, content}) => {
 
     return (
         <div
-            {...classes('cell', {[type]: true, active})}
+            {...cls('cell', {[type]: true, active})}
             onClick={() => onChangeSort(type)}
         >
             {content}
