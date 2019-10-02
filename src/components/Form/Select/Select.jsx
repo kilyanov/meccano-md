@@ -23,7 +23,7 @@ export default class Select extends Component {
         onChange: PropTypes.func,
         onSearch: PropTypes.func,
         onCancelSearch: PropTypes.func,
-        label: PropTypes.string.isRequired,
+        label: PropTypes.string,
         required: PropTypes.bool,
         withSearch: PropTypes.bool,
         fixedPosList: PropTypes.bool,
@@ -43,7 +43,7 @@ export default class Select extends Component {
     state = {
         error: false,
         opened: false,
-        searchOptions: null,
+        searchOptions: [],
         searchString: '',
         pagination: {
             page: 1,
@@ -63,7 +63,7 @@ export default class Select extends Component {
     }
 
     componentDidUpdate(prevProps) {
-        const options = this.state.searchOptions || this.state.options || this.props.options;
+        const options = this.getOptions();
 
         if (!this.props.depended) return;
 
@@ -100,6 +100,7 @@ export default class Select extends Component {
 
     handleListScroll = (event) => {
         event.preventDefault();
+        event.stopPropagation();
         const {target} = event;
         const {pagination, inProgress} = this.state;
         const isEndPage = target.scrollTop === target.scrollHeight - target.clientHeight;
@@ -139,18 +140,17 @@ export default class Select extends Component {
 
         if (this.props.requestService) {
             this.setState({
-                searchString: event.target.value,
-                inProgress: true
+                searchString: event.target.value
             }, () => {
                 if (value) this.debouncedSearch(value);
-                else this.setState({inProgress: false, searchOptions: null});
+                else this.setState({inProgress: false, searchOptions: []});
             });
         } else {
             const searchOptions = this.props.options.filter(({name}) => name.toLowerCase().includes(value));
 
             this.setState({
                 searchString: event.target.value,
-                searchOptions: !!value && searchOptions
+                searchOptions: !!value && searchOptions ? searchOptions : []
             });
         }
     };
@@ -179,6 +179,9 @@ export default class Select extends Component {
                 this.submitNewItem(event);
                 event.preventDefault();
                 break;
+            case KEY_CODE.esc:
+                this.close();
+                break;
             default:
                 break;
         }
@@ -187,7 +190,7 @@ export default class Select extends Component {
     handleClearValue = () => {
         const {canAddNewValue} = this.props;
         const newState = this.state;
-        const options = this.state.searchOptions || this.state.options || this.props.options;
+        const options = this.getOptions();
         const selected = _.isString(this.props.selected) &&
             options.find(({value}) => value === this.props.selected) || this.props.selected;
 
@@ -201,27 +204,31 @@ export default class Select extends Component {
 
     handleListKeyDown = (event) => {
         const focused = this.listRef.querySelector('li:focus');
-        const options = this.state.searchOptions || this.props.options;
+        const options = this.getOptions();
 
         event.preventDefault();
 
         switch (event.keyCode) {
             case KEY_CODE.arrows.down:
-                if (focused && focused.nextElementSibling) {
+                if (focused && focused.nextElementSibling && focused.nextElementSibling.tagName === 'LI') {
                     focused.nextElementSibling.focus();
                 } else {
-                    this.listRef.querySelector('li:first-child').focus();
+                    this.listRef.querySelector('li:first-of-type').focus();
                 }
                 break;
             case KEY_CODE.arrows.up:
                 if (focused && focused.previousElementSibling) {
                     focused.previousElementSibling.focus();
                 } else {
-                    this.listRef.querySelector('li:last-child').focus();
+                    this.listRef.querySelector('li:last-of-type').focus();
                 }
                 break;
+            case KEY_CODE.space:
             case KEY_CODE.enter:
                 this.handleSelect(options[focused.getAttribute('data-index')]);
+                break;
+            case KEY_CODE.esc:
+                this.close();
                 break;
             default:
                 break;
@@ -278,9 +285,14 @@ export default class Select extends Component {
         }).catch(() => this.setState({inProgress: false}));
     };
 
+    getOptions = () => {
+        return this.state.searchString && this.state.searchOptions.length ?
+            this.state.searchOptions : this.state.options || this.props.options;
+    };
+
     checkSelected = () => {
         const {selected} = this.props;
-        let options = this.state.searchOptions || this.state.options || this.props.options;
+        let options = this.getOptions();
 
         if (!options.length) return;
 
@@ -322,12 +334,11 @@ export default class Select extends Component {
             newOption.name = value;
             newOption.value = value;
             newOption.isNew = true;
-            newState.searchOptions = null;
+            newState.searchOptions = [];
             newState.options.push(newOption);
         }
 
         newState.searchFocused = false;
-        newState.searchString = '';
 
         this.setState(newState, () => {
             if (canAddNewValue && value) onChange(newOption);
@@ -348,7 +359,7 @@ export default class Select extends Component {
         this.setState({
             opened: false,
             searchString: '',
-            searchOptions: null
+            searchOptions: []
         }, this.initScrollBar);
     };
 
@@ -396,19 +407,22 @@ export default class Select extends Component {
 
     depended = null;
 
-    debouncedSearch = _.debounce((value) => {
+    searchQuery = (value) => {
         if (this.props.requestCancelService) this.props.requestCancelService();
 
-        this.props.requestService({'query[name]': value}).then(response => {
-            if (!this.isMount) return;
+        this.setState({inProgress: true}, () => {
+            this.props.requestService({'query[name]': value}).then(response => {
+                if (!this.isMount) return;
 
-            this.setState({
-                inProgress: false,
-                searchOptions: response.data.length ? response.data : null,
-                opened: !!response.data.length
+                this.setState({
+                    inProgress: false,
+                    searchOptions: response.data.map(({id, name}) => ({name, value: id}))
+                });
             });
         });
-    }, 1000);
+    };
+
+    debouncedSearch = _.debounce(this.searchQuery, 1000);
 
     isMobileView = isMobileScreen();
 
@@ -429,7 +443,7 @@ export default class Select extends Component {
             canAddNewValue
         } = this.props;
         const {opened, searchString, searchFocused, inProgress, error} = this.state;
-        const options = this.state.searchOptions || this.state.options || this.props.options;
+        const options = this.getOptions();
         const selected = _.isString(this.props.selected) &&
             options.find(({value}) => value === this.props.selected) || this.props.selected;
         const isMultiple = selected instanceof Array;
@@ -448,9 +462,11 @@ export default class Select extends Component {
                     [className]: !!className
                 })}
             >
-                <label {...cls('label', '', 'drag-handle')}>
-                    <span {...cls('label-text', '', 'drag-handle')}>{label}</span>
-                </label>
+                {label && (
+                    <label {...cls('label', '', 'drag-handle')}>
+                        <span {...cls('label-text', '', 'drag-handle')}>{label}</span>
+                    </label>
+                )}
 
                 <div ref={node => this.domNode = node}>
                     <div {...cls('container', {opened})} onClick={() => this.toggle()}>
@@ -459,22 +475,7 @@ export default class Select extends Component {
                                 options.length ? placeholder : 'Нет элементов для выбора'}</span>
                         )}
 
-                        {withSearch && (
-                            <div {...cls('search-wrapper')}>
-                                <input
-                                    {...cls('search-field')}
-                                    type='text'
-                                    onChange={this.handleSearch}
-                                    onFocus={this.handleSearchFocus}
-                                    onBlur={this.handleSearchBlur}
-                                    onKeyDown={this.handleSearchKeyDown}
-                                    value={searchString}
-                                    ref={ref => this.searchRef = ref}
-                                />
-                            </div>
-                        )}
-
-                        {(selectedName && !searchString.length) && (
+                        {selectedName && (
                             <span {...cls('selected-name')}>
                                 <span>{selectedName}</span> {(isMultiple && selected.length > 1) &&
                                 <i>+{selected.length - 1}</i>}
@@ -511,6 +512,23 @@ export default class Select extends Component {
                                         {...cls('list-close-button')}
                                         onClick={() => this.close()}
                                     >✕</a>
+                                </div>
+                            )}
+
+                            {withSearch && (
+                                <div {...cls('search-wrapper')}>
+                                    <input
+                                        {...cls('search-field')}
+                                        type='text'
+                                        autoFocus
+                                        placeholder='Поиск...'
+                                        onChange={this.handleSearch}
+                                        onFocus={this.handleSearchFocus}
+                                        onBlur={this.handleSearchBlur}
+                                        onKeyDown={this.handleSearchKeyDown}
+                                        value={searchString}
+                                        ref={ref => this.searchRef = ref}
+                                    />
                                 </div>
                             )}
 

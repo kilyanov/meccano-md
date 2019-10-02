@@ -44,10 +44,11 @@ $namespace: '.button';
   &--disabled {
     background-color: #F2F2F2 !important;
     border-color: #D9D9D9 !important;
-    color: $fontGrey !important;
+    color: $white-dark !important;
     cursor: not-allowed;
     pointer-events: none;
     box-shadow: none;
+    opacity: .7;
   }
 
   &:hover {
@@ -61,6 +62,11 @@ $namespace: '.button';
   background-color: $background-dark;
   border-color: $white-dark;
   color: $white-dark;
+
+  &--inline {
+    color: $lightBlue !important;
+    border-color: $lightBlue !important;
+  }
 
   &--success {
     background-color: $emerald !important;

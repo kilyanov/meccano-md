@@ -1,0 +1,45 @@
+@import "../../assets/styles/variables";
+
+.documents-page {
+  &__filter-panel {
+    display: flex;
+    flex-wrap: wrap;
+    position: sticky;
+    position: -webkit-sticky;
+    top: $topBarHeight;
+    margin: 0 -10px;
+    padding-top: 10px;
+    background-color: #fff;
+    transition: background-color .3s ease;
+    z-index: 1;
+  }
+
+  &__filter-field {
+    flex: 1;
+    padding: 0 10px
+  }
+
+  &__document-list {
+    margin-bottom: 50px;
+    border-top: 1px solid #ccc;
+  }
+
+  &__document {
+    border-bottom: 1px solid #ccc;
+  }
+
+  &__empty-msg {
+    display: block;
+    margin: 50px 0;
+    font-size: 14px;
+    text-align: center;
+    color: $fontGrey;
+  }
+}
+
+/* Dark Theme */
+.app--dark .documents-page {
+  &__filter-panel {
+    background-color: $background-dark;
+  }
+}

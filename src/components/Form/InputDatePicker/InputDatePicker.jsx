@@ -2,17 +2,18 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import DatePicker from 'react-date-picker';
 import CalendarIcon from '../../Shared/SvgIcons/CalendarIcon';
-import CloseIcon from '../../Shared/SvgIcons/CloseIcon';
+// import CloseIcon from '../../Shared/SvgIcons/CloseIcon';
 import './input-date-picker.scss';
 
 const cls = new Bem('input-date-picker');
 
 export default class InputDatePicker extends Component {
     static propTypes = {
+        className: PropTypes.string,
         label: PropTypes.string,
         value: PropTypes.instanceOf(Date),
         onChange: PropTypes.func,
-        withClearBtn: PropTypes.bool,
+        clearable: PropTypes.bool,
         format: PropTypes.string
     };
 
@@ -31,17 +32,17 @@ export default class InputDatePicker extends Component {
     };
 
     render() {
-        const {withClearBtn, label, format} = this.props;
+        const {className, clearable, label, format} = this.props;
         const {value} = this.state;
 
         return (
-            <div {...cls()}>
+            <div {...cls('', '', className)}>
                 <label {...cls('label')}>
                     {label && <span {...cls('label-text', '', 'drag-handle')}>{label}</span>}
 
                     <DatePicker
                         calendarIcon={<CalendarIcon/>}
-                        clearIcon={withClearBtn ? <CloseIcon/> : null}
+                        clearIcon={clearable && value ? <i {...cls('icon')}>✕</i> : null} // <CloseIcon/>
                         value={value}
                         onChange={this.handleChange}
                         locale='ru-RU'

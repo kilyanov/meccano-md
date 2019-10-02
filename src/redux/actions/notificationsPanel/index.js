@@ -11,12 +11,24 @@ export const getNotifications = () => ({
     promise: ArticleService.getList()
 });
 
-export const addNotification = (form) => ({type: ACTION_TYPE.NOTIFICATION_PANEL.ADD_NOTIFICATION, payload: form});
+export const addNotification = (form) => ({
+    type: ACTION_TYPE.NOTIFICATION_PANEL.ADD_NOTIFICATION,
+    payload: form
+});
 
-export const deleteNotification = (id) => ({type: ACTION_TYPE.NOTIFICATION_PANEL.DELETE_NOTIFICATION, id});
+export const deleteNotification = (id) => ({
+    type: ACTION_TYPE.NOTIFICATION_PANEL.DELETE_NOTIFICATION,
+    id
+});
 
-export const openNotificationPanel = () => ({type: ACTION_TYPE.NOTIFICATION_PANEL.OPEN});
+export const updateNotification = (id, form) => ({
+    type: ACTION_TYPE.NOTIFICATION_PANEL.UPDATE_NOTIFICATION,
+    payload: form,
+    id
+});
 
 export const closeNotificationPanel = () => ({type: ACTION_TYPE.NOTIFICATION_PANEL.CLOSE});
 
 export const toggleNotificationPanel = () => ({type: ACTION_TYPE.NOTIFICATION_PANEL.TOGGLE});
+
+export const openNotificationPanel = () => ({type: ACTION_TYPE.NOTIFICATION_PANEL.OPEN});

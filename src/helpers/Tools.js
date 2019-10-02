@@ -10,7 +10,7 @@ export const ParseToRequest = (form) => {
 };
 
 export const isMobileScreen = () => {
-    return window.innerWidth <= 800;
+    return window.outerWidth <= 800;
 };
 
 export const isMobileBrowser = () => {

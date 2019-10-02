@@ -80,6 +80,7 @@ $namespace: '.vertical-menu';
   }
 
   &__item-title {
+    margin-right: 10px;
     font-size: 15px;
     line-height: 24px;
     overflow: hidden;
@@ -147,6 +148,10 @@ $namespace: '.vertical-menu';
   &__item {
     border-color: $brown-grey;
     color: $white-dark;
+
+    &--active {
+      background-color: $superLightBackground-dark;
+    }
 
     &--open {
       #{$namespace}__item-caption:hover {

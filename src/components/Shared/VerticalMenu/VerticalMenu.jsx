@@ -30,7 +30,7 @@ export default class VerticalMenu extends PureComponent {
     }
 
     modifyChildren = (child) => {
-        const props = classes('item-icon');
+        const props = cls('item-icon');
 
         return React.cloneElement(child, props);
     };

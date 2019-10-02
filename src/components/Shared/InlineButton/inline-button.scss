@@ -14,11 +14,36 @@
     font-size: 12px;
   }
 
+  &--danger {
+    color: $strawberry;
+    border-color: $strawberry;
+  }
+
   &:hover {
     text-decoration: none;
   }
 
   &:focus {
     outline: $linkColor auto 1px;
+  }
+}
+
+/* Dark Theme */
+
+.app--dark .inline-button {
+  border-color: $lightBlue;
+  color: $lightBlue;
+
+  &--small {
+    border-color: $lightBlue;
+  }
+
+  &--danger {
+    border-color: $lightRed;
+    color: $lightRed;
+  }
+
+  &:focus {
+    outline-color: $lightBlue;
   }
 }

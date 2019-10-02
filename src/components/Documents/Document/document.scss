@@ -1,0 +1,84 @@
+@import "../../../assets/styles/variables";
+
+$namespace: '.document';
+
+#{$namespace} {
+  display: flex;
+  align-items: center;
+  padding: 5px 10px;
+
+  &__icon {
+    width: 50px;
+    height: 50px;
+    margin-right: 10px;
+    fill: $shamrock;
+  }
+
+  &__title {
+    margin-bottom: 0;
+    font-weight: normal;
+    font-size: 18px;
+  }
+
+  &__status,
+  &__owner,
+  &__date {
+    display: inline-block;
+    width: 100%;
+    font-size: 12px;
+    color: $fontGrey;
+  }
+
+  &__status {
+    &--new {
+      color: $azure;
+    }
+
+    &--execute {
+      color: $vibrant-purple;
+    }
+
+    &--done {
+      color: $shamrock;
+    }
+
+    &--aborted {
+      color: $yellowish-orange;
+    }
+
+    &--error {
+      color: $strawberry;
+    }
+  }
+
+  &__buttons {
+    flex: 0 0 75px;
+    margin-left: auto;
+  }
+
+  &__button {
+    position: relative;
+    width: 30px;
+    height: 30px;
+    background: none;
+    border: none;
+    fill: $brown-grey;
+
+    &:hover {
+      fill: $azure;
+    }
+
+    &--danger:hover {
+      fill: $strawberry;
+    }
+
+    & + & {
+      margin-left: 10px;
+    }
+  }
+
+  &__button-icon {
+    width: 28px;
+    height: 28px;
+  }
+}

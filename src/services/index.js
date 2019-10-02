@@ -11,3 +11,5 @@ export * from './SourceService';
 export * from './StorageService';
 export * from './TransferService';
 export * from './UserService';
+export * from './DocumentService';
+export * from './AuthorService';

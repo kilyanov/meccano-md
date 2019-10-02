@@ -4,6 +4,7 @@ $namespace: '.input-text';
 
 #{$namespace} {
   position: relative;
+  max-width: 100%;
   margin-bottom: 20px;
 
   &--succeed {

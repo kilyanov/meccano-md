@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, {Component, Fragment} from 'react';
 import PropTypes from 'prop-types';
 import Page from '../../Shared/Page/Page';
 import Button from '../../Shared/Button/Button';
@@ -147,6 +147,41 @@ export default class ProjectCreatePage extends Component {
         }
     };
 
+    getStepsButtons = () => {
+        // Проверяем на наличие полей sections
+        const foundSections = this.state.fields.find(({code}) => {
+            return ['section_main_id', 'section_sub_id', 'section_three_id'].includes(code);
+        });
+
+        const stepsButtons = Object.keys(STEP_DESCRIPTION).map(key => {
+            const active = +key === this.state.step;
+
+            return (
+                <button
+                    {...cls('steps-buttons-item', {active})}
+                    key={key}
+                    disabled={(+key === 2 && !foundSections) || active}
+                    onClick={() => this.setState({step: +key, inProgress: false})}
+                >Шаг {key}: {STEP_DESCRIPTION[key]}</button>
+            );
+        });
+
+        const divider = <span {...cls('steps-buttons-divider')} />;
+
+        return (
+            <div {...cls('steps-buttons')}>
+                {stepsButtons.map((button, buttonIndex) => (
+                    buttonIndex < stepsButtons.length - 1 ? (
+                        <Fragment>
+                            {button}
+                            {divider}
+                        </Fragment>
+                    ) : button
+                ))}
+            </div>
+        );
+    };
+
     saveFields = () => {
         this.setState({inProgress: true}, () => {
             const fields = this.state.fields.map((field, index) => {
@@ -246,7 +281,8 @@ export default class ProjectCreatePage extends Component {
                 <section {...cls('header')}>
                     <div {...cls('container', '', 'container')}>
                         <div {...cls('breadcrumbs')}>
-                            {isEdit ? 'Редактирование' : 'Создание'} проекта: {`Шаг ${step} - ${STEP_DESCRIPTION[step]}`}
+                            {isEdit ? 'Редактирование' : 'Создание'} проекта:
+                            {isEdit ? this.getStepsButtons() : ` Шаг ${step} - ${STEP_DESCRIPTION[step]}`}
                         </div>
 
                         {project && (
@@ -284,7 +320,7 @@ export default class ProjectCreatePage extends Component {
                 <section {...cls('body')}>
                     {(this.project && step === 1 && (fields.length || allFields.length)) && (
                         <ProjectProperties
-                            classes={classes}
+                            classes={cls}
                             project={this.project}
                             fields={fields || []}
                             allFields={allFields || []}
@@ -295,7 +331,7 @@ export default class ProjectCreatePage extends Component {
                     {(this.project && step === 2) && (
                         <ProjectSections
                             projectId={this.projectId}
-                            classes={classes}
+                            classes={cls}
                             sections={sections}
                             onChange={this.handleChangeSections}
                         />

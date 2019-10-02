@@ -5,6 +5,7 @@ import AuthRoute from './AuthRoute';
 import App from '../components/App';
 import HomePage from '../components/Pages/HomePage/HomePage';
 import LoginPage from '../components/Pages/LoginPage/LoginPage';
+import DocumentsPage from '../components/Documents/DocumentsPage';
 import ProjectPage from '../components/Project/ProjectPage/ProjectPage';
 import ProjectCreatePage from '../components/Project/ProjectCreatePage/ProjectCreatePage';
 import NotFoundPage from '../components/Pages/NotFoundPage/NotFoundPage';
@@ -18,6 +19,7 @@ import SettingsRegion from '../components/Settings/SettingsLocation/SettingsRegi
 import SettingsCity from '../components/Settings/SettingsLocation/SettingsCity';
 import SettingsSourceList from '../components/Settings/SettingsSource/SettingsSourceList';
 import SettingsSourceType from '../components/Settings/SettingsSource/SettingsSourceType';
+import SettingsAuthors from '../components/Settings/SettingsAuthors/SettingsAuthors';
 
 export default (
     <Router basename='/'>
@@ -28,6 +30,7 @@ export default (
 
                 <AuthRoute exact component={ProjectPage} path="/project/:id"/>
                 <AuthRoute exact component={ProjectCreatePage} path="/project-create/:id"/>
+                <AuthRoute exact component={DocumentsPage} path="/documents/:id?"/>
 
                 <AuthRoute exact component={ArticleCreatePage} path="/project/:projectId/article/:articleId?"/>
 
@@ -43,6 +46,8 @@ export default (
 
                 <AuthRoute exact component={SettingsSourceList} path="/settings/source/list"/>
                 <AuthRoute exact component={SettingsSourceType} path="/settings/source/type"/>
+
+                <AuthRoute exact component={SettingsAuthors} path="/settings/authors"/>
 
                 <AuthRoute component={NotFoundPage}/>
             </Switch>

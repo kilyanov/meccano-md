@@ -14,16 +14,30 @@ const ProjectCreateField = ({field, value, onChange, className}) => {
     switch (field.type) {
         case FIELD_TYPE.ARRAY:
             return <div {...cls('field', [field.code, field.type], className)} data-id={field.code}>
+                <Select
+                    placeholder={field.placeholder}
+                    label={field.name}
+                    options={field.options || []}
+                    selected={value}
+                    onChange={val => onChange(val, field.code)}
+                    requestService={field.requestService}
+                    requestCancelService={field.requestCancelService}
+                    withSearch
+                />
+
+                {/*
                 <InputTags
                     label={field.name}
                     tags={field.tags}
                     suggestions={field.suggestions}
                     onChange={val => onChange(val, field.code)}
-                    /* eslint-disable-next-line */
-                    // onSearch={field.onSearch}
+                    eslint-disable-next-line
+                    onSearch={field.onSearch}
                     requestService={field.requestService}
                     requestCancelService={field.requestCancelService}
                 />
+                */}
+
             </div>;
         case FIELD_TYPE.UUID:
             return <div {...cls('field', [field.code, field.type], className)} data-id={field.code}>

@@ -25,7 +25,7 @@ export default class SectionTreeList extends Component {
                         parent={parent}
                         item={item}
                         key={itemIndex}
-                        classes={classes}
+                        cls={cls}
                         level={level}
                         onAddChild={onAddItemChild}
                         onEdit={onEditItem}

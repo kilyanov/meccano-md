@@ -42,3 +42,11 @@ $namespace: '.notifications-button';
     transition: fill .3s;
   }
 }
+
+/* Dark Theme */
+
+.app--dark #{$namespace} {
+  &__count {
+    background-color: $lightRed;
+  }
+}

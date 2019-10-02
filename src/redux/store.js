@@ -8,11 +8,13 @@ const logger = createLogger();
 const initialState = {
     profile: {},
     notificationsPanel: {
-        notifications: [
-            {id: '1', title: 'Уведомление', message: 'Болльшой текст уведомления'},
-            {id: '2', title: 'Экспорт статей', message: 'Идет экспорт статей проекта "Первый"'},
-            {id: '3', title: 'Импорт статей', message: 'Идет импорт статей в проект "Первый"'}
-        ],
+        notifications: [{
+            id: '1',
+            title: 'Выгрузка статей',
+            link: '/documents/ad',
+            transactionId: 'asd',
+            message: 'Заказаана выгрузка статей'
+        }],
         settingsMenu: {
             open: false
         },

@@ -6,7 +6,7 @@ import PencilIcon from '../../SvgIcons/PencilIcon';
 const cls = new Bem('properties-table-item');
 const PropertiesTableRow = ({item, columnSettings, onEdit, onDelete, onClick}) => (
     <div {...cls()} onClick={(e) => {
-        if (!e.target.classList.contains(classes('button').className)) {
+        if (!e.target.classList.contains(cls('button').className)) {
             onClick(item);
         }
     }}

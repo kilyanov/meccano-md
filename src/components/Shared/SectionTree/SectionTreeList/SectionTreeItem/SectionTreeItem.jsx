@@ -7,7 +7,7 @@ import PencilIcon from '../../../SvgIcons/PencilIcon';
 
 export default class SectionTreeItem extends Component {
     static propTypes = {
-        classes: PropTypes.func.isRequired,
+        cls: PropTypes.func.isRequired,
         level: PropTypes.number,
         parent: PropTypes.object,
         item: PropTypes.object.isRequired,
@@ -25,7 +25,7 @@ export default class SectionTreeItem extends Component {
     };
 
     render() {
-        const {classes, parent, item, onAddChild, onEdit, onDelete} = this.props;
+        const {cls, parent, item, onAddChild, onEdit, onDelete} = this.props;
         const {open} = this.state;
         const children = item.sectionsTwo || item.sectionsThree;
 

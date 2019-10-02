@@ -16,7 +16,7 @@ $namespace: '.dialog-modal';
     z-index: 1000;
 
     .dialog-modal__container-wrapper {
-      top: 0;
+      top: $topBarHeight;
     }
   }
 
@@ -109,5 +109,13 @@ $namespace: '.dialog-modal';
   &__container {
     background-color: $background-dark;
     color: $white-dark;
+
+    &--danger {
+      .dialog-modal__button--submit {
+        background-color: $lightRed !important;
+        border-color: $lightRed !important;
+        color: white;
+      }
+    }
   }
 }

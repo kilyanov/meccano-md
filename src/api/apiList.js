@@ -25,7 +25,8 @@ const List = {
         project: '/project',
         sections: '/project/section',
         fieldValue: '/project/field-value',
-        wordSearch: '/project/word-search'
+        wordSearch: '/project/word-search',
+        importWordSearch: '/project/word-search/import'
     },
     user: {
         profile: '/user/profile'
@@ -34,7 +35,8 @@ const List = {
     transfer: {
         import: '/transfer/import',
         export: '/transfer/export',
-        type: '/transfer/type'
+        type: '/transfer/type',
+        document: '/transfer/document'
     },
     file: {
         download: '/file/download'

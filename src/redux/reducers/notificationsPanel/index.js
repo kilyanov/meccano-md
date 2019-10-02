@@ -10,7 +10,12 @@ export function notificationsPanel(state = {}, action) {
         case ACTION_TYPE.NOTIFICATION_PANEL.ADD_NOTIFICATION:
             return {
                 ...state,
-                notifications: {...state.notifications, ...action.payload}
+                notifications: [...state.notifications, action.payload]
+            };
+        case ACTION_TYPE.NOTIFICATION_PANEL.UPDATE_NOTIFICATION:
+            return {
+                ...state,
+                notifications: [...state.notifications, action.payload]
             };
         case ACTION_TYPE.NOTIFICATION_PANEL.DELETE_NOTIFICATION:
             return {

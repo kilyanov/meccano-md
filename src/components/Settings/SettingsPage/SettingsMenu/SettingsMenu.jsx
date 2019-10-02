@@ -4,11 +4,12 @@ import VerticalMenu from '../../../Shared/VerticalMenu/VerticalMenu';
 import ImportExportIcon from '../../../Shared/SvgIcons/ImportExportIcon';
 import EarthIcon from '../../../Shared/SvgIcons/EarthIcon';
 import LoudSpeaker from '../../../Shared/SvgIcons/LoudSpeaker';
+import AuthorIcon from '../../../Shared/SvgIcons/AuthorsIcon';
 
 const cls = new Bem('settings-menu');
 const menu = [{
     id: 'io',
-    icon: <ImportExportIcon/>,
+    icon: <ImportExportIcon />,
     name: 'Шаблоны',
     children: [{
         id: 'import',
@@ -21,7 +22,7 @@ const menu = [{
     }]
 }, {
     id: 'location',
-    icon: <EarthIcon/>,
+    icon: <EarthIcon />,
     name: 'Местоположение',
     children: [{
         id: 'country',
@@ -42,7 +43,7 @@ const menu = [{
     }]
 }, {
     id: 'source',
-    icon: <LoudSpeaker/>,
+    icon: <LoudSpeaker />,
     name: 'Источники',
     children: [{
         id: 'type',
@@ -53,6 +54,11 @@ const menu = [{
         name: 'Список',
         link: '/settings/source/list'
     }]
+}, {
+    id: 'authors',
+    icon: <AuthorIcon />,
+    name: 'Авторы',
+    link: '/settings/authors'
 }];
 
 export const getActive = () => {

@@ -5,9 +5,8 @@ import Loader from '../../Shared/Loader/Loader';
 import {ExportService} from '../../../services';
 import TransferService from '../../../services/TransferService';
 import RadioButton from '../../Form/RadioButton/RadioButton';
-import {saveAs} from 'file-saver';
 import './articles-export-modal.scss';
-import {QueueManager} from '../../../helpers/Tools';
+import Notification from '../../../helpers/Notification';
 import {NotificationManager} from 'react-notifications';
 
 const cls = new Bem('articles-export-modal');
@@ -58,19 +57,11 @@ export default class ArticlesExportModal extends Component {
     handleSubmit = () => {
         const {projectId, selectedArticleIds} = this.props;
         const {selectedTemplateId} = this.state;
-        const loadingMessage = {id: 'export', text: 'Идет экспорт статей...'};
 
         if (selectedTemplateId) {
             this.setState({inProgress: true}, () => {
                 const articleIds = _.isBoolean(selectedArticleIds) ? null :
                     selectedArticleIds.length ? selectedArticleIds : null;
-
-                setTimeout(() => {
-                    if (this.state.inProgress) {
-                        QueueManager.push(loadingMessage);
-                        this.props.onClose();
-                    }
-                }, 2000);
 
                 ExportService
                     .articles(
@@ -78,16 +69,21 @@ export default class ArticlesExportModal extends Component {
                         selectedTemplateId,
                         articleIds
                     )
-                    .then(response => {
-                        const blob = new Blob([response.data], {type: 'application/octet-stream'});
+                    .then(({data}) => {
+                        if (data.result === 'toQueue') {
+                            Notification.toPanel({
+                                title: 'Выгрузка статей',
+                                link: `/documents/${data.transactionId}`,
+                                transactionId: data.transactionId,
+                                message: 'Заказаана выгрузка статей'
+                            });
 
-                        saveAs(blob, response.headers['x-filename']);
-                        NotificationManager.success('Экспорт успешно завршен', 'Экспорт статей');
-                        QueueManager.remove(loadingMessage.id);
+                            NotificationManager.success('Документ успешно заказан', 'Экспорт статей');
+                        }
+
                         if (this.isMount) this.setState({inProgress: false}, this.props.onClose);
                     })
                     .catch(() => {
-                        QueueManager.remove(loadingMessage.id);
                         if (this.isMount) this.setState({inProgress: false});
                     });
             });

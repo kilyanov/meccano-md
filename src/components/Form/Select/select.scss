@@ -4,6 +4,7 @@ $namespace: '.select';
 
 #{$namespace} {
     position: relative;
+    max-width: 100%;
     margin-bottom: 20px;
 
     &--succeed {
@@ -24,11 +25,13 @@ $namespace: '.select';
             right: 0;
             bottom: 0;
             max-height: 80vh;
-            z-index: 3;
+            z-index: 6;
+            border-top-left-radius: 20px;
+            border-top-right-radius: 20px;
         }
 
         #{$namespace}__list {
-            max-height: 100%;
+            max-height: 60vh;
             box-shadow: none;
         }
 
@@ -95,6 +98,10 @@ $namespace: '.select';
 
     &__placeholder {
         color: $fontGrey;
+        white-space: nowrap;
+        max-width: 90%;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
 
     &__selected-name {
@@ -126,6 +133,7 @@ $namespace: '.select';
         width: 100%;
         background-color: #fff;
         z-index: 1;
+        transition: all .3s ease;
 
         &--fixed {
             position: fixed;
@@ -190,29 +198,22 @@ $namespace: '.select';
         bottom: 0;
         left: 0;
         right: 0;
-        background-color: rgba(0, 0, 0, .5);
-        z-index: 2;
+        background-color: rgba(0, 0, 0, .7);
+        z-index: 5;
     }
 
     &__search-wrapper {
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
+        height: 40px;
     }
 
     &__search-field {
-        position: absolute;
-        top: 0;
-        left: 0;
-        bottom: 0;
-        width: calc(100% - 50px);
+        width: 100%;
+        height: 100%;
         padding: 0 17px;
         background: transparent;
         border: none;
         font-size: 15px;
-        color: $fontGrey;
+        color: #999;
     }
 
     &__search-clear-button {
@@ -222,8 +223,8 @@ $namespace: '.select';
         background: none;
         border: none;
         padding: 8px;
-        font-size: 14px;
-        line-height: 14px;
+        font-size: 16px;
+        line-height: 12px;
     }
 
     &__message {
@@ -263,6 +264,11 @@ $namespace: '.select';
         }
     }
 
+    &__list-container {
+        background-color: $background-dark;
+        border-top: 1px solid $border-color-dark;
+    }
+
     &__container {
         &:after {
             border-color: $border-color-dark transparent transparent transparent;
@@ -276,5 +282,17 @@ $namespace: '.select';
 
     &--succeed .select__label-text:before {
         color: $superLightBackground-dark;
+    }
+
+    &__search-wrapper {
+        background-color: $border-color-dark;
+    }
+
+    &__search-field {
+        color: $white-dark;
+    }
+
+    &__selected-name i {
+        background-color: $border-color-dark;
     }
 }

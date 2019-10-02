@@ -16,6 +16,7 @@ $namespace: '.input-file';
 
     &__file-list {
         margin-top: 10px;
+        padding-left: 15px;
         font-size: 12px;
         color: #999;
     }
@@ -69,5 +70,18 @@ $namespace: '.input-file';
             color: $errorColor;
             border-color: $errorColor;
         }
+    }
+}
+
+
+/* Dark Theme */
+
+.app--dark #{$namespace} {
+    &__file-list {
+        color: $white-dark;
+    }
+
+    &__file-button {
+        color: $border-color-dark;
     }
 }

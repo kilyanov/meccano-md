@@ -134,7 +134,7 @@ export default class ProjectProperties extends Component {
                                         key={item.code}
                                         item={item}
                                         selected={selected}
-                                        classes={classes}
+                                        classes={cls}
                                         onDoubleClick={this.handleDblClick}
                                     />
                                 );

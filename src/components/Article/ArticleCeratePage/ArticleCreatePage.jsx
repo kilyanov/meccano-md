@@ -120,7 +120,6 @@ export default class ArticleCreatePage extends Component {
     }
 
     handleChangeForm = (value, option) => {
-        console.log(value, option);
         const newState = this.state;
 
         newState.form[option] = _.get(value, 'value', value); // if object and has "value"
@@ -493,7 +492,7 @@ export default class ArticleCreatePage extends Component {
                             }];
                             break;
                         case 'authors':
-                            field.tags = form.authors;
+                            field.options = form.authors;
                             field.requestService = ArticleService.author;
                             field.requestCancelService = ArticleService.cancelLast;
                             break;
