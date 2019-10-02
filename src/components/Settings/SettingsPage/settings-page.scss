@@ -1,7 +1,6 @@
 @import "../../../assets/styles/variables";
 @import "../../../assets/styles/mixins";
 $namespace: '.settings-page';
-$sidebar-width: 300px;
 
 #{$namespace} {
   display: flex;
@@ -64,7 +63,7 @@ $sidebar-width: 300px;
   }
 
   &__left-sidebar {
-    flex: 0 0 $sidebar-width;
+    flex: 0 0 $settingsLeftSidebarWidth;
     border-right: 1px solid $gray;
 
     @include media('mobile') {
@@ -77,7 +76,7 @@ $sidebar-width: 300px;
   }
 
   &__loader {
-    left: $sidebar-width;
+    left: $settingsLeftSidebarWidth;
 
     @include media('mobile') {
       position: fixed;
@@ -88,8 +87,12 @@ $sidebar-width: 300px;
   &__body {
     flex: 1;
     max-height: 100%;
-    padding: 20px 40px;
+    padding: 20px 10px;
     border-top: 1px solid $gray;
+
+    @include media('mobile') {
+
+    }
 
     &--empty {
       background-color: $gray-three;

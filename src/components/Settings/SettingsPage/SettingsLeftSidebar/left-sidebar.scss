@@ -1,6 +1,8 @@
+@import "../../../../assets/styles/variables";
 @import "../../../../assets/styles/mixins";
 
 .left-sidebar {
+  flex: 0 0 $settingsLeftSidebarWidth;
   background-color: #fff;
   transition: right .3s ease-in-out;
 
