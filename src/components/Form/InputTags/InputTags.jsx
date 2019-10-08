@@ -77,13 +77,13 @@ class InputTags extends Component {
                     noOptionsMessage={() => 'Нет элементов'}
                     loadOptions={this.onLoadOptions}
                     styles={{
-                        control: (provided, state) => {
-                          console.log(state);
+                        control: (provided, {isFocused, isSelected}) => {
                           return {
                             ...provided,
                               borderRadius: 0,
                               minHeight: 40,
                               backgroundColor: isDarkTheme ? '#313131' : '#fff',
+                              borderColor: isFocused || isSelected ? '#ccc' : '#ccc',
                               '&:hover, &:active': {
                                 borderColor: '#b2b2b2',
                                 boxShadow: 'none'
@@ -99,12 +99,21 @@ class InputTags extends Component {
                             ...provided,
                             backgroundColor: isDarkTheme ? '#313131' : '#fff',
                         }),
-                        option: (provided) => ({
-                            ...provided,
-                            backgroundColor: isDarkTheme ? '#313131': '#DEEBFF',
-                            '&:hover, &:active, &:focus': {
-                                backgroundColor: isDarkTheme ? '#525252' : '#DEEBFF'
+                        option: (provided, {isDisabled, isFocused, isSelected}) => {
+                            return {
+                                ...provided,
+                                backgroundColor: isDisabled ? null :
+                                    isSelected ? isDarkTheme ? '#525252' : '#ccc' :
+                                        isFocused ? isDarkTheme ? '#525252' : '#ccc' : null
                             }
+                        },
+                        multiValue: (provided) => ({
+                            ...provided,
+                            backgroundColor: isDarkTheme ? '#989898' : '#e6e6e6'
+                        }),
+                        multiValueRemove: (provided) => ({
+                            ...provided,
+                            color: isDarkTheme ? '#313131' : null
                         })
                     }}
                 />
