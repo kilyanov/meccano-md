@@ -3,9 +3,9 @@ import PropTypes from 'prop-types';
 import InputText from '../../../Form/InputText/InputText';
 import InputDatePicker from '../../../Form/InputDatePicker/InputDatePicker';
 import Select from '../../../Form/Select/Select';
+import InputTags from '../../../Form/InputTags/InputTags';
 import InputLink from '../../../Form/InputLink/InputLink';
 import InputNumber from '../../../Form/InputNumber/InputNumber';
-import InputTags from '../../../Form/InputTags/InputTags';
 import InputTime from '../../../Form/InputTime/InputTime';
 import {FIELD_TYPE} from '../../../../constants/FieldType';
 
@@ -14,15 +14,15 @@ const ProjectCreateField = ({field, value, onChange, className}) => {
     switch (field.type) {
         case FIELD_TYPE.ARRAY:
             return <div {...cls('field', [field.code, field.type], className)} data-id={field.code}>
-                <Select
+                <InputTags
+                    onChange={val => onChange(val, field.code)}
+                    options={field.options || []}
                     placeholder={field.placeholder}
                     label={field.name}
-                    options={field.options || []}
-                    selected={value}
-                    onChange={val => onChange(val, field.code)}
+                    value={value}
+
                     requestService={field.requestService}
                     requestCancelService={field.requestCancelService}
-                    withSearch
                 />
 
                 {/*
@@ -50,7 +50,6 @@ const ProjectCreateField = ({field, value, onChange, className}) => {
                     requestService={field.requestService}
                     requestCancelService={field.requestCancelService}
                     depended={field.depended}
-                    withSearch
                 />
             </div>;
         case FIELD_TYPE.UUID_EXT:

@@ -16,6 +16,10 @@ import {isMobileScreen, OperatedNotification} from '../../../helpers/Tools';
 import {STORAGE_KEY} from '../../../constants/LocalStorageKeys';
 
 const cls = new Bem('article-create-page');
+const sectionsSet = {
+    'section_main_id': 'sectionsTwo',
+    'section_sub_id': 'sectionsThree'
+};
 
 export default class ArticleCreatePage extends Component {
     static propTypes = {
@@ -69,6 +73,7 @@ export default class ArticleCreatePage extends Component {
                 ArticleService.get(this.articleId, {expand: 'project.fields,project.sections,source'}),
                 ArticleService.getList({project: this.projectId})
             ]).then(([articleResponse, listResponse]) => {
+                const newState = this.state;
                 const form = articleResponse.data;
                 const articles = listResponse.data;
                 const sections = form.project.sections;
@@ -83,19 +88,20 @@ export default class ArticleCreatePage extends Component {
 
                         if (found) {
                             form[option] = {name: found.name, value: found.id, ...found};
+                            newState[sectionsSet[option]] = found[sectionsSet[option]];
                         }
                     }
                 });
 
-                this.setState({
-                    articles,
-                    fields: form.project.fields,
-                    sections,
-                    prevForm: _.cloneDeep(form),
-                    form,
-                    articleIndex: articles.findIndex(({id}) => id === this.articleId),
-                    inProgress: false
-                }); // , this.getAdditionalDataFields
+                newState.articles = articles;
+                newState.fields = form.project.fields;
+                newState.sections = sections;
+                newState.prevForm = _.cloneDeep(form);
+                newState.form = form;
+                newState.articleIndex = articles.findIndex(({id}) => id === this.articleId);
+                newState.inProgress = false;
+
+                this.setState(newState); // , this.getAdditionalDataFields
             }).catch(() => this.setState({inProgress: false}));
         } else {
             ProjectService.get({expand: 'fields,sections'}, this.projectId).then(response => {
@@ -239,7 +245,10 @@ export default class ArticleCreatePage extends Component {
                             timeOut: 10000,
                             onSubmit: () => this.context.router.history.push(`/project/${this.projectId}`)
                         });
-                        this.setState({inProgress: false}, resolve);
+                        this.setState({inProgress: false}, () => {
+                            this.getArticle();
+                            resolve();
+                        });
                     }).catch(() => this.setState({inProgress: false}, resolve));
                 });
             });

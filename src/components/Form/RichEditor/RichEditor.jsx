@@ -21,64 +21,86 @@ export default class RichEditor extends Component {
         onAfterChange: () => {}
     };
 
-    config = {
-        _that: this,
-        readonly: false,
-        showCharsCounter: false,
-        showWordsCounter: false,
-        showXPathInStatusbar: false,
-        allowResizeX: true,
-        allowResizeY: true,
+    constructor(props) {
+        super(props);
 
-        beautifyHTML: false,
-        beautifyHTMLCDNUrlsJS: [],
-        cleanHTML: {
-            timeout: 300,
-            removeEmptyElements: false,
-            fillEmptyParagraph: false,
-            replaceNBSP: false,
-            cleanOnPaste: false,
-            replaceOldTags: {},
-            allowTags: false,
-            denyTags: false
-        },
-        spellcheck: false,
-        events: {
-            afterGetValueFromEditor: (jodit, _that = this) => {
-                _that.props.onAfterChange(jodit.value);
-            }
+        const generatedFontSizes = {};
 
-        },
-        // afterInit: e => console.log(e),
+        for (let i = 8; i <= 30; i++) {
+            generatedFontSizes[i] = `${i} size`;
+        }
 
-        language: 'ru',
-        i18n: {
-            ru: {
-                'Type something': 'Текст'
-            }
-        },
-        buttons: [
-            'source', 'bold', 'strikethrough', 'underline', 'italic', '|',
-            'ul', 'ol', '|',
-            'align', '|',
-            'font', 'fontsize', 'brush', 'paragraph', '|',
-            // 'link', '|',
-            'undo', 'redo', 'hr', '\n'
-        ],
-        buttonsMD: [
-            'source', 'bold', 'strikethrough', 'underline', 'italic', '|',
-            'ul', 'ol', '|',
-            'align', '|',
-            'font', 'fontsize', 'brush', 'paragraph', '|',
-            // 'link', '|',
-            'undo', 'redo', 'hr', '\n'
-        ],
-        buttonsXS: [
-            'bold', 'strikethrough', 'underline', '|',
-            'ul', 'ol', '|',
-            'fullsize'
-        ]
-    };
+        const fontSize = {
+            name: 'Font Size',
+            icon: 'fontsize',
+            list: generatedFontSizes,
+            exec: (editor, text, controls) => {
+                editor.selection.applyCSS({
+                    'font-size': `${Number(controls.args[0])}px`,
+                });
+            },
+            template: (key, value) => `<span>${value}</span>`,
+        };
+
+        this.config = {
+            _that: this,
+            readonly: false,
+            showCharsCounter: false,
+            showWordsCounter: false,
+            showXPathInStatusbar: false,
+            allowResizeX: true,
+            allowResizeY: true,
+
+            beautifyHTML: false,
+            beautifyHTMLCDNUrlsJS: [],
+            cleanHTML: {
+                timeout: 300,
+                removeEmptyElements: false,
+                fillEmptyParagraph: false,
+                replaceNBSP: false,
+                cleanOnPaste: false,
+                replaceOldTags: {},
+                allowTags: false,
+                denyTags: false
+            },
+            spellcheck: false,
+            events: {
+                afterGetValueFromEditor: (jodit, _that = this) => {
+                    _that.props.onAfterChange(jodit.value);
+                }
+
+            },
+            // afterInit: e => console.log(e),
+
+            language: 'ru',
+            i18n: {
+                ru: {
+                    'Type something': 'Текст'
+                }
+            },
+            buttons: [
+                'source', 'bold', 'strikethrough', 'underline', 'italic', '|',
+                'ul', 'ol', '|',
+                'align', '|',
+                'font', fontSize, 'brush', 'paragraph', '|',
+                // 'link', '|',
+                'undo', 'redo', 'hr', '\n'
+            ],
+            buttonsMD: [
+                'source', 'bold', 'strikethrough', 'underline', 'italic', '|',
+                'ul', 'ol', '|',
+                'align', '|',
+                'font', fontSize, 'brush', 'paragraph', '|',
+                // 'link', '|',
+                'undo', 'redo', 'hr', '\n'
+            ],
+            buttonsXS: [
+                'bold', 'strikethrough', 'underline', '|',
+                'ul', 'ol', '|',
+                'fullsize'
+            ]
+        };
+    }
 
     render() {
         const {content, label, className} = this.props;

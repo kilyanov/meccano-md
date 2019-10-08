@@ -1,11 +1,8 @@
-@import "./react-tags";
-
 @import "../../../assets/styles/variables";
 
 $namespace: '.input-tags';
 
 #{$namespace} {
-  position: relative;
   margin-bottom: 20px;
 
   &--succeed {
@@ -18,71 +15,16 @@ $namespace: '.input-tags';
     }
   }
 
-  &--error {
-    #{$namespace}__label-text {
-      color: $errorColor;
-    }
-
-    #{$namespace}__field {
-      color: $errorColor;
-      padding-right: 40px;
-      border-color: $errorColor;
-    }
-  }
-
-  &__label {
-    display: flex;
-    flex-direction: column;
-  }
-
   &__label-text {
+    display: inline-block;
     font-size: 15px;
     line-height: 24px;
     margin-bottom: 8px;
-  }
-
-  &__message {
-    position: absolute;
-    left: 0;
-    top: 100%;
-    font-size: 12px;
-    line-height: 15px;
-    margin-top: 3px;
-    color: #F62434;
-  }
-
-  &__loader {
-    background: none;
-    top: 32px;
-    left: auto;
-    right: 10px;
-  }
-
-  .react-tags {
-    min-height: 40px;
-    padding: 2px 17px 0;
-    border: 1px solid $brownGreyColor;
-  }
-
-  .react-tags__selected-tag,
-  .react-tags__search input {
-    transition: background-color .3s ease;
   }
 }
 
 /* Dark Theme */
 
 .app--dark #{$namespace} {
-  .react-tags__selected-tag {
-    background-color: $superLightBackground-dark;
-  }
 
-  .react-tags__search input {
-    background-color: $background-dark;
-    color: $white-dark;
-  }
-
-  .input-tags__loader {
-    background: none;
-  }
 }

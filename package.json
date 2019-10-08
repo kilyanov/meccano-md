@@ -32,8 +32,8 @@
     "react-notifications": "^1.4.3",
     "react-redux": "^6.0.0",
     "react-router-dom": "^4.3.1",
+    "react-select": "^3.0.8",
     "react-sortablejs": "^1.5.1",
-    "react-tag-autocomplete": "^5.11.1",
     "redux": "^4.0.1",
     "sortablejs": "^1.6.1"
   },

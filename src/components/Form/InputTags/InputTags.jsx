@@ -1,156 +1,116 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
-import ReactTags from 'react-tag-autocomplete';
+import {connect} from 'react-redux';
+import Select from 'react-select/async-creatable';
+import {EventEmitter} from '../../../helpers';
+import {EVENTS} from '../../../constants/Events';
 import './input-tags.scss';
-import Loader from '../../Shared/Loader/Loader';
-import {InitScrollbar} from '../../../helpers/Tools';
+import {THEME_TYPE} from '../../../constants/ThemeType';
 
 const cls = new Bem('input-tags');
-const Tag = ({classNames, tag, onDelete}) =>
-    <div className={classNames.selectedTag} onClick={onDelete}>{tag.name}</div>;
 
-export default class InputTags extends Component {
+class InputTags extends Component {
     static propTypes = {
-        allowNew: PropTypes.bool,
-        tags: PropTypes.array,
-        suggestions: PropTypes.array,
-        onChange: PropTypes.func.isRequired,
-        onSearch: PropTypes.func,
-        onCancelSearch: PropTypes.func,
-        placeholder: PropTypes.string,
-        requestService: PropTypes.func,
-        requestCancelService: PropTypes.func
-    };
-
-    static defaultProps = {
-        allowNew: true,
-        placeholder: 'Добавить...'
+        required: PropTypes.bool,
+        theme: PropTypes.string.isRequired
     };
 
     state = {
-        suggestions: [],
-        pagination: {
-            page: 1,
-            perPage: 10
-        },
-        inProgress: false
+        defaultOptions: []
     };
 
     componentDidMount() {
-        if (this.props.requestService) {
-            this.props.requestService().then(response => {
-                console.log(response);
-            });
-        }
+        this.getDefaultOptions();
+        EventEmitter.on(EVENTS.FORM.ON_VALIDATE, this.validate);
     }
 
-    handleInputChange = (value) => {
-        if (this.props.requestService) {
-            this.debouncedSearch(value);
-        }
-    };
+    componentWillUnmount() {
+        EventEmitter.off(EVENTS.FORM.ON_VALIDATE, this.validate);
+    }
 
-    handleDelete = (i) => {
-        const tags = this.props.tags.slice(0);
-
-        tags.splice(i, 1);
-        this.props.onChange(tags);
-    };
-
-    handleAddition = (tag) => {
-        const tags = [].concat(this.props.tags, tag);
-
-        this.props.onChange(tags);
-    };
-
-    getList = (isPagination = false) => {
+    getDefaultOptions = () => {
         if (!this.props.requestService) return;
 
-        const form = {
-            page: this.state.pagination.page,
-            'per-page': this.state.pagination.perPage
-        };
+        this.props.requestService().then(response => {
+            const defaultOptions = response.data.map(({id, name}) => ({value: id, label: name}));
 
-        this.props.requestService(form).then(response => {
-            const pagination = {
-                pageCount: +_.get(response.headers, 'x-pagination-page-count'),
-                page: +_.get(response.headers, 'x-pagination-current-page'),
-                perPage: +_.get(response.headers, 'x-pagination-per-page'),
-                totalCount: +_.get(response.headers, 'x-pagination-total-count')
-            };
-            const options = response.data.map(option => ({
-                name: _.get(option, 'name'),
-                value: _.get(option, 'id')
-            }));
-
-            if (!this.isMount) return;
-
-            this.setState({
-                options: isPagination ? _.uniqBy(this.state.options.concat(options), 'value') : options,
-                pagination,
-                inProgress: false
-            }, () => {
-                this.initScrollBar();
-            });
-        }).catch(() => this.setState({inProgress: false}));
-    };
-
-    initScrollBar = () => {
-        if (!this.listRef) return;
-
-        const scroll = InitScrollbar(this.listRef);
-
-        if (scroll) this.scrollBar = scroll;
-        else if (this.scrollBar) this.scrollBar.update();
-    };
-
-    debouncedSearch = _.debounce((value) => {
-        if (this.props.requestCancelService) this.props.requestCancelService();
-
-        this.setState({inProgress: true}, () => {
-            this.props.requestService({'query[name]': value}).then(response => {
-                this.setState({
-                    suggestions: response.data,
-                    inProgress: false
-                });
-            });
+            this.setState({defaultOptions});
         });
-    }, 300);
+    };
+
+    onLoadOptions = (value) => {
+        if (!this.props.requestService) return;
+
+        return this.props.requestService({'query[name]': value}).then(response => {
+            return response.data.map(({id, name}) => ({value: id, label: name}));
+        });
+    };
+
+    validate = () => {
+        const invalid = this.props.required && !this.props.value;
+
+        this.setState({error: invalid, opened: false});
+        return EventEmitter.emit(invalid ? EVENTS.FORM.ON_VALIDATE_FAILURE : EVENTS.FORM.ON_VALIDATE_SUCCESS);
+    };
 
     render() {
-        const {label, tags, placeholder, allowNew} = this.props;
-        const {inProgress} = this.state;
-        const suggestions = this.props.suggestions || this.state.suggestions;
+        const {label, theme, onChange} = this.props;
+        const {defaultOptions} = this.state;
+        const isDarkTheme = theme === THEME_TYPE.DARK;
 
         return (
-            <div {...cls()}>
-                <label {...cls('label')}>
-                    {label && <span {...cls('label-text', '', 'drag-handle')}>{label}</span>}
-
-                    <ReactTags
-                        {...cls('field')}
-                        autofocus={false}
-                        tags={tags}
-                        suggestions={suggestions}
-                        /* eslint-disable */
-                        handleDelete={this.handleDelete}
-                        handleAddition={this.handleAddition}
-                        handleInputChange={this.handleInputChange}
-                        /* eslint-enable */
-                        placeholder={placeholder}
-                        allowNew={allowNew}
-                        tagComponent={Tag}
-                    />
-                </label>
-
-                {inProgress && (
-                    <Loader
-                        {...cls('loader')}
-                        radius={5}
-                        strokeWidth={2}
-                    />
+            <div {...cls('', {succeed: !!this.props.value.length})}>
+                {label && (
+                    <label {...cls('label', '', 'drag-handle')}>
+                        <span {...cls('label-text', '', 'drag-handle')}>{label}</span>
+                    </label>
                 )}
+
+                <Select
+                    {...cls('field')}
+                    placeholder={'Начните вводить текст...'}
+                    isMulti
+                    isSearchable
+                    onChange={onChange}
+                    defaultOptions={defaultOptions}
+                    loadingMessage={() => 'Загрузка...'}
+                    noOptionsMessage={() => 'Нет элементов'}
+                    loadOptions={this.onLoadOptions}
+                    styles={{
+                        control: (provided, state) => {
+                          console.log(state);
+                          return {
+                            ...provided,
+                              borderRadius: 0,
+                              minHeight: 40,
+                              backgroundColor: isDarkTheme ? '#313131' : '#fff',
+                              '&:hover, &:active': {
+                                borderColor: '#b2b2b2',
+                                boxShadow: 'none'
+                              }
+                            }
+                        },
+                        placeholder: (provided) => ({
+                            ...provided,
+                            fontSize: 15,
+                            color: '#999'
+                        }),
+                        menu: (provided) => ({
+                            ...provided,
+                            backgroundColor: isDarkTheme ? '#313131' : '#fff',
+                        }),
+                        option: (provided) => ({
+                            ...provided,
+                            backgroundColor: isDarkTheme ? '#313131': '#DEEBFF',
+                            '&:hover, &:active, &:focus': {
+                                backgroundColor: isDarkTheme ? '#525252' : '#DEEBFF'
+                            }
+                        })
+                    }}
+                />
             </div>
         );
     }
 }
+
+export default connect(({theme}) => ({theme}))(InputTags);
