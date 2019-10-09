@@ -69,8 +69,20 @@ export default class ArticleCreatePage extends Component {
 
     componentDidMount() {
         if (this.articleId) {
+            const {location} = this.props;
+            const searchParams = location.search && new URLSearchParams(location.search);
+            const form = {
+                expand: 'project.fields,project.sections,source'
+            };
+
+            if (searchParams) {
+                for (let item of searchParams.entries()) {
+                    form[item[0]] = item[1];
+                }
+            }
+
             Promise.all([
-                ArticleService.get(this.articleId, {expand: 'project.fields,project.sections,source'}),
+                ArticleService.get(this.articleId, form),
                 ArticleService.getList({project: this.projectId})
             ]).then(([articleResponse, listResponse]) => {
                 const newState = this.state;
@@ -524,10 +536,10 @@ export default class ArticleCreatePage extends Component {
 
         const sectionAnnotation = (
             <section {...cls('section')}>
-                <TextArea
+                <RichEditor
                     {...cls('field', 'annotation')}
                     label='Аннотация'
-                    value={form.annotation || ''}
+                    content={form.annotation || ''}
                     onChange={value => this.handleChangeForm(value, 'annotation')}
                 />
             </section>

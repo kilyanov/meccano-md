@@ -42,6 +42,7 @@ export default class ProjectPage extends Component {
     };
 
     componentDidMount() {
+        console.log(this.searchParams);
         this.getProject(this.projectId).then(this.getArticles);
     }
 
@@ -202,12 +203,14 @@ export default class ProjectPage extends Component {
                 .forEach(field => {
                     form[`query[${field.relation || field.code}]`] = search;
                 });
+            this.searchParams.set('search', search);
         }
 
         if (sort && sort.type) {
             const field = project.fields.find(({code}) => code === sort.type);
 
             form.sort = sort.type && `${sort.dir === SORT_DIR.ASC ? '-' : ''}${field.relation || sort.type}`;
+            this.searchParams.set('sort', `${sort.dir === SORT_DIR.ASC ? '-' : ''}${sort.type}`);
         }
 
         ArticleService
@@ -221,6 +224,8 @@ export default class ProjectPage extends Component {
                 };
 
                 QueueManager.remove(this.queueMessage.id);
+                this.setSearchParams();
+
                 this.setState({
                     articles: isPagination ? this.state.articles.concat(response.data) : response.data,
                     pagination: responsePagination,
@@ -249,6 +254,14 @@ export default class ProjectPage extends Component {
             });
     };
 
+    setSearchParams = () => {
+        const {location, history} = this.props;
+
+        console.log(this.searchParams.toString());
+        location.search = this.searchParams.toString();
+        history.replace(location);
+    };
+
     queueMessage = {id: 'articles', text: 'Загрузка статей...'};
 
     projectId = this.props.match.params.id;
@@ -263,6 +276,8 @@ export default class ProjectPage extends Component {
     }];
 
     isMounted = true;
+
+    searchParams = new URLSearchParams(this.props.location.search);
 
     render() {
         const {
@@ -386,6 +401,7 @@ export default class ProjectPage extends Component {
                         onChangeSort={this.handleChangeSort}
                         onDeleteArticle={this.handleDeleteArticle}
                         sort={filters.sort}
+                        search={filters.search}
                         selectedIds={selectedItemIds}
                         isAllSelected={isAllArticlesSelected}
                         projectId={this.projectId}

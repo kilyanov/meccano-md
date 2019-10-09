@@ -24,6 +24,7 @@ export default class ProjectTable extends Component {
         selectedIds: PropTypes.array,
         onChangeSelected: PropTypes.func,
         sort: PropTypes.object,
+        search: PropTypes.string,
         onChangeSort: PropTypes.func,
         onChangeColumns: PropTypes.func.isRequired,
         onDeleteArticle: PropTypes.func,
@@ -192,7 +193,7 @@ export default class ProjectTable extends Component {
     };
 
     renderArticle = (article, articleKey) => {
-        const {selectedIds, projectId, fields} = this.props;
+        const {selectedIds, projectId, fields, search, sort} = this.props;
         const menuItems = [{
             title: 'Изменить',
             link: `/project/${projectId}/article/${article.id}`
@@ -201,6 +202,8 @@ export default class ProjectTable extends Component {
             title: 'Удвлить',
             onClick: () => this.props.onDeleteArticle(article.id)
         }];
+        const sortString = sort.type && `${sort.dir === SORT_DIR.ASC ? '-' : ''}${sort.type}`;
+        const url = `/project/${projectId}/article/${article.id}?search=${search}&sort=${sortString || ''}&position=${articleKey}`;
 
         return (
             <article
@@ -244,7 +247,7 @@ export default class ProjectTable extends Component {
 
                     return (
                         <Link
-                            to={`/project/${projectId}/article/${article.id}`}
+                            to={url}
                             key={column}
                             {...cls('cell', column)}
                         >
