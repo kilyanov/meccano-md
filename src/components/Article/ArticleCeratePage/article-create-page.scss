@@ -162,6 +162,11 @@ $namespace: '.article-create-page';
     &--array {
       flex-basis: 45%;
     }
+
+    &--textarea,
+    &--annotation {
+      margin-bottom: 20px;
+    }
   }
 }
 

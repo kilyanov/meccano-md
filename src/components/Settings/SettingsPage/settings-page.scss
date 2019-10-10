@@ -87,11 +87,11 @@ $namespace: '.settings-page';
   &__body {
     flex: 1;
     max-height: 100%;
-    padding: 20px 10px;
+    padding: 20px 40px;
     border-top: 1px solid $gray;
 
     @include media('mobile') {
-
+      padding: 20px 10px;
     }
 
     &--empty {
