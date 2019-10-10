@@ -17,6 +17,7 @@ const NotificationsButton = ({
         <div
             {...cls('', '', className)}
             onClick={() => store.dispatch(toggleNotificationPanel())}
+            title='Уведомления'
         >
             <NotificationIcon {...cls('icon')}/>
             {!!notifications.length && <i {...cls('count')}>{notifications.length}</i>}

@@ -9,6 +9,7 @@ import DropDown from '../DropDown/DropDown';
 import {AuthService} from '../../../services';
 import NotificationsButton from './NotificationsButton/NotificationsButton';
 import ThemeButton from './ThemeButton/ThemeButton';
+import DocsButton from './DocsButton/DocsButton';
 
 const cls = new Bem('top-bar');
 
@@ -35,6 +36,7 @@ class TopBar extends PureComponent {
 
                     <section {...cls('buttons')}>
                         <ThemeButton {...cls('button', 'notifications')} />
+                        <DocsButton {...cls('button', 'notifications')} />
                         <NotificationsButton {...cls('button', 'notifications')} />
                     </section>
 

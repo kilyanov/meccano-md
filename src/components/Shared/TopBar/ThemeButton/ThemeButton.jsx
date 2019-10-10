@@ -19,6 +19,7 @@ const ThemeButton = ({ className, theme }) => {
         <div
             {...cls('', '', className)}
             onClick={handleClick}
+            title='Тема'
         >
             <HalfMoonIcon {...cls('icon', { [theme]: true})} />
         </div>
