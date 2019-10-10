@@ -172,7 +172,7 @@ export default class ProjectCreatePage extends Component {
             <div {...cls('steps-buttons')}>
                 {stepsButtons.map((button, buttonIndex) => (
                     buttonIndex < stepsButtons.length - 1 ? (
-                        <Fragment>
+                        <Fragment key={buttonIndex}>
                             {button}
                             {divider}
                         </Fragment>

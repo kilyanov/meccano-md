@@ -71,9 +71,9 @@ export default class App extends Component {
     }
 
     componentWillUnmount() {
-        EventEmitter.off(EVENTS.REDIRECT, null);
-        EventEmitter.off(EVENTS.OPERATED_NOTIFICATION.SHOW, null);
-        EventEmitter.off(EVENTS.OPERATED_NOTIFICATION.HIDE, null);
+        EventEmitter.off(EVENTS.REDIRECT, () => {});
+        EventEmitter.off(EVENTS.OPERATED_NOTIFICATION.SHOW, () => {});
+        EventEmitter.off(EVENTS.OPERATED_NOTIFICATION.HIDE, () => {});
         window.removeEventListener('load', () => {});
         this.unsubscribeStore();
     }

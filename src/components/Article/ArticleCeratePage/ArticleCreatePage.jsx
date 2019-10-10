@@ -320,10 +320,10 @@ export default class ArticleCreatePage extends Component {
         const r = (items) => {
             let found = null;
 
-            items.every(item => {
+            for (let item of items) {
                 if (item.id === sectionId) {
                     found = item;
-                    return false; // for stop loop
+                    break; // for stop loop
                 }
 
                 if (item.sectionsTwo && item.sectionsTwo.length) {
@@ -334,8 +334,10 @@ export default class ArticleCreatePage extends Component {
                     found = r(item.sectionsThree);
                 }
 
-                if (found) return false;
-            });
+                if (found) {
+                    break;
+                }
+            }
 
             return found;
         };
