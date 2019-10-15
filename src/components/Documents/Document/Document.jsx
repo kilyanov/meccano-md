@@ -11,11 +11,7 @@ import {FILE_TYPE_ICON} from '../../../constants/FileTypeIcons';
 
 const cls = new Bem('document');
 
-const Document = ({
-    className,
-    document,
-    onDelete
-}) => {
+const Document = ({className, document, highlighted, onDelete}) => {
     const [inProgress, setProgress] = useState(false);
 
     const handleDownload = (doc) => {
@@ -37,7 +33,7 @@ const Document = ({
     };
 
     return (
-        <div {...cls('', '', className)}>
+        <div {...cls('', {highlighted}, className)} data-id={document.id}>
             {getIcon(document.ext)}
 
             <section {...cls('main')}>

@@ -9,7 +9,6 @@ import {DOCUMENT_STATUS} from '../../constants/DocumentStatus';
 import PromiseDialogModal from '../Shared/PromiseDialogModal/PromiseDialogModal';
 import {DocumentService} from '../../services';
 import Loader from '../Shared/Loader/Loader';
-import {saveAs} from 'file-saver';
 
 const cls = new Bem('documents-page');
 
@@ -27,6 +26,7 @@ export default class DocumentsPage extends Component {
     };
 
     componentDidMount() {
+        this.highlightDocumentId = this.props.match.params.id;
         this.getDocuments();
     }
 
@@ -46,8 +46,6 @@ export default class DocumentsPage extends Component {
                 if (newState.filters.hasOwnProperty(key) && newState.filters[key]
                 ) {
                     const filterValue = newState.filters[key];
-
-                    console.log(key, filterValue);
 
                     if (key === 'name' || key === 'owner') {
                         const re = new RegExp(`(${filterValue})`, 'gi');
@@ -78,7 +76,8 @@ export default class DocumentsPage extends Component {
     handleDelete = (doc) => {
         this.promiseModal.open({
             title: 'Удаление документа',
-            content: `Вы уверены, что хотите удалить документ "${doc.name}"?`
+            content: `Вы уверены, что хотите удалить документ "${doc.name}"?`,
+            danger: true
         }).then(() => {
             DocumentService.delete(doc.id).then(this.getDocuments);
         });
@@ -90,9 +89,20 @@ export default class DocumentsPage extends Component {
                 this.setState({
                     documents: response.data,
                     inProgress: false
-                });
+                }, this.scrollToHighlighted);
             })
             .catch(() => this.setState({inProgress: false}));
+    };
+
+    scrollToHighlighted = () => {
+        if (this.highlightDocumentId) {
+            const appDOM = document.querySelector('.app');
+            const documentDOM = document.querySelector(`[data-id="${this.highlightDocumentId}"]`);
+
+            if (appDOM && documentDOM && documentDOM.offsetTop) {
+                appDOM.scrollTo({ top: documentDOM.offsetTop + 50, behavior: 'smooth' });
+            }
+        }
     };
 
     statusOptions = Object.keys(DOCUMENT_STATUS).map(value => ({name: DOCUMENT_STATUS[value], value}));
@@ -147,6 +157,7 @@ export default class DocumentsPage extends Component {
                             {...cls('document')}
                             key={documentIndex}
                             document={document}
+                            highlighted={document.id === this.highlightDocumentId}
                             onDelete={this.handleDelete}
                         />
                     ))}

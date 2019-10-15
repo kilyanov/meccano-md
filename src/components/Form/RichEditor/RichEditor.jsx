@@ -53,16 +53,18 @@ export default class RichEditor extends Component {
 
             beautifyHTML: false,
             beautifyHTMLCDNUrlsJS: [],
-            cleanHTML: {
-                timeout: 300,
-                removeEmptyElements: false,
-                fillEmptyParagraph: false,
-                replaceNBSP: false,
-                cleanOnPaste: false,
-                replaceOldTags: {},
-                allowTags: false,
-                denyTags: false
-            },
+            // cleanHTML: {
+                // timeout: 300,
+                // removeEmptyElements: false,
+                // fillEmptyParagraph: false,
+                // replaceNBSP: false,
+                // cleanOnPaste: false,
+                // replaceOldTags: {
+                //     "strong": "b"
+                // }
+                // allowTags: false,
+                // denyTags: false
+            // },
             spellcheck: false,
             events: {
                 afterGetValueFromEditor: (jodit, _that = this) => {

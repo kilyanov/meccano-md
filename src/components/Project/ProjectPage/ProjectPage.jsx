@@ -305,7 +305,12 @@ export default class ProjectPage extends Component {
                     <h2 {...cls('title')}>{_.get(project, 'name')}</h2>
                     {!!articles.length && (
                         <Button
-                            text='Выгрузить все'
+                            text={!countSelected || isAllArticlesSelected ? 'Выгрузить все' :
+                                `Выгрузить ${Plural(
+                                    countSelected, 
+                                    `${countSelected} ` ,
+                                    ['статью', 'статьи', 'статей']
+                                )}`}
                             {...cls('upload-btn')}
                             style='success'
                             onClick={() => this.setState({showUploadArticlesModal: true})}

@@ -74,7 +74,6 @@ export const createURLGenerator = (serviceName) => {
          */
         return (...args) => {
             let form = null;
-
             let id = null;
 
             args.forEach(arg => {

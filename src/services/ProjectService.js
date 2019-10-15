@@ -34,7 +34,7 @@ export const ProjectService = {
         get: (form, id) => API.get(urlGenerator('wordSearch')(form, id)),
         create: form => API.post(urlGenerator('wordSearch')(), form),
         update: (form, id) =>  API.put(urlGenerator('wordSearch')(id), form),
-        delete: form => API.delete(urlGenerator('wordSearch')(), {data: form}),
+        delete: (form, projectId) => API.delete(urlGenerator('wordSearch')(projectId), {data: form}),
         import: form => API.post(urlGenerator('importWordSearch')(), form)
     }
 };
