@@ -1,7 +1,6 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import ConfirmModal from '../../../../Shared/ConfirmModal/ConfirmModal';
-import './settings-export-modal.scss';
 import InputText from '../../../../Form/InputText/InputText';
 import TransferService from '../../../../../services/TransferService';
 import Form from '../../../../Form/Form/Form';
@@ -13,6 +12,7 @@ import Select from '../../../../Form/Select/Select';
 import InlineButton from '../../../../Shared/InlineButton/InlineButton';
 import InputTags from '../../../../Form/InputTags/InputTags';
 import {ProjectService} from '../../../../../services';
+import './settings-export-modal.scss';
 
 const cls = new Bem('settings-export-modal');
 
@@ -247,10 +247,10 @@ export default class SettingsExportModal extends Component {
                     <div {...cls('row', '', 'row')}>
                         <div {...cls('item', '', 'col-md-12')}>
                             <InputTags
-                                allowNew={false}
                                 label='Проект'
-                                tags={form.projects || []}
+                                options={form.projects || []}
                                 onChange={val => this.handleChangeForm(val, 'projects')}
+                                value={form.projects}
                                 requestService={ProjectService.get}
                                 requestCancelService={ProjectService.cancelLast}
                             />
