@@ -42,7 +42,6 @@ export default class ProjectPage extends Component {
     };
 
     componentDidMount() {
-        console.log(this.searchParams);
         this.getProject(this.projectId).then(this.getArticles);
     }
 
@@ -257,7 +256,6 @@ export default class ProjectPage extends Component {
     setSearchParams = () => {
         const {location, history} = this.props;
 
-        console.log(this.searchParams.toString());
         location.search = this.searchParams.toString();
         history.replace(location);
     };

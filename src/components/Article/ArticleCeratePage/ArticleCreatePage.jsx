@@ -281,21 +281,32 @@ export default class ArticleCreatePage extends Component {
 
     getArticle = () => {
         this.setState({inProgress: true}, () => {
-            const {articles} = this.state;
-
             ArticleService.get(this.articleId, {expand: 'project.fields,source'}).then(response => {
+                const newState = this.state;
                 const form = response.data;
 
                 form.date = new Date(form.date);
 
-                this.article = _.cloneDeep(form);
-                this.setState({
-                    fields: form.project.fields,
-                    articleIndex: articles.findIndex(({id}) => id === this.articleId),
-                    form,
-                    prevForm: _.cloneDeep(form),
-                    inProgress: false
+                ['section_main_id', 'section_sub_id', 'section_three_id'].forEach(option => {
+                    if (form[option]) {
+                        const found = this.findSectionById(form[option], this.state.sections);
+
+                        if (found) {
+                            form[option] = {name: found.name, value: found.id, ...found};
+                            newState[sectionsSet[option]] = found[sectionsSet[option]];
+                        }
+                    }
                 });
+
+                this.article = _.cloneDeep(form);
+
+                newState.fields = form.project.fields;
+                newState.articleIndex = newState.articles.findIndex(({id}) => id === this.articleId);
+                newState.form = form;
+                newState.prevForm = _.cloneDeep(form);
+                newState.inProgress = false;
+
+                this.setState(newState);
             }).catch(() => this.setState({inProgress: false}));
         });
     };

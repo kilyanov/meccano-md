@@ -65,9 +65,11 @@ export default class Select extends Component {
     componentDidUpdate(prevProps) {
         const options = this.getOptions();
 
-        if (!this.props.depended) return;
+        if (this.props.selected !== prevProps.selected && options.length) {
+            this.checkSelected();
+        }
 
-        if (!_.isEqual(this.props.depended, prevProps.depended)) {
+        if (this.props.depended && !_.isEqual(this.props.depended, prevProps.depended)) {
             this.setState({
                 inProgress: true,
                 options: null
@@ -75,10 +77,6 @@ export default class Select extends Component {
                 this.props.onChange(this.isMultiple ? [] : '');
                 this.getList();
             });
-        }
-
-        if (this.props.selected !== prevProps.selected && options.length) {
-            this.checkSelected();
         }
 
         this.initScrollBar();
@@ -308,19 +306,21 @@ export default class Select extends Component {
 
         // Если выбранный элемент не найден в списке подсказок, запросим его с сервера
         if (!result && options.length && this.props.requestService && selected) {
-            this.props.requestService(null, _.isString(selected) ? selected : _.get(selected, 'value'))
-                .then(response => {
-                    const item = Array.isArray(response.data) ? response.data[0] : response.data;
+            this.setState({inProgress: true}, () => {
+                this.props.requestService(null, _.isString(selected) ? selected : _.get(selected, 'value'))
+                    .then(response => {
+                        const item = Array.isArray(response.data) ? response.data[0] : response.data;
 
-                    options.push({
-                        name: _.get(item, 'name'),
-                        value: _.get(item, 'id')
+                        options.push({
+                            name: _.get(item, 'name'),
+                            value: _.get(item, 'id')
+                        });
+
+                        options = _.uniqBy(options, 'value');
+
+                        if (this.isMount) this.setState({options, inProgress: false}, this.initScrollBar);
                     });
-
-                    options = _.uniqBy(options, 'value');
-
-                    if (this.isMount) this.setState({options}, this.initScrollBar);
-                });
+            });
         }
     };
 
