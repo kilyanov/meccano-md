@@ -77,7 +77,7 @@ export default class ProjectKeyWords extends Component {
             const isAllSelected = keyWords.length === selectedWords.length;
 
             ProjectService.wordSearch
-                .delete(isAllSelected ? {all: true} : {wordIds: selectedWords})
+                .delete(isAllSelected ? {all: true} : {wordIds: selectedWords}, this.props.projectId)
                 .then(this.getItems)
                 .catch(() => this.setState({inProgress: false}));
         });
@@ -103,7 +103,7 @@ export default class ProjectKeyWords extends Component {
             danger: true
         }).then(() => {
             this.setState({inProgress: true}, () => {
-                ProjectService.wordSearch.delete({wordIds: [keyWord.id]}).then(() => {
+                ProjectService.wordSearch.delete({wordIds: [keyWord.id]}, this.props.projectId).then(() => {
                     const {keyWords} = this.state;
 
                     this.setState({
