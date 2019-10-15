@@ -46,12 +46,13 @@ export default class PromiseDialogModal extends PureComponent {
             closeOnSubmit = true,
             submitText = 'Ok',
             cancelText = 'Отмена',
+            danger,
             style // danger
         } = props;
 
         return new Promise((resolve, reject) => {
             const modal = (
-                <div {...cls('container', {[style]: !!style})}>
+                <div {...cls('container', {[style]: !!style, danger})}>
                     <div {...cls('header')}>
                         <h3 {...cls('title')}>{title}</h3>
                         {subTitle && <h6 {...cls('sub-title')}>{subTitle}</h6>}

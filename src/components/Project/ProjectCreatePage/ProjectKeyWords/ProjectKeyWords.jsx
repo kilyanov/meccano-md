@@ -71,7 +71,7 @@ export default class ProjectKeyWords extends Component {
                 `${selectedWords.length} `, 
                 ['слово', 'слова', 'слов'])}?`,
             submitText: 'Удалить',
-            style: 'danger'
+            danger: true
         }).then(() => {
             const {keyWords, selectedWords} = this.state;
             const isAllSelected = keyWords.length === selectedWords.length;
@@ -100,10 +100,10 @@ export default class ProjectKeyWords extends Component {
             title: 'Удаление ключевого слова',
             content: `Вы уверены, что хотите удалить ключевое слово "${keyWord.name}"?`,
             submitText: 'Удалить',
-            style: 'danger'
+            danger: true
         }).then(() => {
             this.setState({inProgress: true}, () => {
-                ProjectService.wordSearch.delete({wordIds: keyWord.id}).then(() => {
+                ProjectService.wordSearch.delete({wordIds: [keyWord.id]}).then(() => {
                     const {keyWords} = this.state;
 
                     this.setState({
