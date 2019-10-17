@@ -247,6 +247,7 @@ export default class ArticleCreatePage extends Component {
                     this.articleId,
                     form
                 ).then(response => {
+                    console.log(response);
                     const newState = this.state;
                     const form = response.data;
                     const sections = form.project.sections;
