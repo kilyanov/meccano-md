@@ -54,10 +54,9 @@ export default class ArticleCreatePage extends Component {
             text: ''
         };
         this.state = {
-            articles: [],
+            articlesNavs: {},
             fields: [],
             sources: [],
-            articleIndex: 0,
             prevForm: _.clone(this.defaultForm),
             form: _.clone(this.defaultForm),
             selectedMedia: {},
@@ -69,64 +68,22 @@ export default class ArticleCreatePage extends Component {
 
     componentDidMount() {
         if (this.articleId) {
-            const {location} = this.props;
-            const searchParams = location.search && new URLSearchParams(location.search);
-            const form = {
-                expand: 'project.fields,project.sections,source'
-            };
-
-            if (searchParams) {
-                for (let item of searchParams.entries()) {
-                    form[item[0]] = item[1];
-                }
-            }
-
-            Promise.all([
-                ArticleService.get(this.articleId, form),
-                ArticleService.getList({project: this.projectId})
-            ]).then(([articleResponse, listResponse]) => {
-                const newState = this.state;
-                const form = articleResponse.data;
-                const articles = listResponse.data;
-                const sections = form.project.sections;
-
-                this.article = _.cloneDeep(form);
-                form.date = new Date(form.date);
-                form.source = {name: _.get(form, 'source.name'), value: _.get(form, 'source.id')};
-
-                ['section_main_id', 'section_sub_id', 'section_three_id'].forEach(option => {
-                    if (form[option]) {
-                        const found = this.findSectionById(form[option], sections);
-
-                        if (found) {
-                            form[option] = {name: found.name, value: found.id, ...found};
-                            newState[sectionsSet[option]] = found[sectionsSet[option]];
-                        }
-                    }
-                });
-
-                newState.articles = articles;
-                newState.fields = form.project.fields;
-                newState.sections = sections;
-                newState.prevForm = _.cloneDeep(form);
-                newState.form = form;
-                newState.articleIndex = articles.findIndex(({id}) => id === this.articleId);
-                newState.inProgress = false;
-
-                this.setState(newState); // , this.getAdditionalDataFields
-            }).catch(() => this.setState({inProgress: false}));
+            this.getArticle();
         } else {
-            ProjectService.get({expand: 'fields,sections'}, this.projectId).then(response => {
-                const project = response.data;
+            ProjectService
+                .get({expand: 'fields,sections'}, this.projectId)
+                .then(response => {
+                    const project = response.data;
 
-                if (project && project.fields) {
-                    this.setState({
-                        sections: project.sections,
-                        fields: project.fields,
-                        inProgress: false
-                    }); // , this.getAdditionalDataFields
-                }
-            }).catch(() => this.setState({inProgress: false}));
+                    if (project && project.fields) {
+                        this.setState({
+                            sections: project.sections,
+                            fields: project.fields,
+                            inProgress: false
+                        }); // , this.getAdditionalDataFields
+                    }
+                })
+                .catch(() => this.setState({inProgress: false}));
         }
     }
 
@@ -166,30 +123,22 @@ export default class ArticleCreatePage extends Component {
     };
 
     handlePrevArticle = () => {
-        const {articles, articleIndex} = this.state;
+        const {articlesNavs} = this.state;
 
-        let prevArticle = articles[articleIndex - 1];
-
-        if (!prevArticle) {
-            prevArticle = articles[articles.length - 1];
-        }
+        if (articlesNavs.prev) return;
 
         this.checkFormChanges().then(() => {
-            this.context.router.history.push(`/project/${this.projectId}/article/${prevArticle.id}`);
+            this.context.router.history.push(`/project/${this.projectId}/article/${articlesNavs.prev}`);
         });
     };
 
     handleNextArticle = () => {
-        const {articles, articleIndex} = this.state;
+        const {articlesNavs} = this.state;
 
-        let nextArticle = articles[articleIndex + 1];
-
-        if (!nextArticle) {
-            nextArticle = articles[0];
-        }
+       if (!articlesNavs.next) return;
 
         this.checkFormChanges().then(() => {
-            this.context.router.history.push(`/project/${this.projectId}/article/${nextArticle.id}`);
+            this.context.router.history.push(`/project/${this.projectId}/article/${articlesNavs.next}`);
         });
     };
 
@@ -280,34 +229,63 @@ export default class ArticleCreatePage extends Component {
     };
 
     getArticle = () => {
+        const {location} = this.props;
+        const searchParams = location.search && new URLSearchParams(location.search);
+        const form = {
+            expand: 'project.fields,project.sections,source'
+        };
+
+        if (searchParams) {
+            for (let item of searchParams.entries()) {
+                form[item[0]] = item[1];
+            }
+        }
+
         this.setState({inProgress: true}, () => {
-            ArticleService.get(this.articleId, {expand: 'project.fields,source'}).then(response => {
-                const newState = this.state;
-                const form = response.data;
+            ArticleService
+                .get(
+                    this.articleId,
+                    form
+                ).then(response => {
+                    const newState = this.state;
+                    const form = response.data;
+                    const sections = form.project.sections;
+                    const articlesNavs = {
+                        current: _.get(response.headers, 'X-Current'),
+                        next: _.get(response.headers, 'X-Next-Article'),
+                        prev: _.get(response.headers, 'X-Prev-Article'),
+                        total: _.get(response.headers, 'X-Total-Count'),
+                    };
 
-                form.date = new Date(form.date);
+                    form.date = new Date(form.date);
 
-                ['section_main_id', 'section_sub_id', 'section_three_id'].forEach(option => {
-                    if (form[option]) {
-                        const found = this.findSectionById(form[option], this.state.sections);
-
-                        if (found) {
-                            form[option] = {name: found.name, value: found.id, ...found};
-                            newState[sectionsSet[option]] = found[sectionsSet[option]];
-                        }
+                    if (form.source && form.source.id) {
+                        form.source = {name: form.source.name, value: form.source.id};
                     }
-                });
 
-                this.article = _.cloneDeep(form);
+                    ['section_main_id', 'section_sub_id', 'section_three_id'].forEach(option => {
+                        if (form[option]) {
+                            const found = this.findSectionById(form[option], sections);
 
-                newState.fields = form.project.fields;
-                newState.articleIndex = newState.articles.findIndex(({id}) => id === this.articleId);
-                newState.form = form;
-                newState.prevForm = _.cloneDeep(form);
-                newState.inProgress = false;
+                            if (found) {
+                                form[option] = {name: found.name, value: found.id, ...found};
+                                newState[sectionsSet[option]] = found[sectionsSet[option]];
+                            }
+                        }
+                    });
 
-                this.setState(newState);
-            }).catch(() => this.setState({inProgress: false}));
+                    this.article = _.cloneDeep(form);
+
+                    newState.articlesNavs = articlesNavs;
+                    newState.fields = form.project.fields;
+                    newState.sections = sections;
+                    newState.form = form;
+                    newState.prevForm = _.cloneDeep(form);
+                    newState.inProgress = false;
+
+                    this.setState(newState);
+                })
+                .catch(() => this.setState({inProgress: false}));
         });
     };
 
@@ -428,8 +406,7 @@ export default class ArticleCreatePage extends Component {
 
     render() {
         const {
-            articles,
-            articleIndex,
+            articlesNavs,
             form,
             showViewSettings,
             sections,
@@ -578,7 +555,7 @@ export default class ArticleCreatePage extends Component {
                     ><i>‹</i> Назад к проекту</a>
 
                     <div {...cls('title-wrap')}>
-                        {articles.length > 1 && (
+                        {articlesNavs.prev && (
                             <button
                                 {...cls('title-button', 'left')}
                                 onClick={this.handlePrevArticle}
@@ -587,10 +564,10 @@ export default class ArticleCreatePage extends Component {
 
                         <h2 {...cls('title')}>
                             {isUpdate ? 'Статья' : 'Новая статья'}
-                            {!!articles.length && ` ${articleIndex + 1} из ${articles.length}`}
+                            {(articlesNavs.current && articlesNavs.total) && ` ${articlesNavs} из ${articlesNavs.total}`}
                         </h2>
 
-                        {articles.length > 1 && (
+                        {articlesNavs.next && (
                             <button
                                 {...cls('title-button', 'right')}
                                 onClick={this.handleNextArticle}

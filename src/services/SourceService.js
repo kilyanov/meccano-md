@@ -13,7 +13,6 @@ export const SourceService = {
         source = CancelToken.source();
         return API.get(url(form, id), {cancelToken: source.token});
     },
-    getById: (id = '') => API.get(url(id)),
     cancelLast: () => source && source.cancel('Operation canceled by the user.'),
     delete: (id) => API.delete(url(id)),
     create: (form) => API.post(url(), form),
