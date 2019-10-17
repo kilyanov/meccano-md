@@ -252,10 +252,10 @@ export default class ArticleCreatePage extends Component {
                     const form = response.data;
                     const sections = form.project.sections;
                     const articlesNavs = {
-                        current: _.get(response.headers, 'X-Current'),
-                        next: _.get(response.headers, 'X-Next-Article'),
-                        prev: _.get(response.headers, 'X-Prev-Article'),
-                        total: _.get(response.headers, 'X-Total-Count'),
+                        current: _.get(response.headers, 'x-current'),
+                        next: _.get(response.headers, 'x-next-article'),
+                        prev: _.get(response.headers, 'x-prev-article'),
+                        total: _.get(response.headers, 'x-total-count'),
                     };
 
                     form.date = new Date(form.date);
