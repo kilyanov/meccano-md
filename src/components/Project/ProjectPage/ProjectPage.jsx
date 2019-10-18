@@ -77,15 +77,15 @@ export default class ProjectPage extends Component {
                 title: 'Удаление статьи',
                 content: `Вы уверены, что хотите удалить статью "${article.title}"?`,
                 submitText: 'Удалить',
-                style: 'danger'
+                danger: true
             }).then(() => {
                 this.setState({inProgress: true}, () => {
                     ArticleService.delete({articleIds: [articleId]}, project.id)
                         .then(() => {
                             NotificationManager.success('Статья была успешно удалена', 'Удаление статьи');
                             this.setState({
-
-                                articles: this.state.articles.filter(({id}) => id !== articleId)
+                                articles: this.state.articles.filter(({id}) => id !== articleId),
+                                inProgress: false
                             }, this.getTotalCountArticles);
                         })
                         .catch(() => this.setState({inProgress: false}));

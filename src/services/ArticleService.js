@@ -9,11 +9,11 @@ const CancelToken = axios.CancelToken;
 let source;
 
 export const ArticleService = {
-    get: (id = '', form) => API.get(`${ApiList.article.article}${id ? `/${id}` : ''}${ParseToRequest(form)}`),
-    getList: (form) => API.get(`${ApiList.article.article}${ParseToRequest(form)}`),
-    delete: (form, projectId) => API.delete(`${ApiList.article.article}?project=${projectId}`, {data: form}),
-    create: (form) => API.post(ApiList.article.article, form),
-    update: (form, id) => API.put(`${ApiList.article.article}/${id}`, form),
+    get: (id = '', form) => API.get(urlGenerator('article')(id, form)),
+    getList: (form) => API.get(urlGenerator('article')(form)),
+    delete: (form, projectId) => API.delete(urlGenerator('article')({project: projectId}), {data: form}),
+    create: (form) => API.post(urlGenerator('article')({project: form.projectId}), form),
+    update: (form, id) => API.put(urlGenerator('article')(id), form),
 
     /* Data fields */
     types: (form) => {

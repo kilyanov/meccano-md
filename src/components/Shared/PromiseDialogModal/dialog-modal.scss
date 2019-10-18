@@ -16,7 +16,7 @@ $namespace: '.dialog-modal';
     z-index: 1000;
 
     .dialog-modal__container-wrapper {
-      top: $topBarHeight;
+      top: 0;
     }
   }
 

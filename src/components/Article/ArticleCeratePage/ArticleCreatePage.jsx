@@ -125,7 +125,7 @@ export default class ArticleCreatePage extends Component {
     handlePrevArticle = () => {
         const {articlesNavs} = this.state;
 
-        if (articlesNavs.prev) return;
+        if (!articlesNavs.prev) return;
 
         this.checkFormChanges().then(() => {
             this.context.router.history.push(`/project/${this.projectId}/article/${articlesNavs.prev}`);
@@ -156,11 +156,16 @@ export default class ArticleCreatePage extends Component {
     };
 
     handleSubmit = () => {
-        const form = {...this.state.form};
+        const form = _.cloneDeep(this.state.form);
         const isUpdate = !!this.articleId;
         const invalidateFields = [];
 
         form.date = moment(form.date).format();
+        form.project_id = this.projectId;
+
+        if (form.authors && form.authors.length) {
+            form.authors = form.authors.map(({label, value}) => ({id: value, name: label}));
+        }
 
         delete form.project;
         delete form.source;
@@ -184,21 +189,21 @@ export default class ArticleCreatePage extends Component {
                 }
             });
 
-        // Check new properties
+        // Check new properties and clear empty
         Object.keys(form).forEach(key => {
             if (isUpdate && form[key] === this.article[key] && key !== 'id') {
                 delete form[key];
             }
+
+            if (!form[key]) delete form[key];
         });
 
         if (_.isEmpty(form)) return;
 
-        form.project_id = this.projectId;
-
         const submitForm = () => {
             return new Promise(resolve => {
                 this.setState({inProgress: true}, () => {
-                    ArticleService[isUpdate ? 'update' : 'create'](form, form.id).then(() => {
+                    ArticleService[isUpdate ? 'update' : 'create'](form, form.id).then(response => {
                         OperatedNotification.success({
                             title: `${isUpdate ? 'Обновление' : 'Создание'} статьи`,
                             message: `Статья успешно ${isUpdate ? 'обновлена' : 'создана'}`,
@@ -206,6 +211,7 @@ export default class ArticleCreatePage extends Component {
                             timeOut: 10000,
                             onSubmit: () => this.context.router.history.push(`/project/${this.projectId}`)
                         });
+                        this.articleId = response.data.id;
                         this.setState({inProgress: false}, () => {
                             this.getArticle();
                             resolve();
@@ -243,11 +249,8 @@ export default class ArticleCreatePage extends Component {
 
         this.setState({inProgress: true}, () => {
             ArticleService
-                .get(
-                    this.articleId,
-                    form
-                ).then(response => {
-                    console.log(response);
+                .get(this.articleId, form)
+                .then(response => {
                     const newState = this.state;
                     const form = response.data;
                     const sections = form.project.sections;
@@ -565,7 +568,7 @@ export default class ArticleCreatePage extends Component {
 
                         <h2 {...cls('title')}>
                             {isUpdate ? 'Статья' : 'Новая статья'}
-                            {(articlesNavs.current && articlesNavs.total) && ` ${articlesNavs} из ${articlesNavs.total}`}
+                            {(articlesNavs.current && articlesNavs.total) && ` ${articlesNavs.current} из ${articlesNavs.total}`}
                         </h2>
 
                         {articlesNavs.next && (
