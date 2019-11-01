@@ -35,7 +35,8 @@
     "react-select": "^3.0.8",
     "react-sortablejs": "^1.5.1",
     "redux": "^4.0.1",
-    "sortablejs": "^1.6.1"
+    "sortablejs": "^1.6.1",
+    "store": "^2.0.12"
   },
   "devDependencies": {
     "@babel/core": "^7.2.2",
@@ -62,7 +63,6 @@
     "react-hot-loader": "^4.6.5",
     "redux-logger": "^3.0.6",
     "sass-loader": "^7.1.0",
-    "store": "^2.0.12",
     "webpack": "^4.29.6",
     "webpack-cli": "^3.2.3",
     "webpack-dev-server": "^3.1.14"

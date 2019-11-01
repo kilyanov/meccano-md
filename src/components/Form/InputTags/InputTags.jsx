@@ -54,7 +54,7 @@ class InputTags extends Component {
     };
 
     render() {
-        const {label, theme, onChange} = this.props;
+        const {label, theme, onChange, options} = this.props;
         const {defaultOptions} = this.state;
         const isDarkTheme = theme === THEME_TYPE.DARK;
 
@@ -72,6 +72,7 @@ class InputTags extends Component {
                     isMulti
                     isSearchable
                     onChange={onChange}
+                    value={options}
                     defaultOptions={defaultOptions}
                     loadingMessage={() => 'Загрузка...'}
                     noOptionsMessage={() => 'Нет элементов'}

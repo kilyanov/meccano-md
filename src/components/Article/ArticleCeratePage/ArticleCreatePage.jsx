@@ -262,6 +262,7 @@ export default class ArticleCreatePage extends Component {
                     };
 
                     form.date = new Date(form.date);
+                    form.authors = form.authors.map(({id, name}) => ({label: name, value: id}));
 
                     if (form.source && form.source.id) {
                         form.source = {name: form.source.name, value: form.source.id};

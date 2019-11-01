@@ -66,6 +66,7 @@ $namespace: '.button';
   &--inline {
     color: $lightBlue;
     border-color: $lightBlue;
+    background-color: transparent;
   }
 
   &--success {
