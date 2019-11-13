@@ -19,7 +19,8 @@ const List = {
     },
     auth: {
         login: '/auth/login',
-        create: '/auth/create'
+        create: '/auth/create',
+        roles: '/auth/roles'
     },
     project: {
         project: '/project',
@@ -29,6 +30,7 @@ const List = {
         importWordSearch: '/project/word-search/import'
     },
     user: {
+        user: '/user',
         profile: '/user/profile'
     },
     export:  '/export',

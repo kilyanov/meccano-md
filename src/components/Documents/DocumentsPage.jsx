@@ -9,6 +9,8 @@ import {DOCUMENT_STATUS} from '../../constants/DocumentStatus';
 import PromiseDialogModal from '../Shared/PromiseDialogModal/PromiseDialogModal';
 import {DocumentService} from '../../services';
 import Loader from '../Shared/Loader/Loader';
+import {EventEmitter} from "../../helpers";
+import {EVENTS} from "../../constants/Events";
 
 const cls = new Bem('documents-page');
 
@@ -27,6 +29,7 @@ export default class DocumentsPage extends Component {
 
     componentDidMount() {
         this.highlightDocumentId = this.props.match.params.id;
+        EventEmitter.on(EVENTS.APP_CONTAINER_SCROLL_END, this.handleEndPage);
         this.getDocuments();
     }
 
@@ -43,8 +46,7 @@ export default class DocumentsPage extends Component {
             let result = true;
 
             for (const key in newState.filters) {
-                if (newState.filters.hasOwnProperty(key) && newState.filters[key]
-                ) {
+                if (newState.filters.hasOwnProperty(key) && newState.filters[key]) {
                     const filterValue = newState.filters[key];
 
                     if (key === 'name' || key === 'owner') {
@@ -60,8 +62,7 @@ export default class DocumentsPage extends Component {
                     }
 
                     if (key === 'date') {
-                        console.log(moment(doc.date).format('YYYY.MM.DD'), moment(filterValue).format('YYYY.MM.DD'));
-                        result = moment(doc.date).format('YYYY.MM.DD') === moment(filterValue).format('YYYY.MM.DD');
+                        result = moment(doc.updatedAt).startOf('day').isSame(filterValue);
                         if (!result) break;
                     }
                 }
@@ -83,8 +84,12 @@ export default class DocumentsPage extends Component {
         });
     };
 
+    handleEndPage = () => {
+        console.log('End page');
+    };
+
     getDocuments = () => {
-        DocumentService.get()
+        DocumentService.get('', {sort: '-updated_at'})
             .then(response => {
                 this.setState({
                     documents: response.data,
@@ -100,7 +105,7 @@ export default class DocumentsPage extends Component {
             const documentDOM = document.querySelector(`[data-id="${this.highlightDocumentId}"]`);
 
             if (appDOM && documentDOM && documentDOM.offsetTop) {
-                appDOM.scrollTo({ top: documentDOM.offsetTop + 50, behavior: 'smooth' });
+                appDOM.scrollTo({top: documentDOM.offsetTop + 50, behavior: 'smooth'});
             }
         }
     };
@@ -132,14 +137,14 @@ export default class DocumentsPage extends Component {
                         clearable
                         onChange={value => this.handleSearch(value, 'date')}
                     />
-                    {/*<InputText*/}
+                    {/* <InputText */}
                     {/*    {...cls('filter-field')}*/}
                     {/*    label='Имя пользователя'*/}
                     {/*    placeholder='Введите имя пользователя'*/}
                     {/*    value={filters.owner}*/}
                     {/*    clearable*/}
                     {/*    onChange={value => this.handleSearch(value, 'owner')}*/}
-                    {/*/>*/}
+                    {/* /> */}
                     <Select
                         {...cls('filter-field')}
                         label='Статус'

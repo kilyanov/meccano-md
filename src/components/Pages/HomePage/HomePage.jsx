@@ -69,7 +69,8 @@ class HomePage extends Component {
         }, {
             id: 'users',
             icon: <UsersIcon/>,
-            name: 'Пользователи'
+            name: 'Пользователи',
+            link: '/users'
         }, {
             id: 'settings',
             icon: <SettingsIcon/>,

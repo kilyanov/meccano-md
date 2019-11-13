@@ -9,7 +9,8 @@ const CheckBox = ({
     disabled = false,
     required = false,
     onChange = () => {},
-    className
+    className,
+    children
 }) => (
     <div {...cls('', {disabled, checked}, className)}>
         <label {...cls('label')}>
@@ -24,7 +25,12 @@ const CheckBox = ({
                 onChange={() => onChange(!checked)}
             />
 
-            <span {...cls('text')}>{label}</span>
+            <div {...cls('data')}>
+                <span {...cls('text')}>{label}</span>
+                {children && (
+                    <div {...cls('children')}>{children}</div>
+                )}
+            </div>
         </label>
     </div>
 );

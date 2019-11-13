@@ -7,6 +7,7 @@ import {THEME_TYPE} from '../constants/ThemeType';
 const logger = createLogger();
 const initialState = {
     profile: {},
+    roles: [],
     notificationsPanel: {
         notifications: [],
         settingsMenu: {

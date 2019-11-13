@@ -476,10 +476,15 @@ export default class Select extends Component {
                         )}
 
                         {selectedName && (
-                            <span {...cls('selected-name')}>
-                                <span>{selectedName}</span> {(isMultiple && selected.length > 1) &&
-                                <i>+{selected.length - 1}</i>}
-                            </span>
+                            <div {...cls('selected-value')}>
+                                <div {...cls('selected-name')}>
+                                    <span>{selectedName}</span> {(isMultiple && selected.length > 1) &&
+                                    <i>+{selected.length - 1}</i>}
+                                </div>
+                                {selected.description && (
+                                    <div {...cls('selected-description')}>{selected.description}</div>
+                                )}
+                            </div>
                         )}
 
                         {!!searchString.length || selectedName  && (
@@ -557,8 +562,25 @@ export default class Select extends Component {
                                                         this.highlight(item.name, searchString) : item.name}
                                                     onChange={() => null}
                                                     checked={active}
-                                                />
-                                            ) : this.state.searchOptions ? this.highlight(item.name, searchString) : item.name}
+                                                >
+                                                    <span {...cls('list-item-description')}>{item.description}</span>
+                                                </CheckBox>
+                                            ) : (
+                                                <div>
+                                                    <span {...cls('list-item-name')}>
+                                                        {this.state.searchOptions ?
+                                                            this.highlight(item.name, searchString) :
+                                                            item.name
+                                                        }
+                                                    </span>
+                                                    {item.description && (
+                                                        <span
+                                                            {...cls('list-item-description')}
+                                                            title={item.description}
+                                                        >{item.description}</span>
+                                                    )}
+                                                </div>
+                                            )}
                                         </li>
                                     );
                                 })}

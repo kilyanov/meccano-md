@@ -12,5 +12,6 @@ export const EVENTS = {
     QUEUE_MANAGER: {
         PUSH: 'queue_manager_push',
         REMOVE: 'queue_manager_remove'
-    }
+    },
+    APP_CONTAINER_SCROLL_END: 'app_container_scroll_end'
 };

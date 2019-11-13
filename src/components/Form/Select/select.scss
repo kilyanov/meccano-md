@@ -104,12 +104,13 @@ $namespace: '.select';
         text-overflow: ellipsis;
     }
 
-    &__selected-name {
+    &__selected-value {
         display: flex;
+        flex-direction: column;
         width: 80%;
-        align-items: center;
         white-space: nowrap;
         user-select: none;
+        line-height: 15px;
 
         span {
             white-space: nowrap;
@@ -174,6 +175,16 @@ $namespace: '.select';
         &--active {
             font-weight: 500;
         }
+    }
+
+    &__list-item-name {
+        display: inline-block;
+        width: 100%;
+    }
+
+    &__list-item-description {
+        font-size: 11px;
+        color: #999;
     }
 
     &__list-title {
@@ -244,6 +255,11 @@ $namespace: '.select';
     .checkbox__box {
         margin-right: 15px;
     }
+
+    &__selected-description {
+        font-size: 11px;
+        color: #999;
+    }
 }
 
 /* Dark Theme */
@@ -292,7 +308,7 @@ $namespace: '.select';
         color: $white-dark;
     }
 
-    &__selected-name i {
+    &__selected-value i {
         background-color: $border-color-dark;
     }
 }

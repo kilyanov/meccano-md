@@ -4,8 +4,8 @@ import {createURLGenerator} from '../api/apiList';
 const urlGenerator = createURLGenerator('transfer');
 
 export const DocumentService = {
-    get: (id) => {
-        return API.get(urlGenerator('document')(id));
+    get: (id, params) => {
+        return API.get(urlGenerator('document')(id, params));
     },
     update: (id, form) => {
         return API.put(urlGenerator('document')(id, form));

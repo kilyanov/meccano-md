@@ -20,6 +20,7 @@ import SettingsCity from '../components/Settings/SettingsLocation/SettingsCity';
 import SettingsSourceList from '../components/Settings/SettingsSource/SettingsSourceList';
 import SettingsSourceType from '../components/Settings/SettingsSource/SettingsSourceType';
 import SettingsAuthors from '../components/Settings/SettingsAuthors/SettingsAuthors';
+import UsersPage from "../components/Users/UsersPage";
 
 export default (
     <Router basename='/'>
@@ -48,6 +49,8 @@ export default (
                 <AuthRoute exact component={SettingsSourceType} path="/settings/source/type"/>
 
                 <AuthRoute exact component={SettingsAuthors} path="/settings/authors"/>
+
+                <AuthRoute exact component={UsersPage} path="/users"/>
 
                 <AuthRoute component={NotFoundPage}/>
             </Switch>

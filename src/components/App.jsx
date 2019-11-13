@@ -78,6 +78,13 @@ export default class App extends Component {
         this.unsubscribeStore();
     }
 
+    handleScroll = (event) => {
+        const {target} = event;
+        const isEndPage = target.scrollTop === target.scrollHeight - target.clientHeight;
+
+        if (isEndPage) EventEmitter.emit(EVENTS.APP_CONTAINER_SCROLL_END);
+    };
+
     getCurrentStateFromStore = () => {
         return {
             theme: store.getState().theme
@@ -103,6 +110,7 @@ export default class App extends Component {
                 <div
                     {...cls('', {blur: false, [theme]: !!theme})}
                     ref={node => this.containerRef = node}
+                    onScroll={this.handleScroll}
                 >
                     <NotificationContainer/>
                     <QueueManager/>
