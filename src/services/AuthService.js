@@ -19,7 +19,6 @@ export const AuthService = {
                 return response;
             });
     },
-    create: (form) => API.post(ApiList.auth.create, form),
     checkAuthorization: () => {
         const token = StorageService.get(STORAGE_KEY.TOKEN);
         const tokenExpired = StorageService.get(STORAGE_KEY.TOKEN_EXPIRED);
@@ -47,6 +46,5 @@ export const AuthService = {
         StorageService.remove(STORAGE_KEY.TOKEN_EXPIRED);
         API.removeToken();
         EventEmitter.emit(EVENTS.REDIRECT, '/login');
-    },
-    roles: () => API.get(ApiList.auth.roles)
+    }
 };

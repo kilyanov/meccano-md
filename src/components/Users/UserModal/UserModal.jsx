@@ -1,12 +1,11 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
-import UserService from "../../../services/UserService";
+import {UserService} from "../../../services";
 import ConfirmModal from "../../Shared/ConfirmModal/ConfirmModal";
 import Form from "../../Form/Form/Form";
 import InputText from "../../Form/InputText/InputText";
 import Loader from "../../Shared/Loader/Loader";
 import {connect} from 'react-redux';
-import {AuthService} from "../../../services";
 import {NotificationManager} from "react-notifications";
 import Select from "../../Form/Select/Select";
 
@@ -23,17 +22,25 @@ class UserModal extends Component {
             username: '',
             password: '',
             email: '',
-            role: 'admin'
+            roles: [],
+            permissions: []
         },
-        inProgress: false
+        inProgress: !!this.props.userId
     };
 
     componentDidMount() {
         const {userId} = this.props;
 
         if (userId) {
-            UserService.getProfile(userId).then(response => {
-                console.log(response);
+            UserService.get(userId).then(response => {
+                const form = response.data;
+
+                form.roles = form.roles.map(({name, description}) => ({name, value: name, description}));
+
+                this.setState({
+                    form: response.data,
+                    inProgress: false
+                });
             });
         }
     }
@@ -47,8 +54,10 @@ class UserModal extends Component {
         const isEdit  = !!userId;
         const {form} = this.state;
 
+        form.roles = form.roles.map(({value}) => value);
+
         this.setState({inProgress: true}, () => {
-            AuthService
+            UserService
                 .create(form)
                 .then(() => {
                     NotificationManager.success(
@@ -56,6 +65,7 @@ class UserModal extends Component {
                         `${isEdit ? 'Редактирование' : 'Создание'} пользователя`
                     );
                     this.setState({inProgress: false});
+                    this.props.onClose();
                 })
                 .catch(() => this.setState({inProgress: false}));
         });
@@ -67,8 +77,6 @@ class UserModal extends Component {
         const {onClose, userId} = this.props;
         const {form, inProgress} = this.state;
         const isEdit = !!userId;
-        
-        console.log(this.props.roles);
 
         return (
             <ConfirmModal
@@ -84,17 +92,17 @@ class UserModal extends Component {
                 >
                     <InputText
                         label='Имя пользователя'
-                        placeholder='user'
+                        placeholder='Username'
                         required
                         value={form.username}
                         onChange={value => this.handleChangeForm(value, 'username')}
                     />
 
                     <Select
-                        label='Роль'
+                        label='Права'
                         options={this.roleOptions}
-                        selected={form.role}
-                        onChange={value => this.handleChangeForm(value, 'role')}
+                        selected={form.roles}
+                        onChange={value => this.handleChangeForm(value, 'roles')}
                     />
 
                     <InputText
@@ -110,7 +118,7 @@ class UserModal extends Component {
                         label='Пароль'
                         type='password'
                         required
-                        value={form.password}
+                        value={form.password || ''}
                         onChange={value => this.handleChangeForm(value, 'password')}
                     />
                 </Form>
@@ -122,10 +130,7 @@ class UserModal extends Component {
 }
 
 function mapStateToProps({roles, profile}) {
-    return {
-        roles,
-        profile
-    };
+    return {roles, profile};
 }
 
 export default connect(mapStateToProps)(UserModal);

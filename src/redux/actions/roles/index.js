@@ -1,5 +1,5 @@
 import {ACTION_TYPE} from "../../../constants/ActionTypes";
-import {AuthService} from "../../../services";
+import {UserService} from '../../../services';
 
 export const getRoles = () => ({
     type: ACTION_TYPE.REQUEST,
@@ -8,5 +8,5 @@ export const getRoles = () => ({
         ACTION_TYPE.ROLES.ROLES_LOADED,
         ACTION_TYPE.ROLES.ROLES_LOAD_FAILURE
     ],
-    promise: AuthService.roles()
+    promise: UserService.roles()
 });

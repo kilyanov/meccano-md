@@ -1,5 +1,5 @@
 import {ACTION_TYPE} from "../../../constants/ActionTypes";
-import UserService from '../../../services/UserService';
+import {UserService} from '../../../services';
 
 export const getProfile = () => ({
     type: ACTION_TYPE.REQUEST,

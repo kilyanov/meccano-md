@@ -1,6 +1,5 @@
 import API from '../api/api';
-import ApiList, {createURLGenerator} from '../api/apiList';
-import {ParseToRequest} from '../helpers/Tools';
+import {createURLGenerator} from '../api/apiList';
 import axios from 'axios';
 
 const urlGenerator = createURLGenerator('article');

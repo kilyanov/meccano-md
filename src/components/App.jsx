@@ -1,6 +1,6 @@
 import React, {Component, Fragment} from 'react';
 import PropTypes from 'prop-types';
-import {AuthService, StorageService} from "../services";
+import {AuthService, DocumentService, StorageService} from "../services";
 import {EventEmitter} from "../helpers";
 import {NotificationContainer} from 'react-notifications';
 import {Redirect} from 'react-router-dom';
@@ -14,12 +14,16 @@ import NotificationsPanel from './Shared/NotificationsPanel/NotificationsPanel';
 import store from '../redux/store';
 import {switchTheme} from '../redux/actions/theme';
 import {THEME_TYPE} from '../constants/ThemeType';
+import Notification from "../helpers/Notification";
+import {DOCUMENT_STATUS} from "../constants/DocumentStatus";
+import {saveAs} from "file-saver";
 
 const cls = new Bem('app');
 
 export default class App extends Component {
     static propTypes = {
-        children: PropTypes.node
+        children: PropTypes.node,
+        profile: PropTypes.object
     };
 
     constructor(props) {
@@ -43,7 +47,8 @@ export default class App extends Component {
     state = {
         redirect: false,
         notification: null,
-        theme: ''
+        theme: '',
+        profile: {}
     };
 
     componentDidMount() {
@@ -85,10 +90,51 @@ export default class App extends Component {
         if (isEndPage) EventEmitter.emit(EVENTS.APP_CONTAINER_SCROLL_END);
     };
 
+    handleDownloadDocument = (transactionId) => {
+        DocumentService.download(transactionId).then(response => {
+            const blob = new Blob([response.data], {type: 'application/octet-stream'});
+
+            saveAs(blob, response.headers['x-filename']);
+        });
+    };
+
     getCurrentStateFromStore = () => {
         return {
-            theme: store.getState().theme
+            theme: store.getState().theme,
+            profile: store.getState().profile
         };
+    };
+
+    getDocumentsForUser = () => {
+        const {profile} = this.state;
+
+        if (_.isEmpty(profile) || !profile.id) return;
+
+        const form = {
+            sort: '-updated_at',
+            userId: profile.id,
+            page: 1,
+            pageSize: 5
+        };
+
+        DocumentService.get('', form)
+            .then(response => {
+                if (response.data && response.data.length) {
+                    response.data.forEach(document => {
+                        Notification.toPanel({
+                            category: 'Документы',
+                            title: document.name,
+                            // link: `/documents/${document.transactionId}`,
+                            transactionId: document.transactionId,
+                            message: DOCUMENT_STATUS[document.status],
+                            buttons: [{
+                                label: 'Скачать',
+                                onClick: () => this.handleDownloadDocument(document.transactionId)
+                            }]
+                        });
+                    });
+                }
+            });
     };
 
     updateStateFromStore = () => {
@@ -96,6 +142,10 @@ export default class App extends Component {
 
         if (this.state.theme !== currentState.theme) {
             this.setState({theme: currentState.theme});
+        }
+
+        if (currentState.profile && !_.isEqual(currentState.profile, this.state.profile)) {
+            this.setState({profile: currentState.profile}, this.getDocumentsForUser);
         }
     };
 

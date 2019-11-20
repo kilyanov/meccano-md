@@ -311,4 +311,9 @@ $namespace: '.select';
     &__selected-value i {
         background-color: $border-color-dark;
     }
+
+    &--selected-name {
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
 }

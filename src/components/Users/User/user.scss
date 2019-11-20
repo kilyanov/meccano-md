@@ -30,4 +30,16 @@
             color: $fontGrey;
         }
     }
+
+    &__buttons {
+        display: flex;
+        flex-direction: column;
+        flex: 0 0 10%;
+        align-items: center;
+        justify-content: center;
+    }
+
+    &__button + &__button {
+        margin-top: 10px;
+    }
 }

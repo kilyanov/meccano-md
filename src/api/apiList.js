@@ -18,9 +18,7 @@ const List = {
         type: '/source/type'
     },
     auth: {
-        login: '/auth/login',
-        create: '/auth/create',
-        roles: '/auth/roles'
+        login: '/auth/login'
     },
     project: {
         project: '/project',
@@ -31,7 +29,9 @@ const List = {
     },
     user: {
         user: '/user',
-        profile: '/user/profile'
+        profile: '/user/profile',
+        create: '/user/create',
+        roles: '/user/roles'
     },
     export:  '/export',
     transfer: {

@@ -1,6 +1,7 @@
 @import "../../../assets/styles/variables";
 
 $panelWidth: 400px;
+$headerHeight: 100px;
 
 .notifications-panel {
   position: fixed;
@@ -11,7 +12,7 @@ $panelWidth: 400px;
   max-width: 100%;
   color: $white;
   transition: right .3s ease-in-out;
-  z-index: 4;
+  z-index: 6;
 
   &--open {
     right: 0;
@@ -21,7 +22,8 @@ $panelWidth: 400px;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 30px;
+    height: $headerHeight;
+    padding: 0 30px;
     background-color: rgba(0, 0, 0, .8);
   }
 
@@ -50,11 +52,26 @@ $panelWidth: 400px;
   }
 
   &__notifications {
-    background: rgba(81, 81, 81, .8);
+    max-height: calc(100% - #{$headerHeight});
+    //background: rgba(81, 81, 81, .8);
+    background-color: rgba(0, 0, 0, 0.8);
   }
 
   &__footer {
     height: 100%;
     background-color: rgba(0, 0, 0, .8);
+  }
+
+  &__category-name {
+    position: sticky;
+    position: -webkit-sticky;
+    top: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 50px;
+    padding: 0 20px;
+    background: #5c5c5c;
+    z-index: 1;
   }
 }

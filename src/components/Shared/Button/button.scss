@@ -42,9 +42,9 @@ $namespace: '.button';
   }
 
   &--disabled {
-    background-color: #F2F2F2;
-    border-color: #D9D9D9;
-    color: $white-dark;
+    background-color: $gray-three;
+    border-color: $gray;
+    color: $fontGrey;
     cursor: not-allowed;
     pointer-events: none;
     box-shadow: none;
@@ -72,5 +72,9 @@ $namespace: '.button';
   &--success {
     background-color: $emerald;
     border-color: $emerald;
+  }
+
+  &--disabled {
+    color: $white-dark;
   }
 }

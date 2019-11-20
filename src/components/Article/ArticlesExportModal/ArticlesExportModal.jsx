@@ -15,7 +15,8 @@ export default class ArticlesExportModal extends Component {
     static propTypes= {
         projectId: PropTypes.string.isRequired,
         selectedArticleIds: PropTypes.oneOfType([PropTypes.array, PropTypes.string]),
-        onClose: PropTypes.func.isRequired
+        onClose: PropTypes.func.isRequired,
+        onUpdateParent: PropTypes.func.isRequired
     };
 
     state = {
@@ -81,7 +82,10 @@ export default class ArticlesExportModal extends Component {
                             NotificationManager.success('Документ успешно заказан', 'Экспорт статей');
                         }
 
-                        if (this.isMount) this.setState({inProgress: false}, this.props.onClose);
+                        if (this.isMount) this.setState({inProgress: false}, () => {
+                            this.props.onUpdateParent();
+                            this.props.onClose();
+                        });
                     })
                     .catch(() => {
                         if (this.isMount) this.setState({inProgress: false});

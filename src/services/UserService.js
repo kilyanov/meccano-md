@@ -1,7 +1,12 @@
 import API from '../api/api';
-import ApiList from '../api/apiList';
+import {createURLGenerator} from '../api/apiList';
 
-export default {
-    get: () => API.get(ApiList.user.user),
-    getProfile: () => API.get(ApiList.user.profile)
+const urlGenerator = createURLGenerator('user');
+
+export const UserService = {
+    get: (id) => API.get(urlGenerator('user')(id)),
+    getProfile: () => API.get(urlGenerator('profile')()),
+    create: (form) => API.post(urlGenerator('create')(), form),
+    update: (id, form) => API.put(urlGenerator('user')(id), form),
+    roles: () => API.get(urlGenerator('roles')())
 };

@@ -5,6 +5,7 @@ import './notifications-panel.scss';
 import store from '../../../redux/store';
 import {closeNotificationPanel, deleteNotification} from '../../../redux/actions/notificationsPanel';
 import PanelNotification from './PanelNotification/PanelNotification';
+import {InitScrollbar} from "../../../helpers/Tools";
 
 const cls = new Bem('notifications-panel');
 
@@ -22,6 +23,11 @@ class NotificationsPanel extends Component {
         this.currentDateTimeInterval = setInterval(() => {
             this.setState({currentDateTime: moment()});
         }, 30000);
+        this.initScrollbars();
+    }
+
+    componentDidUpdate() {
+        this.initScrollbars();
     }
 
     componentWillUnmount() {
@@ -79,6 +85,13 @@ class NotificationsPanel extends Component {
         return parseInt(style.right) === 0;
     };
 
+    initScrollbars = () => {
+        const scroll = InitScrollbar(this.listRef);
+
+        if (scroll) this.scrollBar = scroll;
+        else if (this.scrollBar) this.scrollBar.update();
+    };
+
     hasListener = false;
 
     currentDateTimeInterval = null;
@@ -90,6 +103,7 @@ class NotificationsPanel extends Component {
     render() {
         const {notificationsPanel} = this.props;
         const {currentDateTime} = this.state;
+        const categories = _.groupBy(notificationsPanel.notifications, 'category');
 
         return (
             <aside
@@ -109,14 +123,23 @@ class NotificationsPanel extends Component {
                     </div>
                 </section>
 
-                <section {...cls('notifications')}>
-                    {notificationsPanel.notifications.map((notification) => (
-                        <PanelNotification
-                            key={notification.id}
-                            notification={notification}
-                            onClose={this.handleCloseNotification}
-                        />
-                    ))}
+                <section {...cls('notifications')} ref={ref => this.listRef = ref}>
+                    {Object
+                        .keys(categories)
+                        .sort((a) => a === 'Уведомления' ? -1 : 1)
+                        .map((category, categoryIndex) => (
+                            <div {...cls('category')} key={categoryIndex}>
+                                <div {...cls('category-name')}>{category}</div>
+
+                                {categories[category].map(notification => (
+                                    <PanelNotification
+                                        key={notification.id}
+                                        notification={notification}
+                                        onClose={this.handleCloseNotification}
+                                    />
+                                ))}
+                            </div>
+                        ))}
                 </section>
 
                 <section {...cls('footer')} />

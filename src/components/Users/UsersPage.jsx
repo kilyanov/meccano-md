@@ -3,7 +3,7 @@ import Page from "../Shared/Page/Page";
 import User from "./User/User";
 import InlineButton from "../Shared/InlineButton/InlineButton";
 import UserModal from "./UserModal/UserModal";
-import UserService from "../../services/UserService";
+import {UserService} from "../../services";
 import Loader from "../Shared/Loader/Loader";
 
 const classes = new Bem('users-page');
@@ -21,7 +21,10 @@ export default class UsersPage extends Component {
     }
 
     handleCloseUserModal = () => {
-        this.setState({openUserModal: false, selectedUser: null});
+        this.setState({
+            openUserModal: false,
+            selectedUser: null
+        });
     };
 
     handleAddUser = () => {
@@ -29,7 +32,10 @@ export default class UsersPage extends Component {
     };
 
     handleChangeUser = (user) => {
-        this.setState({openUserModal: true, selectedUser: user});
+        this.setState({
+            openUserModal: true,
+            selectedUser: user
+        });
     };
 
     handleDeleteUser = (userId) => {
@@ -69,6 +75,7 @@ export default class UsersPage extends Component {
 
                 {openUserModal && (
                     <UserModal
+                        userId={selectedUser ? selectedUser.id : ''}
                         onClose={this.handleCloseUserModal}
                         selectedUser={selectedUser}
                     />

@@ -14,8 +14,8 @@ export default class PanelNotification extends Component {
 
     render() {
         const {notification, onClose} = this.props;
-        const Wrapper = notification.link ? Link : React.createElement('div');
         const handleClick = () => {
+            if (notification.onClick) notification.onClick(notification);
             if (notification.link) {
                 setTimeout(() => {
                     store.dispatch(closeNotificationPanel());
@@ -23,22 +23,38 @@ export default class PanelNotification extends Component {
                 }, 100);
             }
         };
+        const children = (
+            <>
+                <section {...cls('body')}>
+                    <div {...cls('data')} onClick={() => handleClick()}>
+                        <h4 {...cls('title')}>{notification.title}</h4>
+                        <p {...cls('message')}>{notification.message}</p>
+                    </div>
 
-        return (
-            <Wrapper
-                {...cls()}
-                to={notification.link}
-            >
-                <div {...cls('data')} onClick={() => handleClick()}>
-                    <h4 {...cls('title')}>{notification.title}</h4>
-                    <p {...cls('message')}>{notification.message}</p>
-                </div>
+                    <button
+                        {...cls('close-button')}
+                        onClick={() => onClose(notification)}
+                    >✕</button>
+                </section>
 
-                <button
-                    {...cls('button', 'close')}
-                    onClick={() => onClose(notification)}
-                >✕</button>
-            </Wrapper>
+                {(notification.buttons && notification.buttons.length) && (
+                    <section {...cls('buttons')}>
+                        {notification.buttons.map((button, buttonIndex) => (
+                            <button
+                                key={buttonIndex}
+                                type='button'
+                                {...cls('button')}
+                                onClick={() => button.onClick()}
+                                title={button.title}
+                            >{button.label || button.name || button.title}</button>
+                        ))}
+                    </section>
+                )}
+            </>
         );
+
+        return notification.link ?
+            <Link {...cls()} to={notification.link} >{children}</Link> :
+            <div {...cls()}>{children}</div>;
     }
 }

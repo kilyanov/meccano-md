@@ -308,7 +308,7 @@ export default class ProjectPage extends Component {
                             text={!countSelected || isAllArticlesSelected ? 'Выгрузить все' :
                                 `Выгрузить ${Plural(
                                     countSelected, 
-                                    `${countSelected} ` ,
+                                    `${countSelected} `,
                                     ['статью', 'статьи', 'статей']
                                 )}`}
                             {...cls('upload-btn')}
@@ -429,6 +429,7 @@ export default class ProjectPage extends Component {
                     <ArticlesExportModal
                         projectId={this.projectId}
                         selectedArticleIds={isAllArticlesSelected || selectedItemIds}
+                        onUpdateParent={this.handleClearSelected}
                         onClose={() => this.setState({showUploadArticlesModal: false})}
                     />
                 )}
