@@ -9,6 +9,7 @@ import {NotificationManager} from 'react-notifications';
 import Loader from '../../Shared/Loader/Loader';
 import ListEndedStub from '../../Shared/ListEndedStub/ListEndedStub';
 import Form from '../../Form/Form/Form';
+import {PERMISSION} from "../../../constants/Permissions";
 
 const columnSettings = {
     name: {
@@ -194,6 +195,7 @@ export default class SettingsSourceType extends Component {
                 inProgress={inProgress}
             >
                 <PropertiesTable
+                    editPermissions={[PERMISSION.editSettings]}
                     columnSettings={columnSettings}
                     items={items}
                     onEditItem={this.handleEditItem}

@@ -2,6 +2,8 @@ import React from 'react';
 import ProfileIcon from "../../Shared/SvgIcons/ProfileIcon";
 import './user.scss';
 import InlineButton from "../../Shared/InlineButton/InlineButton";
+import Access from "../../Shared/Access/Access";
+import {PERMISSION} from "../../../constants/Permissions";
 
 const cls = new Bem('user');
 const User = ({user, onChange, onDelete}) => {
@@ -22,18 +24,20 @@ const User = ({user, onChange, onDelete}) => {
                 </div>
             </section>
             <section {...cls('buttons')}>
-                <InlineButton
-                    {...cls('button')}
-                    onClick={() => onChange(user)}
-                    small
-                >Изменить</InlineButton>
+                <Access permissions={[PERMISSION.editUsers]}>
+                    <InlineButton
+                        {...cls('button')}
+                        onClick={() => onChange(user)}
+                        small
+                    >Изменить</InlineButton>
 
-                <InlineButton
-                    {...cls('button')}
-                    onClick={() => onDelete(user.id)}
-                    danger
-                    small
-                >Удалить</InlineButton>
+                    <InlineButton
+                        {...cls('button')}
+                        onClick={() => onDelete(user.id)}
+                        danger
+                        small
+                    >Удалить</InlineButton>
+                </Access>
             </section>
         </div>
     );

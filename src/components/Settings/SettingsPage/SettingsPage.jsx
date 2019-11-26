@@ -7,6 +7,8 @@ import Loader from '../../Shared/Loader/Loader';
 import InputText from '../../Form/InputText/InputText';
 import MenuHamburger from '../../Shared/MenuHamburger/MenuHamburger';
 import SettingsLeftSidebar from './SettingsLeftSidebar/SettingsLeftSidebar';
+import Access from "../../Shared/Access/Access";
+import {PERMISSION} from "../../../constants/Permissions";
 
 const cls = new Bem('settings-page');
 
@@ -60,11 +62,13 @@ const SettingsPage = ({
                                 </div>
 
                                 {withAddButton && (
-                                    <Button
-                                        {...cls('button', 'add')}
-                                        text={addButtonTitle}
-                                        onClick={onAdd}
-                                    />
+                                    <Access permissions={[PERMISSION.editSettings]}>
+                                        <Button
+                                            {...cls('button', 'add')}
+                                            text={addButtonTitle}
+                                            onClick={onAdd}
+                                        />
+                                    </Access>
                                 )}
                             </div>
 

@@ -6,6 +6,7 @@ import SettingsPage from '../SettingsPage/SettingsPage';
 import {NotificationManager} from 'react-notifications';
 import ListEndedStub from '../../Shared/ListEndedStub/ListEndedStub';
 import SettingsSourceModal from './SettingsSourceModal';
+import {PERMISSION} from "../../../constants/Permissions";
 
 const columnSettings = {
     name: {
@@ -230,6 +231,7 @@ export default class SettingsSourceList extends Component {
                 inProgress={inProgress}
             >
                 <PropertiesTable
+                    editPermissions={[PERMISSION.editSettings]}
                     columnSettings={columnSettings}
                     items={items}
                     onEditItem={this.handleEditItem}

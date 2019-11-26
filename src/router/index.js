@@ -21,6 +21,7 @@ import SettingsSourceList from '../components/Settings/SettingsSource/SettingsSo
 import SettingsSourceType from '../components/Settings/SettingsSource/SettingsSourceType';
 import SettingsAuthors from '../components/Settings/SettingsAuthors/SettingsAuthors';
 import UsersPage from "../components/Users/UsersPage";
+import {PERMISSION} from "../constants/Permissions";
 
 export default (
     <Router basename='/'>
@@ -30,27 +31,88 @@ export default (
                 <AuthRoute exact component={HomePage} path="/"/>
 
                 <AuthRoute exact component={ProjectPage} path="/project/:id"/>
-                <AuthRoute exact component={ProjectCreatePage} path="/project-create/:id"/>
-                <AuthRoute exact component={DocumentsPage} path="/documents/:id?"/>
-
                 <AuthRoute exact component={ArticleCreatePage} path="/project/:projectId/article/:articleId?"/>
+                <AuthRoute
+                    exact
+                    permissions={[PERMISSION.createProject]}
+                    component={ProjectCreatePage}
+                    path="/project-create/:id"
+                />
 
-                <AuthRoute exact component={SettingsPage} path="/settings"/>
+                <AuthRoute
+                    exact
+                    permissions={[PERMISSION.viewDocuments, PERMISSION.editDocuments]}
+                    component={DocumentsPage}
+                    path="/documents/:id?"
+                />
 
-                <AuthRoute exact component={SettingsImport} path="/settings/templates/import"/>
-                <AuthRoute exact component={SettingsExport} path="/settings/templates/export"/>
+                <AuthRoute
+                    exact
+                    permissions={[PERMISSION.viewSettings, PERMISSION.editSettings]}
+                    component={SettingsPage}
+                    path="/settings"
+                />
+                <AuthRoute
+                    exact
+                    permissions={[PERMISSION.viewSettings, PERMISSION.editSettings]}
+                    component={SettingsImport}
+                    path="/settings/templates/import"
+                />
+                <AuthRoute
+                    exact
+                    permissions={[PERMISSION.viewSettings, PERMISSION.editSettings]}
+                    component={SettingsExport}
+                    path="/settings/templates/export"
+                />
+                <AuthRoute
+                    exact
+                    permissions={[PERMISSION.viewSettings, PERMISSION.editSettings]}
+                    component={SettingsCountry}
+                    path="/settings/location/country"
+                />
+                <AuthRoute
+                    exact
+                    permissions={[PERMISSION.viewSettings, PERMISSION.editSettings]}
+                    component={SettingsFederal}
+                    path="/settings/location/federal"
+                />
+                <AuthRoute
+                    exact
+                    permissions={[PERMISSION.viewSettings, PERMISSION.editSettings]}
+                    component={SettingsRegion}
+                    path="/settings/location/region"
+                />
+                <AuthRoute
+                    exact
+                    permissions={[PERMISSION.viewSettings, PERMISSION.editSettings]}
+                    component={SettingsCity}
+                    path="/settings/location/city"
+                />
+                <AuthRoute
+                    exact
+                    permissions={[PERMISSION.viewSettings, PERMISSION.editSettings]}
+                    component={SettingsSourceList}
+                    path="/settings/source/list"
+                />
+                <AuthRoute
+                    exact
+                    permissions={[PERMISSION.viewSettings, PERMISSION.editSettings]}
+                    component={SettingsSourceType}
+                    path="/settings/source/type"
+                />
+                <AuthRoute
+                    exact
+                    permissions={[PERMISSION.viewSettings, PERMISSION.editSettings]}
+                    component={SettingsAuthors}
+                    path="/settings/authors"
+                />
 
-                <AuthRoute exact component={SettingsCountry} path="/settings/location/country"/>
-                <AuthRoute exact component={SettingsFederal} path="/settings/location/federal"/>
-                <AuthRoute exact component={SettingsRegion} path="/settings/location/region"/>
-                <AuthRoute exact component={SettingsCity} path="/settings/location/city"/>
-
-                <AuthRoute exact component={SettingsSourceList} path="/settings/source/list"/>
-                <AuthRoute exact component={SettingsSourceType} path="/settings/source/type"/>
-
-                <AuthRoute exact component={SettingsAuthors} path="/settings/authors"/>
-
-                <AuthRoute exact component={UsersPage} path="/users"/>
+                <AuthRoute
+                    exact
+                    permissions={[PERMISSION.viewUsers, PERMISSION.editUsers]}
+                    component={UsersPage}
+                    path="/users"
+                />
 
                 <AuthRoute component={NotFoundPage}/>
             </Switch>

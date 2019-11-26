@@ -5,6 +5,8 @@ import InlineButton from "../Shared/InlineButton/InlineButton";
 import UserModal from "./UserModal/UserModal";
 import {UserService} from "../../services";
 import Loader from "../Shared/Loader/Loader";
+import Access from "../Shared/Access/Access";
+import {PERMISSION} from "../../constants/Permissions";
 
 const classes = new Bem('users-page');
 
@@ -48,7 +50,7 @@ export default class UsersPage extends Component {
                 users: response.data,
                 inProgress: false
             });
-        })
+        });
     };
 
     render() {
@@ -57,9 +59,11 @@ export default class UsersPage extends Component {
         return (
             <Page {...classes()} withBar>
                 <section {...classes('filter-panel')}>
-                    <InlineButton
-                        onClick={this.handleAddUser}
-                    >+ Добавить</InlineButton>
+                    <Access permissions={[PERMISSION.editUsers]}>
+                        <InlineButton
+                            onClick={this.handleAddUser}
+                        >+ Добавить</InlineButton>
+                    </Access>
                 </section>
 
                 <section {...classes('list')}>

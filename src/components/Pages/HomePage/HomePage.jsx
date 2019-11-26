@@ -13,10 +13,16 @@ import {ProjectService} from '../../../services';
 import Loader from '../../Shared/Loader/Loader';
 import Page from '../../Shared/Page/Page';
 import DocumentIcon from '../../Shared/SvgIcons/DocumentIcon';
+import {PERMISSION} from "../../../constants/Permissions";
+import Access from "../../Shared/Access/Access";
 
 class HomePage extends Component {
     static propTypes = {
         profile: PropTypes.object
+    };
+
+    static defaultProps = {
+        profile: {}
     };
 
     state = {
@@ -51,11 +57,13 @@ class HomePage extends Component {
             id: 'articles',
             icon: <EarthIcon/>,
             name: 'Статьи',
-            children: []
+            children: [],
+            permissions: ['HIDDEN']
         }, {
             id: 'projects',
             icon: <ProjectsIcon/>,
             name: 'Проекты',
+            permissions: [PERMISSION.all],
             children: this.state.projects.map(({id, name}) => ({
                 name,
                 link: `/project/${id}`,
@@ -65,38 +73,43 @@ class HomePage extends Component {
             id: 'documents',
             icon: <DocumentIcon/>,
             name: 'Документы',
-            link: '/documents'
+            link: '/documents',
+            permissions: [PERMISSION.viewDocuments, PERMISSION.editDocuments]
         }, {
             id: 'users',
             icon: <UsersIcon/>,
             name: 'Пользователи',
-            link: '/users'
+            link: '/users',
+            permissions: [PERMISSION.viewUsers, PERMISSION.editUsers]
         }, {
             id: 'settings',
             icon: <SettingsIcon/>,
             name: 'Настройки',
-            link: '/settings'
+            link: '/settings',
+            permissions: [PERMISSION.viewSettings, PERMISSION.editSettings]
         }]
     );
 
     render() {
         const cls = new Bem('home-page');
-        const {profile} = this.props;
         const {showProjectCreateModal, inProgress} = this.state;
+        const {profile} = this.props;
         const menu = this.getMenu();
 
         return (
             <Page {...cls()} withBar>
                 <h1 {...cls('title')}>Добро пожаловать, {_.get(profile, 'username', '')}!</h1>
-                <h5 {...cls('sub-title')}>
-                    Выберите ваш текущий проект, или
-                    {' '}
-                    <a
-                        {...cls('link')}
-                        role='button'
-                        onClick={() => this.setState({ showProjectCreateModal: true })}
-                    >создайте новый</a>
-                </h5>
+                <Access permissions={[PERMISSION.createProject]}>
+                    <h5 {...cls('sub-title')}>
+                        Выберите ваш текущий проект, или
+                        {' '}
+                        <a
+                            {...cls('link')}
+                            role='button'
+                            onClick={() => this.setState({ showProjectCreateModal: true })}
+                        >создайте новый</a>
+                    </h5>
+                </Access>
 
                 <div {...cls('row', '', ['row', 'row--align-h-center'])}>
                     <div {...cls('column', '', 'col-md-6')}>

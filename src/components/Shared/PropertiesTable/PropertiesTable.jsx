@@ -7,6 +7,7 @@ const cls = new Bem('properties-table');
 
 export default class PropertiesTable extends Component {
     static propTypes = {
+        editPermissions: PropTypes.array.isRequired,
         columnSettings: PropTypes.object.isRequired,
         items: PropTypes.array.isRequired,
         onEditItem: PropTypes.func,
@@ -37,6 +38,7 @@ export default class PropertiesTable extends Component {
                         <PropertiesTableRow
                             key={item.id || itemIndex}
                             item={item}
+                            editPermissions={this.props.editPermissions}
                             columnSettings={columnSettings}
                             onClick={this.props.onClickItem}
                             onEdit={this.props.onEditItem}

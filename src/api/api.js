@@ -36,7 +36,8 @@ httpService.interceptors.response.use(
             const data = response.data instanceof ArrayBuffer ? arrayBufferToArray(response.data) : response.data;
 
             console.log(data);
-            data.forEach(msg => Notify.error(msg.message, 'Ошибка'));
+            if (_.isArray(data)) data.forEach(msg => Notify.error(msg.message, 'Ошибка'));
+            if (_.isObject(data)) Notify.error(data.message, 'Ошибка');
         }
 
         return Promise.reject(error.response);

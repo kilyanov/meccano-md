@@ -7,6 +7,7 @@ import PropertiesTable from '../../../Shared/PropertiesTable/PropertiesTable';
 import PromiseDialogModal from '../../../Shared/PromiseDialogModal/PromiseDialogModal';
 import Loader from '../../../Shared/Loader/Loader';
 import SettingsExportModal from './SettingsExportModal/SettingsExportModal';
+import {PERMISSION} from "../../../../constants/Permissions";
 
 const columnSettings = {
     name: {
@@ -82,6 +83,7 @@ export default class SettingsExport extends Component {
                 onAdd={() => this.setState({showItemModal: true, selectedItem: null})}
             >
                 <PropertiesTable
+                    editPermissions={[PERMISSION.editSettings]}
                     columnSettings={columnSettings}
                     items={this.state.items}
                     onEditItem={this.handleClickItem}

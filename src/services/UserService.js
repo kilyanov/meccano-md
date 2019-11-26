@@ -5,8 +5,8 @@ const urlGenerator = createURLGenerator('user');
 
 export const UserService = {
     get: (id) => API.get(urlGenerator('user')(id)),
-    getProfile: () => API.get(urlGenerator('profile')()),
+    getProfile: (id) => API.get(urlGenerator('profile')(id ? {id} : {})),
     create: (form) => API.post(urlGenerator('create')(), form),
-    update: (id, form) => API.put(urlGenerator('user')(id), form),
+    update: (form, id) => API.put(urlGenerator('user')(id), form),
     roles: () => API.get(urlGenerator('roles')())
 };

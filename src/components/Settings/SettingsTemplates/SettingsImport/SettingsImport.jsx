@@ -7,6 +7,7 @@ import SettingsImportModal from './SettingsImportModal/SettingsImportModal';
 import TransferService from '../../../../services/TransferService';
 import Loader from '../../../Shared/Loader/Loader';
 import {NotificationManager} from 'react-notifications';
+import {PERMISSION} from "../../../../constants/Permissions";
 
 const columnSettings = {
     name: {
@@ -82,6 +83,7 @@ export default class SettingsImport extends Component {
                 onAdd={() => this.setState({showItemModal: true, selectedItem: null})}
             >
                 <PropertiesTable
+                    editPermissions={[PERMISSION.editSettings]}
                     columnSettings={columnSettings}
                     items={this.state.items}
                     onEditItem={this.handleClickItem}

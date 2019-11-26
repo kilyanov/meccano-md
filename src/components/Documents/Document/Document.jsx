@@ -8,6 +8,8 @@ import {saveAs} from 'file-saver';
 import Loader from '../../Shared/Loader/Loader';
 import './document.scss';
 import {FILE_TYPE_ICON} from '../../../constants/FileTypeIcons';
+import Access from "../../Shared/Access/Access";
+import {PERMISSION} from "../../../constants/Permissions";
 
 const cls = new Bem('document');
 
@@ -59,12 +61,14 @@ const Document = ({className, document, highlighted, onDelete}) => {
                     </button>
                 )}
 
-                <button
-                    {...cls('button', 'danger')}
-                    onClick={() => onDelete(document)}
-                >
-                    <TrashIcon {...cls('button-icon')} />
-                </button>
+                <Access permissions={[PERMISSION.editDocuments]}>
+                    <button
+                        {...cls('button', 'danger')}
+                        onClick={() => onDelete(document)}
+                    >
+                        <TrashIcon {...cls('button-icon')} />
+                    </button>
+                </Access>
             </section>
         </div>
     );

@@ -1,5 +1,4 @@
 import React, {Component} from 'react';
-import {LocationService} from '../../../services';
 import PromiseDialogModal from '../../Shared/PromiseDialogModal/PromiseDialogModal';
 import ConfirmModal from '../../Shared/ConfirmModal/ConfirmModal';
 import PropertiesTable from '../../Shared/PropertiesTable/PropertiesTable';
@@ -7,10 +6,10 @@ import SettingsPage from '../SettingsPage/SettingsPage';
 import InputText from '../../Form/InputText/InputText';
 import {NotificationManager} from 'react-notifications';
 import Loader from '../../Shared/Loader/Loader';
-import Select from '../../Form/Select/Select';
 import ListEndedStub from '../../Shared/ListEndedStub/ListEndedStub';
 import Form from '../../Form/Form/Form';
 import {AuthorService} from '../../../services';
+import {PERMISSION} from "../../../constants/Permissions";
 
 const columnSettings = {
     name: {
@@ -177,14 +176,12 @@ export default class SettingsAuthors extends Component {
         const {
             form,
             items,
-            regionItems,
             showItemModal,
             searchQuery,
             pagination,
             inProgress,
             modalInProgress
         } = this.state;
-        const selectedRegion = regionItems.find(({value}) => value === form.region_id);
 
         return (
             <SettingsPage
@@ -198,6 +195,7 @@ export default class SettingsAuthors extends Component {
                 inProgress={inProgress}
             >
                 <PropertiesTable
+                    editPermissions={[PERMISSION.editSettings]}
                     columnSettings={columnSettings}
                     items={items}
                     onEditItem={this.handleEditItem}

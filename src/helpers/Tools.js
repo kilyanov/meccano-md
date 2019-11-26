@@ -1,5 +1,4 @@
 import PerfectScrollbar from 'perfect-scrollbar';
-import API from '../api/api';
 import {EventEmitter} from './EventEmitter';
 import {EVENTS} from '../constants/Events';
 
@@ -33,17 +32,6 @@ export const InitScrollbar = (node, options) => {
     }
 };
 
-export const prepareRequest = (type = 'get', url, form) => {
-    return API[type](url, form);
-};
-
-export const arrayMove = (array, from, to) => {
-    const newArray = array.slice();
-
-    newArray.splice(to < 0 ? newArray.length + to : to, 0, newArray.splice(from, 1)[0]);
-    return newArray;
-};
-
 export const Plural = (n, base, words) => {
     const number = Math.abs(parseInt(n));
 
@@ -72,4 +60,10 @@ export const QueueManager = {
     remove(id) {
         EventEmitter.emit(EVENTS.QUEUE_MANAGER.REMOVE, id);
     }
+};
+
+export const isAccess = (arrayOfPermissions, profile) => {
+    if (!profile || !profile.permissions) return false;
+
+    return !!profile.permissions.filter(({name}) => arrayOfPermissions.includes(name)).length;
 };

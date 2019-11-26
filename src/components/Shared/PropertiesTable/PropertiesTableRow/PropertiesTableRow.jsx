@@ -2,9 +2,10 @@ import React from 'react';
 import './properties-table-item.scss';
 import TrashIcon from '../../SvgIcons/TrashIcon';
 import PencilIcon from '../../SvgIcons/PencilIcon';
+import Access from "../../Access/Access";
 
 const cls = new Bem('properties-table-item');
-const PropertiesTableRow = ({item, columnSettings, onEdit, onDelete, onClick}) => (
+const PropertiesTableRow = ({item, columnSettings, onEdit, onDelete, onClick, editPermissions}) => (
     <div {...cls()} onClick={(e) => {
         if (!e.target.classList.contains(cls('button').className)) {
             onClick(item);
@@ -34,18 +35,20 @@ const PropertiesTableRow = ({item, columnSettings, onEdit, onDelete, onClick}) =
         </div>
 
         <div {...cls('buttons')}>
-            <button
-                {...cls('button')}
-                onClick={() => onEdit(item)}
-            >
-                <PencilIcon {...cls('icon')}/>
-            </button>
-            <button
-                {...cls('button')}
-                onClick={() => onDelete(item)}
-            >
-                <TrashIcon {...cls('icon')}/>
-            </button>
+            <Access permissions={editPermissions}>
+                <button
+                    {...cls('button')}
+                    onClick={() => onEdit(item)}
+                >
+                    <PencilIcon {...cls('icon')}/>
+                </button>
+                <button
+                    {...cls('button')}
+                    onClick={() => onDelete(item)}
+                >
+                    <TrashIcon {...cls('icon')}/>
+                </button>
+            </Access>
         </div>
     </div>
 );

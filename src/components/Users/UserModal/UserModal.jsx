@@ -32,7 +32,7 @@ class UserModal extends Component {
         const {userId} = this.props;
 
         if (userId) {
-            UserService.get(userId).then(response => {
+            UserService.getProfile(userId).then(response => {
                 const form = response.data;
 
                 form.roles = form.roles.map(({name, description}) => ({name, value: name, description}));
@@ -52,13 +52,13 @@ class UserModal extends Component {
     handleSubmit = () => {
         const {userId} = this.props;
         const isEdit  = !!userId;
+        const method = isEdit ? 'update' : 'create';
         const {form} = this.state;
 
         form.roles = form.roles.map(({value}) => value);
 
         this.setState({inProgress: true}, () => {
-            UserService
-                .create(form)
+            UserService[method](form, userId)
                 .then(() => {
                     NotificationManager.success(
                         `Пользователь успешно ${isEdit ? 'обновлен' : 'создан'}`,
@@ -99,7 +99,7 @@ class UserModal extends Component {
                     />
 
                     <Select
-                        label='Права'
+                        label='Роли'
                         options={this.roleOptions}
                         selected={form.roles}
                         onChange={value => this.handleChangeForm(value, 'roles')}

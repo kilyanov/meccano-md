@@ -10,6 +10,7 @@ import Loader from '../../Shared/Loader/Loader';
 import Select from '../../Form/Select/Select';
 import ListEndedStub from '../../Shared/ListEndedStub/ListEndedStub';
 import Form from '../../Form/Form/Form';
+import {PERMISSION} from "../../../constants/Permissions";
 
 const columnSettings = {
     name: {
@@ -213,6 +214,7 @@ export default class SettingsCity extends Component {
                 inProgress={inProgress}
             >
                 <PropertiesTable
+                    editPermissions={[PERMISSION.editSettings]}
                     columnSettings={columnSettings}
                     items={items}
                     onEditItem={this.handleEditItem}
