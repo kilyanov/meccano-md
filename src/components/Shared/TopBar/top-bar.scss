@@ -116,7 +116,7 @@ $namespace: '.top-bar';
     &:hover {
       background-color: $shamrock;
 
-      svg {
+      & > svg {
         fill: #fff;
       }
     }

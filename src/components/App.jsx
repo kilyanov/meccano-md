@@ -17,6 +17,7 @@ import {THEME_TYPE} from '../constants/ThemeType';
 import Notification from "../helpers/Notification";
 import {DOCUMENT_STATUS} from "../constants/DocumentStatus";
 import {saveAs} from "file-saver";
+import {getDocuments} from "../redux/actions/document";
 
 const cls = new Bem('app');
 
@@ -121,6 +122,7 @@ export default class App extends Component {
             .then(response => {
                 if (response.data && response.data.length) {
                     response.data.forEach(document => {
+                        document.date = document.updatedAt;
                         Notification.toPanel({
                             category: 'Документы',
                             title: document.name,
@@ -144,8 +146,12 @@ export default class App extends Component {
             this.setState({theme: currentState.theme});
         }
 
-        if (currentState.profile && !_.isEqual(currentState.profile, this.state.profile)) {
-            this.setState({profile: currentState.profile}, this.getDocumentsForUser);
+        if (currentState.profile && currentState.profile.id !== this.state.profile.id) {
+            console.log(this.state.profile, currentState.profile);
+            this.setState({profile: currentState.profile}, () => {
+                store.dispatch(getDocuments(currentState.profile.id));
+                // this.getDocumentsForUser();
+            });
         }
     };
 

@@ -8,6 +8,10 @@ import RadioButton from '../../Form/RadioButton/RadioButton';
 import './articles-export-modal.scss';
 import Notification from '../../../helpers/Notification';
 import {NotificationManager} from 'react-notifications';
+import {OperatedNotification} from "../../../helpers/Tools";
+import store from "../../../redux/store";
+import {openNotificationPanel} from "../../../redux/actions/notificationsPanel";
+import InputText from "../../Form/InputText/InputText";
 
 const cls = new Bem('articles-export-modal');
 
@@ -23,6 +27,7 @@ export default class ArticlesExportModal extends Component {
         templates: [],
         selectedType: null,
         selectedTemplateId: null,
+        filename: null,
         inProgress: true
     };
 
@@ -57,7 +62,7 @@ export default class ArticlesExportModal extends Component {
 
     handleSubmit = () => {
         const {projectId, selectedArticleIds} = this.props;
-        const {selectedTemplateId} = this.state;
+        const {selectedTemplateId, filename} = this.state;
 
         if (selectedTemplateId) {
             this.setState({inProgress: true}, () => {
@@ -68,7 +73,8 @@ export default class ArticlesExportModal extends Component {
                     .articles(
                         projectId,
                         selectedTemplateId,
-                        articleIds
+                        articleIds,
+                        filename
                     )
                     .then(({data}) => {
                         if (data.result === 'toQueue') {
@@ -76,10 +82,16 @@ export default class ArticlesExportModal extends Component {
                                 title: 'Выгрузка статей',
                                 link: `/documents/${data.transactionId}`,
                                 transactionId: data.transactionId,
-                                message: 'Заказаана выгрузка статей'
+                                message: 'Заказана выгрузка статей'
                             });
 
-                            NotificationManager.success('Документ успешно заказан', 'Экспорт статей');
+                            OperatedNotification.success({
+                                title: 'Экспорт статей',
+                                message: 'Документ успешно заказан',
+                                submitButtonText: 'Показать документы',
+                                timeOut: 10000,
+                                onSubmit: () => store.dispatch(openNotificationPanel())
+                            });
                         }
 
                         if (this.isMount) this.setState({inProgress: false}, () => {
@@ -98,7 +110,7 @@ export default class ArticlesExportModal extends Component {
 
     render() {
         const {onClose} = this.props;
-        const {inProgress, templates, selectedTemplateId, selectedType} = this.state;
+        const {inProgress, filename, templates, selectedTemplateId, selectedType} = this.state;
 
         return (
             <ConfirmModal
@@ -109,6 +121,7 @@ export default class ArticlesExportModal extends Component {
                 submitText='Экспорт'
                 onSubmit={this.handleSubmit}
             >
+
                 <div {...cls('row', '', 'row')}>
                     <div {...cls('col', '', 'col-md-6')}>
                         <h3 {...cls('block-title')}>Выберите формат:</h3>
@@ -141,6 +154,18 @@ export default class ArticlesExportModal extends Component {
                         </div>
                     )}
                 </div>
+
+                {selectedTemplateId && (
+                    <div {...cls('row', '', 'row')}>
+                        <div {...cls('col', '', 'col-md-12')}>
+                            <InputText
+                                label='Имя файла'
+                                value={filename || ''}
+                                onChange={value => this.setState({filename: value})}
+                            />
+                        </div>
+                    </div>
+                )}
 
                 {inProgress && <Loader/>}
             </ConfirmModal>

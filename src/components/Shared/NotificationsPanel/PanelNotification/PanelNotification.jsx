@@ -23,12 +23,18 @@ export default class PanelNotification extends Component {
                 }, 100);
             }
         };
+        const today = moment();
+        const notificationDate = moment(notification.date);
+        const date = today.isSame(notification.date) ?
+            notificationDate.format('HH:mm') :
+            notificationDate.format('D MMM [в] HH:mm');
         const children = (
             <>
                 <section {...cls('body')}>
                     <div {...cls('data')} onClick={() => handleClick()}>
                         <h4 {...cls('title')}>{notification.title}</h4>
                         <p {...cls('message')}>{notification.message}</p>
+                        <span {...cls('sub-info')}>{date}</span>
                     </div>
 
                     <button

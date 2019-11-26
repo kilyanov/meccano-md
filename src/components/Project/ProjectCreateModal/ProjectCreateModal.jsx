@@ -7,6 +7,10 @@ import Form from '../../Form/Form/Form';
 import {ProjectService} from '../../../services/ProjectService';
 import {NotificationManager} from 'react-notifications';
 import Loader from '../../Shared/Loader/Loader';
+import {EventEmitter} from "../../../helpers";
+import {EVENTS} from "../../../constants/Events";
+import store from "../../../redux/store";
+import {addProject} from "../../../redux/actions/project";
 
 const cls = new Bem('project-create-modal');
 
@@ -49,7 +53,8 @@ export default class ProjectCreateModal extends Component {
 
                 this.setState({inProgress: false}, () => {
                     this.props.onClose();
-                    this.context.router.history.push(`/project-create/${response.data.id}`);
+                    store.dispatch(addProject(response.data));
+                    EventEmitter.emit(EVENTS.REDIRECT, `/project-create/${response.data.id}`);
                 });
             });
         });

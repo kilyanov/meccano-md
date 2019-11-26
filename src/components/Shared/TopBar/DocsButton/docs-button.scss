@@ -13,6 +13,7 @@ $namespace: '.docs-button';
   cursor: pointer;
   transition: background-color .3s;
 
+  &--active,
   &:hover {
     background-color: $shamrock;
 
@@ -24,6 +25,49 @@ $namespace: '.docs-button';
   &__icon {
     width: 28px;
     transition: fill .3s;
+  }
+
+  &__list {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    width: 500px;
+    max-width: 90vw;
+    background: $white;
+    box-shadow: 0 4px 15px 0 rgba(0, 0, 0, 0.2);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  &__list-item {
+    &:hover {
+      background-color: $gray;
+    }
+  }
+
+  &__document {
+    .document__icon {
+      flex: 0 0 40px;
+      width: 30px;
+      height: 30px;
+    }
+
+    .document__main {
+      width: 80%;
+    }
+
+    .document__title {
+      font-size: 14px;
+      line-height: 16px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .document__status {
+      font-size: 11px;
+    }
   }
 }
 

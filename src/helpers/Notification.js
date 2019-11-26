@@ -23,6 +23,7 @@ export default class Notification {
     static toPanel(message) {
         message.id = _.uniqueId();
         message.type = NOTIFICATION_TYPE.panel;
+        message.date = moment().format();
 
         if (!message.category) {
             message.category = 'Уведомления';

@@ -18,6 +18,11 @@ $namespace: '.rich-editor';
     .jodit_container {
         transition: background-color .3s ease;
     }
+    .jodit_wysiwyg p {
+        display: unset !important;
+        padding: 0 !important;
+        margin: 0 0 10px !important;
+    }
 }
 
 /* Dark Theme */

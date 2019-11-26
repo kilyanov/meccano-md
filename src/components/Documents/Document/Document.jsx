@@ -13,7 +13,7 @@ import {PERMISSION} from "../../../constants/Permissions";
 
 const cls = new Bem('document');
 
-const Document = ({className, document, highlighted, onDelete}) => {
+const Document = ({className, document, highlighted, canDelete = true, onDelete = () => {}}) => {
     const [inProgress, setProgress] = useState(false);
 
     const handleDownload = (doc) => {
@@ -39,7 +39,7 @@ const Document = ({className, document, highlighted, onDelete}) => {
             {getIcon(document.ext)}
 
             <section {...cls('main')}>
-                <h3 {...cls('title')}>{document.name || 'Документ'}</h3>
+                <h3 {...cls('title')}>{document.filename || document.name || 'Документ'}</h3>
                 <span {...cls('owner')}>
                     {_.get(document, 'user.username', 'Нет пользователя')}, {moment(document.updatedAt)
                         .format('D MMMM YYYY [в] HH:mm')}
@@ -61,14 +61,16 @@ const Document = ({className, document, highlighted, onDelete}) => {
                     </button>
                 )}
 
-                <Access permissions={[PERMISSION.editDocuments]}>
-                    <button
-                        {...cls('button', 'danger')}
-                        onClick={() => onDelete(document)}
-                    >
-                        <TrashIcon {...cls('button-icon')} />
-                    </button>
-                </Access>
+                {canDelete && (
+                    <Access permissions={[PERMISSION.editDocuments]}>
+                        <button
+                            {...cls('button', 'danger')}
+                            onClick={() => onDelete(document)}
+                        >
+                            <TrashIcon {...cls('button-icon')} />
+                        </button>
+                    </Access>
+                )}
             </section>
         </div>
     );

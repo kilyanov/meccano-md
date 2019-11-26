@@ -53,17 +53,20 @@ export default class RichEditor extends Component {
 
             beautifyHTML: false,
             beautifyHTMLCDNUrlsJS: [],
+            askBeforePasteHTML: false,
+            askBeforePasteFromWord: false,
+            defaultActionOnPaste: 'insert_only_text',
             // cleanHTML: {
-                // timeout: 300,
-                // removeEmptyElements: false,
-                // fillEmptyParagraph: false,
-                // replaceNBSP: false,
-                // cleanOnPaste: false,
-                // replaceOldTags: {
-                //     "strong": "b"
-                // }
-                // allowTags: false,
-                // denyTags: false
+            // timeout: 300,
+            // removeEmptyElements: false,
+            // fillEmptyParagraph: false,
+            // replaceNBSP: false,
+            // cleanOnPaste: false,
+            // replaceOldTags: {
+            //     "strong": "b"
+            // }
+            // allowTags: false,
+            // denyTags: false
             // },
             spellcheck: false,
             events: {

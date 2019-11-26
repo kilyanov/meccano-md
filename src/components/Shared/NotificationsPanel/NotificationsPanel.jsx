@@ -6,6 +6,7 @@ import store from '../../../redux/store';
 import {closeNotificationPanel, deleteNotification} from '../../../redux/actions/notificationsPanel';
 import PanelNotification from './PanelNotification/PanelNotification';
 import {InitScrollbar} from "../../../helpers/Tools";
+import {KEY_CODE} from "../../../constants";
 
 const cls = new Bem('notifications-panel');
 
@@ -20,6 +21,7 @@ class NotificationsPanel extends Component {
 
     componentDidMount() {
         document.addEventListener('click', this.handleClickOutside);
+        document.addEventListener('keydown', this.handleDocumentKeyDown);
         this.currentDateTimeInterval = setInterval(() => {
             this.setState({currentDateTime: moment()});
         }, 30000);
@@ -42,6 +44,12 @@ class NotificationsPanel extends Component {
             event.target.classList.contains('panel-notification__button');
 
         if (!isInnerClick && this.isOpen()) {
+            store.dispatch(closeNotificationPanel());
+        }
+    };
+
+    handleDocumentKeyDown = (event) => {
+        if (this.isOpen() && event.keyCode === KEY_CODE.esc) {
             store.dispatch(closeNotificationPanel());
         }
     };

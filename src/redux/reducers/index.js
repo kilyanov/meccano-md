@@ -4,13 +4,17 @@ import {roles} from './roles';
 import {notificationsPanel} from './notificationsPanel';
 import {theme} from './theme';
 import {settingsMenu} from './settingsMenu';
+import {projects} from './project';
+import {documents} from './document';
 
 const reducer = combineReducers({
     profile,
     roles,
     notificationsPanel,
     theme,
-    settingsMenu
+    settingsMenu,
+    projects,
+    documents
 });
 
 export default reducer;

@@ -9,8 +9,6 @@ import UsersIcon from '../../Shared/SvgIcons/UsersIcon';
 import SettingsIcon from '../../Shared/SvgIcons/SettingsIcon';
 import ProjectCreateModal from '../../Project/ProjectCreateModal/ProjectCreateModal';
 import VerticalMenu from '../../Shared/VerticalMenu/VerticalMenu';
-import {ProjectService} from '../../../services';
-import Loader from '../../Shared/Loader/Loader';
 import Page from '../../Shared/Page/Page';
 import DocumentIcon from '../../Shared/SvgIcons/DocumentIcon';
 import {PERMISSION} from "../../../constants/Permissions";
@@ -18,27 +16,19 @@ import Access from "../../Shared/Access/Access";
 
 class HomePage extends Component {
     static propTypes = {
-        profile: PropTypes.object
+        profile: PropTypes.object,
+        projects: PropTypes.array
     };
 
     static defaultProps = {
-        profile: {}
+        profile: {},
+        projects: []
     };
 
     state = {
         projects: [],
-        inProgress: true,
         showProjectCreateModal: false
     };
-
-    componentDidMount() {
-        ProjectService.get().then(response => {
-            this.setState({
-                projects: response.data,
-                inProgress: false
-            });
-        }).catch(() => this.setState({inProgress: false}));
-    }
 
     handleClick = (name) => {
         if (this.dialogModal) {
@@ -64,7 +54,7 @@ class HomePage extends Component {
             icon: <ProjectsIcon/>,
             name: 'Проекты',
             permissions: [PERMISSION.all],
-            children: this.state.projects.map(({id, name}) => ({
+            children: this.props.projects.map(({id, name}) => ({
                 name,
                 link: `/project/${id}`,
                 editLink: `/project-create/${id}`
@@ -92,7 +82,7 @@ class HomePage extends Component {
 
     render() {
         const cls = new Bem('home-page');
-        const {showProjectCreateModal, inProgress} = this.state;
+        const {showProjectCreateModal} = this.state;
         const {profile} = this.props;
         const menu = this.getMenu();
 
@@ -124,11 +114,11 @@ class HomePage extends Component {
                 )}
 
                 <PromiseDialogModal ref={node => this.dialogModal = node}/>
-
-                {inProgress && <Loader/>}
             </Page>
         );
     }
 }
 
-export default connect(({profile}) => ({profile}))(HomePage);
+const mapStateToProps = ({profile, projects}) => ({profile, projects});
+
+export default connect(mapStateToProps)(HomePage);

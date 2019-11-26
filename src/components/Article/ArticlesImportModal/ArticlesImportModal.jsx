@@ -9,6 +9,8 @@ import Loader from '../../Shared/Loader/Loader';
 import TransferService from '../../../services/TransferService';
 import {OperatedNotification, QueueManager} from '../../../helpers/Tools';
 import {NotificationManager} from 'react-notifications';
+import {EventEmitter} from "../../../helpers";
+import {EVENTS} from "../../../constants/Events";
 
 const cls = new Bem('articles-import-modal');
 
@@ -90,7 +92,7 @@ export default class ArticlesImportModal extends Component {
                                 message: 'Импорт успешно завершен',
                                 submitButtonText: 'Перейти к проекту →',
                                 cancelButtonText: 'Закрыть',
-                                onSubmit: () => this.context.router.history.push(`/project/${this.props.projectId}`)
+                                onSubmit: () => EventEmitter.emit(EVENTS.REDIRECT, `/project/${this.props.projectId}`)
                             });
                         }
 

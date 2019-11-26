@@ -14,6 +14,10 @@ import InlineButton from "../../Shared/InlineButton/InlineButton";
 import {KEY_CODE} from "../../../constants";
 import {OperatedNotification} from '../../../helpers/Tools';
 import ProjectKeyWords from './ProjectKeyWords/ProjectKeyWords';
+import {EventEmitter} from "../../../helpers";
+import {EVENTS} from "../../../constants/Events";
+import {deleteProject, updateProject} from "../../../redux/actions/project";
+import store from "../../../redux/store";
 
 const cls = new Bem('project-create-page');
 const STEP_DESCRIPTION = {
@@ -143,7 +147,7 @@ export default class ProjectCreatePage extends Component {
                 this.saveSections();
                 break;
             default:
-                this.context.router.history.push(`/project/${this.projectId}`);
+                EventEmitter.emit(EVENTS.REDIRECT, `/project/${this.projectId}`);
         }
     };
 
@@ -189,7 +193,9 @@ export default class ProjectCreatePage extends Component {
                 return field;
             });
 
-            ProjectService.put(this.state.projectId, {fields}).then(() => {
+            ProjectService.put(this.state.projectId, {fields}).then(response => {
+                store.dispatch(updateProject(response.data));
+
                 // Проверяем на наличие полей sections
                 const found = this.state.fields.find(({code}) => {
                     return ['section_main_id', 'section_sub_id', 'section_three_id'].includes(code);
@@ -221,14 +227,15 @@ export default class ProjectCreatePage extends Component {
         project.fields = fields;
 
         this.setState({inProgress: true}, () => {
-            ProjectService.put(this.state.projectId, project).then(() => {
+            ProjectService.put(this.state.projectId, project).then(response => {
+                store.dispatch(updateProject(response.data));
                 OperatedNotification.success({
                     title: 'Обновление проекта',
                     message: 'Проект успешно обновлен',
                     submitButtonText: 'Перейти к проекту →',
                     cancelButtonText: 'Продолжить',
                     timeOut: 10000,
-                    onSubmit: () => this.context.router.history.push(`/project/${this.projectId}`)
+                    onSubmit: () => EventEmitter.emit(EVENTS.REDIRECT, `/project/${this.projectId}`)
                 });
                 this.setState({inProgress: false});
             }).catch(() => this.setState({inProgress: false}));
@@ -242,13 +249,15 @@ export default class ProjectCreatePage extends Component {
             title: isEdit ? 'Удаление проекта' : 'Отмена создания проекта',
             content: `Вы уверены, что хотите ${
                 isEdit ? 'удалить проект' : 'отменить создание проекта'
-            } \b"${this.project.name}"\b?`,
+            } "${this.project.name}"?`,
             style: 'danger',
+            danger: true,
             submitText: isEdit ? 'Удалить' : 'Отменить создание'
         }).then(() => {
             ProjectService.delete(this.projectId).then(() => {
                 NotificationManager.success('Проект был удален', 'Удаление проекта');
-                this.context.router.history.push('/');
+                store.dispatch(deleteProject(this.projectId));
+                EventEmitter.emit(EVENTS.REDIRECT, '/');
             });
         });
     };

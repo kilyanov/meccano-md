@@ -4,7 +4,6 @@ import Page from '../../Shared/Page/Page';
 import {ArticleService, LocationService, ProjectService, SourceService, StorageService} from '../../../services';
 import './article-create-page.scss';
 import Form from '../../Form/Form/Form';
-import TextArea from '../../Form/TextArea/TextArea';
 import RichEditor from '../../Form/RichEditor/RichEditor';
 import Loader from '../../Shared/Loader/Loader';
 import ArrowIcon from '../../Shared/SvgIcons/ArrowIcon';
@@ -14,6 +13,8 @@ import ProjectCreateField from '../../Project/ProjectCreatePage/ProjectCreatePag
 import Sortable from 'react-sortablejs';
 import {isMobileScreen, OperatedNotification} from '../../../helpers/Tools';
 import {STORAGE_KEY} from '../../../constants/LocalStorageKeys';
+import {EventEmitter} from "../../../helpers";
+import {EVENTS} from "../../../constants/Events";
 
 const cls = new Bem('article-create-page');
 const sectionsSet = {
@@ -128,23 +129,24 @@ export default class ArticleCreatePage extends Component {
         if (!articlesNavs.prev) return;
 
         this.checkFormChanges().then(() => {
-            this.context.router.history.push(`/project/${this.projectId}/article/${articlesNavs.prev}`);
+            console.log(this.context);
+            EventEmitter.emit(EVENTS.REDIRECT, `/project/${this.projectId}/article/${articlesNavs.prev}`);
         });
     };
 
     handleNextArticle = () => {
         const {articlesNavs} = this.state;
 
-       if (!articlesNavs.next) return;
+        if (!articlesNavs.next) return;
 
         this.checkFormChanges().then(() => {
-            this.context.router.history.push(`/project/${this.projectId}/article/${articlesNavs.next}`);
+            EventEmitter.emit(EVENTS.REDIRECT, `/project/${this.projectId}/article/${articlesNavs.next}`);
         });
     };
 
     handleClickBackButton = () => {
         this.checkFormChanges().then(() => {
-            this.context.router.history.push(`/project/${this.projectId}`);
+            EventEmitter.emit(EVENTS.REDIRECT, `/project/${this.projectId}`);
         });
     };
 
@@ -209,7 +211,7 @@ export default class ArticleCreatePage extends Component {
                             message: `Статья успешно ${isUpdate ? 'обновлена' : 'создана'}`,
                             submitButtonText: '← Перейти ко всем статьям',
                             timeOut: 10000,
-                            onSubmit: () => this.context.router.history.push(`/project/${this.projectId}`)
+                            onSubmit: () => EventEmitter.emit(EVENTS.REDIRECT, `/project/${this.projectId}`)
                         });
                         this.articleId = response.data.id;
                         this.setState({inProgress: false}, () => {

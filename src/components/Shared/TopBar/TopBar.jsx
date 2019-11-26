@@ -36,7 +36,7 @@ class TopBar extends PureComponent {
 
                     <section {...cls('buttons')}>
                         <ThemeButton {...cls('button', 'notifications')} />
-                        {/* <DocsButton {...cls('button', 'notifications')} /> */}
+                        <DocsButton {...cls('button', 'notifications')} />
                         <NotificationsButton {...cls('button', 'notifications')} />
                     </section>
 

@@ -6,9 +6,13 @@ import {THEME_TYPE} from '../constants/ThemeType';
 
 const logger = createLogger();
 const initialState = {
+    documents: [],
+    projects: [],
     profile: {},
     roles: [],
     notificationsPanel: {
+        projects: [],
+        documents: [],
         notifications: [],
         settingsMenu: {
             open: false
