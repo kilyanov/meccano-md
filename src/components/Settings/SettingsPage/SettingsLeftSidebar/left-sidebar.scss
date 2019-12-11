@@ -4,7 +4,7 @@
 .left-sidebar {
   flex: 0 0 $settingsLeftSidebarWidth;
   background-color: #fff;
-  transition: right .3s ease-in-out;
+  transition: right .3s ease-in-out, background-color .3s ease;
 
   @include media('mobile') {
     position: absolute;

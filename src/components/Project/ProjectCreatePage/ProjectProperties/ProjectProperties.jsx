@@ -5,6 +5,8 @@ import './project-properties.scss';
 import {InitScrollbar} from '../../../../helpers/Tools';
 import SelectedProperty from './SelectedProperty/SelectedProperty';
 import UnselectedProperty from './UnselectedProperty/UnselectedProperty';
+import CreateFieldModal from "../CreateFieldModal/CreateFieldModal";
+import InlineButton from "../../../Shared/InlineButton/InlineButton";
 
 const cls = new Bem('project-properties');
 const classSelected = 'unselected-property--selected';
@@ -14,7 +16,14 @@ export default class ProjectProperties extends Component {
         project: PropTypes.object.isRequired,
         fields: PropTypes.array.isRequired,
         allFields: PropTypes.array.isRequired,
-        onChange: PropTypes.func.isRequired
+        onChange: PropTypes.func.isRequired,
+        onCreateField: PropTypes.func.isRequired,
+        onEditField: PropTypes.func.isRequired
+    };
+
+    state = {
+        openCreateFieldModal: false,
+        selectedFieldId: ''
     };
 
     componentDidMount() {
@@ -72,14 +81,22 @@ export default class ProjectProperties extends Component {
         }
     };
 
+    handleEditField = (id = '') => {
+        this.setState({
+            openCreateFieldModal: true,
+            selectedFieldId: id
+        });
+    };
+
     render() {
         const {fields, allFields} = this.props;
+        const {openCreateFieldModal, selectedFieldId} = this.state;
 
         return (
             <div {...cls('', '', 'container')}>
-                <div {...cls('row', '', 'row')}>
+                <section {...cls('row', '', 'row')}>
                     <div {...cls('column', '', 'col-xs-6')}>
-                        <h3>Выбранные поля</h3>
+                        <h3 {...cls('title')}>Выбранные поля</h3>
 
                         <Sortable
                             ref={ref => this.leftList = ref}
@@ -96,17 +113,22 @@ export default class ProjectProperties extends Component {
                         >
                             {fields.map((item, index) => (
                                 <SelectedProperty
+                                    key={item.code || item.id}
                                     item={item}
                                     index={index}
                                     onDelete={this.handleDelete}
                                     onChange={field => this.handleChange(field, index)}
-                                    key={item.code}
                                 />
                             ))}
                         </Sortable>
                     </div>
                     <div {...cls('column', '', 'col-xs-6')}>
-                        <h3>Добавление полей</h3>
+                        <h3 {...cls('title')}>Добавление полей
+                            <InlineButton
+                                {...cls('create-field')}
+                                onClick={() => this.handleEditField()}
+                            >+ Создать поле</InlineButton>
+                        </h3>
 
                         <Sortable
                             ref={ref => this.rightList = ref}
@@ -131,7 +153,7 @@ export default class ProjectProperties extends Component {
 
                                 return (
                                     <UnselectedProperty
-                                        key={item.code}
+                                        key={item.code || item.id}
                                         item={item}
                                         selected={selected}
                                         classes={cls}
@@ -141,7 +163,16 @@ export default class ProjectProperties extends Component {
                             })}
                         </Sortable>
                     </div>
-                </div>
+                </section>
+
+                {openCreateFieldModal && (
+                    <CreateFieldModal
+                        fieldId={selectedFieldId}
+                        onClose={() => this.setState({openCreateFieldModal: false, selectedFieldId: null})}
+                        onCreateField={this.props.onCreateField}
+                        onEditField={this.props.onEditField}
+                    />
+                )}
             </div>
         );
     }

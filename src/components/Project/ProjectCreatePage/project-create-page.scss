@@ -6,6 +6,10 @@ $namespace: '.project-create-page';
     display: flex;
     flex-direction: column;
 
+    &__container {
+        position: relative;
+    }
+
     &__header {
         margin-top: -40px;
         padding: 30px 0;
@@ -140,6 +144,14 @@ $namespace: '.project-create-page';
         height: 1px;
         margin: 0 10px;
         background-color: $brownGreyColor;
+    }
+
+    &__viewer-select {
+        position: absolute !important;
+        right: 1em;
+        top: 50%;
+        min-width: 250px;
+        z-index: 2;
     }
 }
 

@@ -13,7 +13,7 @@ const DocsButton = ({className}) => {
     const buttonRef = useRef(null);
     useEffect(() => {
         document.addEventListener('click', (event) => {
-            if (!buttonRef.current.contains(event.target)) {
+            if (buttonRef && buttonRef.current && !buttonRef.current.contains(event.target)) {
                 setIsOpen(false);
             }
         });

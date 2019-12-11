@@ -1,0 +1,7 @@
+.project-user-modal {
+    &__field {
+        & + & {
+            margin-top: 20px;
+        }
+    }
+}

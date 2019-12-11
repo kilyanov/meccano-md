@@ -447,7 +447,9 @@ export default class Select extends Component {
         const selected = _.isString(this.props.selected) &&
             options.find(({value}) => value === this.props.selected) || this.props.selected;
         const isMultiple = selected instanceof Array;
-        const selectedName = isMultiple ? _.get(selected, '[0].name', '') : _.get(selected, 'name');
+        const selectedName = isMultiple ?
+            [...selected].slice(0, 3).map(({name}) => name).join(', ') :
+            _.get(selected, 'name');
 
         return (
             <div
@@ -478,8 +480,8 @@ export default class Select extends Component {
                         {selectedName && (
                             <div {...cls('selected-value')}>
                                 <div {...cls('selected-name')}>
-                                    <span>{selectedName}</span> {(isMultiple && selected.length > 1) &&
-                                    <i>+{selected.length - 1}</i>}
+                                    <span>{selectedName}</span> {(isMultiple && selected.length > 3) &&
+                                    <i>+{selected.length - 3}</i>}
                                 </div>
                                 {selected.description && (
                                     <div {...cls('selected-description')}>{selected.description}</div>

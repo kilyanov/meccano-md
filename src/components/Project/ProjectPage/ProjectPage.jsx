@@ -236,9 +236,7 @@ export default class ProjectPage extends Component {
 
     getProject = (projectId) => {
         return ProjectService.get({expand: 'fields'}, projectId).then(response => {
-            return this.setState({
-                project: response.data
-            });
+            return this.setState({project: response.data});
         });
     };
 

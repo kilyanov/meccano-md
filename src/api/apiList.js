@@ -25,13 +25,16 @@ const List = {
         sections: '/project/section',
         fieldValue: '/project/field-value',
         wordSearch: '/project/word-search',
-        importWordSearch: '/project/word-search/import'
+        importWordSearch: '/project/word-search/import',
+        field: '/project/field'
     },
     user: {
         user: '/user',
         profile: '/user/profile',
         create: '/user/create',
-        roles: '/user/roles'
+        roles: '/user/roles',
+        type: '/user/type'
+
     },
     export:  '/export',
     transfer: {

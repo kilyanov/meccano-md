@@ -44,5 +44,12 @@ export const ACTION_TYPE = {
         ADD: 'DOCUMENT_ADD',
         UPDATE: 'DOCUMENT_ADD',
         DELETE: 'DOCUMENT_ADD'
+    },
+    USER: {
+        TYPES: {
+            LOADING: 'USER_TYPES_LOADING',
+            LOADED: 'USER_TYPES_LOADED',
+            LOAD_FAILURE: 'USER_TYPES_LOAD_FAILURE'
+        }
     }
 };

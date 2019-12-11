@@ -20,7 +20,7 @@ export default class InputText extends Component {
             PropTypes.string,
             PropTypes.number
         ]).isRequired,
-        onChange: PropTypes.func,
+        onChange: PropTypes.func.isRequired,
         onClick: PropTypes.func,
         onEnter: PropTypes.func,
         disabled: PropTypes.bool,

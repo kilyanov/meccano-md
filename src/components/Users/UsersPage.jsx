@@ -81,6 +81,7 @@ export default class UsersPage extends Component {
                     <UserModal
                         userId={selectedUser ? selectedUser.id : ''}
                         onClose={this.handleCloseUserModal}
+                        onUpdateParent={() => this.getUsers()}
                         selectedUser={selectedUser}
                     />
                 )}

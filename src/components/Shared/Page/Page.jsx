@@ -25,7 +25,7 @@ class Page extends Component {
 
         return (
             <div {...cls('', {'with-bar': withBar && !staticBar, blur: notificationsPanel.open})}>
-                {withBar && <TopBar static={staticBar}/>}
+                {withBar && <TopBar isStatic={staticBar}/>}
 
                 <div
                     {...cls('content', '', {

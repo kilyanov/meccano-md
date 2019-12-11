@@ -1,11 +1,12 @@
 import React, {Component, Fragment} from 'react';
 import PropTypes from 'prop-types';
+import {connect} from 'react-redux';
 import Page from '../../Shared/Page/Page';
 import Button from '../../Shared/Button/Button';
 import './project-create-page.scss';
 import ProjectSections from './ProjectSections/ProjectSections';
 import Loader from '../../Shared/Loader/Loader';
-import {ProjectService} from '../../../services';
+import {ProjectService, UserService} from '../../../services';
 import PromiseDialogModal from '../../Shared/PromiseDialogModal/PromiseDialogModal';
 import {NotificationManager} from 'react-notifications';
 import ProjectProperties from './ProjectProperties/ProjectProperties';
@@ -18,15 +19,18 @@ import {EventEmitter} from "../../../helpers";
 import {EVENTS} from "../../../constants/Events";
 import {deleteProject, updateProject} from "../../../redux/actions/project";
 import store from "../../../redux/store";
+import Select from "react-select";
+import ProjectUsers from "./ProjectUsers/ProjectUsers";
 
 const cls = new Bem('project-create-page');
 const STEP_DESCRIPTION = {
     1: 'Настройка полей',
     2: 'Создание структуры',
-    3: 'Настройка ключевых слов'
+    3: 'Настройка ключевых слов',
+    4: 'Настройка пользователей'
 };
 
-export default class ProjectCreatePage extends Component {
+class ProjectCreatePage extends Component {
     static contextTypes = {
         router: PropTypes.object
     };
@@ -35,35 +39,33 @@ export default class ProjectCreatePage extends Component {
         step: 1,
         projectId: this.props.match.params.id,
         project: null,
+        roleFields: {
+            monitor: [],
+            analytic: [],
+            client: []
+        },
         fields: [],
         allFields: [],
         sections: [],
         wordSearch: [],
+        userTypes: [],
         isEdit: false,
         isEditTitle: false,
         editTitleValue: '',
+        selectedUserType: null,
         inProgress: true
     };
 
     componentDidMount() {
-        const params = {
-            expand: 'fields,allFields'
-        };
-
-        ProjectService.get(params, this.projectId).then(response => {
-            const {fields, allFields, createdAt, updatedAt} = response.data;
-            // const isEdit = createdAt !== updatedAt;
-
-            this.project = response.data;
-            this.setState({
-                fields,
-                allFields, // allFields.filter(({code}) => !fields.find(f => f.code === code))
-                project: response.data,
-                isEdit: createdAt !== updatedAt,
-                inProgress: false
-            });
-        });
+        this.getProject();
+        this.getUserTypes();
         document.addEventListener('click', this.handleClickOutside, true);
+    }
+
+    componentDidUpdate(prevProps) {
+        if (prevProps.userTypes.length !== this.props.userTypes.length) {
+            this.getUserTypes();
+        }
     }
 
     componentWillUnmount() {
@@ -81,7 +83,15 @@ export default class ProjectCreatePage extends Component {
         }
     };
 
-    handleChangeSelectedFields = (fields) => {
+    handleChangeSelectedFields = (newFieldSet) => {
+        const {fields, selectedUserType} = this.state;
+
+        fields.forEach(fieldSet => {
+            if (fieldSet.user_type_id === selectedUserType.value) {
+                fieldSet.data = newFieldSet;
+            }
+        });
+
         this.setState({fields});
     };
 
@@ -135,10 +145,17 @@ export default class ProjectCreatePage extends Component {
         }
     };
 
-    handleSubmit = () => {
-        if (this.state.step === 1) this.saveFields();
-        if (this.state.step === 2) this.saveSections();
+    handleCreateField = (field) => {
+        this.setState(({allFields}) => allFields.unshift(field));
+    };
 
+    handleEditField = (field) => {
+        this.setState(({allFields}) => {
+            return {allFields: allFields.map(f => f.id === field.id ? field : f)};
+        });
+    };
+
+    handleSubmit = () => {
         switch (this.state.step) {
             case 1:
                 this.saveFields();
@@ -149,6 +166,44 @@ export default class ProjectCreatePage extends Component {
             default:
                 EventEmitter.emit(EVENTS.REDIRECT, `/project/${this.projectId}`);
         }
+    };
+
+    getProject = () => {
+        const params = {
+            expand: 'fields,allFields,users'
+        };
+
+        Promise
+            .all([
+                ProjectService.get(params, this.projectId),
+                ProjectService.field.get()
+            ])
+            .then(([projectResponse, filedsResponse]) => {
+                const {fields, allFields, createdAt, updatedAt} = projectResponse.data;
+                const allFieldsWithAdditional = allFields.concat(filedsResponse.data);
+
+                this.project = projectResponse.data;
+                this.project.allFields = allFieldsWithAdditional;
+                this.setState({
+                    fields,
+                    allFields: allFieldsWithAdditional,
+                    project: this.project,
+                    isEdit: createdAt !== updatedAt,
+                    inProgress: false
+                });
+            })
+            .catch(() => this.setState({inProgress: false}));
+    };
+
+    getUserTypes = () => {
+        const userTypes = this.props.userTypes.map(({id, name}) => ({label: name, value: id}));
+
+        console.log(userTypes);
+
+        this.setState({
+            userTypes,
+            selectedUserType: userTypes[0]
+        });
     };
 
     getStepsButtons = () => {
@@ -274,12 +329,14 @@ export default class ProjectCreatePage extends Component {
             sections,
             isEdit,
             project,
+            userTypes,
             isEditTitle,
             editTitleValue,
+            selectedUserType,
             inProgress
         } = this.state;
-        const backButtonLabel = step === 2 ? 'Назад' :
-            isEdit ? 'Удалить проект' : 'Отменить создание';
+        const backButtonLabel = step === 2 ? 'Назад' : isEdit ? 'Удалить проект' : 'Отменить создание';
+        const fieldsByUserType = selectedUserType && fields.find(f => f.user_type_id === selectedUserType.value);
 
         return (
             <Page
@@ -323,17 +380,28 @@ export default class ProjectCreatePage extends Component {
                                     />
                                 </div>
                         )}
+
+                        {(!!userTypes.length && step === 1) && (
+                            <Select
+                                {...cls('viewer-select')}
+                                options={userTypes}
+                                value={selectedUserType}
+                                onChange={value => this.setState({selectedUserType: value})}
+                            />
+                        )}
                     </div>
                 </section>
 
                 <section {...cls('body')}>
-                    {(this.project && step === 1 && (fields.length || allFields.length)) && (
+                    {(this.project && step === 1 && fields && fieldsByUserType) && (
                         <ProjectProperties
                             classes={cls}
                             project={this.project}
-                            fields={fields || []}
+                            fields={fieldsByUserType.data || []}
                             allFields={allFields || []}
                             onChange={this.handleChangeSelectedFields}
+                            onCreateField={this.handleCreateField}
+                            onEditField={this.handleEditField}
                         />
                     )}
 
@@ -348,6 +416,10 @@ export default class ProjectCreatePage extends Component {
 
                     {(this.project && step === 3) && (
                         <ProjectKeyWords projectId={this.projectId}/>
+                    )}
+
+                    {(this.project && step === 4) && (
+                        <ProjectUsers users={this.state.project.users || []} />
                     )}
                 </section>
 
@@ -386,3 +458,5 @@ export default class ProjectCreatePage extends Component {
         );
     }
 }
+
+export default connect(({userTypes}) => ({userTypes}))(ProjectCreatePage);

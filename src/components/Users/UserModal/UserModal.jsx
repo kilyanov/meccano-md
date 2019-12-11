@@ -15,6 +15,7 @@ class UserModal extends Component {
     static propTypes = {
         userId: PropTypes.string,
         onClose: PropTypes.func.isRequired,
+        onUpdateParent: PropTypes.func.isRequired
     };
 
     state = {
@@ -23,6 +24,7 @@ class UserModal extends Component {
             password: '',
             email: '',
             roles: [],
+            types: [],
             permissions: []
         },
         inProgress: !!this.props.userId
@@ -36,6 +38,7 @@ class UserModal extends Component {
                 const form = response.data;
 
                 form.roles = form.roles.map(({name, description}) => ({name, value: name, description}));
+                form.types = form.types.map(({name, id}) => ({name, value: id}));
 
                 this.setState({
                     form: response.data,
@@ -53,9 +56,12 @@ class UserModal extends Component {
         const {userId} = this.props;
         const isEdit  = !!userId;
         const method = isEdit ? 'update' : 'create';
-        const {form} = this.state;
+        const form = {...this.state.form};
 
         form.roles = form.roles.map(({value}) => value);
+        form.types = form.types.map(({value}) => value);
+
+        if (!form.password && isEdit) delete form.password;
 
         this.setState({inProgress: true}, () => {
             UserService[method](form, userId)
@@ -65,6 +71,7 @@ class UserModal extends Component {
                         `${isEdit ? 'Редактирование' : 'Создание'} пользователя`
                     );
                     this.setState({inProgress: false});
+                    this.props.onUpdateParent()
                     this.props.onClose();
                 })
                 .catch(() => this.setState({inProgress: false}));
@@ -74,9 +81,10 @@ class UserModal extends Component {
     roleOptions = this.props.roles.map(({name, description}) => ({name, value: name, description}));
 
     render() {
-        const {onClose, userId} = this.props;
+        const {onClose, userId, userTypes} = this.props;
         const {form, inProgress} = this.state;
         const isEdit = !!userId;
+        const userTypeOptions = userTypes.map(({id, name}) => ({name, value: id}));
 
         return (
             <ConfirmModal
@@ -99,10 +107,17 @@ class UserModal extends Component {
                     />
 
                     <Select
-                        label='Роли'
+                        label='Роль'
                         options={this.roleOptions}
                         selected={form.roles}
                         onChange={value => this.handleChangeForm(value, 'roles')}
+                    />
+
+                    <Select
+                        label='Тип пользователя'
+                        options={userTypeOptions}
+                        selected={form.types}
+                        onChange={value => this.handleChangeForm(value, 'types')}
                     />
 
                     <InputText
@@ -117,7 +132,7 @@ class UserModal extends Component {
                     <InputText
                         label='Пароль'
                         type='password'
-                        required
+                        required={!isEdit}
                         value={form.password || ''}
                         onChange={value => this.handleChangeForm(value, 'password')}
                     />
@@ -129,8 +144,8 @@ class UserModal extends Component {
     }
 }
 
-function mapStateToProps({roles, profile}) {
-    return {roles, profile};
+function mapStateToProps({roles, profile, userTypes}) {
+    return {roles, profile, userTypes};
 }
 
 export default connect(mapStateToProps)(UserModal);

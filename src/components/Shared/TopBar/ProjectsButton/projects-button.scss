@@ -1,0 +1,62 @@
+@import "../../../../assets/styles/variables";
+
+$namespace: '.projects-button';
+#{$namespace} {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    padding: 0 20px;
+    border-left: 1px solid #d9d9d9;
+    cursor: pointer;
+    transition: background-color .3s;
+
+    &--active,
+    &:hover {
+        background-color: $shamrock;
+
+        #{$namespace}__icon {
+            fill: #fff;
+        }
+    }
+
+    &__icon {
+        width: 28px;
+        transition: fill .3s;
+        fill: #333;
+    }
+
+    &__list {
+        position: absolute;
+        top: 100%;
+        right: 0;
+        width: 200px;
+        margin: 0;
+        padding: 0;
+        background-color: $white;
+        box-shadow: 0 4px 15px 0 rgba(0, 0, 0, 0.2);
+        list-style: none;
+    }
+
+    &__list-item {
+        padding: 10px 15px;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        font-size: 14px;
+        color: $blackColor;
+
+        &:hover {
+            background-color: $shamrock;
+            color: $white;
+        }
+    }
+
+    &__link {
+        color: inherit;
+
+        &:hover {
+            text-decoration: none;
+        }
+    }
+}

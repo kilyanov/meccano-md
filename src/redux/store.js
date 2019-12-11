@@ -4,12 +4,13 @@ import requestMiddleware from './middleware/request';
 import reducers from './reducers';
 import {THEME_TYPE} from '../constants/ThemeType';
 
-const logger = createLogger();
+// const logger = createLogger();
 const initialState = {
     documents: [],
     projects: [],
     profile: {},
     roles: [],
+    userTypes: [],
     notificationsPanel: {
         projects: [],
         documents: [],
@@ -30,7 +31,7 @@ const composeEnhancers =
         window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__({}) : compose;
 /* eslint-enable */
 
-const middleware = applyMiddleware(requestMiddleware, logger);
+const middleware = applyMiddleware(requestMiddleware); // , logger
 const store = createStore(reducers, initialState, composeEnhancers(middleware));
 
 export default store;

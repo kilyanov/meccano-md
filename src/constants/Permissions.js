@@ -16,6 +16,7 @@ export const PERMISSION = {
 };
 
 export const PERMISSION_NAMES = {
+    all: 'Все',
     viewSettings: "Просмотр настроек системы",
     editSettings: "Редактирование настроек системы",
     viewUsers: "Просмотр Пользователей",

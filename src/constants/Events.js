@@ -13,5 +13,8 @@ export const EVENTS = {
         PUSH: 'queue_manager_push',
         REMOVE: 'queue_manager_remove'
     },
+    USER: {
+        CHANGE_TYPE: 'change_user_type'
+    },
     APP_CONTAINER_SCROLL_END: 'app_container_scroll_end'
 };

@@ -1,6 +1,7 @@
 import React from 'react';
 import {BrowserRouter as Router, Route, Switch} from 'react-router-dom';
 import AuthRoute from './AuthRoute';
+import {PERMISSION} from "../constants/Permissions";
 
 import App from '../components/App';
 import HomePage from '../components/Pages/HomePage/HomePage';
@@ -20,8 +21,8 @@ import SettingsCity from '../components/Settings/SettingsLocation/SettingsCity';
 import SettingsSourceList from '../components/Settings/SettingsSource/SettingsSourceList';
 import SettingsSourceType from '../components/Settings/SettingsSource/SettingsSourceType';
 import SettingsAuthors from '../components/Settings/SettingsAuthors/SettingsAuthors';
+import SettingsSystem from "../components/Settings/SettingsSystem/SettingsSystem";
 import UsersPage from "../components/Users/UsersPage";
-import {PERMISSION} from "../constants/Permissions";
 
 export default (
     <Router basename='/'>
@@ -51,6 +52,12 @@ export default (
                     permissions={[PERMISSION.viewSettings, PERMISSION.editSettings]}
                     component={SettingsPage}
                     path="/settings"
+                />
+                <AuthRoute
+                    exact
+                    permissions={[PERMISSION.viewSettings, PERMISSION.editSettings]}
+                    component={SettingsSystem}
+                    path="/settings/system"
                 />
                 <AuthRoute
                     exact

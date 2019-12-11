@@ -88,7 +88,9 @@ class HomePage extends Component {
 
         return (
             <Page {...cls()} withBar>
-                <h1 {...cls('title')}>Добро пожаловать, {_.get(profile, 'username', '')}!</h1>
+                {_.get(profile, 'username') && (
+                    <h1 {...cls('title')}>Добро пожаловать, {profile.username}!</h1>
+                )}
                 <Access permissions={[PERMISSION.createProject]}>
                     <h5 {...cls('sub-title')}>
                         Выберите ваш текущий проект, или

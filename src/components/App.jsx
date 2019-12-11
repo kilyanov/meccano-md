@@ -18,6 +18,7 @@ import Notification from "../helpers/Notification";
 import {DOCUMENT_STATUS} from "../constants/DocumentStatus";
 import {saveAs} from "file-saver";
 import {getDocuments} from "../redux/actions/document";
+import {profile} from "../redux/reducers/profile";
 
 const cls = new Bem('app');
 
@@ -147,9 +148,16 @@ export default class App extends Component {
         }
 
         if (currentState.profile && currentState.profile.id !== this.state.profile.id) {
-            console.log(this.state.profile, currentState.profile);
             this.setState({profile: currentState.profile}, () => {
                 store.dispatch(getDocuments(currentState.profile.id));
+
+                if (currentState.profile.types && currentState.profile.types.length) {
+                    const storageUserType = StorageService.get('user_type');
+
+                    if (!storageUserType || !currentState.profile.types.find(({slug}) => slug === storageUserType)) {
+                        StorageService.set('user_type', currentState.profile.types[0].slug);
+                    }
+                }
                 // this.getDocumentsForUser();
             });
         }
