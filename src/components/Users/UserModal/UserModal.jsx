@@ -108,6 +108,7 @@ class UserModal extends Component {
 
                     <Select
                         label='Роль'
+                        required
                         options={this.roleOptions}
                         selected={form.roles}
                         onChange={value => this.handleChangeForm(value, 'roles')}
@@ -115,6 +116,7 @@ class UserModal extends Component {
 
                     <Select
                         label='Тип пользователя'
+                        required
                         options={userTypeOptions}
                         selected={form.types}
                         onChange={value => this.handleChangeForm(value, 'types')}

@@ -390,7 +390,8 @@ export default class Select extends Component {
     };
 
     validate = () => {
-        const invalid = this.props.required && !this.props.selected;
+        const invalid = this.props.required && !this.props.selected ||
+            (this.props.selected instanceof Array && !this.props.selected.length);
 
         this.setState({error: invalid, opened: false});
         return EventEmitter.emit(invalid ? EVENTS.FORM.ON_VALIDATE_FAILURE : EVENTS.FORM.ON_VALIDATE_SUCCESS);

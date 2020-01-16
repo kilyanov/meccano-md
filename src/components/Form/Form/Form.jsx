@@ -49,7 +49,6 @@ export default class Form extends Component {
         const countValidatedElements = validatedElements.length;
 
         this.elementsCount[type]++;
-        console.log(type, this.elementsCount[type]);
 
         if (this.elementsCount.success + this.elementsCount.failure === countValidatedElements) {
             if (this.elementsCount.success === countValidatedElements) {
