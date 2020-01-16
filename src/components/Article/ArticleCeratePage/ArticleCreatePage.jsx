@@ -199,7 +199,7 @@ export default class ArticleCreatePage extends Component {
 
         // Check new properties and clear empty
         Object.keys(form).forEach(key => {
-            if (isUpdate && form[key] === this.article[key] && key !== 'id') {
+            if (isUpdate && form[key] === this.article[key] && !['id', 'project_id'].includes(key)) {
                 delete form[key];
             }
 
