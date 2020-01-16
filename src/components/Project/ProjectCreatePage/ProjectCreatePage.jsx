@@ -173,26 +173,19 @@ class ProjectCreatePage extends Component {
             expand: 'projectFields,allFields,users'
         };
 
-        Promise
-            .all([
-                ProjectService.get(params, this.projectId),
-                ProjectService.field.get()
-            ])
-            .then(([projectResponse, fieldsResponse]) => {
-                const {projectFields, allFields, createdAt, updatedAt} = projectResponse.data;
-                const allFieldsWithAdditional = allFields.concat(fieldsResponse.data);
+        ProjectService.get(params, this.projectId).then(projectResponse => {
+            const {projectFields, allFields, createdAt, updatedAt} = projectResponse.data;
 
-                this.project = projectResponse.data;
-                this.project.allFields = allFieldsWithAdditional;
-                this.setState({
-                    projectFields,
-                    allFields: allFieldsWithAdditional,
-                    project: this.project,
-                    isEdit: createdAt !== updatedAt,
-                    inProgress: false
-                });
-            })
-            .catch(() => this.setState({inProgress: false}));
+            this.project = projectResponse.data;
+            this.project.allFields = allFields;
+            this.setState({
+                projectFields,
+                allFields,
+                project: this.project,
+                isEdit: createdAt !== updatedAt,
+                inProgress: false
+            });
+        }).catch(() => this.setState({inProgress: false}));
     };
 
     getUserTypes = () => {

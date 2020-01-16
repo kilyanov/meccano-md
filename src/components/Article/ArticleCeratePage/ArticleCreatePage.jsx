@@ -301,8 +301,6 @@ export default class ArticleCreatePage extends Component {
                     newState.prevForm = _.cloneDeep(form);
                     newState.inProgress = false;
 
-                    console.log(newState);
-
                     this.setState(newState);
                 })
                 .catch(() => this.setState({inProgress: false}));
