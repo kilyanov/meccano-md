@@ -2,7 +2,7 @@ import {StorageService} from '../../../../services';
 import {STORAGE_KEY} from '../../../../constants/LocalStorageKeys';
 
 export const getColumnsFromFields = (fields) => {
-    return fields.map(({code}) => code);
+    return fields.map(({slug}) => slug);
 };
 
 export const getColumnsFromStorage = (projectId, projectColumns) => {

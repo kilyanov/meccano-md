@@ -154,8 +154,8 @@ export default class App extends Component {
                 if (currentState.profile.types && currentState.profile.types.length) {
                     const storageUserType = StorageService.get('user_type');
 
-                    if (!storageUserType || !currentState.profile.types.find(({slug}) => slug === storageUserType)) {
-                        StorageService.set('user_type', currentState.profile.types[0].slug);
+                    if (!storageUserType || !currentState.profile.types.find(({id}) => id === storageUserType)) {
+                        StorageService.set('user_type', currentState.profile.types[0].id);
                     }
                 }
                 // this.getDocumentsForUser();

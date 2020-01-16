@@ -3,5 +3,6 @@ export const STORAGE_KEY = {
     ARTICLE_VIEW_TYPE: 'article-view-type',
     LAST_PATHNAME: 'last-pathname',
     TOKEN: 'token',
-    TOKEN_EXPIRED: 'token-expired'
+    TOKEN_EXPIRED: 'token-expired',
+    USER_TYPE: 'user_type'
 };

@@ -12,7 +12,7 @@ const SelectedProperty = ({
     onChange = () => {},
     onDelete = () => {}
 }) => (
-    <div {...cls('', {required: item.required})} data-id={item.code}>
+    <div {...cls('', {required: item.required})} data-id={item.slug}>
         <div {...cls('arrows')}>
             <ArrowIcon {...cls('arrow-top')}/>
             <ArrowIcon {...cls('arrow-bottom')}/>

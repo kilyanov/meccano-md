@@ -33,8 +33,8 @@ const List = {
         profile: '/user/profile',
         create: '/user/create',
         roles: '/user/roles',
-        type: '/user/type'
-
+        type: '/user/type',
+        project: '/user/project'
     },
     export:  '/export',
     transfer: {

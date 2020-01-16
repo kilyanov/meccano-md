@@ -10,16 +10,17 @@ import ProjectTable from './ProjectTable/ProjectTable';
 import PromiseDialogModal from '../../Shared/PromiseDialogModal/PromiseDialogModal';
 import ArticleCreateModal from '../../Article/ArticleCreateModal/ArticleCreateModal';
 import ArticlesExportModal from '../../Article/ArticlesExportModal/ArticlesExportModal';
-import {ArticleService, ProjectService} from '../../../services';
+import {ArticleService, ProjectService, StorageService} from '../../../services';
 import {NotificationManager} from 'react-notifications';
 import DropDownButton from '../../Shared/DropDownButton/DropDownButton';
 import ArticlesImportModal from '../../Article/ArticlesImportModal/ArticlesImportModal';
 import Page from '../../Shared/Page/Page';
 import Loader from '../../Shared/Loader/Loader';
-import {SORT_DIR} from '../../../constants';
+import {EVENTS, SORT_DIR, STORAGE_KEY} from '../../../constants';
 import RightLoader from '../../Shared/Loader/RightLoader/RightLoader';
 import {Plural, QueueManager} from '../../../helpers/Tools';
 import InlineButton from '../../Shared/InlineButton/InlineButton';
+import {EventEmitter} from "../../../helpers";
 
 const cls = new Bem('project-page');
 const defaultPagination = {page: 1, pageCount: 1};
@@ -38,15 +39,18 @@ export default class ProjectPage extends Component {
         showArticleModal: false,
         showUploadArticlesModal: false,
         showImportArticlesModal: false,
+        userTypeId: StorageService.get(STORAGE_KEY.USER_TYPE),
         inProgress: true
     };
 
     componentDidMount() {
         this.getProject(this.projectId).then(this.getArticles);
+        EventEmitter.on(EVENTS.USER.CHANGE_TYPE, this.handleChangeUserType);
     }
 
     componentWillUnmount() {
         this.isMounted = false;
+        EventEmitter.off(EVENTS.USER.CHANGE_TYPE, this.handleChangeUserType);
     }
 
     handleChangeFilter = (filter, value) => {
@@ -185,28 +189,34 @@ export default class ProjectPage extends Component {
         });
     };
 
+    handleChangeUserType = (userTypeId) => {
+        this.setState({userTypeId});
+    };
+
     getArticles = (isPagination = false) => {
         const {pagination, project, filters: {sort, search}} = this.state;
         const selectedColumns = this.projectTable.getColumns();
+        const fields = this.getFields();
+
         const form = {
             project: this.projectId,
             page: pagination.page,
-            expand: project.fields
-                .filter(({code}) => selectedColumns.includes(code))
-                .map(field => field.relation || field.code)
+            expand: fields
+                .filter(({slug}) => selectedColumns.includes(slug))
+                .map(field => field.relation || field.slug)
         };
 
         if (search) {
             project.fields
-                .filter(({code}) => selectedColumns.includes(code))
+                .filter(({slug}) => selectedColumns.includes(slug))
                 .forEach(field => {
-                    form[`query[${field.relation || field.code}]`] = search;
+                    form[`query[${field.relation || field.slug}]`] = search;
                 });
             this.searchParams.set('search', search);
         }
 
         if (sort && sort.type) {
-            const field = project.fields.find(({code}) => code === sort.type);
+            const field = project.fields.find(({slug}) => slug === sort.type);
 
             form.sort = sort.type && `${sort.dir === SORT_DIR.ASC ? '-' : ''}${field.relation || sort.type}`;
             this.searchParams.set('sort', `${sort.dir === SORT_DIR.ASC ? '-' : ''}${sort.type}`);
@@ -235,9 +245,23 @@ export default class ProjectPage extends Component {
     };
 
     getProject = (projectId) => {
-        return ProjectService.get({expand: 'fields'}, projectId).then(response => {
+        return ProjectService.get({expand: 'projectFields'}, projectId).then(response => {
             return this.setState({project: response.data});
         });
+    };
+
+    getFields = () => {
+        const {project, userTypeId} = this.state;
+
+        if (!project || !project.projectFields || !project.projectFields.length) {
+            return [];
+        }
+
+        const fields = project.projectFields.find(({user_type_id}) => user_type_id === userTypeId);
+
+        if (fields && fields.data) {
+            return fields.data;
+        }
     };
 
     getTotalCountArticles = () => {
@@ -296,6 +320,7 @@ export default class ProjectPage extends Component {
 
                 return article;
             });
+        const fields = this.getFields();
 
         return (
             <Page {...cls()} withBar>
@@ -409,7 +434,7 @@ export default class ProjectPage extends Component {
                         articles={articles}
                         pagination={pagination}
                         onScrollToEnd={this.handleScrollToEndArticles}
-                        fields={_.get(project, 'fields', [])}
+                        fields={fields}
                     />
                 </div>
 

@@ -174,7 +174,7 @@ export default class ProjectTable extends Component {
 
                 {this.selectedColumns.map(column => {
                     const active = sort.type === column;
-                    const currentField = fields.find(({code}) => code === column);
+                    const currentField = fields.find(({slug}) => slug === column);
 
                     return (
                         <div
@@ -218,13 +218,13 @@ export default class ProjectTable extends Component {
                 </div>
 
                 {this.selectedColumns.map(column => {
-                    const currentField = fields.find(({code}) => code === column);
+                    const currentField = fields.find(({slug}) => slug === column);
                     const relation = currentField && currentField.relation;
 
                     let columnValue = _.get(article, relation, article[column]);
 
-                    if (currentField && currentField.type) {
-                        switch (currentField.type) {
+                    if (currentField && currentField.type && currentField.type.key) {
+                        switch (currentField.type.key) {
                             case FIELD_TYPE.ARRAY:
                                 columnValue = (columnValue || []).map(({name}) => name).join(', ');
                                 break;

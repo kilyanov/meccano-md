@@ -18,8 +18,8 @@ export default class UnselectedProperty extends Component {
         return (
             <div
                 {...cls('', {selected})}
-                data-id={item.code}
-                onDoubleClick={() => onDoubleClick(item.code)}
+                data-id={item.slug}
+                onDoubleClick={() => onDoubleClick(item.slug)}
             >
                 {item.name}
 

@@ -14,5 +14,12 @@ export const UserService = {
         create: (form) => API.post(urlGenerator('type')(), form),
         update: (form, id) => API.put(urlGenerator('type')(id), form),
         delete: (id) => API.delete(urlGenerator('type')(id))
+    },
+    project: {
+        getList: (projectId) => API.get(urlGenerator('project')(projectId)),
+        get: (projectId, useId) => API.get(urlGenerator('project')(projectId, useId)),
+        create: (form, projectId) => API.post(urlGenerator('project')(projectId), form),
+        update: (form, id) => API.put(urlGenerator('project')(id), form),
+        delete: (projectId, useId) => API.delete(urlGenerator('project')(projectId, useId))
     }
 };

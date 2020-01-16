@@ -56,12 +56,13 @@ export default class ArticleCreatePage extends Component {
         };
         this.state = {
             articlesNavs: {},
-            fields: [],
+            projectFields: [],
             sources: [],
             prevForm: _.clone(this.defaultForm),
             form: _.clone(this.defaultForm),
             selectedMedia: {},
             viewType: StorageService.get(STORAGE_KEY.ARTICLE_VIEW_TYPE) || 1,
+            userTypeId: StorageService.get(STORAGE_KEY.USER_TYPE),
             showViewSettings: false,
             inProgress: true
         };
@@ -72,20 +73,21 @@ export default class ArticleCreatePage extends Component {
             this.getArticle();
         } else {
             ProjectService
-                .get({expand: 'fields,sections'}, this.projectId)
+                .get({expand: 'projectFields,sections'}, this.projectId)
                 .then(response => {
                     const project = response.data;
 
-                    if (project && project.fields) {
+                    if (project && project.projectFields) {
                         this.setState({
                             sections: project.sections,
-                            fields: project.fields,
+                            projectFields: project.projectFields,
                             inProgress: false
                         }); // , this.getAdditionalDataFields
                     }
                 })
                 .catch(() => this.setState({inProgress: false}));
         }
+        EventEmitter.on(EVENTS.USER.CHANGE_TYPE, this.setUserType);
     }
 
     componentDidUpdate(prevProps) {
@@ -93,6 +95,10 @@ export default class ArticleCreatePage extends Component {
             this.articleId = this.props.match.params.articleId;
             this.getArticle();
         }
+    }
+
+    componentWillUnmount() {
+        EventEmitter.off(EVENTS.USER.CHANGE_TYPE, this.setUserType);
     }
 
     handleChangeForm = (value, option) => {
@@ -151,10 +157,10 @@ export default class ArticleCreatePage extends Component {
     };
 
     handleEndSort = (sortedKeys) => {
-        const {fields} = this.state;
-        const sortedList = sortedKeys.map(key => fields.find(({code}) => code === key)).filter(item => !!item);
+        const {projectFields} = this.state;
+        const sortedList = sortedKeys.map(key => projectFields.find(({slug}) => slug === key)).filter(item => !!item);
 
-        this.setState({fields: sortedList}, this.saveFieldsSort);
+        this.setState({projectFields: sortedList}, this.saveFieldsSort);
     };
 
     handleSubmit = () => {
@@ -180,12 +186,12 @@ export default class ArticleCreatePage extends Component {
             });
 
         // Check required
-        this.state.fields
+        this.state.projectFields
             .filter(({required}) => required)
             .forEach(field => {
-                if (!form[field.code] ||
-                    (form[field.code] instanceof Array && _.isEmpty(form[field.code])) ||
-                    (form[field.code] instanceof Object && _.isEmpty(form[field.code]))
+                if (!form[field.slug] ||
+                    (form[field.slug] instanceof Array && _.isEmpty(form[field.slug])) ||
+                    (form[field.slug] instanceof Object && _.isEmpty(form[field.slug]))
                 ) {
                     invalidateFields.push(field);
                 }
@@ -238,20 +244,24 @@ export default class ArticleCreatePage extends Component {
 
     getArticle = () => {
         const {location} = this.props;
+        const {userTypeId} = this.state;
         const searchParams = location.search && new URLSearchParams(location.search);
-        const form = {
-            expand: 'project.fields,project.sections,source'
+        const requestForm = {
+            expand: 'project.projectFields,project.sections,source',
+            user_type: userTypeId
         };
 
+        if (!userTypeId) return;
+
         if (searchParams) {
-            for (let item of searchParams.entries()) {
-                form[item[0]] = item[1];
+            for (const item of searchParams.entries()) {
+                requestForm[item[0]] = item[1];
             }
         }
 
         this.setState({inProgress: true}, () => {
             ArticleService
-                .get(this.articleId, form)
+                .get(this.articleId, requestForm)
                 .then(response => {
                     const newState = this.state;
                     const form = response.data;
@@ -260,11 +270,11 @@ export default class ArticleCreatePage extends Component {
                         current: _.get(response.headers, 'x-current'),
                         next: _.get(response.headers, 'x-next-article'),
                         prev: _.get(response.headers, 'x-prev-article'),
-                        total: _.get(response.headers, 'x-total-count'),
+                        total: _.get(response.headers, 'x-total-count')
                     };
 
                     form.date = new Date(form.date);
-                    form.authors = form.authors.map(({id, name}) => ({label: name, value: id}));
+                    form.authors = (form.authors || []).map(({id, name}) => ({label: name, value: id}));
 
                     if (form.source && form.source.id) {
                         form.source = {name: form.source.name, value: form.source.id};
@@ -282,13 +292,16 @@ export default class ArticleCreatePage extends Component {
                     });
 
                     this.article = _.cloneDeep(form);
+                    const fields = form.project.projectFields.find(f => f.user_type_id === userTypeId);
 
                     newState.articlesNavs = articlesNavs;
-                    newState.fields = form.project.fields;
+                    newState.projectFields = fields ? fields.data : [];
                     newState.sections = sections;
                     newState.form = form;
                     newState.prevForm = _.cloneDeep(form);
                     newState.inProgress = false;
+
+                    console.log(newState);
 
                     this.setState(newState);
                 })
@@ -297,26 +310,31 @@ export default class ArticleCreatePage extends Component {
     };
 
     getDataSectionFields = () => {
-        const {form, sectionsTwo, sectionsThree, fields} = this.state;
+        const {form, sectionsTwo, sectionsThree, projectFields} = this.state;
 
-        let dataSectionFields = _.cloneDeep(fields).filter(({code}) => code !== 'annotation' && code !== 'text');
+        let dataSectionFields = _.cloneDeep(projectFields).filter(({slug}) => slug !== 'annotation' && slug !== 'text');
 
         if (!form.section_main_id || !sectionsTwo || !sectionsTwo.length) {
-            dataSectionFields = dataSectionFields.filter(({code}) => code !== 'section_sub_id');
+            dataSectionFields = dataSectionFields.filter(({slug}) => slug !== 'section_sub_id');
         }
 
         if (!form.section_sub_id || !sectionsThree || !sectionsThree.length) {
-            dataSectionFields = dataSectionFields.filter(({code}) => code !== 'section_three_id');
+            dataSectionFields = dataSectionFields.filter(({slug}) => slug !== 'section_three_id');
         }
 
         return dataSectionFields;
+    };
+
+    setUserType = () => {
+        console.log(StorageService.get(STORAGE_KEY.USER_TYPE));
+        this.setState({userTypeId: StorageService.get(STORAGE_KEY.USER_TYPE)}, this.getArticle);
     };
 
     findSectionById = (sectionId, sections) => {
         const r = (items) => {
             let found = null;
 
-            for (let item of items) {
+            for (const item of items) {
                 if (item.id === sectionId) {
                     found = item;
                     break; // for stop loop
@@ -342,10 +360,10 @@ export default class ArticleCreatePage extends Component {
     };
 
     saveFieldsSort = () => {
-        const {fields} = this.state;
+        const {projectFields} = this.state;
 
         ProjectService.cancelLast();
-        ProjectService.put(this.projectId, {fields});
+        ProjectService.put(this.projectId, {projectFields});
     };
 
     checkFormChanges = () => {
@@ -436,7 +454,7 @@ export default class ArticleCreatePage extends Component {
                 onChange={this.handleEndSort}
             >
                 {dataSectionFields.map(field => {
-                    switch (field.code) {
+                    switch (field.slug) {
                         case 'source_id':
                             field.requestService = SourceService.get;
                             field.requestCancelService = SourceService.cancelLast;
@@ -520,10 +538,10 @@ export default class ArticleCreatePage extends Component {
 
                     return (
                         <ProjectCreateField
-                            key={field.code}
+                            key={field.slug}
                             field={field}
                             placeholder={field.placeholder}
-                            value={form[field.code] || ''}
+                            value={form[field.slug] || ''}
                             onChange={this.handleChangeForm}
                         />
                     );
@@ -571,7 +589,8 @@ export default class ArticleCreatePage extends Component {
 
                         <h2 {...cls('title')}>
                             {isUpdate ? 'Статья' : 'Новая статья'}
-                            {(articlesNavs.current && articlesNavs.total) && ` ${articlesNavs.current} из ${articlesNavs.total}`}
+                            {(articlesNavs.current && articlesNavs.total) &&
+                            ` ${articlesNavs.current} из ${articlesNavs.total}`}
                         </h2>
 
                         {articlesNavs.next && (

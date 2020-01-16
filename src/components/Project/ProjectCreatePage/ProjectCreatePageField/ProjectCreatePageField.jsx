@@ -11,11 +11,13 @@ import {FIELD_TYPE} from '../../../../constants/FieldType';
 
 const cls = new Bem('article-create-page');
 const ProjectCreateField = ({field, value, onChange, className}) => {
-    switch (field.type) {
+    const filedType = field.type.key;
+
+    switch (filedType) {
         case FIELD_TYPE.ARRAY:
-            return <div {...cls('field', [field.code, field.type], className)} data-id={field.code}>
+            return <div {...cls('field', [field.slug, filedType], className)} data-id={field.slug}>
                 <InputTags
-                    onChange={val => onChange(val, field.code)}
+                    onChange={val => onChange(val, field.slug)}
                     options={field.options || []}
                     placeholder={field.placeholder}
                     label={field.name}
@@ -30,7 +32,7 @@ const ProjectCreateField = ({field, value, onChange, className}) => {
                     label={field.name}
                     tags={field.tags}
                     suggestions={field.suggestions}
-                    onChange={val => onChange(val, field.code)}
+                    onChange={val => onChange(val, field.slug)}
                     eslint-disable-next-line
                     onSearch={field.onSearch}
                     requestService={field.requestService}
@@ -40,26 +42,26 @@ const ProjectCreateField = ({field, value, onChange, className}) => {
 
             </div>;
         case FIELD_TYPE.UUID:
-            return <div {...cls('field', [field.code, field.type], className)} data-id={field.code}>
+            return <div {...cls('field', [field.slug, filedType], className)} data-id={field.slug}>
                 <Select
                     placeholder={field.placeholder}
                     label={field.name}
                     options={field.options || []}
                     selected={value}
-                    onChange={val => onChange(val, field.code)}
+                    onChange={val => onChange(val, field.slug)}
                     requestService={field.requestService}
                     requestCancelService={field.requestCancelService}
                     depended={field.depended}
                 />
             </div>;
         case FIELD_TYPE.UUID_EXT:
-            return <div {...cls('field', [field.code, field.type], className)} data-id={field.code}>
+            return <div {...cls('field', [field.slug, filedType], className)} data-id={field.slug}>
                 <Select
                     placeholder={field.placeholder}
                     label={field.name}
                     options={field.options || []}
                     selected={value}
-                    onChange={val => onChange(val, field.code)}
+                    onChange={val => onChange(val, field.slug)}
                     requestService={field.requestService}
                     requestCancelService={field.requestCancelService}
                     depended={field.depended}
@@ -68,40 +70,40 @@ const ProjectCreateField = ({field, value, onChange, className}) => {
                 />
             </div>;
         case FIELD_TYPE.URL:
-            return <div {...cls('field', [field.code, field.type], className)} data-id={field.code}>
+            return <div {...cls('field', [field.slug, filedType], className)} data-id={field.slug}>
                 <InputLink
                     label={field.name}
-                    onChange={val => onChange(val, field.code)}
+                    onChange={val => onChange(val, field.slug)}
                     value={value || ''}
                 />
             </div>;
         case FIELD_TYPE.FLOAT:
         case FIELD_TYPE.INT:
-            return <div {...cls('field', [field.code, field.type], className)} data-id={field.code}>
+            return <div {...cls('field', [field.slug, filedType], className)} data-id={field.slug}>
                 <InputNumber
                     label={field.name}
-                    onChange={val => onChange(val, field.code)}
+                    onChange={val => onChange(val, field.slug)}
                     value={value || ''}
                 />
             </div>;
         case FIELD_TYPE.DATETIME:
-            return <div {...cls('field', [field.code, field.type], className)} data-id={field.code}>
+            return <div {...cls('field', [field.slug, filedType], className)} data-id={field.slug}>
                 <InputDatePicker
                     label={field.name}
                     value={value || ''}
-                    onChange={val => onChange(val, field.code)}
+                    onChange={val => onChange(val, field.slug)}
                 />
             </div>;
         case FIELD_TYPE.DATE:
-            return <div {...cls('field', [field.code, field.type], className)} data-id={field.code}>
+            return <div {...cls('field', [field.slug, filedType], className)} data-id={field.slug}>
                 <InputDatePicker
                     label={field.name}
                     value={value || ''}
-                    onChange={val => onChange(val, field.code)}
+                    onChange={val => onChange(val, field.slug)}
                 />
             </div>;
         case FIELD_TYPE.TIME:
-            return <div {...cls('field', [field.code, field.type], className)} data-id={field.code}>
+            return <div {...cls('field', [field.slug, filedType], className)} data-id={field.slug}>
                 <InputTime
                     label={field.name}
                     value={value}
@@ -109,11 +111,11 @@ const ProjectCreateField = ({field, value, onChange, className}) => {
             </div>;
         case FIELD_TYPE.TEXT:
         default:
-            return <div {...cls('field', [field.code, field.type], className)} data-id={field.code}>
+            return <div {...cls('field', [field.slug, filedType], className)} data-id={field.slug}>
                 <InputText
                     label={field.name}
                     value={value || ''}
-                    onChange={val => onChange(val, field.code)}
+                    onChange={val => onChange(val, field.slug)}
                 />
             </div>;
     }

@@ -4,22 +4,37 @@ import User from "../../../Users/User/User";
 import InlineButton from "../../../Shared/InlineButton/InlineButton";
 import ProjectUserModal from "./ProjectUserModal/ProjectUserModal";
 import './project-users.scss';
+import {UserService} from "../../../../services";
 
 const cls = new Bem('project-users');
 
 export default class ProjectUsers extends Component {
     static propTypes = {
-        users: PropTypes.array.isRequired
+        projectId: PropTypes.string.isRequired
     };
 
     state = {
+        users: [],
         showCreateModal: false,
         selectedUser: null
     };
 
+    componentDidMount() {
+        this.getUserList();
+    }
+
+    getUserList = () => {
+        const {projectId} = this.props;
+
+        UserService.project.getList(projectId).then(response => {
+            console.log(response);
+            this.setState({ users: response.data });
+        });
+    };
+
     render() {
-        const {users} = this.props;
-        const {showCreateModal, selectedUser} = this.state;
+        const {projectId} = this.props;
+        const {users, showCreateModal, selectedUser} = this.state;
 
         return (
             <div {...cls('', '', 'container')}>
@@ -40,6 +55,7 @@ export default class ProjectUsers extends Component {
                 {showCreateModal && (
                     <ProjectUserModal
                         user={selectedUser}
+                        projectId={projectId}
                         onClose={() => this.setState({selectedUserId: null, showCreateModal: false})}
                     />
                 )}

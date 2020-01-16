@@ -38,8 +38,8 @@ export default class ProjectProperties extends Component {
         const {fields, allFields} = this.props;
 
         allFields.forEach(item => {
-            const selected = !!fields.find(({code}) => code === item.code);
-            const elem = document.querySelector(`.unselected-property[data-id="${item.code}"]`);
+            const selected = !!fields.find(({slug}) => slug === item.slug);
+            const elem = document.querySelector(`.unselected-property[data-id="${item.slug}"]`);
 
             if (!elem) return;
 
@@ -49,7 +49,7 @@ export default class ProjectProperties extends Component {
 
     handleEndSort = (sortedKeys) => {
         const sortedList = sortedKeys.map(key => {
-            return this.props.allFields.find(({code}) => code === key);
+            return this.props.allFields.find(({slug}) => slug === key);
         }).filter(item => !!item);
 
         this.props.onChange(sortedList);
@@ -71,12 +71,12 @@ export default class ProjectProperties extends Component {
 
     handleDblClick = (itemCode) => {
         const {fields, allFields} = this.props;
-        const foundIndex = fields.findIndex(({code}) => code === itemCode);
+        const foundIndex = fields.findIndex(({slug}) => slug === itemCode);
 
         if (foundIndex !== -1) {
             this.handleDelete(foundIndex);
         } else {
-            fields.push(allFields.find(({code}) => code === itemCode));
+            fields.push(allFields.find(({slug}) => slug === itemCode));
             this.props.onChange(fields);
         }
     };
@@ -113,7 +113,7 @@ export default class ProjectProperties extends Component {
                         >
                             {fields.map((item, index) => (
                                 <SelectedProperty
-                                    key={item.code || item.id}
+                                    key={item.id || item.slug}
                                     item={item}
                                     index={index}
                                     onDelete={this.handleDelete}
@@ -149,11 +149,11 @@ export default class ProjectProperties extends Component {
                             }}
                         >
                             {allFields.map(item => {
-                                const selected = !!fields.find(({code}) => code === item.code);
+                                const selected = !!fields.find(({slug}) => slug === item.slug);
 
                                 return (
                                     <UnselectedProperty
-                                        key={item.code || item.id}
+                                        key={item.id || item.slug}
                                         item={item}
                                         selected={selected}
                                         classes={cls}

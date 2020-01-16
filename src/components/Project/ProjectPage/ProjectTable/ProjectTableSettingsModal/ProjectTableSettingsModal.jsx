@@ -60,7 +60,7 @@ export default class ProjectTableSettingsModal extends Component {
                         <div {...cls('item')} key={column}>
                             <CheckBox
                                 checked={selectedColumns.includes(column)}
-                                label={_.get(projectFields.find(({code}) => code === column), 'name')}
+                                label={_.get(projectFields.find(({slug}) => slug === column), 'name')}
                                 onChange={checked => this.handleChangeColumns(checked, column)}
                             />
                         </div>

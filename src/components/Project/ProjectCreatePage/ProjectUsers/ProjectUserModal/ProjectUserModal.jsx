@@ -11,7 +11,8 @@ const cls = new Bem('project-user-modal');
 
 export default class ProjectUserModal extends Component {
     static propTypes = {
-        onClose: PropTypes.func.isRequired
+        onClose: PropTypes.func.isRequired,
+        projectId: PropTypes.string.isRequired
     };
 
     state = {
@@ -31,6 +32,25 @@ export default class ProjectUserModal extends Component {
 
     handleChangePermissions = (permissions) => {
         this.setState({permissions});
+    };
+
+    handleSubmit = () => {
+        const {projectId} = this.props;
+        const {user, permissions} = this.state;
+
+        this.setState({ inProgress: true }, () => {
+            const data = permissions.map(permission => {
+                return {
+                    user_id: user.value,
+                    project_id: projectId,
+                    item_name: permission.value
+                };
+            });
+
+            UserService.project.create(data, projectId).then(response => {
+                console.log(response);
+            });
+        });
     };
 
     getUsers = () => {
@@ -55,7 +75,8 @@ export default class ProjectUserModal extends Component {
         return (
             <ConfirmModal
                 {...cls()}
-                title={`${this.isEdit ? 'Добавление' : 'Изменение'} пользователя`}
+                title={`${this.isEdit ? 'Изменение' : 'Добавление'} пользователя`}
+                onSubmit={this.handleSubmit}
                 onClose={onClose}
             >
                 <Select

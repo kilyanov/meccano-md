@@ -6,7 +6,7 @@ import Button from '../../Shared/Button/Button';
 import './project-create-page.scss';
 import ProjectSections from './ProjectSections/ProjectSections';
 import Loader from '../../Shared/Loader/Loader';
-import {ProjectService, UserService} from '../../../services';
+import {ProjectService} from '../../../services';
 import PromiseDialogModal from '../../Shared/PromiseDialogModal/PromiseDialogModal';
 import {NotificationManager} from 'react-notifications';
 import ProjectProperties from './ProjectProperties/ProjectProperties';
@@ -44,7 +44,7 @@ class ProjectCreatePage extends Component {
             analytic: [],
             client: []
         },
-        fields: [],
+        projectFields: [],
         allFields: [],
         sections: [],
         wordSearch: [],
@@ -84,15 +84,15 @@ class ProjectCreatePage extends Component {
     };
 
     handleChangeSelectedFields = (newFieldSet) => {
-        const {fields, selectedUserType} = this.state;
+        const {projectFields, selectedUserType} = this.state;
 
-        fields.forEach(fieldSet => {
+        projectFields.forEach(fieldSet => {
             if (fieldSet.user_type_id === selectedUserType.value) {
                 fieldSet.data = newFieldSet;
             }
         });
 
-        this.setState({fields});
+        this.setState({projectFields});
     };
 
     handleClickBackButton = () => {
@@ -170,7 +170,7 @@ class ProjectCreatePage extends Component {
 
     getProject = () => {
         const params = {
-            expand: 'fields,allFields,users'
+            expand: 'projectFields,allFields,users'
         };
 
         Promise
@@ -178,14 +178,14 @@ class ProjectCreatePage extends Component {
                 ProjectService.get(params, this.projectId),
                 ProjectService.field.get()
             ])
-            .then(([projectResponse, filedsResponse]) => {
-                const {fields, allFields, createdAt, updatedAt} = projectResponse.data;
-                const allFieldsWithAdditional = allFields.concat(filedsResponse.data);
+            .then(([projectResponse, fieldsResponse]) => {
+                const {projectFields, allFields, createdAt, updatedAt} = projectResponse.data;
+                const allFieldsWithAdditional = allFields.concat(fieldsResponse.data);
 
                 this.project = projectResponse.data;
                 this.project.allFields = allFieldsWithAdditional;
                 this.setState({
-                    fields,
+                    projectFields,
                     allFields: allFieldsWithAdditional,
                     project: this.project,
                     isEdit: createdAt !== updatedAt,
@@ -208,8 +208,8 @@ class ProjectCreatePage extends Component {
 
     getStepsButtons = () => {
         // Проверяем на наличие полей sections
-        const foundSections = this.state.fields.find(({code}) => {
-            return ['section_main_id', 'section_sub_id', 'section_three_id'].includes(code);
+        const foundSections = this.state.projectFields.find(({slug}) => {
+            return ['section_main_id', 'section_sub_id', 'section_three_id'].includes(slug);
         });
 
         const stepsButtons = Object.keys(STEP_DESCRIPTION).map(key => {
@@ -243,17 +243,16 @@ class ProjectCreatePage extends Component {
 
     saveFields = () => {
         this.setState({inProgress: true}, () => {
-            const fields = this.state.fields.map((field, index) => {
-                field.order = index;
-                return field;
+            this.state.projectFields.forEach(fieldsByType => {
+                fieldsByType.data.forEach((field, index) => field.order = index);
             });
 
-            ProjectService.put(this.state.projectId, {fields}).then(response => {
+            ProjectService.put(this.state.projectId, {projectFields: this.state.projectFields}).then(response => {
                 store.dispatch(updateProject(response.data));
 
                 // Проверяем на наличие полей sections
-                const found = this.state.fields.find(({code}) => {
-                    return ['section_main_id', 'section_sub_id', 'section_three_id'].includes(code);
+                const found = this.state.projectFields.find(({slug}) => {
+                    return ['section_main_id', 'section_sub_id', 'section_three_id'].includes(slug);
                 });
 
                 this.setState({step: found ? 2 : 3, inProgress: false});
@@ -277,9 +276,9 @@ class ProjectCreatePage extends Component {
     };
 
     saveProject = () => {
-        const {project, fields} = this.state;
+        const {project, projectFields} = this.state;
 
-        project.fields = fields;
+        project.projectFields = projectFields;
 
         this.setState({inProgress: true}, () => {
             ProjectService.put(this.state.projectId, project).then(response => {
@@ -324,7 +323,7 @@ class ProjectCreatePage extends Component {
     render() {
         const {
             step,
-            fields,
+            projectFields,
             allFields,
             sections,
             isEdit,
@@ -336,7 +335,7 @@ class ProjectCreatePage extends Component {
             inProgress
         } = this.state;
         const backButtonLabel = step === 2 ? 'Назад' : isEdit ? 'Удалить проект' : 'Отменить создание';
-        const fieldsByUserType = selectedUserType && fields.find(f => f.user_type_id === selectedUserType.value);
+        const fieldsByUserType = selectedUserType && projectFields.find(f => f.user_type_id === selectedUserType.value);
 
         return (
             <Page
@@ -393,7 +392,7 @@ class ProjectCreatePage extends Component {
                 </section>
 
                 <section {...cls('body')}>
-                    {(this.project && step === 1 && fields && fieldsByUserType) && (
+                    {(this.project && step === 1 && projectFields && fieldsByUserType) && (
                         <ProjectProperties
                             classes={cls}
                             project={this.project}
@@ -419,7 +418,7 @@ class ProjectCreatePage extends Component {
                     )}
 
                     {(this.project && step === 4) && (
-                        <ProjectUsers users={this.state.project.users || []} />
+                        <ProjectUsers projectId={this.projectId} />
                     )}
                 </section>
 
