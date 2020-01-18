@@ -12,6 +12,7 @@
   &__title {
     display: flex;
     align-items: center;
+    justify-content: space-between;
   }
 
   &__row {
@@ -49,10 +50,24 @@
   }
 
   &__create-field {
-    margin-left: auto;
     margin-bottom: 0;
     font-size: 14px;
     line-height: 16px;
+  }
+
+  &__search-field {
+    display: flex;
+    align-items: center;
+  }
+
+  &__search-input {
+    margin-bottom: 0;
+
+    .input-text__field {
+      padding: 0 6px;
+      background: transparent;
+      border: none;
+    }
   }
 }
 

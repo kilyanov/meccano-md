@@ -7,6 +7,8 @@ import SelectedProperty from './SelectedProperty/SelectedProperty';
 import UnselectedProperty from './UnselectedProperty/UnselectedProperty';
 import CreateFieldModal from "../CreateFieldModal/CreateFieldModal";
 import InlineButton from "../../../Shared/InlineButton/InlineButton";
+import InputText from "../../../Form/InputText/InputText";
+import SearchIcon from "../../../Shared/SvgIcons/SearchIcon";
 
 const cls = new Bem('project-properties');
 const classSelected = 'unselected-property--selected';
@@ -23,7 +25,9 @@ export default class ProjectProperties extends Component {
 
     state = {
         openCreateFieldModal: false,
-        selectedFieldId: ''
+        selectedFieldId: '',
+        searchSelectedValue: '',
+        searchUnselectedValue: ''
     };
 
     componentDidMount() {
@@ -88,9 +92,37 @@ export default class ProjectProperties extends Component {
         });
     };
 
+    handleSearch = (value ,type) => {
+        this.setState({ [type]: value.toLowerCase() });
+    };
+
+    highlight = (text, searchString) => {
+        if (searchString) {
+            const parts = text.split(new RegExp(`(${searchString})`, 'gi'));
+
+            return (
+                <span>
+                    {parts.map((part, i) =>
+                        <span
+                            key={i}
+                            style={part.toLowerCase() === searchString.toLowerCase() ?
+                                {backgroundColor: '#ffff8f'} : {}}
+                        >
+                            {part}
+                        </span>
+                    )}
+                </span>);
+        }
+
+        return text;
+    };
+
     render() {
         const {fields, allFields} = this.props;
-        const {openCreateFieldModal, selectedFieldId} = this.state;
+        const {openCreateFieldModal, selectedFieldId, searchUnselectedValue} = this.state;
+        const filteredAllFields = searchUnselectedValue ?
+            allFields.filter(({name}) => name.toLowerCase().includes(searchUnselectedValue)) :
+            allFields;
 
         return (
             <div {...cls('', '', 'container')}>
@@ -124,6 +156,15 @@ export default class ProjectProperties extends Component {
                     </div>
                     <div {...cls('column', '', 'col-xs-6')}>
                         <h3 {...cls('title')}>Добавление полей
+                            <div {...cls('search-field')}>
+                                <SearchIcon {...cls('search-icon')} />
+                                <InputText
+                                    {...cls('search-input')}
+                                    placeholder='Поиск...'
+                                    onChange={value => this.handleSearch(value, 'searchUnselectedValue')}
+                                    value={searchUnselectedValue}
+                                />
+                            </div>
                             <InlineButton
                                 {...cls('create-field')}
                                 onClick={() => this.handleEditField()}
@@ -148,8 +189,10 @@ export default class ProjectProperties extends Component {
                                 }
                             }}
                         >
-                            {allFields.map(item => {
+                            {filteredAllFields.map(item => {
                                 const selected = !!fields.find(({slug}) => slug === item.slug);
+
+                                item.hignlightedName = this.highlight(item.name, searchUnselectedValue);
 
                                 return (
                                     <UnselectedProperty

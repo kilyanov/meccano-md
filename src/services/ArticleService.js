@@ -11,8 +11,8 @@ export const ArticleService = {
     get: (id = '', form) => API.get(urlGenerator('article')(id, form)),
     getList: (form) => API.get(urlGenerator('article')(form)),
     delete: (form, projectId) => API.delete(urlGenerator('article')({project: projectId}), {data: form}),
-    create: (form) => API.post(urlGenerator('article')({project: form.projectId}), form),
-    update: (form, id) => API.put(urlGenerator('article')(id), form),
+    create: (form, _, userTypeId) => API.post(urlGenerator('article')({project: form.projectId, user_type: userTypeId}), form),
+    update: (form, id, userTypeId) => API.put(urlGenerator('article')({id, user_type: userTypeId}), form),
 
     /* Data fields */
     types: (form) => {

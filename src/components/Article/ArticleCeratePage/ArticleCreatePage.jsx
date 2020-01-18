@@ -211,20 +211,21 @@ export default class ArticleCreatePage extends Component {
         const submitForm = () => {
             return new Promise(resolve => {
                 this.setState({inProgress: true}, () => {
-                    ArticleService[isUpdate ? 'update' : 'create'](form, form.id).then(response => {
-                        OperatedNotification.success({
-                            title: `${isUpdate ? 'Обновление' : 'Создание'} статьи`,
-                            message: `Статья успешно ${isUpdate ? 'обновлена' : 'создана'}`,
-                            submitButtonText: '← Перейти ко всем статьям',
-                            timeOut: 10000,
-                            onSubmit: () => EventEmitter.emit(EVENTS.REDIRECT, `/project/${this.projectId}`)
-                        });
-                        this.articleId = response.data.id;
-                        this.setState({inProgress: false}, () => {
-                            this.getArticle();
-                            resolve();
-                        });
-                    }).catch(() => this.setState({inProgress: false}, resolve));
+                    ArticleService[isUpdate ? 'update' : 'create'](form, form.id, this.state.userTypeId)
+                        .then(response => {
+                            OperatedNotification.success({
+                                title: `${isUpdate ? 'Обновление' : 'Создание'} статьи`,
+                                message: `Статья успешно ${isUpdate ? 'обновлена' : 'создана'}`,
+                                submitButtonText: '← Перейти ко всем статьям',
+                                timeOut: 10000,
+                                onSubmit: () => EventEmitter.emit(EVENTS.REDIRECT, `/project/${this.projectId}`)
+                            });
+                            this.articleId = response.data.id;
+                            this.setState({inProgress: false}, () => {
+                                this.getArticle();
+                                resolve();
+                            });
+                        }).catch(() => this.setState({inProgress: false}, resolve));
                 });
             });
         };
@@ -436,6 +437,7 @@ export default class ArticleCreatePage extends Component {
             sectionsTwo,
             sectionsThree,
             viewType,
+            projectFields,
             inProgress
         } = this.state;
         const isUpdate = !!this.articleId;
@@ -547,7 +549,7 @@ export default class ArticleCreatePage extends Component {
             </Sortable>
         );
 
-        const sectionAnnotation = (
+        const sectionAnnotation = projectFields.find(({slug}) => slug === 'annotation') ? (
             <section {...cls('section')}>
                 <RichEditor
                     {...cls('field', 'annotation')}
@@ -556,9 +558,9 @@ export default class ArticleCreatePage extends Component {
                     onChange={value => this.handleChangeForm(value, 'annotation')}
                 />
             </section>
-        );
+        ) : null;
 
-        const sectionText = (
+        const sectionText = projectFields.find(({slug}) => slug !== 'text') ? (
             <section {...cls('section')}>
                 <RichEditor
                     {...cls('field', 'textarea')}
@@ -567,7 +569,7 @@ export default class ArticleCreatePage extends Component {
                     onChange={value => this.handleChangeForm(value, 'text')}
                 />
             </section>
-        );
+        ) : null;
 
         return (
             <Page withBar staticBar {...cls()}>

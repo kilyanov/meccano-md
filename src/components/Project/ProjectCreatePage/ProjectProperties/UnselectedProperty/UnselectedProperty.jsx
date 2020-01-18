@@ -21,7 +21,7 @@ export default class UnselectedProperty extends Component {
                 data-id={item.slug}
                 onDoubleClick={() => onDoubleClick(item.slug)}
             >
-                {item.name}
+                {item.hignlightedName || item.name}
 
                 <span {...cls('selected-icon')}>
                     <CheckIcon/>
