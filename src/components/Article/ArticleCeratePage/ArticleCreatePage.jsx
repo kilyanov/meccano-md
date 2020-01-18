@@ -560,7 +560,7 @@ export default class ArticleCreatePage extends Component {
             </section>
         ) : null;
 
-        const sectionText = projectFields.find(({slug}) => slug !== 'text') ? (
+        const sectionText = projectFields.find(({slug}) => slug === 'text') ? (
             <section {...cls('section')}>
                 <RichEditor
                     {...cls('field', 'textarea')}
