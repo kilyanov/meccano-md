@@ -194,12 +194,13 @@ export default class ProjectPage extends Component {
     };
 
     getArticles = (isPagination = false) => {
-        const {pagination, project, filters: {sort, search}} = this.state;
+        const {pagination, project, filters: {sort, search}, userTypeId} = this.state;
         const selectedColumns = this.projectTable.getColumns();
         const fields = this.getFields();
 
         const form = {
             project: this.projectId,
+            user_type: userTypeId,
             page: pagination.page,
             expand: fields
                 .filter(({slug}) => selectedColumns.includes(slug))
