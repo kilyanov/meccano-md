@@ -8,6 +8,7 @@ import Loader from "../../Shared/Loader/Loader";
 import {connect} from 'react-redux';
 import {NotificationManager} from "react-notifications";
 import Select from "../../Form/Select/Select";
+import {slugify} from 'transliteration';
 
 const classes = new Bem('user-modal');
 
@@ -21,6 +22,9 @@ class UserModal extends Component {
     state = {
         form: {
             username: '',
+            name: '',
+            surname: '',
+            department: '',
             password: '',
             email: '',
             roles: [],
@@ -49,7 +53,16 @@ class UserModal extends Component {
     }
 
     handleChangeForm = (value, prop) => {
-        this.setState(({form}) => form[prop] = value);
+        this.setState(({form}) => {
+            form[prop] = value;
+
+            // Транслит для Логина
+            if (['name', 'surname'].includes(prop) && !form.username) {
+                this.username = `${slugify(form.surname)}${form.name ? '_' : ''}${slugify(form.name ? form.name : '')}`;
+            }
+
+            return {form};
+        });
     };
 
     handleSubmit = () => {
@@ -62,6 +75,7 @@ class UserModal extends Component {
         form.types = form.types.map(({value}) => value);
 
         if (!form.password && isEdit) delete form.password;
+        if (!form.username) form.username = this.username;
 
         this.setState({inProgress: true}, () => {
             UserService[method](form, userId)
@@ -71,7 +85,7 @@ class UserModal extends Component {
                         `${isEdit ? 'Редактирование' : 'Создание'} пользователя`
                     );
                     this.setState({inProgress: false});
-                    this.props.onUpdateParent()
+                    this.props.onUpdateParent();
                     this.props.onClose();
                 })
                 .catch(() => this.setState({inProgress: false}));
@@ -79,6 +93,8 @@ class UserModal extends Component {
     };
 
     roleOptions = this.props.roles.map(({name, description}) => ({name, value: name, description}));
+
+    username = '';
 
     render() {
         const {onClose, userId, userTypes} = this.props;
@@ -99,11 +115,32 @@ class UserModal extends Component {
                     validate
                 >
                     <InputText
-                        label='Имя пользователя'
-                        placeholder='Username'
+                        label='Фамилия'
+                        placeholder='Фамилия'
+                        value={form.surname || ''}
+                        onChange={value => this.handleChangeForm(value, 'surname')}
+                    />
+
+                    <InputText
+                        label='Имя'
+                        placeholder='Имя'
+                        value={form.name || ''}
+                        onChange={value => this.handleChangeForm(value, 'name')}
+                    />
+
+                    <InputText
+                        label='Логин'
+                        placeholder='Логин'
                         required
-                        value={form.username}
+                        value={form.username || this.username}
                         onChange={value => this.handleChangeForm(value, 'username')}
+                    />
+
+                    <InputText
+                        label='Отдел'
+                        placeholder='Отдел'
+                        value={form.department || ''}
+                        onChange={value => this.handleChangeForm(value, 'department')}
                     />
 
                     <Select

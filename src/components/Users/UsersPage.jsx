@@ -7,6 +7,7 @@ import {UserService} from "../../services";
 import Loader from "../Shared/Loader/Loader";
 import Access from "../Shared/Access/Access";
 import {PERMISSION} from "../../constants/Permissions";
+import PromiseDialogModal from "../Shared/PromiseDialogModal/PromiseDialogModal";
 
 const classes = new Bem('users-page');
 
@@ -40,8 +41,18 @@ export default class UsersPage extends Component {
         });
     };
 
-    handleDeleteUser = (userId) => {
-        console.log('Delete user', userId);
+    handleDeleteUser = (user) => {
+        if (!this.promiseModal) return;
+
+        this.promiseModal
+            .open({
+                title: 'Удаление пользователя',
+                content: `Вы уверены, что хтите удалить пользователя "${user.username}"?`,
+                danger: true,
+                submitText: 'Удалить'
+            })
+            .then(() => UserService.delete(user.id))
+            .then(this.getUsers);
     };
 
     getUsers = () => {
@@ -85,6 +96,8 @@ export default class UsersPage extends Component {
                         selectedUser={selectedUser}
                     />
                 )}
+
+                <PromiseDialogModal ref={ref => this.promiseModal = ref}/>
 
                 {inProgress && <Loader fixed/>}
             </Page>

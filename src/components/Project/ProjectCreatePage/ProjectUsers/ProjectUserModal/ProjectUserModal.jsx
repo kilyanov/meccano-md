@@ -38,7 +38,7 @@ export default class ProjectUserModal extends Component {
         const {projectId} = this.props;
         const {user, permissions} = this.state;
 
-        this.setState({ inProgress: true }, () => {
+        this.setState({inProgress: true}, () => {
             const data = permissions.map(permission => {
                 return {
                     user_id: user.value,
@@ -49,7 +49,8 @@ export default class ProjectUserModal extends Component {
 
             UserService.project.create(data, projectId).then(response => {
                 console.log(response);
-            });
+                this.setState({inProgress: false});
+            }).catch(() => this.setState({inProgress: false}));
         });
     };
 

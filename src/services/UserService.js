@@ -8,6 +8,7 @@ export const UserService = {
     getProfile: (id) => API.get(urlGenerator('profile')(id ? {id} : {})),
     create: (form) => API.post(urlGenerator('create')(), form),
     update: (form, id) => API.put(urlGenerator('user')(id), form),
+    delete: (id) => API.delete(urlGenerator('user')(id)),
     roles: () => API.get(urlGenerator('roles')()),
     types: {
         get: (id = '') => API.get(urlGenerator('type')(id)),

@@ -78,4 +78,14 @@ $namespace: '.docs-button';
   &__count {
     background-color: $lightRed;
   }
+
+  &__list {
+    background-color: $background-dark;
+  }
+
+  &__list-item {
+    &:hover {
+      background-color: $lightBackground-dark;
+    }
+  }
 }

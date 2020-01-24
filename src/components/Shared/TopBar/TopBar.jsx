@@ -17,7 +17,7 @@ const TopBar = ({isStatic, className}) => {
                 <section {...cls('buttons')}>
                     <ProjectsButton {...cls('button', 'notifications')} />
                     <DocsButton {...cls('button', 'notifications')} />
-                    <NotificationsButton {...cls('button', 'notifications')} />
+                    {/* <NotificationsButton {...cls('button', 'notifications')} /> */}
                 </section>
 
                 <ProfileButton {...cls('button')} />

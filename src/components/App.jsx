@@ -197,7 +197,7 @@ export default class App extends Component {
                         />
                     )}
                 </div>
-                <NotificationsPanel/>
+                {/* <NotificationsPanel/> */}
             </Fragment>
         );
     }

@@ -134,6 +134,10 @@ export default class ProjectTable extends Component {
         title: 'Настроить столбцы',
         onClick: this.handleClickColumnSettings
     }, {
+        id: 'edit-mode',
+        title: 'Режим редактирования',
+        onClick: () => console.log('Функционал еще не написан))')
+    }, {
         id: 'set-color',
         title: 'Цветовое выделение строк'
     }];

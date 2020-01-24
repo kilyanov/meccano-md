@@ -42,7 +42,7 @@ const User = ({user, onChange, onDelete}) => {
 
                     <InlineButton
                         {...cls('button')}
-                        onClick={() => onDelete(user.id)}
+                        onClick={() => onDelete(user)}
                         danger
                         small
                     >Удалить</InlineButton>
