@@ -191,8 +191,6 @@ class ProjectCreatePage extends Component {
     getUserTypes = () => {
         const userTypes = this.props.userTypes.map(({id, name}) => ({label: name, value: id}));
 
-        console.log(userTypes);
-
         this.setState({
             userTypes,
             selectedUserType: userTypes[0]
