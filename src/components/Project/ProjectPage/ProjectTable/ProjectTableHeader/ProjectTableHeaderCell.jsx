@@ -6,11 +6,12 @@ const Cell = ({classes, type, sort, onChangeSort, content}) => {
 
     return (
         <div
-            {...cls('cell', {[type]: true, active})}
+            {...classes('cell', {[type]: true, active})}
             onClick={() => onChangeSort(type)}
         >
             {content}
             {active && <SortArrow classes={classes} dir={sort.dir}/>}
+            <div {...classes('cell-handler')} />
         </div>
     );
 };

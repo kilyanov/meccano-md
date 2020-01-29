@@ -53,3 +53,12 @@
       }
   }
 }
+
+.select__control {
+    border-color: transparent;
+
+    &--is-focused {
+        border-color: hsl(0,0%,80%) !important;
+        box-shadow: none !important;
+    }
+}

@@ -3,8 +3,8 @@ import ApiList from '../api/apiList';
 import { StorageService } from "./StorageService";
 import { EventEmitter } from "../helpers";
 import { storeMainActions } from '../redux/storeMainActions';
-import {STORAGE_KEY} from '../constants/LocalStorageKeys';
-import {EVENTS} from '../constants/Events';
+import { STORAGE_KEY } from '../constants/LocalStorageKeys';
+import { EVENTS } from '../constants/Events';
 
 export const AuthService = {
     login: (form) => {

@@ -8,7 +8,7 @@ import './project-table.scss';
 import './ProjectTableHeader/project-table-header.scss';
 import DropDownMenuIcon from '../../../Shared/SvgIcons/DropDownMenuIcon';
 import ProjectTableSettingsModal from './ProjectTableSettingsModal/ProjectTableSettingsModal';
-import {getColumnsFromStorage, getColumnsFromFields} from './Columns';
+import {getColumnsFromStorage, getColumnsFromFields, updateColumnWidth} from './Columns';
 import SettingsIcon from '../../../Shared/SvgIcons/SettingsIcon';
 import SortArrow from './ProjectTableHeader/ProjectTableHeaderSortArrow';
 import {InitScrollbar} from '../../../../helpers/Tools';
@@ -48,11 +48,13 @@ export default class ProjectTable extends Component {
 
     componentDidMount() {
         this.initScrollbar();
+        document.addEventListener('mousemove', this.handleMouseMove);
+        document.addEventListener('mouseup', this.handleMouseUp);
     }
 
     componentDidUpdate = () => {
         this.initScrollbar();
-        this.setColumnWidth();
+        this.syncColumnWidth();
     };
 
     handleSelectAllArticles = (checked) => {
@@ -111,22 +113,34 @@ export default class ProjectTable extends Component {
         }
     };
 
-    getColumns = () => {
-        return this.selectedColumns;
+    handleMouseDown = (e, key) => {
+        this.columnKey = key;
+        this.element = e.target.parentNode;
+        this.startX = e.pageX;
+        this.startWidth = this.element.clientWidth;
+        this.pressed = true;
     };
 
-    setColumnWidth = () => {
-        this.selectedColumns.forEach(key => {
-            const headerColumn = document.querySelector(`.project-table-header__cell--${key}`);
-            const bodyColumns = document.querySelectorAll(`.project-table__cell--${key}`);
+    handleMouseMove = (e) => {
+        if (!this.pressed) return;
 
-            if (headerColumn && bodyColumns) {
-                bodyColumns.forEach(column => {
-                    column.style.maxWidth = `${headerColumn.offsetWidth}px`;
-                    column.style.minWidth = `${headerColumn.offsetWidth}px`;
-                });
-            }
+        this.diff = e.pageX - this.startX;
+        this.element.style.flex = `0 0 ${this.startWidth + this.diff}px`;
+        const bodyColumns = document.querySelectorAll(`.project-table__cell--${this.columnKey}`);
+
+        bodyColumns.forEach(column => {
+            column.style.maxWidth = `${this.startWidth + this.diff}px`;
+            column.style.minWidth = `${this.startWidth + this.diff}px`;
         });
+    };
+
+    handleMouseUp = () => {
+        this.pressed = false;
+        updateColumnWidth(this.props.projectId, this.columnKey, this.startWidth + this.diff);
+    };
+
+    getColumns = () => {
+        return this.selectedColumns;
     };
 
     settingsMenu = [{
@@ -160,6 +174,20 @@ export default class ProjectTable extends Component {
         else if (this.scrollBar) this.scrollBar.update();
     };
 
+    syncColumnWidth = () => {
+        this.selectedColumns.forEach(({key}) => {
+            const headerColumn = document.querySelector(`.project-table-header__cell--${key}`);
+            const bodyColumns = document.querySelectorAll(`.project-table__cell--${key}`);
+
+            if (headerColumn && bodyColumns) {
+                bodyColumns.forEach(column => {
+                    column.style.maxWidth = `${headerColumn.offsetWidth}px`;
+                    column.style.minWidth = `${headerColumn.offsetWidth}px`;
+                });
+            }
+        });
+    };
+
     renderHeader = () => {
         const {articles, selectedIds, sort, fields, projectId} = this.props;
         const projectColumns = getColumnsFromFields(fields);
@@ -176,19 +204,26 @@ export default class ProjectTable extends Component {
                     />
                 </div>
 
-                {this.selectedColumns.map(column => {
-                    const active = sort.type === column;
-                    const currentField = fields.find(({slug}) => slug === column);
+                {this.selectedColumns.map(({key, width}) => {
+                    const active = sort.type === key;
+                    const currentField = fields.find(({slug}) => slug === key);
 
                     return (
                         <div
-                            key={column}
-                            ref={node => this.headerCellRef[column] = node}
-                            {...headerClasses('cell', {[column]: true, active})}
-                            onClick={() => this.handleChangeSort(column)}
+                            key={key}
+                            ref={node => this.headerCellRef[key] = node}
+                            {...headerClasses('cell', {[key]: true, active})}
+                            onClick={() => this.handleChangeSort(key)}
+                            style={width ? {flex: `0 0 ${width}px`} : {}}
                         >
                             {_.get(currentField, 'name')}
                             {active && <SortArrow classes={headerClasses} dir={sort.dir}/>}
+                            <div
+                                {...headerClasses('cell-handler')}
+                                onMouseDown={event => this.handleMouseDown(event, key)}
+                                onMouseMove={this.handleMouseMove}
+                                onMouseUp={this.handleMouseUp}
+                            />
                         </div>
                     );
                 })}
@@ -221,16 +256,16 @@ export default class ProjectTable extends Component {
                     />
                 </div>
 
-                {this.selectedColumns.map(column => {
-                    const currentField = fields.find(({slug}) => slug === column);
+                {this.selectedColumns.map(({key}) => {
+                    const currentField = fields.find(({slug}) => slug === key);
                     const relation = currentField && currentField.relation;
 
-                    let columnValue = _.get(article, relation, article[column]);
+                    let columnValue = _.get(article, relation, article[key]);
 
                     if (currentField && currentField.type && currentField.type.key) {
                         switch (currentField.type.key) {
                             case FIELD_TYPE.ARRAY:
-                                columnValue = (columnValue || []).map(({name}) => name).join(', ');
+                                columnValue = (columnValue || []).map(c => c.name).join(', ');
                                 break;
                             case FIELD_TYPE.DATE:
                                 columnValue = moment(columnValue).format('DD.MM.YYYY');
@@ -252,8 +287,8 @@ export default class ProjectTable extends Component {
                     return (
                         <Link
                             to={url}
-                            key={column}
-                            {...cls('cell', column)}
+                            key={key}
+                            {...cls('cell', key)}
                         >
                             <span {...cls('cell-text')}>{columnValue}</span>
                         </Link>
@@ -291,9 +326,7 @@ export default class ProjectTable extends Component {
                 >
                     {articles.map((article, articleKey) => this.renderArticle(article, articleKey))}
 
-                    {!articles.length && (
-                        <div {...cls('empty-message')}>Статей пока нет</div>
-                    )}
+                    {!articles.length && <div {...cls('empty-message')}>Статей пока нет</div>}
                 </section>
 
                 <button

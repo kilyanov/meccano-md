@@ -63,6 +63,13 @@ $namespace: '.project-table-header';
     }
   }
 
+  &__cell-handler {
+    height: 100%;
+    width: 10px;
+    margin-left: auto;
+    cursor: col-resize;
+  }
+
   &__sort-arrow {
     margin-top: -5px;
     margin-left: 5px;

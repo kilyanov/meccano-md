@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import './project-table-settings-modal.scss';
 import ConfirmModal from '../../../../Shared/ConfirmModal/ConfirmModal';
-import {getColumnsFromStorage, getColumnsFromFields, setColumnsToStorage} from '../Columns';
+import {getColumnsFromStorage, getColumnsFromFields, setColumnsToStorage, DEFAULT_COLUMN_WIDTH} from '../Columns';
 import CheckBox from '../../../../Form/CheckBox/CheckBox';
 
 const cls = new Bem('project-table-settings-modal');
@@ -30,8 +30,8 @@ export default class ProjectTableSettingsModal extends Component {
     handleChangeColumns = (checked, column) => {
         let {selectedColumns} = this.state;
 
-        if (checked) selectedColumns.push(column);
-        else selectedColumns = selectedColumns.filter(key => key !== column);
+        if (checked) selectedColumns.push({key: column, width: DEFAULT_COLUMN_WIDTH});
+        else selectedColumns = selectedColumns.filter(({key}) => key !== column);
 
         this.setState({selectedColumns});
     };
@@ -59,7 +59,7 @@ export default class ProjectTableSettingsModal extends Component {
                     {projectColumns.map(column => (
                         <div {...cls('item')} key={column}>
                             <CheckBox
-                                checked={selectedColumns.includes(column)}
+                                checked={!!selectedColumns.find(({key}) => key === column)}
                                 label={_.get(projectFields.find(({slug}) => slug === column), 'name')}
                                 onChange={checked => this.handleChangeColumns(checked, column)}
                             />

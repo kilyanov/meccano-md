@@ -203,7 +203,7 @@ export default class ProjectPage extends Component {
             user_type: userTypeId,
             page: pagination.page,
             expand: fields
-                .filter(({slug}) => selectedColumns.includes(slug))
+                .filter(({slug}) => selectedColumns.find(({key}) => key === slug))
                 .map(field => field.relation || field.slug)
         };
 

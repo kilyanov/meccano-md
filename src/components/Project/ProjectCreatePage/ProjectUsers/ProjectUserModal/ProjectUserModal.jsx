@@ -84,6 +84,7 @@ export default class ProjectUserModal extends Component {
                     {...cls('field')}
                     value={user}
                     placeholder='Выберите пользователя'
+                    classNamePrefix='select'
                     options={users}
                     onChange={this.handleChangeUser}
                     isSearchable
@@ -96,6 +97,7 @@ export default class ProjectUserModal extends Component {
                     {...cls('field')}
                     isMulti
                     placeholder='Выберите разрешения'
+                    classNamePrefix='select'
                     options={this.permissionsOptions}
                     onChange={this.handleChangePermissions}
                     isDisabled={inProgress}

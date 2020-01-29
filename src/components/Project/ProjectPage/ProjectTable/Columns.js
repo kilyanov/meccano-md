@@ -11,7 +11,11 @@ export const getColumnsFromStorage = (projectId, projectColumns) => {
     let storageProjects = storageData && JSON.parse(storageData);
 
     // Удаляем старые значения
-    if (storageProjects instanceof Array) {
+    if (
+        !storageProjects ||
+        storageProjects instanceof Array ||
+        storageProjects[projectId] && storageProjects[projectId].some(item => _.isString(item))
+    ) {
         storageProjects = {};
     }
 
@@ -45,8 +49,30 @@ export const setColumnsToStorage = (selectedColumns, projectColumns, projectId) 
     StorageService.set(STORAGE_KEY.PROJECT_TABLE_COLUMNS, JSON.stringify(storageProjects));
 };
 
-export const DEFAULT_COLUMNS = ['date', 'source_id', 'title', 'annotation'];
+export const updateColumnWidth = (projectId, columnKey, newWidth) => {
+    const storageData = StorageService.get(STORAGE_KEY.PROJECT_TABLE_COLUMNS);
+    const storageProjects = storageData && JSON.parse(storageData);
+
+    if (storageProjects && storageProjects[projectId]) {
+        storageProjects[projectId].forEach(column => {
+            if (column.key === columnKey) {
+                column.width = newWidth;
+            }
+        });
+    }
+
+    StorageService.set(STORAGE_KEY.PROJECT_TABLE_COLUMNS, JSON.stringify(storageProjects));
+};
+
+export const DEFAULT_COLUMN_WIDTH = 0;
+
+export const DEFAULT_COLUMNS = [
+    {key: 'date', width: DEFAULT_COLUMN_WIDTH},
+    {key: 'source_id', width: DEFAULT_COLUMN_WIDTH},
+    {key: 'title', width: DEFAULT_COLUMN_WIDTH},
+    {key: 'annotation', width: DEFAULT_COLUMN_WIDTH}
+];
 
 const getVerifyColumns = (selectedColumns, projectColumns) => {
-    return selectedColumns.filter(column => projectColumns.includes(column));
+    return selectedColumns.filter(({key}) => projectColumns.includes(key));
 };
