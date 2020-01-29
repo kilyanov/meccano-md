@@ -60,7 +60,7 @@ class ProjectUserModal extends Component {
             const requestForm = {...form};
 
             requestForm.user_id = requestForm.user_id.value;
-            requestForm.userProjectTypes = requestForm.userProjectTypes.map(({value}) => value);
+            requestForm.userProjectTypes = requestForm.userProjectTypes.map(({id, value}) => ({id, user_type_id: value}));
             requestForm.project_id = projectId;
 
             UserService.project.create(requestForm, projectId).then(response => {
