@@ -29,7 +29,7 @@ const User = ({user, onChange, onDelete}) => {
                     <a {...cls('data-item-link')} href={`mailto:${user.email}`}>{user.email}</a>
                 </div>
                 <div {...cls('data-item', 'small')}>
-                    {user.permissions.map(({description}) => description).join(', ')}
+                    {/* {user.permissions.map(({description}) => description).join(', ')} */}
                 </div>
             </section>
             <section {...cls('buttons')}>

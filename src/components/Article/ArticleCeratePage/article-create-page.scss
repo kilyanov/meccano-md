@@ -59,6 +59,10 @@ $namespace: '.article-create-page';
     border-radius: 50%;
     transition: background-color .3s ease;
 
+    &:hover {
+      background-color: $gray;
+    }
+
     &--left {
       transform: rotate(-180deg);
     }

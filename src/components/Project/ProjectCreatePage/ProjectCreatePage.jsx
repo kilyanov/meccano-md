@@ -36,7 +36,7 @@ class ProjectCreatePage extends Component {
     };
 
     state = {
-        step: 1,
+        step: 4,
         projectId: this.props.match.params.id,
         project: null,
         roleFields: {

@@ -1,7 +1,24 @@
 .project-user-modal {
     &__field {
-        & + & {
-            margin-top: 20px;
-        }
+        margin-bottom: 20px;
+    }
+
+    &__label {
+        display: inline-block;
+        font-size: 15px;
+        line-height: 24px;
+        margin-bottom: 8px;
+    }
+
+    &__list {
+        display: flex;
+        flex-direction: column;
+        margin: 0;
+        padding-left: 10px;
+        list-style: none;
+    }
+
+    &__list-itme {
+        margin-bottom: 10px;
     }
 }

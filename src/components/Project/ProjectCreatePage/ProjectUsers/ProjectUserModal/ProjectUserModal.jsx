@@ -7,6 +7,7 @@ import './project-user-modal.scss';
 import Loader from "../../../../Shared/Loader/Loader";
 import {connect} from "react-redux";
 import CheckBox from "../../../../Form/CheckBox/CheckBox";
+import {PROJECT_USER_PERMISSIONS, PROJECT_USER_TRANSMIT} from "../consts";
 
 const cls = new Bem('project-user-modal');
 
@@ -18,24 +19,26 @@ class ProjectUserModal extends Component {
 
     state = {
         form: {
-            user_id: this.props.user || null,
+            user_id: null,
             userProjectTypes: [],
-            access_read: false,
+            access_read: true,
             access_edit: false,
             access_full: false,
+            access_project_manager: false,
             transmit_project_manager: false,
             transmit_analytic: false,
             transmit_client: false
         },
-        user: this.props.user || null,
+        user: null,
         users: [],
         userTypes: [],
-        permissions: [],
         inProgress: true
     };
 
     componentDidMount() {
-        this.getUsers();
+        if (this.props.projectUser) this.prepareProjectUser();
+        else this.getUsers();
+
         this.getUserTypes();
     }
 
@@ -47,8 +50,17 @@ class ProjectUserModal extends Component {
 
     handleChangeForm = (prop, value) => {
         this.setState(({form}) => {
+            if (prop === 'userProjectTypes' && !value) {
+                return {form};
+            }
+
             form[prop] = value;
+
             return {form};
+        }, () => {
+            if (prop.includes('access')) {
+                this.checkAccessRights(prop, value);
+            }
         });
     };
 
@@ -64,7 +76,7 @@ class ProjectUserModal extends Component {
             requestForm.project_id = projectId;
 
             UserService.project.create(requestForm, projectId).then(response => {
-                console.log(response);
+                this.props.onChange(response.data);
                 this.setState({inProgress: false});
             }).catch(() => this.setState({inProgress: false}));
         });
@@ -84,47 +96,53 @@ class ProjectUserModal extends Component {
 
         this.setState(state => {
             state.userTypes = userTypes;
-            state.form.userProjectTypes = [userTypes[0]];
+
+            if (!state.form.userProjectTypes || !state.form.userProjectTypes.length) {
+                state.form.userProjectTypes = [userTypes[0]];
+            }
 
             return state;
         });
     };
 
-    isEdit = this.props.user && !_.isEmpty(this.props.user);
+    prepareProjectUser = () => {
+        const {projectUser} = this.props;
+        const user = {label: projectUser.user.username, value: projectUser.user.id};
 
-    permissions = [
-        {
-            id: 'access_read',
-            name: 'Только чтение'
-        },
-        {
-            id: 'access_edit',
-            name: 'Редактирование своих'
-        },
-        {
-            id: 'access_full',
-            name: 'Полный доступ'
-        },
-        {
-            id: 'access_project_manager',
-            name: 'Проект-менеджер'
-        }
-    ];
+        this.setState({
+            users: [user],
+            form: {
+                ...projectUser,
+                user_id: user,
+                userProjectTypes: projectUser.userProjectTypes.map(({userType: {name, id}}) => (
+                    {label: name, value: id}
+                ))
+            },
+            inProgress: false
+        });
+    };
 
-    transmit = [
-        {
-            id: 'transmit_project_manager',
-            name: 'проект-менеджеру'
-        },
-        {
-            id: 'transmit_analytic',
-            name: 'аналитикам'
-        },
-        {
-            id: 'transmit_client',
-            name: 'клиенту'
-        }
-    ];
+    checkAccessRights = (current, checked) => {
+        let sets = true;
+
+        this.setState(({form}) => {
+            PROJECT_USER_PERMISSIONS.forEach(({id}) => {
+                if (current === id) {
+                    sets = false;
+                }
+
+                form[id] = sets;
+
+                if (checked && current === id) {
+                    form[id] = true;
+                }
+            });
+
+            return {form};
+        });
+    };
+
+    isEdit = this.props.projectUser && !_.isEmpty(this.props.projectUser);
 
     render() {
         const {onClose} = this.props;
@@ -137,44 +155,48 @@ class ProjectUserModal extends Component {
                 onSubmit={this.handleSubmit}
                 onClose={onClose}
             >
-                <span {...cls('label')}>Пользователь:</span>
-                <Select
-                    {...cls('field')}
-                    value={form.user_id}
-                    placeholder='Выберите пользователя'
-                    classNamePrefix='select'
-                    options={users}
-                    onChange={value => this.handleChangeForm('user_id', value)}
-                    isSearchable
-                    isClearable
-                    isDisabled={this.isEdit || inProgress}
-                    menuPosition='fixed'
-                />
+                <section {...cls('field')}>
+                    <span {...cls('label')}>Пользователь:</span>
+                    <Select
+                        value={form.user_id}
+                        placeholder='Выберите пользователя'
+                        classNamePrefix='select'
+                        options={users}
+                        onChange={value => this.handleChangeForm('user_id', value)}
+                        isSearchable
+                        isClearable
+                        isDisabled={this.isEdit || inProgress}
+                        menuPosition='fixed'
+                    />
+                </section>
 
-                <span {...cls('label')}>Тип пользователя:</span>
-                <Select
-                    {...cls('field')}
-                    isMulti
-                    placeholder='Тип пользователя'
-                    classNamePrefix='select'
-                    options={userTypes}
-                    onChange={value => this.handleChangeForm('userProjectTypes', value)}
-                    isDisabled={inProgress}
-                    value={form.userProjectTypes}
-                    menuPosition='fixed'
-                />
+                <section {...cls('field')}>
+                    <span {...cls('label')}>Тип пользователя:</span>
+                    <Select
+                        {...cls('field')}
+                        isMulti
+                        placeholder='Тип пользователя'
+                        classNamePrefix='select'
+                        options={userTypes}
+                        onChange={value => this.handleChangeForm('userProjectTypes', value)}
+                        isDisabled={inProgress}
+                        value={form.userProjectTypes}
+                        menuPosition='fixed'
+                    />
+                </section>
 
-                <section {...cls('section')}>
+                <section {...cls('field')}>
                     <span {...cls('label')}>Разрешения:</span>
 
                     <ul {...cls('list')}>
-                        {this.permissions.map((item) => (
+                        {PROJECT_USER_PERMISSIONS.map((item) => (
                             <li
                                 key={item.id}
                                 {...cls('list-item')}
                             >
                                 <CheckBox
                                     {...cls('list-item-field')}
+                                    disabled={item.id === 'access_read'}
                                     checked={form[item.id]}
                                     onChange={value => this.handleChangeForm(item.id, value)}
                                 >
@@ -185,11 +207,11 @@ class ProjectUserModal extends Component {
                     </ul>
                 </section>
 
-                <section {...cls('section')}>
-                    <span {...cls('subtitle')}>Возможность передачи статей:</span>
+                <section {...cls('field')}>
+                    <span {...cls('label')}>Возможность передачи статей:</span>
 
                     <ul {...cls('list')}>
-                        {this.transmit.map((item) => (
+                        {PROJECT_USER_TRANSMIT.map((item) => (
                             <li
                                 key={item.id}
                                 {...cls('list-item')}
