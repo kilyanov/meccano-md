@@ -21,6 +21,8 @@ import RightLoader from '../../Shared/Loader/RightLoader/RightLoader';
 import {Plural, QueueManager} from '../../../helpers/Tools';
 import InlineButton from '../../Shared/InlineButton/InlineButton';
 import {EventEmitter} from "../../../helpers";
+import store from "../../../redux/store";
+import {setCurrentProject} from "../../../redux/actions/currentProject";
 
 const cls = new Bem('project-page');
 const defaultPagination = {page: 1, pageCount: 1};
@@ -246,7 +248,8 @@ export default class ProjectPage extends Component {
     };
 
     getProject = (projectId) => {
-        return ProjectService.get({expand: 'projectFields'}, projectId).then(response => {
+        return ProjectService.get({expand: 'projectFields', pageSize: 50}, projectId).then(response => {
+            store.dispatch(setCurrentProject(response.data));
             return this.setState({project: response.data});
         });
     };
@@ -258,7 +261,7 @@ export default class ProjectPage extends Component {
             return [];
         }
 
-        const fields = project.projectFields.find(({user_type_id}) => user_type_id === userTypeId);
+        const fields = project.projectFields.find(field => field.user_type_id === userTypeId);
 
         if (fields && fields.data) {
             return fields.data;

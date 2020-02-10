@@ -10,3 +10,5 @@ export const getProfile = () => ({
     ],
     promise: UserService.getProfile()
 });
+
+export const userLogout = () => ({type: ACTION_TYPE.USER.LOGOUT});

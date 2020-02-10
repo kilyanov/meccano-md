@@ -50,6 +50,11 @@ export const ACTION_TYPE = {
             LOADING: 'USER_TYPES_LOADING',
             LOADED: 'USER_TYPES_LOADED',
             LOAD_FAILURE: 'USER_TYPES_LOAD_FAILURE'
-        }
+        },
+        LOGOUT: 'USER_LOGOUT'
+    },
+    CURRENT_PROJECT: {
+        SET: 'CURRENT_PROJECT_SET',
+        CLEAR: 'CURRENT_PROJECT_CLEAR'
     }
 };

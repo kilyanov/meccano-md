@@ -41,15 +41,17 @@ class ProfileButton extends Component {
     };
 
     render() {
-        const {profile, userTypes} = this.props;
+        const {profile, userTypes, currentProject} = this.props;
         const {isOpen} = this.state;
         const storageUserType = StorageService.get(STORAGE_KEY.USER_TYPE);
-        const availableUserTypes = profile.types && profile.types.length ?
-            userTypes.filter(({id}) => profile.types.find(t => t.id === id)) :
-            userTypes;
+        const projectUserTypes = _.get(currentProject, 'userProject.userProjectTypes', []);
         const menu = [{name: 'Выйти', onClick: AuthService.logOut}];
 
-        if (availableUserTypes.length) {
+        if (userTypes.length && projectUserTypes.length) {
+            const availableUserTypes = projectUserTypes.map(ut => {
+                return userTypes.find(({id}) => ut.user_type_id === id);
+            });
+
             availableUserTypes.forEach(({name, id}) => {
                 menu.unshift({
                     id,
@@ -88,7 +90,7 @@ class ProfileButton extends Component {
                                     key={itemIndex}
                                     onClick={() => item.onClick()}
                                 >{isActive && <i {...cls('list-item-active')}>✔</i>} {item.name}</li>
-                            )
+                            );
                         })}
                     </ul>
                 )}
@@ -97,4 +99,12 @@ class ProfileButton extends Component {
     }
 }
 
-export default connect(({userTypes, profile}) => ({userTypes, profile}))(ProfileButton);
+function mapStateToProps({userTypes, profile, currentProject}) {
+    return {
+        userTypes,
+        profile,
+        currentProject
+    };
+}
+
+export default connect(mapStateToProps)(ProfileButton);

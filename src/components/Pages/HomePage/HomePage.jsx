@@ -13,6 +13,7 @@ import Page from '../../Shared/Page/Page';
 import DocumentIcon from '../../Shared/SvgIcons/DocumentIcon';
 import {PERMISSION} from "../../../constants/Permissions";
 import Access from "../../Shared/Access/Access";
+import Loader from "../../Shared/Loader/Loader";
 
 class HomePage extends Component {
     static propTypes = {
@@ -114,6 +115,8 @@ class HomePage extends Component {
                         onClose={() => this.setState({ showProjectCreateModal: false })}
                     />
                 )}
+
+                {_.isEmpty(profile) && <Loader />}
 
                 <PromiseDialogModal ref={node => this.dialogModal = node}/>
             </Page>

@@ -104,3 +104,14 @@ $namespace: '.profile-button';
         color: $emerald;
     }
 }
+
+/* Dark Theme */
+.app--dark #{$namespace} {
+    &__list {
+        background-color: $background-dark;
+    }
+
+    &__list-item {
+        color: $white-dark;
+    }
+}

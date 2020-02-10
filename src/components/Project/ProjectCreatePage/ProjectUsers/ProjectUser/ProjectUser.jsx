@@ -13,7 +13,12 @@ const ProjectUser = ({projectUser, onChange, onDelete}) => {
     let userTypesString = '';
 
     if (user.types && user.types.length) {
-        userTypesString = userTypes.filter(({id}) => user.types.find(t => t.id === id)).map(({name}) => name).join(', ');
+        userTypesString = userTypes.filter(({id}) => {
+            return user.types
+                .find(t => t.id === id)
+                .map(({name}) => name)
+                .join(', ');
+        });
     }
 
     return (

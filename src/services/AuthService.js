@@ -5,6 +5,8 @@ import { EventEmitter } from "../helpers";
 import { storeMainActions } from '../redux/storeMainActions';
 import { STORAGE_KEY } from '../constants/LocalStorageKeys';
 import { EVENTS } from '../constants/Events';
+import store from "../redux/store";
+import {userLogout} from "../redux/actions/profile";
 
 export const AuthService = {
     login: (form) => {
@@ -45,6 +47,7 @@ export const AuthService = {
         StorageService.remove(STORAGE_KEY.TOKEN);
         StorageService.remove(STORAGE_KEY.TOKEN_EXPIRED);
         API.removeToken();
+        store.dispatch(userLogout());
         EventEmitter.emit(EVENTS.REDIRECT, '/login');
     }
 };

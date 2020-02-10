@@ -6,6 +6,7 @@ import './project-users.scss';
 import {UserService} from "../../../../services";
 import Loader from "../../../Shared/Loader/Loader";
 import ProjectUser from "./ProjectUser/ProjectUser";
+import PromiseDialogModal from "../../../Shared/PromiseDialogModal/PromiseDialogModal";
 
 const cls = new Bem('project-users');
 
@@ -30,7 +31,15 @@ export default class ProjectUsers extends Component {
     };
 
     handleDelete = (user) => {
+        const {projectId} = this.props;
 
+        this.promiseModal.open({
+            title: 'Удаление документа',
+            content: `Вы уверены, что хотите удалить пользователя "${user.username}"?`,
+            danger: true
+        }).then(() => {
+            UserService.project.delete(projectId, user.id).then(this.getUserList);
+        });
     };
 
     getUserList = () => {
@@ -74,9 +83,11 @@ export default class ProjectUsers extends Component {
                         projectUser={selectedUser}
                         projectId={projectId}
                         onChange={this.handleChangeUsers}
-                        onClose={() => this.setState({selectedUserId: null, showCreateModal: false})}
+                        onClose={() => this.setState({selectedUser: null, showCreateModal: false})}
                     />
                 )}
+
+                <PromiseDialogModal ref={ref => this.promiseModal = ref} />
 
                 {inProgress && <Loader/>}
             </div>

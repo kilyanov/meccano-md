@@ -4,5 +4,6 @@ export const STORAGE_KEY = {
     LAST_PATHNAME: 'last-pathname',
     TOKEN: 'token',
     TOKEN_EXPIRED: 'token-expired',
-    USER_TYPE: 'user_type'
+    USER_TYPE: 'user_type',
+    THEME: 'theme'
 };

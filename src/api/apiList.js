@@ -78,17 +78,16 @@ export const createURLGenerator = (serviceName) => {
                 id <String>
          */
         return (...args) => {
+            let result = url;
             let form = null;
-            let id = null;
 
             args.forEach(arg => {
-                if (_.isObject(arg)) form = arg;
-                if (_.isString(arg)) id = arg;
+                if (arg && _.isObject(arg)) form = arg;
+                if (arg && _.isString(arg)) {
+                    result += `/${arg}`;
+                }
             });
 
-            let result = url;
-
-            if (id) result += `/${id}`;
             if (form) result += ParseToRequest(form);
 
             return result;

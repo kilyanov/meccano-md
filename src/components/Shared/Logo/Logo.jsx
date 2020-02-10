@@ -4,8 +4,8 @@ import './logo.scss';
 import LogoIcon from '../SvgIcons/LogoIcon';
 
 const cls = new Bem('logo');
-const Logo = () => (
-    <Link to='/' {...cls()}>
+const Logo = ({onClick}) => (
+    <Link to='/' {...cls()} onClick={onClick}>
         <LogoIcon {...cls('img', '', ['d-none', 'd-sm-block'])}/>
         {/* <img {...cls('img', '', ['d-none', 'd-sm-block'])} src={require('./img/logo.jpg')} alt='ExLibris'/> */}
         <span {...cls('divider', '', ['d-none', 'd-sm-block'])}/>

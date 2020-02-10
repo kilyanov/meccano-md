@@ -56,3 +56,9 @@
         margin-top: 10px;
     }
 }
+
+/* Dark Theme */
+.app--dark .project-user {
+    background-color: $background-dark;
+    border-color: $white-dark;
+}

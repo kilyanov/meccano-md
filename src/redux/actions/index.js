@@ -6,3 +6,4 @@ export * from './settingsMenu';
 export * from './project';
 export * from './document';
 export * from './userType';
+export * from './currentProject';

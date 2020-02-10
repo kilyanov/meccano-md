@@ -8,8 +8,21 @@ import Loader from "../../../../Shared/Loader/Loader";
 import {connect} from "react-redux";
 import CheckBox from "../../../../Form/CheckBox/CheckBox";
 import {PROJECT_USER_PERMISSIONS, PROJECT_USER_TRANSMIT} from "../consts";
+import {ReactSelectStyles} from "../../../../../constants/ReactSelectStyles";
+import {THEME_TYPE} from "../../../../../constants";
 
 const cls = new Bem('project-user-modal');
+const defaulForm = {
+    user_id: null,
+    userProjectTypes: [],
+    access_read: true,
+    access_edit: false,
+    access_full: false,
+    access_project_manager: false,
+    transmit_project_manager: false,
+    transmit_analytic: false,
+    transmit_client: false
+};
 
 class ProjectUserModal extends Component {
     static propTypes = {
@@ -18,17 +31,7 @@ class ProjectUserModal extends Component {
     };
 
     state = {
-        form: {
-            user_id: null,
-            userProjectTypes: [],
-            access_read: true,
-            access_edit: false,
-            access_full: false,
-            access_project_manager: false,
-            transmit_project_manager: false,
-            transmit_analytic: false,
-            transmit_client: false
-        },
+        form: {...defaulForm},
         user: null,
         users: [],
         userTypes: [],
@@ -77,7 +80,7 @@ class ProjectUserModal extends Component {
 
             UserService.project.create(requestForm, projectId).then(response => {
                 this.props.onChange(response.data);
-                this.setState({inProgress: false});
+                this.setState({inProgress: false}, this.close);
             }).catch(() => this.setState({inProgress: false}));
         });
     };
@@ -142,18 +145,26 @@ class ProjectUserModal extends Component {
         });
     };
 
+    close = () => {
+        this.setState(state => {
+            state.form = {...defaulForm};
+            return state;
+        }, this.props.onClose);
+    };
+
     isEdit = this.props.projectUser && !_.isEmpty(this.props.projectUser);
 
     render() {
-        const {onClose} = this.props;
+        const {theme} = this.props;
         const {users, userTypes, form, inProgress} = this.state;
+        const isDarkTheme = theme === THEME_TYPE.DARK;
 
         return (
             <ConfirmModal
                 {...cls()}
                 title={`${this.isEdit ? 'Изменение' : 'Добавление'} пользователя`}
                 onSubmit={this.handleSubmit}
-                onClose={onClose}
+                onClose={() => this.close()}
             >
                 <section {...cls('field')}>
                     <span {...cls('label')}>Пользователь:</span>
@@ -167,6 +178,7 @@ class ProjectUserModal extends Component {
                         isClearable
                         isDisabled={this.isEdit || inProgress}
                         menuPosition='fixed'
+                        styles={ReactSelectStyles(isDarkTheme)}
                     />
                 </section>
 
@@ -182,6 +194,7 @@ class ProjectUserModal extends Component {
                         isDisabled={inProgress}
                         value={form.userProjectTypes}
                         menuPosition='fixed'
+                        styles={ReactSelectStyles(isDarkTheme)}
                     />
                 </section>
 
@@ -234,4 +247,4 @@ class ProjectUserModal extends Component {
     }
 }
 
-export default connect(({userTypes}) => ({userTypes}))(ProjectUserModal);
+export default connect(({userTypes, theme}) => ({userTypes, theme}))(ProjectUserModal);

@@ -1,13 +1,13 @@
 import {applyMiddleware, compose, createStore} from 'redux';
-import {createLogger} from 'redux-logger';
 import requestMiddleware from './middleware/request';
 import reducers from './reducers';
 import {THEME_TYPE} from '../constants/ThemeType';
 
 // const logger = createLogger();
-const initialState = {
+export const initialState = {
     documents: [],
     projects: [],
+    currentProject: null,
     profile: {},
     roles: [],
     userTypes: [],

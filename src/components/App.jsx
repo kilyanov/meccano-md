@@ -10,7 +10,7 @@ import {InitScrollbar} from '../helpers/Tools';
 import {EVENTS} from '../constants/Events';
 import OperatedNotification from './Shared/OperatedNotifiction/OperatedNotification';
 import QueueManager from './Shared/QueeManager/QueueManager';
-import NotificationsPanel from './Shared/NotificationsPanel/NotificationsPanel';
+// import NotificationsPanel from './Shared/NotificationsPanel/NotificationsPanel';
 import store from '../redux/store';
 import {switchTheme} from '../redux/actions/theme';
 import {THEME_TYPE} from '../constants/ThemeType';
@@ -18,7 +18,6 @@ import Notification from "../helpers/Notification";
 import {DOCUMENT_STATUS} from "../constants/DocumentStatus";
 import {saveAs} from "file-saver";
 import {getDocuments} from "../redux/actions/document";
-import {profile} from "../redux/reducers/profile";
 
 const cls = new Bem('app');
 
@@ -147,7 +146,7 @@ export default class App extends Component {
             this.setState({theme: currentState.theme});
         }
 
-        if (currentState.profile && currentState.profile.id !== this.state.profile.id) {
+        if (!_.isEmpty(currentState.profile) && currentState.profile.id !== this.state.profile.id) {
             this.setState({profile: currentState.profile}, () => {
                 store.dispatch(getDocuments(currentState.profile.id));
 

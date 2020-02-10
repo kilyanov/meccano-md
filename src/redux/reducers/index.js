@@ -7,8 +7,12 @@ import {settingsMenu} from './settingsMenu';
 import {projects} from './project';
 import {documents} from './document';
 import {userTypes} from './userType';
+import {currentProject} from './currentProject';
+import {ACTION_TYPE, STORAGE_KEY} from "../../constants";
+import {initialState} from "../store";
+import {StorageService} from "../../services";
 
-const reducer = combineReducers({
+const appReducer = combineReducers({
     profile,
     roles,
     notificationsPanel,
@@ -16,7 +20,20 @@ const reducer = combineReducers({
     settingsMenu,
     projects,
     documents,
-    userTypes
+    userTypes,
+    currentProject
 });
 
-export default reducer;
+const rootReducer = (state, action) => {
+    let newState = state;
+
+    if (action.type === ACTION_TYPE.USER.LOGOUT) {
+        const userTheme = StorageService.get(STORAGE_KEY.THEME) || initialState.theme;
+
+        newState = {...initialState, theme: userTheme};
+    }
+
+    return appReducer(newState, action);
+};
+
+export default rootReducer;
