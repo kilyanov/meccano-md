@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
+import {connect} from 'react-redux';
 import Page from '../../Shared/Page/Page';
 import {ArticleService, LocationService, ProjectService, SourceService, StorageService} from '../../../services';
 import './article-create-page.scss';
@@ -15,6 +16,8 @@ import {isMobileScreen, OperatedNotification} from '../../../helpers/Tools';
 import {STORAGE_KEY} from '../../../constants/LocalStorageKeys';
 import {EventEmitter} from "../../../helpers";
 import {EVENTS} from "../../../constants/Events";
+import store from "../../../redux/store";
+import {setCurrentProject} from "../../../redux/actions/currentProject";
 
 const cls = new Bem('article-create-page');
 const sectionsSet = {
@@ -22,7 +25,7 @@ const sectionsSet = {
     'section_sub_id': 'sectionsThree'
 };
 
-export default class ArticleCreatePage extends Component {
+class ArticleCreatePage extends Component {
     static propTypes = {
         country: PropTypes.array,
         city: PropTypes.array,
@@ -63,12 +66,16 @@ export default class ArticleCreatePage extends Component {
             selectedMedia: {},
             viewType: StorageService.get(STORAGE_KEY.ARTICLE_VIEW_TYPE) || 1,
             userTypeId: StorageService.get(STORAGE_KEY.USER_TYPE),
+            userType: null,
             showViewSettings: false,
             inProgress: true
         };
     }
 
     componentDidMount() {
+        this.setUserType();
+        EventEmitter.on(EVENTS.USER.CHANGE_TYPE, this.setUserType);
+
         if (this.articleId) {
             this.getArticle();
         } else {
@@ -76,6 +83,10 @@ export default class ArticleCreatePage extends Component {
                 .get({expand: 'projectFields,sections'}, this.projectId)
                 .then(response => {
                     const project = response.data;
+
+                    if (!this.props.currentProject) {
+                        store.dispatch(setCurrentProject(project));
+                    }
 
                     if (project && project.projectFields) {
                         this.setState({
@@ -87,13 +98,15 @@ export default class ArticleCreatePage extends Component {
                 })
                 .catch(() => this.setState({inProgress: false}));
         }
-        EventEmitter.on(EVENTS.USER.CHANGE_TYPE, this.setUserType);
     }
 
     componentDidUpdate(prevProps) {
         if (prevProps.match.params.articleId !== this.props.match.params.articleId) {
             this.articleId = this.props.match.params.articleId;
             this.getArticle();
+        }
+        if (!_.isEqual(prevProps.userTypes, this.props.userTypes)) {
+            this.setUserType();
         }
     }
 
@@ -135,7 +148,6 @@ export default class ArticleCreatePage extends Component {
         if (!articlesNavs.prev) return;
 
         this.checkFormChanges().then(() => {
-            console.log(this.context);
             EventEmitter.emit(EVENTS.REDIRECT, `/project/${this.projectId}/article/${articlesNavs.prev}`);
         });
     };
@@ -163,6 +175,17 @@ export default class ArticleCreatePage extends Component {
         this.setState({projectFields: sortedList}, this.saveFieldsSort);
     };
 
+    handleDoneArticle = () => {
+        const { userType } = this.state;
+
+        if (userType) {
+            this.setState(state => {
+                state.form[`complete_${userType.slug}`] = true;
+                return state;
+            }, this.handleSubmit);
+        }
+    };
+
     handleSubmit = () => {
         const form = _.cloneDeep(this.state.form);
         const isUpdate = !!this.articleId;
@@ -170,6 +193,11 @@ export default class ArticleCreatePage extends Component {
 
         form.date = moment(form.date).format();
         form.project_id = this.projectId;
+
+        // При обновлении статьи сбрасываем ее готовность
+        // if (resetComplete && userType) {
+        //     form[`complete_${userType.slug}`] = false;
+        // }
 
         if (form.authors && form.authors.length) {
             form.authors = form.authors.map(({label, value}) => ({id: value, name: label}));
@@ -248,7 +276,7 @@ export default class ArticleCreatePage extends Component {
         const {userTypeId} = this.state;
         const searchParams = location.search && new URLSearchParams(location.search);
         const requestForm = {
-            expand: 'project.projectFields,project.sections,source',
+            expand: 'project.projectFields,project.sections,source,complete_monitor,complete_analytic,complete_client',
             user_type: userTypeId
         };
 
@@ -295,6 +323,10 @@ export default class ArticleCreatePage extends Component {
                     this.article = _.cloneDeep(form);
                     const fields = form.project.projectFields.find(f => f.user_type_id === userTypeId);
 
+                    if (!this.props.currentProject) {
+                        store.dispatch(setCurrentProject(form.project));
+                    }
+
                     newState.articlesNavs = articlesNavs;
                     newState.projectFields = fields ? fields.data : [];
                     newState.sections = sections;
@@ -311,7 +343,9 @@ export default class ArticleCreatePage extends Component {
     getDataSectionFields = () => {
         const {form, sectionsTwo, sectionsThree, projectFields} = this.state;
 
-        let dataSectionFields = _.cloneDeep(projectFields).filter(({slug}) => slug !== 'annotation' && slug !== 'text');
+        let dataSectionFields = _.cloneDeep(projectFields).filter(({slug}) => {
+            return !['annotation', 'text', 'complete_monitor', 'complete_analytic', 'complete_client'].includes(slug);
+        });
 
         if (!form.section_main_id || !sectionsTwo || !sectionsTwo.length) {
             dataSectionFields = dataSectionFields.filter(({slug}) => slug !== 'section_sub_id');
@@ -325,8 +359,10 @@ export default class ArticleCreatePage extends Component {
     };
 
     setUserType = () => {
-        console.log(StorageService.get(STORAGE_KEY.USER_TYPE));
-        this.setState({userTypeId: StorageService.get(STORAGE_KEY.USER_TYPE)}, this.getArticle);
+        const userTypeId = StorageService.get(STORAGE_KEY.USER_TYPE);
+        const userType = this.props.userTypes.find(({id}) => id === userTypeId);
+
+        this.setState({userTypeId, userType}, this.getArticle);
     };
 
     findSectionById = (sectionId, sections) => {
@@ -393,7 +429,6 @@ export default class ArticleCreatePage extends Component {
 
             Object.keys(prevFormClone).forEach(key => {
                 if (!_.isEqual(prevFormClone[key],  formClone[key])) {
-                    console.log(key, prevFormClone[key], formClone[key]);
                     isEqual = false;
                 }
             });
@@ -438,6 +473,7 @@ export default class ArticleCreatePage extends Component {
             sectionsThree,
             viewType,
             projectFields,
+            userType,
             inProgress
         } = this.state;
         const isUpdate = !!this.articleId;
@@ -604,13 +640,22 @@ export default class ArticleCreatePage extends Component {
                     <button
                         {...cls('view-button')}
                         onClick={this.handleShowViewSettings}
+                        title='Отображение статей'
                     >
                         <div {...cls('view-button-icon')}>
                             <i/><i/><i/>
                         </div>
 
-                        <span>Отображение статей</span>
+                        {/* <span>Отображение статей</span> */}
                     </button>
+
+                    <Button
+                        {...cls('done-button')}
+                        text='Завершить статью'
+                        style='success'
+                        disabled={userType && form[`complete_${userType.slug}`]}
+                        onClick={this.handleDoneArticle}
+                    />
 
                     <Button
                         {...cls('submit-button')}
@@ -682,3 +727,9 @@ export default class ArticleCreatePage extends Component {
         );
     }
 }
+
+function mapStateToProps({userTypes, currentProject}) {
+    return {userTypes, currentProject};
+}
+
+export default connect(mapStateToProps)(ArticleCreatePage);

@@ -29,5 +29,9 @@ export const PROJECT_USER_TRANSMIT = [
     {
         id: 'transmit_client',
         name: 'клиенту'
+    },
+    {
+        id: 'transmit_monitoring',
+        name: 'Мониторщикам'
     }
 ];
