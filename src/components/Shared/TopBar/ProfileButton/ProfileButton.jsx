@@ -34,16 +34,29 @@ class ProfileButton extends Component {
         }
     };
 
-    handleChangeUserType = (typeId) => {
-        StorageService.set(STORAGE_KEY.USER_TYPE, typeId);
-        EventEmitter.emit(EVENTS.USER.CHANGE_TYPE, typeId);
+    handleChangeUserType = (userType) => {
+        StorageService.set(STORAGE_KEY.USER_TYPE, JSON.stringify(userType));
+        EventEmitter.emit(EVENTS.USER.CHANGE_TYPE, userType);
         this.forceUpdate();
+    };
+
+    getCurrentUserType = () => {
+        const storageValue = StorageService.get(STORAGE_KEY.USER_TYPE);
+        let userType = null;
+
+        try {
+            userType = JSON.parse(storageValue);
+        } catch (e) {
+            console.error(e);
+        }
+
+        return userType;
     };
 
     render() {
         const {profile, userTypes, currentProject} = this.props;
         const {isOpen} = this.state;
-        const storageUserType = StorageService.get(STORAGE_KEY.USER_TYPE);
+        const storageUserType = this.getCurrentUserType();
         const projectUserTypes = _.get(currentProject, 'userProject.userProjectTypes', []);
         const menu = [{name: 'Выйти', onClick: AuthService.logOut}];
 
@@ -52,11 +65,11 @@ class ProfileButton extends Component {
                 return userTypes.find(({id}) => ut.user_type_id === id);
             });
 
-            availableUserTypes.forEach(({name, id}) => {
+            availableUserTypes.forEach(userType => {
                 menu.unshift({
-                    id,
-                    name,
-                    onClick: () => this.handleChangeUserType(id)
+                    id: userType.id,
+                    name: userType.name,
+                    onClick: () => this.handleChangeUserType(userType)
                 });
             });
         }
@@ -82,7 +95,7 @@ class ProfileButton extends Component {
                 {isOpen && (
                     <ul {...cls('list')}>
                         {menu.map((item, itemIndex) => {
-                            const isActive = item.id === storageUserType;
+                            const isActive = item.id === storageUserType.id;
 
                             return (
                                 <li

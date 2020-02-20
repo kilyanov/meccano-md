@@ -18,6 +18,7 @@ import Notification from "../helpers/Notification";
 import {DOCUMENT_STATUS} from "../constants/DocumentStatus";
 import {saveAs} from "file-saver";
 import {getDocuments} from "../redux/actions/document";
+import {STORAGE_KEY} from "../constants";
 
 const cls = new Bem('app');
 
@@ -151,10 +152,17 @@ export default class App extends Component {
                 store.dispatch(getDocuments(currentState.profile.id));
 
                 if (currentState.profile.types && currentState.profile.types.length) {
-                    const storageUserType = StorageService.get('user_type');
+                    let storageUserType = StorageService.get('user_type');
+
+                    // Удаляем старую айди типа пользователя для ее замены на объект типа пользователя
+                    try {
+                        JSON.parse(storageUserType);
+                    } catch (e) {
+                        storageUserType = null;
+                    }
 
                     if (!storageUserType || !currentState.profile.types.find(({id}) => id === storageUserType)) {
-                        StorageService.set('user_type', currentState.profile.types[0].id);
+                        StorageService.set(STORAGE_KEY.USER_TYPE, JSON.stringify(currentState.profile.types[0]));
                     }
                 }
                 // this.getDocumentsForUser();

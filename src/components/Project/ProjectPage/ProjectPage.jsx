@@ -30,20 +30,33 @@ const defaultSort = {type: null, dir: null};
 const defaultFilters = {search: '', sort: defaultSort};
 
 export default class ProjectPage extends Component {
-    state = {
-        articles: [],
-        activeArticle: null,
-        selectedItemIds: [],
-        isAllArticlesSelected: false,
-        pagination: defaultPagination,
-        project: null,
-        filters: defaultFilters,
-        showArticleModal: false,
-        showUploadArticlesModal: false,
-        showImportArticlesModal: false,
-        userTypeId: StorageService.get(STORAGE_KEY.USER_TYPE),
-        inProgress: true
-    };
+    constructor(props) {
+        super(props);
+
+        const storageValue = StorageService.get(STORAGE_KEY.USER_TYPE);
+        let userType = null;
+
+        try {
+            userType = JSON.parse(storageValue);
+        } catch (e) {
+            console.error(e);
+        }
+
+        this.state = {
+            articles: [],
+            activeArticle: null,
+            selectedItemIds: [],
+            isAllArticlesSelected: false,
+            pagination: defaultPagination,
+            project: null,
+            filters: defaultFilters,
+            showArticleModal: false,
+            showUploadArticlesModal: false,
+            showImportArticlesModal: false,
+            userType,
+            inProgress: true
+        };
+    }
 
     componentDidMount() {
         this.getProject(this.projectId).then(this.getArticles);
@@ -191,18 +204,35 @@ export default class ProjectPage extends Component {
         });
     };
 
-    handleChangeUserType = (userTypeId) => {
-        this.setState({userTypeId});
+    handleChangeUserType = (userType) => {
+        this.setState({userType});
+    };
+
+    handleCompleteArticles = () => {
+        const {selectedItemIds, userType} = this.state;
+
+        if (userType && userType.slug) {
+            const form = {
+                articleIds: selectedItemIds,
+                properties: {
+                    [`complete_${userType.slug}`]: true
+                }
+            };
+
+            this.setState({inProgress: true}, () => {
+                ProjectService.updateMany(form, this.projectId).then(() => this.getArticles());
+            });
+        }
     };
 
     getArticles = (isPagination = false) => {
-        const {pagination, project, filters: {sort, search}, userTypeId} = this.state;
+        const {pagination, project, filters: {sort, search}, userType} = this.state;
         const selectedColumns = this.projectTable.getColumns();
         const fields = this.getFields();
 
         const form = {
             project: this.projectId,
-            user_type: userTypeId,
+            user_type: userType && userType.id || '',
             page: pagination.page,
             expand: fields
                 .filter(({slug}) => selectedColumns.find(({key}) => key === slug))
@@ -255,13 +285,13 @@ export default class ProjectPage extends Component {
     };
 
     getFields = () => {
-        const {project, userTypeId} = this.state;
+        const {project, userType} = this.state;
 
         if (!project || !project.projectFields || !project.projectFields.length) {
             return [];
         }
 
-        const fields = project.projectFields.find(field => field.user_type_id === userTypeId);
+        const fields = project.projectFields.find(field => field.user_type_id === userType.id);
 
         if (fields && fields.data) {
             return fields.data;
@@ -332,15 +362,24 @@ export default class ProjectPage extends Component {
                     <h2 {...cls('title')}>{_.get(project, 'name')}</h2>
                     {!!articles.length && (
                         <Button
+                            {...cls('upload-btn')}
                             text={!countSelected || isAllArticlesSelected ? 'Выгрузить все' :
                                 `Выгрузить ${Plural(
                                     countSelected, 
                                     `${countSelected} `,
                                     ['статью', 'статьи', 'статей']
                                 )}`}
-                            {...cls('upload-btn')}
                             style='success'
                             onClick={() => this.setState({showUploadArticlesModal: true})}
+                        />
+                    )}
+
+                    {hasSelectedItems && (
+                        <Button
+                            {...cls('upload-btn')}
+                            text='Завершить'
+                            style='info'
+                            onClick={this.handleCompleteArticles}
                         />
                     )}
                 </section>

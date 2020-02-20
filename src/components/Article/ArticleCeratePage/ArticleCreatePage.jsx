@@ -359,10 +359,10 @@ class ArticleCreatePage extends Component {
     };
 
     setUserType = () => {
-        const userTypeId = StorageService.get(STORAGE_KEY.USER_TYPE);
-        const userType = this.props.userTypes.find(({id}) => id === userTypeId);
+        const storageValue = StorageService.get(STORAGE_KEY.USER_TYPE);
+        const userType = storageValue && JSON.parse(storageValue);
 
-        this.setState({userTypeId, userType}, this.getArticle);
+        this.setState({userTypeId: userType.id, userType}, this.getArticle);
     };
 
     findSectionById = (sectionId, sections) => {

@@ -42,5 +42,6 @@ export const ProjectService = {
         create: (form) => API.post(urlGenerator('field')(), form),
         update: (form, id) =>  API.put(urlGenerator('field')(id), form),
         delete: (form, projectId) => API.delete(urlGenerator('field')(projectId), {data: form})
-    }
+    },
+    updateMany: (form, projectId) => API.put(`${ApiList.project.project}/${projectId}/update-many`, form)
 };
