@@ -8,6 +8,7 @@ import {projects} from './project';
 import {documents} from './document';
 import {userTypes} from './userType';
 import {currentProject} from './currentProject';
+import {articleColors} from './articleColors';
 import {ACTION_TYPE, STORAGE_KEY} from "../../constants";
 import {initialState} from "../store";
 import {StorageService} from "../../services";
@@ -21,7 +22,8 @@ const appReducer = combineReducers({
     projects,
     documents,
     userTypes,
-    currentProject
+    currentProject,
+    articleColors
 });
 
 const rootReducer = (state, action) => {

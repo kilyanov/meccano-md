@@ -35,5 +35,11 @@ export const ArticleService = {
         source = CancelToken.source();
         return API.get(urlGenerator('genre')(form));
     },
-    cancelLast: () => source && source.cancel('Operation canceled by the user.')
+    cancelLast: () => source && source.cancel('Operation canceled by the user.'),
+    color: {
+        get: (project, id) => API.get(urlGenerator('color')(id, {project})),
+        create: (project, form) => API.post(urlGenerator('color')({project}), form),
+        update: (project, form, id) => API.put(urlGenerator('color')(id, {project}), form),
+        delete: (id) => API.put(urlGenerator('color')({id})),
+    }
 };

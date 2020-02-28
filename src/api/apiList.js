@@ -7,7 +7,8 @@ const List = {
         rating: '/article/rating',
         heading: '/article/heading',
         author: '/article/author',
-        genre: '/article/genre'
+        genre: '/article/genre',
+        color: '/article/color'
     },
     city: '/city',
     country: '/country',

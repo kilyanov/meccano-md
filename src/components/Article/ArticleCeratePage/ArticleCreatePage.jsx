@@ -57,6 +57,8 @@ class ArticleCreatePage extends Component {
             annotation: '',
             text: ''
         };
+        const userType = StorageService.get(STORAGE_KEY.USER_TYPE);
+
         this.state = {
             articlesNavs: {},
             projectFields: [],
@@ -65,7 +67,7 @@ class ArticleCreatePage extends Component {
             form: _.clone(this.defaultForm),
             selectedMedia: {},
             viewType: StorageService.get(STORAGE_KEY.ARTICLE_VIEW_TYPE) || 1,
-            userTypeId: StorageService.get(STORAGE_KEY.USER_TYPE),
+            userTypeId: userType ? userType.id : null,
             userType: null,
             showViewSettings: false,
             inProgress: true

@@ -5,7 +5,7 @@ export const getColumnsFromFields = (fields) => {
     return fields.map(({slug}) => slug);
 };
 
-export const getColumnsFromStorage = (projectId, projectColumns) => {
+export const getColumnsFromStorage = (projectId, projectColumns = []) => {
     const storageData = StorageService.get(STORAGE_KEY.PROJECT_TABLE_COLUMNS);
 
     let storageProjects = storageData && JSON.parse(storageData);

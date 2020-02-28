@@ -25,6 +25,7 @@
     "object-to-formdata": "^1.6.4",
     "perfect-scrollbar": "^1.4.0",
     "prop-types": "^15.6.2",
+    "rc-color-picker": "^1.2.6",
     "react": "^16.8.1",
     "react-bem-helper": "^1.4.1",
     "react-date-picker": "^7.5.0",

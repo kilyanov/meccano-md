@@ -8,6 +8,7 @@ export const initialState = {
     documents: [],
     projects: [],
     currentProject: null,
+    articleColors: [],
     profile: {},
     roles: [],
     userTypes: [],

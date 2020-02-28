@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import {connect} from 'react-redux';
 import {Link} from 'react-router-dom';
 import {SORT_DIR} from '../../../../constants';
 import CheckBox from '../../../Form/CheckBox/CheckBox';
@@ -13,11 +14,12 @@ import SettingsIcon from '../../../Shared/SvgIcons/SettingsIcon';
 import SortArrow from './ProjectTableHeader/ProjectTableHeaderSortArrow';
 import {InitScrollbar} from '../../../../helpers/Tools';
 import {FIELD_TYPE} from '../../../../constants/FieldType';
+import ProjectTableColorModal from "./ProjectTableColorModal/ProjectTableColorModal";
 
 const cls = new Bem('project-table');
 const headerClasses = new Bem('project-table-header');
 
-export default class ProjectTable extends Component {
+class ProjectTable extends Component {
     static propTypes = {
         className: PropTypes.string,
         articles: PropTypes.array,
@@ -32,7 +34,8 @@ export default class ProjectTable extends Component {
         pagination: PropTypes.object.isRequired,
         onScrollToEnd: PropTypes.func.isRequired,
         fields: PropTypes.array.isRequired,
-        isAllSelected: PropTypes.bool
+        isAllSelected: PropTypes.bool,
+        articleColors: PropTypes.array
     };
 
     static defaultProps = {
@@ -153,7 +156,8 @@ export default class ProjectTable extends Component {
         onClick: () => console.log('Функционал еще не написан))')
     }, {
         id: 'set-color',
-        title: 'Цветовое выделение строк'
+        title: 'Цветовое выделение строк',
+        onClick: () => this.setState({showColorModal: true})
     }];
 
     articleDropDown = {};
@@ -244,10 +248,21 @@ export default class ProjectTable extends Component {
         const sortString = sort.type && `${sort.dir === SORT_DIR.ASC ? '-' : ''}${sort.type}`;
         const url = `/project/${projectId}/article/${article.id}?search=${search}&sort=${sortString || ''}&position=${articleKey}`;
 
+        let color = '';
+
+        ['complete_monitor', 'complete_analytic', 'complete_client'].some(key => {
+            if (article[key]) {
+                color = this.props.articleColors.find(({type}) => type === key);
+            }
+
+            return article[key];
+        });
+
         return (
             <article
                 {...cls('row')}
                 key={`${article.id}-${articleKey}`}
+                style={{backgroundColor: color.color}}
             >
                 <div {...cls('cell', 'check')}>
                     <CheckBox
@@ -313,7 +328,7 @@ export default class ProjectTable extends Component {
 
     render() {
         const {className, articles, projectId, fields} = this.props;
-        const {showColumnSettingsModal} = this.state;
+        const {showColumnSettingsModal, showColorModal} = this.state;
 
         return (
             <div {...cls('', '', className)}>
@@ -352,7 +367,22 @@ export default class ProjectTable extends Component {
                         projectFields={fields}
                     />
                 )}
+
+                {showColorModal && (
+                    <ProjectTableColorModal
+                        onClose={() => this.setState({showColorModal: false})}
+                        projectId={projectId}
+                    />
+                )}
             </div>
         );
     }
 }
+
+function mapStateToProps(store) {
+    return {
+        articleColors: store.articleColors
+    };
+}
+
+export default connect(mapStateToProps)(ProjectTable);

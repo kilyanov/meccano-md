@@ -56,5 +56,9 @@ export const ACTION_TYPE = {
     CURRENT_PROJECT: {
         SET: 'CURRENT_PROJECT_SET',
         CLEAR: 'CURRENT_PROJECT_CLEAR'
+    },
+    ARTICLE_COLORS: {
+        SET: 'ARTICLE_COLORS_SET',
+        CLEAR: 'ARTICLE_COLORS_CLEAR'
     }
 };

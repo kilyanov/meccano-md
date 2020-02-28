@@ -1,0 +1,15 @@
+.project-table-color-modal {
+    &__item {
+        display: flex;
+        align-items: center;
+        min-height: 40px;
+    }
+
+    &__item-value {
+        margin-left: auto;
+    }
+
+    .rc-color-picker-trigger {
+        width: 60px;
+    }
+}

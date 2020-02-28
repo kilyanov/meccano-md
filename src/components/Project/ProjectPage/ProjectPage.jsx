@@ -23,6 +23,8 @@ import InlineButton from '../../Shared/InlineButton/InlineButton';
 import {EventEmitter} from "../../../helpers";
 import store from "../../../redux/store";
 import {setCurrentProject} from "../../../redux/actions/currentProject";
+import {clearArticleColors, setArticleColors} from "../../../redux/actions/articleColors";
+import {getColumnsFromFields, getColumnsFromStorage} from "./ProjectTable/Columns";
 
 const cls = new Bem('project-page');
 const defaultPagination = {page: 1, pageCount: 1};
@@ -60,12 +62,14 @@ export default class ProjectPage extends Component {
 
     componentDidMount() {
         this.getProject(this.projectId).then(this.getArticles);
+        this.getArticleColors();
         EventEmitter.on(EVENTS.USER.CHANGE_TYPE, this.handleChangeUserType);
     }
 
     componentWillUnmount() {
         this.isMounted = false;
         EventEmitter.off(EVENTS.USER.CHANGE_TYPE, this.handleChangeUserType);
+        store.dispatch(clearArticleColors());
     }
 
     handleChangeFilter = (filter, value) => {
@@ -225,9 +229,17 @@ export default class ProjectPage extends Component {
         }
     };
 
+    getArticleColors = () => {
+        ArticleService.color.get(this.projectId).then(response => {
+            if (response.data) {
+                store.dispatch(setArticleColors(response.data));
+            }
+        });
+    };
+
     getArticles = (isPagination = false) => {
         const {pagination, project, filters: {sort, search}, userType} = this.state;
-        const selectedColumns = this.projectTable.getColumns();
+        const selectedColumns = getColumnsFromStorage(this.projectId);
         const fields = this.getFields();
 
         const form = {
@@ -238,6 +250,8 @@ export default class ProjectPage extends Component {
                 .filter(({slug}) => selectedColumns.find(({key}) => key === slug))
                 .map(field => field.relation || field.slug)
         };
+
+        form.expand = [...form.expand, 'complete_monitor', 'complete_analytic', 'complete_client'];
 
         if (search) {
             project.fields
