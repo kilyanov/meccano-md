@@ -143,7 +143,7 @@ export default class ProjectProperties extends Component {
                             }}
                             onChange={this.handleEndSort}
                         >
-                            {fields.map((item, index) => (
+                            {!!fields.length && fields.map((item, index) => (
                                 <SelectedProperty
                                     key={item.id || item.slug}
                                     item={item}

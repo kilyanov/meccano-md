@@ -36,7 +36,7 @@ class ProjectCreatePage extends Component {
     };
 
     state = {
-        step: 4,
+        step: 1,
         projectId: this.props.match.params.id,
         project: null,
         roleFields: {
@@ -85,6 +85,8 @@ class ProjectCreatePage extends Component {
 
     handleChangeSelectedFields = (newFieldSet) => {
         const {projectFields, selectedUserType} = this.state;
+
+        console.log(projectFields, newFieldSet);
 
         projectFields.forEach(fieldSet => {
             if (fieldSet.user_type_id === selectedUserType.value) {
@@ -449,4 +451,11 @@ class ProjectCreatePage extends Component {
     }
 }
 
-export default connect(({userTypes}) => ({userTypes}))(ProjectCreatePage);
+function mapStateToProps(state) {
+    return {
+        user: state.user,
+        userTypes: state.userTypes
+    };
+}
+
+export default connect(mapStateToProps)(ProjectCreatePage);

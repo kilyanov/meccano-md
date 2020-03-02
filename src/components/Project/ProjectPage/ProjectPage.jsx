@@ -24,7 +24,8 @@ import {EventEmitter} from "../../../helpers";
 import store from "../../../redux/store";
 import {setCurrentProject} from "../../../redux/actions/currentProject";
 import {clearArticleColors, setArticleColors} from "../../../redux/actions/articleColors";
-import {getColumnsFromFields, getColumnsFromStorage} from "./ProjectTable/Columns";
+import {getColumnsFromStorage} from "./ProjectTable/Columns";
+import ArticleTransferModal from "../../Article/ArticleTransferModal/ArticleTransferModal";
 
 const cls = new Bem('project-page');
 const defaultPagination = {page: 1, pageCount: 1};
@@ -55,6 +56,7 @@ export default class ProjectPage extends Component {
             showArticleModal: false,
             showUploadArticlesModal: false,
             showImportArticlesModal: false,
+            showTransferModal: false,
             userType,
             inProgress: true
         };
@@ -292,7 +294,7 @@ export default class ProjectPage extends Component {
     };
 
     getProject = (projectId) => {
-        return ProjectService.get({expand: 'projectFields', pageSize: 50}, projectId).then(response => {
+        return ProjectService.get({expand: 'projectFields,users', pageSize: 50}, projectId).then(response => {
             store.dispatch(setCurrentProject(response.data));
             return this.setState({project: response.data});
         });
@@ -358,6 +360,7 @@ export default class ProjectPage extends Component {
             pagination,
             showUploadArticlesModal,
             showImportArticlesModal,
+            showTransferModal,
             inProgress
         } = this.state;
         const countSelected = isAllArticlesSelected ? pagination.totalCount : selectedItemIds.length;
@@ -394,6 +397,15 @@ export default class ProjectPage extends Component {
                             text='Завершить'
                             style='info'
                             onClick={this.handleCompleteArticles}
+                        />
+                    )}
+
+                    {hasSelectedItems && (
+                        <Button
+                            {...cls('upload-btn')}
+                            text='Передать'
+                            style='info'
+                            onClick={() => this.setState({showTransferModal: true})}
                         />
                     )}
                 </section>
@@ -478,7 +490,6 @@ export default class ProjectPage extends Component {
 
                 <div {...cls('project-table-wrapper')}>
                     <ProjectTable
-                        ref={ref => this.projectTable = ref}
                         onChangeSelected={this.handleChangeSelected}
                         onChangeColumns={this.handleChangeColumns}
                         onChangeSort={this.handleChangeSort}
@@ -521,6 +532,14 @@ export default class ProjectPage extends Component {
                         }}
                         onSubmit={this.handleImportArticlesSubmit}
                         projectId={this.projectId}
+                    />
+                )}
+
+                {showTransferModal && (
+                    <ArticleTransferModal
+                        onClose={() => this.setState({showTransferModal: false})}
+                        projectId={this.projectId}
+                        articleIds={selectedItemIds}
                     />
                 )}
 

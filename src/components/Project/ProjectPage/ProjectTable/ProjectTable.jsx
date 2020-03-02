@@ -35,7 +35,8 @@ class ProjectTable extends Component {
         onScrollToEnd: PropTypes.func.isRequired,
         fields: PropTypes.array.isRequired,
         isAllSelected: PropTypes.bool,
-        articleColors: PropTypes.array
+        articleColors: PropTypes.array,
+        currentProject: PropTypes.object
     };
 
     static defaultProps = {
@@ -142,23 +143,36 @@ class ProjectTable extends Component {
         updateColumnWidth(this.props.projectId, this.columnKey, this.startWidth + this.diff);
     };
 
-    getColumns = () => {
-        return this.selectedColumns;
+    getSettingMenu = () => {
+        const { currentProject } = this.props;
+        const settingsMenu = [{
+            id: 'set-columns',
+            title: 'Настроить столбцы',
+            onClick: this.handleClickColumnSettings
+        }, {
+            id: 'edit-mode',
+            title: 'Режим редактирования',
+            onClick: () => console.log('Функционал еще не написан))')
+        }];
+
+        if (currentProject && currentProject.userProject) {
+            const isProjectManager = currentProject.userProject.access_project_manager;
+
+            if (isProjectManager) {
+                settingsMenu.push({
+                    id: 'set-color',
+                    title: 'Цветовое выделение строк',
+                    onClick: () => this.setState({showColorModal: true})
+                })
+            }
+        }
+
+        return settingsMenu;
     };
 
-    settingsMenu = [{
-        id: 'set-columns',
-        title: 'Настроить столбцы',
-        onClick: this.handleClickColumnSettings
-    }, {
-        id: 'edit-mode',
-        title: 'Режим редактирования',
-        onClick: () => console.log('Функционал еще не написан))')
-    }, {
-        id: 'set-color',
-        title: 'Цветовое выделение строк',
-        onClick: () => this.setState({showColorModal: true})
-    }];
+    getColumns = () => {
+        return this.selectedColumns;
+    };;
 
     articleDropDown = {};
 
@@ -355,7 +369,7 @@ class ProjectTable extends Component {
                     <SettingsIcon/>
                     <DropDown
                         ref={node => this.settingsMenuRef = node}
-                        items={this.settingsMenu}
+                        items={this.getSettingMenu()}
                     />
                 </button>
 
@@ -381,7 +395,8 @@ class ProjectTable extends Component {
 
 function mapStateToProps(store) {
     return {
-        articleColors: store.articleColors
+        articleColors: store.articleColors,
+        currentProject: store.currentProject
     };
 }
 

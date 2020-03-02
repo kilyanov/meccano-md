@@ -19,7 +19,7 @@ export default class UnselectedProperty extends Component {
             <div
                 {...cls('', {selected})}
                 data-id={item.slug}
-                onDoubleClick={() => onDoubleClick(item.slug)}
+                onDoubleClick={() => !item.saveField ? onDoubleClick(item.slug) : null}
             >
                 {item.hignlightedName || item.name}
 

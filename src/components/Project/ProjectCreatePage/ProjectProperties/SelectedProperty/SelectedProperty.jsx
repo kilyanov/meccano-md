@@ -12,7 +12,13 @@ const SelectedProperty = ({
     onChange = () => {},
     onDelete = () => {}
 }) => (
-    <div {...cls('', {required: item.required})} data-id={item.slug}>
+    <div
+        {...cls('', {
+            required: item.required,
+            saved: item.saveField
+        })}
+        data-id={item.slug}
+    >
         <div {...cls('arrows')}>
             <ArrowIcon {...cls('arrow-top')}/>
             <ArrowIcon {...cls('arrow-bottom')}/>
@@ -31,12 +37,14 @@ const SelectedProperty = ({
         />
 
         <div {...cls('buttons')}>
-            <button
-                {...cls('remove-button')}
-                onClick={() => onDelete(index)}
-            >
-                <TrashIcon {...cls('trash-icon')}/>
-            </button>
+            {!item.saveField && (
+                <button
+                    {...cls('remove-button')}
+                    onClick={() => onDelete(index)}
+                >
+                    <TrashIcon {...cls('trash-icon')}/>
+                </button>
+            )}
         </div>
     </div>
 );

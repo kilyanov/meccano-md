@@ -89,7 +89,7 @@ class ProjectTableColorModal extends Component {
                 {...cls()}
                 title='Цветовое выделение строк'
                 onClose={onClose}
-                buttons={['cancel']}
+                buttons={[]}
             >
                 {Object.keys(TYPES).map(key => (
                     <div {...cls('item')} key={key}>

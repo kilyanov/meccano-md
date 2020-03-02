@@ -82,7 +82,7 @@ class ArticleCreatePage extends Component {
             this.getArticle();
         } else {
             ProjectService
-                .get({expand: 'projectFields,sections'}, this.projectId)
+                .get({expand: 'projectFields,sections,users'}, this.projectId)
                 .then(response => {
                     const project = response.data;
 
@@ -278,7 +278,8 @@ class ArticleCreatePage extends Component {
         const {userTypeId} = this.state;
         const searchParams = location.search && new URLSearchParams(location.search);
         const requestForm = {
-            expand: 'project.projectFields,project.sections,source,complete_monitor,complete_analytic,complete_client',
+            expand: 'project.projectFields,project.sections,' +
+                'project.users,source,complete_monitor,complete_analytic,complete_client',
             user_type: userTypeId
         };
 
