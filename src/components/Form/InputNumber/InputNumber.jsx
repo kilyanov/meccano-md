@@ -9,7 +9,8 @@ export default class InputNumber extends Component {
         className: PropTypes.string,
         value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
         onChange: PropTypes.func.isRequired,
-        label: PropTypes.string.isRequired
+        label: PropTypes.string.isRequired,
+        readOnly: PropTypes.bool
     };
 
     state = {
@@ -23,7 +24,7 @@ export default class InputNumber extends Component {
     };
 
     render() {
-        const {className, label, value} = this.props;
+        const {className, label, value, readOnly} = this.props;
         const {error} = this.state;
         const isFocused = this.inputRef === document.activeElement;
         const isError = error;
@@ -36,7 +37,8 @@ export default class InputNumber extends Component {
                     error: isError,
                     focused: isFocused,
                     succeed: isSucceed,
-                    empty: isEmpty
+                    empty: isEmpty,
+                    readOnly
                 }, className)}
             >
                 <label {...cls('label')}>
@@ -46,6 +48,7 @@ export default class InputNumber extends Component {
                         {...cls('field')}
                         type='text'
                         pattern='[0-9]*'
+                        readOnly={readOnly}
                         onChange={this.handleChange}
                         value={value || ''}
                         data-error={error}

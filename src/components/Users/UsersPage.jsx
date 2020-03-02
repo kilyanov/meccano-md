@@ -8,6 +8,7 @@ import Loader from "../Shared/Loader/Loader";
 import Access from "../Shared/Access/Access";
 import {PERMISSION} from "../../constants/Permissions";
 import PromiseDialogModal from "../Shared/PromiseDialogModal/PromiseDialogModal";
+import './users-page.scss';
 
 const classes = new Bem('users-page');
 
@@ -68,7 +69,7 @@ export default class UsersPage extends Component {
         const {users, openUserModal, selectedUser, inProgress} = this.state;
 
         return (
-            <Page {...classes()} withBar>
+            <Page title='Пользователи' {...classes()} withBar>
                 <section {...classes('filter-panel')}>
                     <Access permissions={[PERMISSION.editUsers]}>
                         <InlineButton

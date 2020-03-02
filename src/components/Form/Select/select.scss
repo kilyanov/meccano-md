@@ -142,6 +142,10 @@ $namespace: '.select';
             left: auto;
             width: auto;
         }
+
+        .checkbox__label {
+            background-color: unset;
+        }
     }
 
     &__list {

@@ -67,3 +67,9 @@ export const isAccess = (arrayOfPermissions, profile) => {
 
     return !!profile.permissions.filter(({name}) => arrayOfPermissions.includes(name)).length;
 };
+
+export const isProjectAccess = (permissions = [], userProject) => {
+    if (!userProject || !permissions.length) return false;
+
+    return userProject && permissions.some(pm => userProject.hasOwnProperty(pm) && userProject[pm]);
+};

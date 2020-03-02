@@ -17,7 +17,7 @@ export default class UnselectedProperty extends Component {
 
         return (
             <div
-                {...cls('', {selected})}
+                {...cls('', {selected, hidden: item.saveField})}
                 data-id={item.slug}
                 onDoubleClick={() => !item.saveField ? onDoubleClick(item.slug) : null}
             >

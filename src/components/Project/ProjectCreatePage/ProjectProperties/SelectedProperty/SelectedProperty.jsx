@@ -15,7 +15,7 @@ const SelectedProperty = ({
     <div
         {...cls('', {
             required: item.required,
-            saved: item.saveField
+            hidden: item.saveField
         })}
         data-id={item.slug}
     >

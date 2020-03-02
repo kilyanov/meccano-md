@@ -441,7 +441,8 @@ export default class Select extends Component {
             fixedPosList,
             validateErrorMessage,
             className,
-            canAddNewValue
+            canAddNewValue,
+            readOnly
         } = this.props;
         const {opened, searchString, searchFocused, inProgress, error} = this.state;
         const options = this.getOptions();
@@ -459,7 +460,8 @@ export default class Select extends Component {
                     multiple: isMultiple,
                     mobile: this.isMobileView,
                     succeed: isMultiple && selected.length || !_.isEmpty(selected),
-                    disabled: disabled || !options.length && !canAddNewValue
+                    disabled: disabled || !options.length && !canAddNewValue,
+                    readOnly
                 }, {
                     validated: required,
                     [className]: !!className
@@ -535,6 +537,7 @@ export default class Select extends Component {
                                         onBlur={this.handleSearchBlur}
                                         onKeyDown={this.handleSearchKeyDown}
                                         value={searchString}
+                                        readOnly={readOnly}
                                         ref={ref => this.searchRef = ref}
                                     />
                                 </div>

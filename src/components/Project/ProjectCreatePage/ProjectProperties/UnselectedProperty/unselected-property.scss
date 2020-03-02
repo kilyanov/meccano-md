@@ -23,6 +23,10 @@ $namespace: '.unselected-property';
   user-select: none;
   cursor: grab;
 
+  &--hidden {
+    display: none;
+  }
+
   &--selected {
     background-color: $gray-four;
     color: $brown-grey;

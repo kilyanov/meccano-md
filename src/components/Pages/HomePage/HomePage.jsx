@@ -43,43 +43,49 @@ class HomePage extends Component {
         }
     };
 
-    getMenu = () => (
-        [{
-            id: 'articles',
-            icon: <EarthIcon/>,
-            name: 'Статьи',
-            children: [],
-            permissions: ['HIDDEN']
-        }, {
-            id: 'projects',
-            icon: <ProjectsIcon/>,
-            name: 'Проекты',
-            permissions: [PERMISSION.all],
-            children: this.props.projects.map(({id, name}) => ({
-                name,
-                link: `/project/${id}`,
-                editLink: `/project-create/${id}`
-            }))
-        }, {
-            id: 'documents',
-            icon: <DocumentIcon/>,
-            name: 'Документы',
-            link: '/documents',
-            permissions: [PERMISSION.viewDocuments, PERMISSION.editDocuments]
-        }, {
-            id: 'users',
-            icon: <UsersIcon/>,
-            name: 'Пользователи',
-            link: '/users',
-            permissions: [PERMISSION.viewUsers, PERMISSION.editUsers]
-        }, {
-            id: 'settings',
-            icon: <SettingsIcon/>,
-            name: 'Настройки',
-            link: '/settings',
-            permissions: [PERMISSION.viewSettings, PERMISSION.editSettings]
-        }]
-    );
+    getMenu = () => {
+        const { profile } = this.props;
+        const currentPermissions = profile && profile.permissions || [];
+
+        return (
+            [{
+                id: 'articles',
+                icon: <EarthIcon/>,
+                name: 'Статьи',
+                children: [],
+                permissions: ['HIDDEN']
+            }, {
+                id: 'projects',
+                icon: <ProjectsIcon/>,
+                name: 'Проекты',
+                permissions: [PERMISSION.all],
+                children: this.props.projects.map(({id, name}) => ({
+                    name,
+                    link: `/project/${id}`,
+                    editLink: currentPermissions.find(pm => pm.name === PERMISSION.editProjectSettings)
+                        && `/project-create/${id}`
+                }))
+            }, {
+                id: 'documents',
+                icon: <DocumentIcon/>,
+                name: 'Документы',
+                link: '/documents',
+                permissions: [PERMISSION.viewDocuments, PERMISSION.editDocuments]
+            }, {
+                id: 'users',
+                icon: <UsersIcon/>,
+                name: 'Пользователи',
+                link: '/users',
+                permissions: [PERMISSION.viewUsers, PERMISSION.editUsers]
+            }, {
+                id: 'settings',
+                icon: <SettingsIcon/>,
+                name: 'Настройки',
+                link: '/settings',
+                permissions: [PERMISSION.viewSettings, PERMISSION.editSettings]
+            }]
+        );
+    };
 
     render() {
         const cls = new Bem('home-page');

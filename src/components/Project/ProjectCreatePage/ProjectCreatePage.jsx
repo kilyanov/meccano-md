@@ -12,7 +12,7 @@ import {NotificationManager} from 'react-notifications';
 import ProjectProperties from './ProjectProperties/ProjectProperties';
 import PencilIcon from "../../Shared/SvgIcons/PencilIcon";
 import InlineButton from "../../Shared/InlineButton/InlineButton";
-import {KEY_CODE} from "../../../constants";
+import {KEY_CODE, PERMISSION} from "../../../constants";
 import {OperatedNotification} from '../../../helpers/Tools';
 import ProjectKeyWords from './ProjectKeyWords/ProjectKeyWords';
 import {EventEmitter} from "../../../helpers";
@@ -21,6 +21,9 @@ import {deleteProject, updateProject} from "../../../redux/actions/project";
 import store from "../../../redux/store";
 import Select from "react-select";
 import ProjectUsers from "./ProjectUsers/ProjectUsers";
+import Access from "../../Shared/Access/Access";
+import ProjectAccess from "../../Shared/ProjectAccess/ProjectAccess";
+import {PROJECT_PERMISSION} from "../../../constants/ProjectPermissions";
 
 const cls = new Bem('project-create-page');
 const STEP_DESCRIPTION = {
@@ -85,8 +88,6 @@ class ProjectCreatePage extends Component {
 
     handleChangeSelectedFields = (newFieldSet) => {
         const {projectFields, selectedUserType} = this.state;
-
-        console.log(projectFields, newFieldSet);
 
         projectFields.forEach(fieldSet => {
             if (fieldSet.user_type_id === selectedUserType.value) {
@@ -331,129 +332,131 @@ class ProjectCreatePage extends Component {
         const fieldsByUserType = selectedUserType && projectFields.find(f => f.user_type_id === selectedUserType.value);
 
         return (
-            <Page
-                withBar
-                withContainerClass={false}
-                {...cls()}
-            >
-                <section {...cls('header')}>
-                    <div {...cls('container', '', 'container')}>
-                        <div {...cls('breadcrumbs')}>
-                            {isEdit ? 'Редактирование' : 'Создание'} проекта:
-                            {isEdit ? this.getStepsButtons() : ` Шаг ${step} - ${STEP_DESCRIPTION[step]}`}
+            <ProjectAccess permissions={[PROJECT_PERMISSION.PROJECT_MANAGER]} redirect='/'>
+                <Page
+                    withBar
+                    withContainerClass={false}
+                    {...cls()}
+                >
+                    <section {...cls('header')}>
+                        <div {...cls('container', '', 'container')}>
+                            <div {...cls('breadcrumbs')}>
+                                {isEdit ? 'Редактирование' : 'Создание'} проекта:
+                                {isEdit ? this.getStepsButtons() : ` Шаг ${step} - ${STEP_DESCRIPTION[step]}`}
+                            </div>
+
+                            {project && (
+                                isEditTitle ?
+                                    <div
+                                        {...cls('title-input-container')}
+                                        ref={ref => this.titleInputContainer = ref}
+                                    >
+                                        <input
+                                            autoFocus
+                                            type='text'
+                                            {...cls('title-input')}
+                                            onChange={this.handleEditTitle}
+                                            onKeyDown={this.handleInputKeyDown}
+                                            value={editTitleValue}
+                                        />
+                                        <InlineButton
+                                            {...cls('title-input-button')}
+                                            text='Переименовать'
+                                            onClick={this.handleEndEditTitle}
+                                            disabled={!project.name.length}
+                                        />
+                                    </div> :
+                                    <div {...cls('title-container')} onClick={this.handleStartEditTile}>
+                                        <h2 {...cls('title')}>{project.name}</h2>
+                                        <PencilIcon
+                                            {...cls('title-edit-icon')}
+                                            size={{width: 20, height: 20}}
+                                        />
+                                    </div>
+                            )}
+
+                            {(!!userTypes.length && step === 1) && (
+                                <Select
+                                    {...cls('viewer-select')}
+                                    options={userTypes}
+                                    value={selectedUserType}
+                                    onChange={value => this.setState({selectedUserType: value})}
+                                />
+                            )}
                         </div>
+                    </section>
 
-                        {project && (
-                            isEditTitle ?
-                                <div
-                                    {...cls('title-input-container')}
-                                    ref={ref => this.titleInputContainer = ref}
-                                >
-                                    <input
-                                        autoFocus
-                                        type='text'
-                                        {...cls('title-input')}
-                                        onChange={this.handleEditTitle}
-                                        onKeyDown={this.handleInputKeyDown}
-                                        value={editTitleValue}
-                                    />
-                                    <InlineButton
-                                        {...cls('title-input-button')}
-                                        text='Переименовать'
-                                        onClick={this.handleEndEditTitle}
-                                        disabled={!project.name.length}
-                                    />
-                                </div> :
-                                <div {...cls('title-container')} onClick={this.handleStartEditTile}>
-                                    <h2 {...cls('title')}>{project.name}</h2>
-                                    <PencilIcon
-                                        {...cls('title-edit-icon')}
-                                        size={{width: 20, height: 20}}
-                                    />
-                                </div>
-                        )}
-
-                        {(!!userTypes.length && step === 1) && (
-                            <Select
-                                {...cls('viewer-select')}
-                                options={userTypes}
-                                value={selectedUserType}
-                                onChange={value => this.setState({selectedUserType: value})}
+                    <section {...cls('body')}>
+                        {(this.project && step === 1 && projectFields && fieldsByUserType) && (
+                            <ProjectProperties
+                                classes={cls}
+                                project={this.project}
+                                fields={fieldsByUserType.data || []}
+                                allFields={allFields || []}
+                                onChange={this.handleChangeSelectedFields}
+                                onCreateField={this.handleCreateField}
+                                onEditField={this.handleEditField}
                             />
                         )}
-                    </div>
-                </section>
 
-                <section {...cls('body')}>
-                    {(this.project && step === 1 && projectFields && fieldsByUserType) && (
-                        <ProjectProperties
-                            classes={cls}
-                            project={this.project}
-                            fields={fieldsByUserType.data || []}
-                            allFields={allFields || []}
-                            onChange={this.handleChangeSelectedFields}
-                            onCreateField={this.handleCreateField}
-                            onEditField={this.handleEditField}
-                        />
-                    )}
+                        {(this.project && step === 2) && (
+                            <ProjectSections
+                                projectId={this.projectId}
+                                classes={cls}
+                                sections={sections}
+                                onChange={this.handleChangeSections}
+                            />
+                        )}
 
-                    {(this.project && step === 2) && (
-                        <ProjectSections
-                            projectId={this.projectId}
-                            classes={cls}
-                            sections={sections}
-                            onChange={this.handleChangeSections}
-                        />
-                    )}
+                        {(this.project && step === 3) && (
+                            <ProjectKeyWords projectId={this.projectId}/>
+                        )}
 
-                    {(this.project && step === 3) && (
-                        <ProjectKeyWords projectId={this.projectId}/>
-                    )}
+                        {(this.project && step === 4) && (
+                            <ProjectUsers projectId={this.projectId} />
+                        )}
+                    </section>
 
-                    {(this.project && step === 4) && (
-                        <ProjectUsers projectId={this.projectId} />
-                    )}
-                </section>
-
-                <section {...cls('footer')}>
-                    <div {...cls('container', '', 'container')}>
-                        <Button
-                            onClick={this.handleClickBackButton}
-                            {...cls('cancel-button')}
-                            style={isEdit && step !== 2 ? 'error' : 'default'}
-                            viewType='inline'
-                            text={backButtonLabel}
-                        />
-
-                        {((step === 1 || step === 2) && isEdit) && (
+                    <section {...cls('footer')}>
+                        <div {...cls('container', '', 'container')}>
                             <Button
-                                onClick={() => step === 1 ? this.saveProject() : this.saveSections()}
-                                {...cls('submit-button', 'margin-left-auto')}
-                                style='inline'
-                                text='Сохранить'
+                                onClick={this.handleClickBackButton}
+                                {...cls('cancel-button')}
+                                style={isEdit && step !== 2 ? 'error' : 'default'}
+                                viewType='inline'
+                                text={backButtonLabel}
                             />
-                        )}
-                        <Button
-                            onClick={this.handleSubmit}
-                            {...cls('submit-button')}
-                            disabled={step === 2 && !sections.length}
-                            style='success'
-                            text={step === 3 ? 'Сохранить' : 'Далее'}
-                        />
-                    </div>
-                </section>
 
-                <PromiseDialogModal ref={node => this.promiseDialogModal = node} />
+                            {((step === 1 || step === 2) && isEdit) && (
+                                <Button
+                                    onClick={() => step === 1 ? this.saveProject() : this.saveSections()}
+                                    {...cls('submit-button', 'margin-left-auto')}
+                                    style='inline'
+                                    text='Сохранить'
+                                />
+                            )}
+                            <Button
+                                onClick={this.handleSubmit}
+                                {...cls('submit-button')}
+                                disabled={step === 2 && !sections.length}
+                                style='success'
+                                text={step === 3 ? 'Сохранить' : 'Далее'}
+                            />
+                        </div>
+                    </section>
 
-                {(!this.project || inProgress) && <Loader fixed/>}
-            </Page>
+                    <PromiseDialogModal ref={node => this.promiseDialogModal = node} />
+
+                    {(!this.project || inProgress) && <Loader fixed/>}
+                </Page>
+            </ProjectAccess>
         );
     }
 }
 
 function mapStateToProps(state) {
     return {
-        user: state.user,
+        profile: state.profile,
         userTypes: state.userTypes
     };
 }

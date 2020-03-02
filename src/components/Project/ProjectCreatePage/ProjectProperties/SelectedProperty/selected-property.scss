@@ -12,6 +12,10 @@ $namespace: '.selected-property';
     border-bottom: 1px solid $gray;
     user-select: none;
 
+    &--hidden {
+        display: none;
+    }
+
     &--allFields {
         flex: 0 0 179px;
         justify-content: center;

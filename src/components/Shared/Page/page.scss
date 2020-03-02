@@ -8,6 +8,12 @@ $namespace: '.page';
     background-color: #fff;
     transition: background-color .3s ease;
 
+    &__title {
+        font-size: 32px;
+        line-height: 40px;
+        letter-spacing: .5px;
+    }
+
     &--with-bar {
         padding-top: 90px;
 

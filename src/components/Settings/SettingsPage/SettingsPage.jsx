@@ -37,10 +37,8 @@ const SettingsPage = ({
     });
 
     return (
-        <Page withBar {...cls()}>
+        <Page title='Настройки' withBar {...cls()}>
             <div {...cls('header')}>
-                <h2 {...cls('title')}>Настройки</h2>
-
                 <MenuHamburger />
             </div>
 

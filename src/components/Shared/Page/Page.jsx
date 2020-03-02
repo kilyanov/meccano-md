@@ -8,6 +8,7 @@ const cls = new Bem('page');
 
 class Page extends Component {
     static propTypes = {
+        title: PropTypes.string,
         className: PropTypes.string,
         children: PropTypes.node,
         withBar: PropTypes.bool,
@@ -21,7 +22,7 @@ class Page extends Component {
     };
 
     render() {
-        const {className, children, withBar, staticBar, withContainerClass, notificationsPanel} = this.props;
+        const {className, children, withBar, staticBar, withContainerClass, notificationsPanel, title} = this.props;
 
         return (
             <div {...cls('', {'with-bar': withBar && !staticBar, blur: notificationsPanel.open})}>
@@ -32,7 +33,10 @@ class Page extends Component {
                         container: withContainerClass,
                         [className]: !!className
                     })}
-                >{children}</div>
+                >
+                    {title && <h1 {...cls('title')}>{title}</h1>}
+                    {children}
+                </div>
             </div>
         );
     }

@@ -118,9 +118,7 @@ export default class DocumentsPage extends Component {
         const documents = inSearch ? filteredDocuments : this.state.documents;
 
         return (
-            <Page {...cls()} withBar>
-                <h2 {...cls('title')}>Документы</h2>
-
+            <Page title='Документы' {...cls()} withBar>
                 <section {...cls('filter-panel')}>
                     <InputText
                         {...cls('filter-field')}

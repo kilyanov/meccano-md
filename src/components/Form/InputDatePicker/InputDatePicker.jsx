@@ -14,7 +14,8 @@ export default class InputDatePicker extends Component {
         value: PropTypes.instanceOf(Date),
         onChange: PropTypes.func,
         clearable: PropTypes.bool,
-        format: PropTypes.string
+        format: PropTypes.string,
+        readOnly: PropTypes.bool
     };
 
     static defaultProps = {
@@ -32,7 +33,7 @@ export default class InputDatePicker extends Component {
     };
 
     render() {
-        const {className, clearable, label, format} = this.props;
+        const {className, clearable, label, format, readOnly} = this.props;
         const {value} = this.state;
 
         return (
@@ -44,6 +45,7 @@ export default class InputDatePicker extends Component {
                         calendarIcon={<CalendarIcon/>}
                         clearIcon={clearable && value ? <i {...cls('icon')}>✕</i> : null} // <CloseIcon/>
                         value={value}
+                        readOnly={readOnly}
                         onChange={this.handleChange}
                         locale='ru-RU'
                         format={format}

@@ -12,12 +12,14 @@ import Button from '../../Shared/Button/Button';
 import ArticleViewSettings from './ArticleViewSettings/ArticleViewSettings';
 import ProjectCreateField from '../../Project/ProjectCreatePage/ProjectCreatePageField/ProjectCreatePageField';
 import Sortable from 'react-sortablejs';
-import {isMobileScreen, OperatedNotification} from '../../../helpers/Tools';
+import {isMobileScreen, isProjectAccess, OperatedNotification} from '../../../helpers/Tools';
 import {STORAGE_KEY} from '../../../constants/LocalStorageKeys';
 import {EventEmitter} from "../../../helpers";
 import {EVENTS} from "../../../constants/Events";
 import store from "../../../redux/store";
 import {setCurrentProject} from "../../../redux/actions/currentProject";
+import ProjectAccess from "../../Shared/ProjectAccess/ProjectAccess";
+import {PROJECT_PERMISSION} from "../../../constants/ProjectPermissions";
 
 const cls = new Bem('article-create-page');
 const sectionsSet = {
@@ -467,6 +469,7 @@ class ArticleCreatePage extends Component {
     article = null;
 
     render() {
+        const {currentProject} = this.props;
         const {
             articlesNavs,
             form,
@@ -482,6 +485,7 @@ class ArticleCreatePage extends Component {
         const isUpdate = !!this.articleId;
         const dataSectionFields = this.getDataSectionFields();
         const getValue = (prop) => _.isObject(prop) ? prop.value : prop;
+        const readOnly = !isProjectAccess([PROJECT_PERMISSION.EDIT], currentProject.userProject);
         const sectionData = (
             <Sortable
                 {...cls('section', 'sortable')}
@@ -493,6 +497,8 @@ class ArticleCreatePage extends Component {
                 onChange={this.handleEndSort}
             >
                 {dataSectionFields.map(field => {
+                    field.readOnly = readOnly;
+
                     switch (field.slug) {
                         case 'source_id':
                             field.requestService = SourceService.get;
@@ -593,6 +599,7 @@ class ArticleCreatePage extends Component {
                 <RichEditor
                     {...cls('field', 'annotation')}
                     label='Аннотация'
+                    readOnly={readOnly}
                     content={form.annotation || ''}
                     onChange={value => this.handleChangeForm(value, 'annotation')}
                 />
@@ -603,6 +610,7 @@ class ArticleCreatePage extends Component {
             <section {...cls('section')}>
                 <RichEditor
                     {...cls('field', 'textarea')}
+                    readOnly={readOnly}
                     label='Текст статьи'
                     content={form.text || ''}
                     onChange={value => this.handleChangeForm(value, 'text')}
@@ -652,19 +660,21 @@ class ArticleCreatePage extends Component {
                         {/* <span>Отображение статей</span> */}
                     </button>
 
-                    <Button
-                        {...cls('done-button')}
-                        text='Завершить статью'
-                        style='success'
-                        disabled={userType && form[`complete_${userType.slug}`]}
-                        onClick={this.handleDoneArticle}
-                    />
+                    <ProjectAccess permissions={[PROJECT_PERMISSION.EDIT]}>
+                        <Button
+                            {...cls('done-button')}
+                            text='Завершить статью'
+                            style='success'
+                            disabled={!userType || (userType && form[`complete_${userType.slug}`])}
+                            onClick={this.handleDoneArticle}
+                        />
 
-                    <Button
-                        {...cls('submit-button')}
-                        text={isUpdate ? 'Обновить' : 'Создать'}
-                        onClick={() => this.form.submit()}
-                    />
+                        <Button
+                            {...cls('submit-button')}
+                            text={isUpdate ? 'Обновить' : 'Создать'}
+                            onClick={() => this.form.submit()}
+                        />
+                    </ProjectAccess>
                 </section>
 
                 <Form onSubmit={this.handleSubmit} ref={node => this.form = node}>

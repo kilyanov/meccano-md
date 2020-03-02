@@ -31,6 +31,7 @@ export default class InputText extends Component {
         validateErrorMessage: PropTypes.string,
         onValidate: PropTypes.func,
         required: PropTypes.bool,
+        readOnly: PropTypes.bool,
         children: PropTypes.node
     };
 
@@ -174,6 +175,7 @@ export default class InputText extends Component {
             type,
             onClick,
             validateType,
+            readOnly,
             validateErrorMessage,
             children
         } = this.props;
@@ -194,7 +196,8 @@ export default class InputText extends Component {
                     focused: isFocused,
                     succeed: isSucceed,
                     empty: isEmpty,
-                    link: isLink
+                    link: isLink,
+                    readOnly
                 }, {
                     validated: isValidated,
                     error: isError,
@@ -212,6 +215,7 @@ export default class InputText extends Component {
                         required={required}
                         name={name}
                         value={value}
+                        readOnly={readOnly}
                         onChange={this.handleChange}
                         onKeyDown={this.handleKeyDown}
                         onSubmit={() => this.validate()}

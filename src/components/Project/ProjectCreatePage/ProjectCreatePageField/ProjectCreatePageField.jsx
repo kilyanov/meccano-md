@@ -22,7 +22,7 @@ const ProjectCreateField = ({field, value, onChange, className}) => {
                     placeholder={field.placeholder}
                     label={field.name}
                     value={value}
-
+                    readOnly={field.readOnly}
                     requestService={field.requestService}
                     requestCancelService={field.requestCancelService}
                 />
@@ -48,6 +48,7 @@ const ProjectCreateField = ({field, value, onChange, className}) => {
                     label={field.name}
                     options={field.options || []}
                     selected={value}
+                    readOnly={field.readOnly}
                     onChange={val => onChange(val, field.slug)}
                     requestService={field.requestService}
                     requestCancelService={field.requestCancelService}
@@ -61,6 +62,7 @@ const ProjectCreateField = ({field, value, onChange, className}) => {
                     label={field.name}
                     options={field.options || []}
                     selected={value}
+                    readOnly={field.readOnly}
                     onChange={val => onChange(val, field.slug)}
                     requestService={field.requestService}
                     requestCancelService={field.requestCancelService}
@@ -73,6 +75,7 @@ const ProjectCreateField = ({field, value, onChange, className}) => {
             return <div {...cls('field', [field.slug, filedType], className)} data-id={field.slug}>
                 <InputLink
                     label={field.name}
+                    readOnly={field.readOnly}
                     onChange={val => onChange(val, field.slug)}
                     value={value || ''}
                 />
@@ -82,6 +85,7 @@ const ProjectCreateField = ({field, value, onChange, className}) => {
             return <div {...cls('field', [field.slug, filedType], className)} data-id={field.slug}>
                 <InputNumber
                     label={field.name}
+                    readOnly={field.readOnly}
                     onChange={val => onChange(val, field.slug)}
                     value={value || ''}
                 />
@@ -90,6 +94,7 @@ const ProjectCreateField = ({field, value, onChange, className}) => {
             return <div {...cls('field', [field.slug, filedType], className)} data-id={field.slug}>
                 <InputDatePicker
                     label={field.name}
+                    readOnly={field.readOnly}
                     value={value || ''}
                     onChange={val => onChange(val, field.slug)}
                 />
@@ -98,6 +103,7 @@ const ProjectCreateField = ({field, value, onChange, className}) => {
             return <div {...cls('field', [field.slug, filedType], className)} data-id={field.slug}>
                 <InputDatePicker
                     label={field.name}
+                    readOnly={field.readOnly}
                     value={value || ''}
                     onChange={val => onChange(val, field.slug)}
                 />
@@ -106,6 +112,7 @@ const ProjectCreateField = ({field, value, onChange, className}) => {
             return <div {...cls('field', [field.slug, filedType], className)} data-id={field.slug}>
                 <InputTime
                     label={field.name}
+                    readOnly={field.readOnly}
                     value={value}
                 />
             </div>;
@@ -114,6 +121,7 @@ const ProjectCreateField = ({field, value, onChange, className}) => {
             return <div {...cls('field', [field.slug, filedType], className)} data-id={field.slug}>
                 <InputText
                     label={field.name}
+                    readOnly={field.readOnly}
                     value={value || ''}
                     onChange={val => onChange(val, field.slug)}
                 />

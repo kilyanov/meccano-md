@@ -19,7 +19,8 @@ export default class InputTime extends React.Component {
         disabled: PropTypes.bool,
         disableOldTime: PropTypes.bool,
         filter: PropTypes.bool,
-        defaultValue: PropTypes.string
+        defaultValue: PropTypes.string,
+        readOnly: PropTypes.bool
     };
 
     static defaultProps = {
@@ -261,7 +262,7 @@ export default class InputTime extends React.Component {
     };
 
     render() {
-        const {isOpen, time, error, focused, value} = this.state;
+        const {isOpen, time, error, focused, value, readOnly} = this.state;
         const {
             autoFocus,
             placeholder,
@@ -282,7 +283,8 @@ export default class InputTime extends React.Component {
                     error: isError,
                     focused: isFocused,
                     succeed: isSucceed,
-                    empty: isEmpty
+                    empty: isEmpty,
+                    readOnly
                 }, className)}
                 title={label}
                 onClick={() => !isOpen && this.open()}
@@ -292,6 +294,7 @@ export default class InputTime extends React.Component {
 
                     <input
                         autoFocus={autoFocus}
+                        readOnly={readOnly}
                         placeholder={placeholder}
                         {...cls('field', {active: focused})}
                         type='text'

@@ -71,6 +71,8 @@ class ProjectUserModal extends Component {
         const {projectId} = this.props;
         const {form} = this.state;
 
+        if (!form.user_id || !projectId || !form.userProjectTypes.length) return;
+
         this.setState({inProgress: true}, () => {
             const requestForm = {...form};
 
