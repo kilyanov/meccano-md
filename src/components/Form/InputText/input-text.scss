@@ -7,6 +7,13 @@ $namespace: '.input-text';
   max-width: 100%;
   margin-bottom: 20px;
 
+  &--readOnly {
+    #{$namespace}__field {
+      color: $fontGrey;
+      background-color: $gray-three;
+    }
+  }
+
   &--succeed {
     #{$namespace}__label-text {
       font-weight: 500;
@@ -119,5 +126,12 @@ $namespace: '.input-text';
 
   &__earth-icon {
     fill: $border-color-dark
+  }
+
+  &--readOnly {
+    #{$namespace}__field {
+      color: $fontGrey;
+      background-color: $superLightBackground-dark;
+    }
   }
 }

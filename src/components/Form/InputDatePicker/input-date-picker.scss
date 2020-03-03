@@ -6,6 +6,18 @@ $namespace: '.input-date-picker';
   position: relative;
   margin-bottom: 20px;
 
+  &--readOnly {
+    .react-date-picker {
+      color: $fontGrey;
+      background-color: $gray-three;
+      pointer-events: none;
+    }
+
+    .react-date-picker__inputGroup__input {
+      color: $fontGrey;
+    }
+  }
+
   &--succeed {
     #{$namespace}__label-text {
       font-weight: 500;
@@ -177,5 +189,14 @@ $namespace: '.input-date-picker';
   .react-calendar__navigation button:enabled:hover,
   .react-calendar__navigation button:enabled:focus {
     background-color: $superLightBackground-dark;
+  }
+
+  &--readOnly {
+    .react-date-picker {
+      background-color: $superLightBackground-dark;
+    }
+    .react-date-picker__inputGroup__input {
+      color: $fontGrey;
+    }
   }
 }

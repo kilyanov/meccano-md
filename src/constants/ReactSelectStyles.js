@@ -1,12 +1,16 @@
-export function ReactSelectStyles(isDarkTheme) {
+export function ReactSelectStyles(isDarkTheme, readOnly) {
+    const darkColor = readOnly ? '#525252' : '#313131';
+    const lightColor = readOnly ? '#f2f2f2' : '#fff';
+
     return {
         control: (provided, {isFocused, isSelected}) => {
             return {
                 ...provided,
                 borderRadius: 0,
                 minHeight: 40,
-                backgroundColor: isDarkTheme ? '#313131' : '#fff',
+                backgroundColor: isDarkTheme ? darkColor : lightColor,
                 borderColor: isFocused || isSelected ? '#ccc' : '#ccc',
+                pointerEvents: readOnly ? 'none' : 'all',
                 '&:hover, &:active': {
                     borderColor: '#b2b2b2',
                     boxShadow: 'none'
@@ -20,7 +24,7 @@ export function ReactSelectStyles(isDarkTheme) {
         }),
         menu: (provided) => ({
             ...provided,
-            backgroundColor: isDarkTheme ? '#313131' : '#fff',
+            backgroundColor: isDarkTheme ? darkColor : lightColor
         }),
         option: (provided, {isDisabled, isFocused, isSelected}) => {
             return {

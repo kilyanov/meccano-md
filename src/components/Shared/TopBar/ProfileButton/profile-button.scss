@@ -81,6 +81,8 @@ $namespace: '.profile-button';
     }
 
     &__list-item {
+        display: flex;
+        align-items: center;
         padding: 10px 15px;
         white-space: nowrap;
         text-overflow: ellipsis;
@@ -102,6 +104,10 @@ $namespace: '.profile-button';
     &__list-item-active {
         margin-right: 10px;
         color: $emerald;
+    }
+
+    &__switch-theme-button {
+        margin-left: auto;
     }
 }
 

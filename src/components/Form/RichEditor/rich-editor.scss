@@ -2,6 +2,15 @@
 $namespace: '.rich-editor';
 
 #{$namespace} {
+    &--readOnly {
+        pointer-events: none;
+
+        .jodit_container {
+            color: $fontGrey;
+            background-color: $gray-three;
+        }
+    }
+
     &__label {
         display: inline-block;
         font-size: 15px;

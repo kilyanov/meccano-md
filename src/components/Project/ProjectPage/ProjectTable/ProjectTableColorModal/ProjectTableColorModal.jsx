@@ -8,7 +8,6 @@ import ColorPicker from 'rc-color-picker';
 import Loader from "../../../../Shared/Loader/Loader";
 import 'rc-color-picker/assets/index.css';
 import './project-table-color-modal.scss';
-import store from "../../../../../redux/store";
 import {setArticleColors} from "../../../../../redux/actions/articleColors";
 
 const cls = new BEMHelper('project-table-color-modal');
@@ -57,14 +56,17 @@ class ProjectTableColorModal extends Component {
         const { colors } = this.state;
         const form = {type, color: colors[type].color};
 
-        ArticleService.color[colors[type].id ? 'update' : 'create'](projectId, form, colors[type].id)
-            .then(this.getArticleColoes);
+        this.setState({inProgress: true}, () => {
+            ArticleService.color[colors[type].id ? 'update' : 'create'](projectId, form, colors[type].id)
+                .then(this.getArticleColors);
+        });
     };
 
-    getArticleColoes = () => {
+    getArticleColors = () => {
         ArticleService.color.get(this.projectId).then(response => {
             if (response.data) {
-                store.dispatch(setArticleColors(response.data));
+                this.props.onSetArticleColors(response.data);
+                this.setState({inProgress: false});
             }
         });
     };
@@ -120,4 +122,10 @@ function mapStateTpProps(state) {
     };
 }
 
-export default connect(mapStateTpProps)(ProjectTableColorModal);
+function mapDispatchToProps(dispatch) {
+    return {
+        onSetArticleColors: (colors) => dispatch(setArticleColors(colors))
+    };
+}
+
+export default connect(mapStateTpProps, mapDispatchToProps)(ProjectTableColorModal);

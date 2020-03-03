@@ -1,6 +1,7 @@
 import PerfectScrollbar from 'perfect-scrollbar';
 import {EventEmitter} from './EventEmitter';
 import {EVENTS} from '../constants/Events';
+import store from "../redux/store";
 
 export const ParseToRequest = (form) => {
     if (!form) return '';
@@ -62,14 +63,32 @@ export const QueueManager = {
     }
 };
 
-export const isAccess = (arrayOfPermissions, profile) => {
-    if (!profile || !profile.permissions) return false;
+export const isAccess = (permissions = []) => {
+    const state = store.getState();
+    const profile = state.profile;
 
-    return !!profile.permissions.filter(({name}) => arrayOfPermissions.includes(name)).length;
+    if (!_.get(profile, 'permissions', []).length || !permissions || !permissions.length) {
+        return false;
+    }
+
+    return !!profile.permissions.filter(({name}) => permissions.includes(name)).length;
 };
 
-export const isProjectAccess = (permissions = [], userProject) => {
-    if (!userProject || !permissions.length) return false;
+export const isProjectAccess = (permissions = []) => {
+    const state = store.getState();
+    const currentProject = state.currentProject;
+    const userProject = currentProject && currentProject.userProject;
+
+    if (!userProject || !permissions || !permissions.length) return false;
 
     return userProject && permissions.some(pm => userProject.hasOwnProperty(pm) && userProject[pm]);
+};
+
+export const isRolesAccees = (roles = []) => {
+    const state = store.getState();
+    const profile = state.profile;
+
+    if (!_.get(profile, 'roles', []).length || !roles || !roles.length) return false;
+
+    return profile.roles && profile.roles.some(({name}) => roles.includes(name));
 };

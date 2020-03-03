@@ -18,8 +18,8 @@ import {EventEmitter} from "../../../helpers";
 import {EVENTS} from "../../../constants/Events";
 import store from "../../../redux/store";
 import {setCurrentProject} from "../../../redux/actions/currentProject";
-import ProjectAccess from "../../Shared/ProjectAccess/ProjectAccess";
 import {PROJECT_PERMISSION} from "../../../constants/ProjectPermissions";
+import Access from "../../Shared/Access/Access";
 
 const cls = new Bem('article-create-page');
 const sectionsSet = {
@@ -660,7 +660,7 @@ class ArticleCreatePage extends Component {
                         {/* <span>Отображение статей</span> */}
                     </button>
 
-                    <ProjectAccess permissions={[PROJECT_PERMISSION.EDIT]}>
+                    <Access permissions={[PROJECT_PERMISSION.EDIT]}>
                         <Button
                             {...cls('done-button')}
                             text='Завершить статью'
@@ -674,7 +674,7 @@ class ArticleCreatePage extends Component {
                             text={isUpdate ? 'Обновить' : 'Создать'}
                             onClick={() => this.form.submit()}
                         />
-                    </ProjectAccess>
+                    </Access>
                 </section>
 
                 <Form onSubmit={this.handleSubmit} ref={node => this.form = node}>

@@ -13,7 +13,8 @@ const cls = new Bem('input-tags');
 class InputTags extends Component {
     static propTypes = {
         required: PropTypes.bool,
-        theme: PropTypes.string.isRequired
+        theme: PropTypes.string.isRequired,
+        readOnly: PropTypes.bool
     };
 
     state = {
@@ -79,7 +80,7 @@ class InputTags extends Component {
                     loadingMessage={() => 'Загрузка...'}
                     noOptionsMessage={() => 'Нет элементов'}
                     loadOptions={this.onLoadOptions}
-                    styles={ReactSelectStyles(isDarkTheme)}
+                    styles={ReactSelectStyles(isDarkTheme, readOnly)}
                 />
             </div>
         );

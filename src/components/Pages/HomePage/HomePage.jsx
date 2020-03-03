@@ -14,6 +14,8 @@ import DocumentIcon from '../../Shared/SvgIcons/DocumentIcon';
 import {PERMISSION} from "../../../constants/Permissions";
 import Access from "../../Shared/Access/Access";
 import Loader from "../../Shared/Loader/Loader";
+import {isProjectAccess, isRolesAccees} from "../../../helpers/Tools";
+import {PROJECT_PERMISSION} from "../../../constants/ProjectPermissions";
 
 class HomePage extends Component {
     static propTypes = {
@@ -44,8 +46,8 @@ class HomePage extends Component {
     };
 
     getMenu = () => {
-        const { profile } = this.props;
-        const currentPermissions = profile && profile.permissions || [];
+        const {roles} = this.props;
+        const canEditProject = isProjectAccess(PROJECT_PERMISSION.PROJECT_MANAGER) || isRolesAccees(roles.admin);
 
         return (
             [{
@@ -62,8 +64,7 @@ class HomePage extends Component {
                 children: this.props.projects.map(({id, name}) => ({
                     name,
                     link: `/project/${id}`,
-                    editLink: currentPermissions.find(pm => pm.name === PERMISSION.editProjectSettings)
-                        && `/project-create/${id}`
+                    editLink: canEditProject ? `/project-create/${id}` : ''
                 }))
             }, {
                 id: 'documents',
@@ -130,6 +131,16 @@ class HomePage extends Component {
     }
 }
 
-const mapStateToProps = ({profile, projects}) => ({profile, projects});
+const mapStateToProps = (state) => {
+    const roles = {};
+
+    state.roles.forEach(({name}) => roles[name] = name);
+
+    return {
+        profile: state.profile,
+        projects: state.projects,
+        roles
+    };
+};
 
 export default connect(mapStateToProps)(HomePage);

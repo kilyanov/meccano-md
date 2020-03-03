@@ -13,7 +13,8 @@ export default class RichEditor extends Component {
         content: PropTypes.string,
         label: PropTypes.string,
         onChange: PropTypes.func,
-        onAfterChange: PropTypes.func
+        onAfterChange: PropTypes.func,
+        readonly: PropTypes.bool
     };
 
     static defaultProps = {
@@ -108,14 +109,15 @@ export default class RichEditor extends Component {
     }
 
     render() {
-        const {content, label, className} = this.props;
+        const {content, label, className, readOnly} = this.props;
 
         return (
-            <div {...cls('', '', className)}>
+            <div {...cls('', {readOnly}, className)}>
                 {label && <span {...cls('label')}>{label}</span>}
 
                 <Editor
                     ref={ref => this.jodit = ref}
+                    readonly={readOnly}
                     value={content}
                     config={this.config}
                     onChange={value => this.props.onChange(value)}

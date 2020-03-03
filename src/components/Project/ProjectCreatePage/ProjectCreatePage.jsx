@@ -315,6 +315,7 @@ class ProjectCreatePage extends Component {
     project = null;
 
     render() {
+        const {roles} = this.props;
         const {
             step,
             projectFields,
@@ -332,7 +333,11 @@ class ProjectCreatePage extends Component {
         const fieldsByUserType = selectedUserType && projectFields.find(f => f.user_type_id === selectedUserType.value);
 
         return (
-            <ProjectAccess permissions={[PROJECT_PERMISSION.PROJECT_MANAGER]} redirect='/'>
+            <Access
+                permissions={[PROJECT_PERMISSION.PROJECT_MANAGER]}
+                roles={[roles.admin]}
+                redirect='/'
+            >
                 <Page
                     withBar
                     withContainerClass={false}
@@ -449,15 +454,20 @@ class ProjectCreatePage extends Component {
 
                     {(!this.project || inProgress) && <Loader fixed/>}
                 </Page>
-            </ProjectAccess>
+            </Access>
         );
     }
 }
 
 function mapStateToProps(state) {
+    const roles = {};
+
+    state.roles.forEach(({name}) => roles[name] = name);
+
     return {
         profile: state.profile,
-        userTypes: state.userTypes
+        userTypes: state.userTypes,
+        roles
     };
 }
 

@@ -37,7 +37,7 @@ export default class InputDatePicker extends Component {
         const {value} = this.state;
 
         return (
-            <div {...cls('', '', className)}>
+            <div {...cls('', {readOnly}, className)}>
                 <label {...cls('label')}>
                     {label && <span {...cls('label-text', '', 'drag-handle')}>{label}</span>}
 

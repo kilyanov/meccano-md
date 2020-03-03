@@ -5,8 +5,10 @@ import ProfileIcon from "../../SvgIcons/ProfileIcon";
 import ArrowIcon from "../../SvgIcons/ArrowIcon";
 import {AuthService, StorageService} from "../../../../services";
 import {EventEmitter} from "../../../../helpers";
-import {STORAGE_KEY, EVENTS} from "../../../../constants";
+import {STORAGE_KEY, EVENTS, THEME_TYPE} from "../../../../constants";
 import './profile-button.scss';
+import Switcher from "../../../Form/Switcher/Switcher";
+import {switchTheme} from "../../../../redux/actions/theme";
 
 const namespace = 'profile-button';
 const cls = new Bem(namespace);
@@ -40,6 +42,13 @@ class ProfileButton extends Component {
         this.forceUpdate();
     };
 
+    handleSwitchTheme = () => {
+        const {theme} = this.props;
+
+        StorageService.set('theme', THEME_TYPE[theme.toUpperCase()] === 'light' ? THEME_TYPE.DARK : THEME_TYPE.LIGHT);
+        this.props.onSwitchTheme();
+    };
+
     getCurrentUserType = () => {
         const storageValue = StorageService.get(STORAGE_KEY.USER_TYPE);
         let userType = null;
@@ -54,11 +63,11 @@ class ProfileButton extends Component {
     };
 
     render() {
-        const {profile, userTypes, currentProject} = this.props;
+        const {profile, userTypes, currentProject, theme} = this.props;
         const {isOpen} = this.state;
         const storageUserType = this.getCurrentUserType();
         const projectUserTypes = _.get(currentProject, 'userProject.userProjectTypes', []);
-        const menu = [{name: 'Выйти', onClick: AuthService.logOut}];
+        const userTypeMenu = [];
 
         if (userTypes.length && projectUserTypes.length) {
             const availableUserTypes = projectUserTypes.map(ut => {
@@ -66,7 +75,7 @@ class ProfileButton extends Component {
             });
 
             availableUserTypes.forEach(userType => {
-                menu.unshift({
+                userTypeMenu.unshift({
                     id: userType.id,
                     name: userType.name,
                     onClick: () => this.handleChangeUserType(userType)
@@ -94,7 +103,7 @@ class ProfileButton extends Component {
 
                 {isOpen && (
                     <ul {...cls('list')}>
-                        {menu.map((item, itemIndex) => {
+                        {userTypeMenu.map((item, itemIndex) => {
                             const isActive = item.id === storageUserType.id;
 
                             return (
@@ -105,6 +114,23 @@ class ProfileButton extends Component {
                                 >{isActive && <i {...cls('list-item-active')}>✔</i>} {item.name}</li>
                             );
                         })}
+
+                        <li {...cls('list-item')}>
+                            Темная тема
+
+                            <Switcher
+                                {...cls('switch-theme-button')}
+                                checked={theme === THEME_TYPE.DARK}
+                                onChange={this.handleSwitchTheme}
+                            />
+                        </li>
+
+                        <li
+                            {...cls('list-item')}
+                            onClick={() => AuthService.logOut()}
+                        >
+                            Выйти
+                        </li>
                     </ul>
                 )}
             </div>
@@ -112,12 +138,19 @@ class ProfileButton extends Component {
     }
 }
 
-function mapStateToProps({userTypes, profile, currentProject}) {
+function mapStateToProps({userTypes, profile, currentProject, theme}) {
     return {
         userTypes,
         profile,
-        currentProject
+        currentProject,
+        theme
     };
 }
 
-export default connect(mapStateToProps)(ProfileButton);
+function mapDispatchToProps(dispatch) {
+    return {
+        onSwitchTheme: () => dispatch(switchTheme())
+    };
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(ProfileButton);

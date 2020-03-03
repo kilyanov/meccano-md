@@ -16,6 +16,13 @@ $namespace: '.input-number';
     }
   }
 
+  &--readOnly {
+    #{$namespace}__field {
+      color: $fontGrey;
+      background-color: $gray-three;
+    }
+  }
+
   &--error {
     &:not(#{$namespace}--empty):after {
       content: "";
@@ -105,5 +112,11 @@ $namespace: '.input-number';
   &__field {
     background-color: $background-dark;
     color: $white-dark;
+  }
+  &--readOnly {
+    #{$namespace}__field {
+      color: $fontGrey;
+      background-color: $superLightBackground-dark;
+    }
   }
 }

@@ -17,6 +17,21 @@ $namespace: '.select';
         }
     }
 
+    &--readOnly {
+        #{$namespace}__container {
+            color: $fontGrey;
+            background-color: $gray-three;
+        }
+
+        #{$namespace}__list {
+            background-color: $gray-three;
+        }
+
+        #{$namespace}__list-item {
+            pointer-events: none;
+        }
+    }
+
     &--mobile {
         #{$namespace}__list-container {
             position: fixed;
@@ -125,6 +140,11 @@ $namespace: '.select';
             border-radius: 3px;
             font-style: normal;
         }
+    }
+
+    &__selected-name {
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
 
     &__list-container {
@@ -319,5 +339,21 @@ $namespace: '.select';
     &--selected-name {
         overflow: hidden;
         text-overflow: ellipsis;
+    }
+
+    &--readOnly {
+        #{$namespace}__container {
+            color: $fontGrey;
+            background-color: $superLightBackground-dark;
+        }
+
+        #{$namespace}__list {
+            background-color: $superLightBackground-dark;
+        }
+
+        #{$namespace}__list-item {
+            color: $fontGrey;
+            pointer-events: none;
+        }
     }
 }

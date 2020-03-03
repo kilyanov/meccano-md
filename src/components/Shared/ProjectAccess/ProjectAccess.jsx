@@ -10,7 +10,7 @@ const ProjectAccess = ({permissions, children, replaceComponent, redirect}) => {
     const canRender = !permissions || isProjectAccess(permissions, userProject);
 
     if (!canRender && redirect) {
-        EventEmitter.emit(EVENTS.REDIRECT, redirect)
+        EventEmitter.emit(EVENTS.REDIRECT, redirect);
     }
 
     return canRender ? <>{children}</> : replaceComponent || null;
