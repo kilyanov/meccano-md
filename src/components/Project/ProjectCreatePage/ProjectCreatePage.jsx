@@ -201,8 +201,13 @@ class ProjectCreatePage extends Component {
     };
 
     getStepsButtons = () => {
+        const { selectedUserType, projectFields } = this.state;
+        const fields = selectedUserType
+            ? projectFields.find(({user_type_id}) => user_type_id === selectedUserType.value)
+            : projectFields[0];
+
         // Проверяем на наличие полей sections
-        const foundSections = this.state.projectFields.find(({slug}) => {
+        const foundSections = fields.data.find(({slug}) => {
             return ['section_main_id', 'section_sub_id', 'section_three_id'].includes(slug);
         });
 

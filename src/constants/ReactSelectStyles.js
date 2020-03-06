@@ -32,7 +32,7 @@ export function ReactSelectStyles(isDarkTheme, readOnly) {
                 backgroundColor: isDisabled ? null :
                     isSelected ? isDarkTheme ? '#525252' : '#ccc' :
                         isFocused ? isDarkTheme ? '#525252' : '#ccc' : null
-            }
+            };
         },
         multiValue: (provided) => ({
             ...provided,
