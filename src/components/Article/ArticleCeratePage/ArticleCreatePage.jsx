@@ -677,7 +677,11 @@ class ArticleCreatePage extends Component {
                     </Access>
                 </section>
 
-                <Form onSubmit={this.handleSubmit} ref={node => this.form = node}>
+                <Form
+                    {...cls('form', '', 'container')}
+                    onSubmit={this.handleSubmit}
+                    ref={node => this.form = node}
+                >
                     {viewType === 1 && (
                         <div {...cls('row', '', 'row')}>
                             <div {...cls('col', '', 'col-lg-6')}>

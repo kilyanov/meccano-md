@@ -4,7 +4,8 @@ $namespace: '.vertical-menu';
 
 #{$namespace} {
   width: 100%;
-  margin: 0;
+  max-width: 800px;
+  margin: 0 auto;
   padding: 0;
   list-style: none;
   border: 1px solid $gray;

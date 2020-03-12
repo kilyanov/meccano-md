@@ -63,10 +63,7 @@ export const QueueManager = {
     }
 };
 
-export const isAccess = (permissions = []) => {
-    const state = store.getState();
-    const profile = state.profile;
-
+export const isAccess = (permissions = [], profile) => {
     if (!_.get(profile, 'permissions', []).length || !permissions || !permissions.length) {
         return false;
     }
@@ -84,7 +81,7 @@ export const isProjectAccess = (permissions = []) => {
     return userProject && permissions.some(pm => userProject.hasOwnProperty(pm) && userProject[pm]);
 };
 
-export const isRolesAccees = (roles = []) => {
+export const isRolesAccess = (roles = []) => {
     const state = store.getState();
     const profile = state.profile;
 

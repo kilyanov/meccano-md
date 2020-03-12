@@ -173,7 +173,7 @@ class ProjectCreatePage extends Component {
 
     getProject = () => {
         const params = {
-            expand: 'projectFields,allFields,users'
+            expand: 'projectFields,allFields'
         };
 
         ProjectService.get(params, this.projectId).then(projectResponse => {

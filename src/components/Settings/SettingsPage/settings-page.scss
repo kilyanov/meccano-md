@@ -100,11 +100,15 @@ $namespace: '.settings-page';
   }
 
   &__stub {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding-top: 30%;
     color: $fontGrey;
+    transform: translateY(-50%);
 
     h2, h5 {
       margin-bottom: 0;
