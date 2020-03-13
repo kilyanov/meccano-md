@@ -276,7 +276,7 @@ class ProjectTable extends Component {
             <article
                 {...cls('row')}
                 key={`${article.id}-${articleKey}`}
-                style={{backgroundColor: color.color}}
+                style={{backgroundColor: color && color.color ? color.color : null}}
             >
                 <div {...cls('cell', 'check')}>
                     <CheckBox
