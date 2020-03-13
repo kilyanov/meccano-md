@@ -256,7 +256,7 @@ export default class ProjectPage extends Component {
         form.expand = [...form.expand, 'complete_monitor', 'complete_analytic', 'complete_client'];
 
         if (search) {
-            project.fields
+            fields
                 .filter(({slug}) => selectedColumns.includes(slug))
                 .forEach(field => {
                     form[`query[${field.relation || field.slug}]`] = search;
@@ -265,7 +265,7 @@ export default class ProjectPage extends Component {
         }
 
         if (sort && sort.type) {
-            const field = project.fields.find(({slug}) => slug === sort.type);
+            const field = fields.find(({slug}) => slug === sort.type);
 
             form.sort = sort.type && `${sort.dir === SORT_DIR.ASC ? '-' : ''}${field.relation || sort.type}`;
             this.searchParams.set('sort', `${sort.dir === SORT_DIR.ASC ? '-' : ''}${sort.type}`);

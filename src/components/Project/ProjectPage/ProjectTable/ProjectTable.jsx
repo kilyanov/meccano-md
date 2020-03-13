@@ -67,7 +67,11 @@ class ProjectTable extends Component {
         );
     };
 
-    handleChangeSort = (sortType) => {
+    handleChangeSort = (event, sortType) => {
+        if (event.target && event.target.classList.contains('project-table-header__cell-handler')) {
+            return;
+        }
+
         let {sort} = this.props;
 
         if (sort.type === sortType) {
@@ -140,6 +144,10 @@ class ProjectTable extends Component {
 
     handleMouseUp = () => {
         this.pressed = false;
+        this.element = null;
+        this.startX = 0;
+        this.startWidth = 0;
+        this.columnKey = null;
         updateColumnWidth(this.props.projectId, this.columnKey, this.startWidth + this.diff);
     };
 
@@ -163,16 +171,12 @@ class ProjectTable extends Component {
                     id: 'set-color',
                     title: 'Цветовое выделение строк',
                     onClick: () => this.setState({showColorModal: true})
-                })
+                });
             }
         }
 
         return settingsMenu;
     };
-
-    getColumns = () => {
-        return this.selectedColumns;
-    };;
 
     articleDropDown = {};
 
@@ -231,7 +235,7 @@ class ProjectTable extends Component {
                             key={key}
                             ref={node => this.headerCellRef[key] = node}
                             {...headerClasses('cell', {[key]: true, active})}
-                            onClick={() => this.handleChangeSort(key)}
+                            onClick={event => this.handleChangeSort(event, key)}
                             style={width ? {flex: `0 0 ${width}px`} : {}}
                         >
                             {_.get(currentField, 'name')}
@@ -240,7 +244,6 @@ class ProjectTable extends Component {
                                 {...headerClasses('cell-handler')}
                                 onMouseDown={event => this.handleMouseDown(event, key)}
                                 onMouseMove={this.handleMouseMove}
-                                onMouseUp={this.handleMouseUp}
                             />
                         </div>
                     );
@@ -260,9 +263,15 @@ class ProjectTable extends Component {
             onClick: () => this.props.onDeleteArticle(article.id)
         }];
         const sortString = sort.type && `${sort.dir === SORT_DIR.ASC ? '-' : ''}${sort.type}`;
-        const url = `/project/${projectId}/article/${article.id}?search=${search}&sort=${sortString || ''}&position=${articleKey}`;
-
+        const sp = new URLSearchParams();
+        let url = `/project/${projectId}/article/${article.id}?`;
         let color = '';
+
+        sp.set('search', search);
+        sp.set('sort', sortString || '');
+        sp.set('position', articleKey);
+
+        url += sp.toString();
 
         ['complete_monitor', 'complete_analytic', 'complete_client'].some(key => {
             if (article[key]) {

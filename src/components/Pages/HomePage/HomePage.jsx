@@ -14,7 +14,7 @@ import DocumentIcon from '../../Shared/SvgIcons/DocumentIcon';
 import {PERMISSION} from "../../../constants/Permissions";
 import Access from "../../Shared/Access/Access";
 import Loader from "../../Shared/Loader/Loader";
-import {isProjectAccess, isRolesAccees} from "../../../helpers/Tools";
+import {isProjectAccess, isRolesAccess} from "../../../helpers/Tools";
 import {PROJECT_PERMISSION} from "../../../constants/ProjectPermissions";
 
 class HomePage extends Component {
@@ -29,7 +29,6 @@ class HomePage extends Component {
     };
 
     state = {
-        projects: [],
         showProjectCreateModal: false
     };
 
@@ -47,7 +46,7 @@ class HomePage extends Component {
 
     getMenu = () => {
         const {roles} = this.props;
-        const canEditProject = isProjectAccess(PROJECT_PERMISSION.PROJECT_MANAGER) || isRolesAccees(roles.admin);
+        const canEditProject = isProjectAccess(PROJECT_PERMISSION.PROJECT_MANAGER) || isRolesAccess(roles.admin);
 
         return (
             [{
@@ -131,9 +130,8 @@ class HomePage extends Component {
     }
 }
 
+const roles = {};
 const mapStateToProps = (state) => {
-    const roles = {};
-
     state.roles.forEach(({name}) => roles[name] = name);
 
     return {
