@@ -61,6 +61,10 @@ class UserModal extends Component {
                 this.username = `${slugify(form.surname)}${form.name ? '_' : ''}${slugify(form.name ? form.name : '')}`;
             }
 
+            if (prop === 'username') {
+                this.username = value;
+            }
+
             return {form};
         });
     };
@@ -132,7 +136,7 @@ class UserModal extends Component {
                         label='Логин'
                         placeholder='Логин'
                         required
-                        value={form.username || this.username}
+                        value={form.username || this.username }
                         onChange={value => this.handleChangeForm(value, 'username')}
                     />
 
