@@ -40,7 +40,6 @@ $namespace: '.projects-button';
     }
 
     &__list-item {
-        padding: 10px 15px;
         white-space: nowrap;
         text-overflow: ellipsis;
         font-size: 14px;
@@ -53,6 +52,10 @@ $namespace: '.projects-button';
     }
 
     &__link {
+        display: flex;
+        height: 100%;
+        padding: 10px 15px;
+        align-items: center;
         color: inherit;
 
         &:hover {

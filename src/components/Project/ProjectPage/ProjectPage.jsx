@@ -68,6 +68,29 @@ export default class ProjectPage extends Component {
         EventEmitter.on(EVENTS.USER.CHANGE_TYPE, this.handleChangeUserType);
     }
 
+    componentDidUpdate(prevProps) {
+        if (prevProps.match.params.id !== this.props.match.params.id) {
+            this.projectId = this.props.match.params.id;
+            this.setState({
+                articles: [],
+                activeArticle: null,
+                selectedItemIds: [],
+                isAllArticlesSelected: false,
+                pagination: defaultPagination,
+                project: null,
+                filters: defaultFilters,
+                showArticleModal: false,
+                showUploadArticlesModal: false,
+                showImportArticlesModal: false,
+                showTransferModal: false,
+                inProgress: true
+            }, () => {
+                this.getProject(this.projectId).then(this.getArticles);
+                this.getArticleColors();
+            });
+        }
+    }
+
     componentWillUnmount() {
         this.isMounted = false;
         EventEmitter.off(EVENTS.USER.CHANGE_TYPE, this.handleChangeUserType);

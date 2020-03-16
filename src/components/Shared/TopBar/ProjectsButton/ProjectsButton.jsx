@@ -46,6 +46,7 @@ const ProjectsButton = ({className}) => {
                             <Link
                                 {...cls('link')}
                                 to={`/project/${project.id}`}
+                                onClick={() => setIsOpen(false)}
                             >{project.name}</Link>
                         </li>
                     ))}

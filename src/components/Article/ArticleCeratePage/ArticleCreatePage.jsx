@@ -174,7 +174,19 @@ class ArticleCreatePage extends Component {
 
     handleEndSort = (sortedKeys) => {
         const {projectFields} = this.state;
-        const sortedList = sortedKeys.map(key => projectFields.find(({slug}) => slug === key)).filter(item => !!item);
+
+        sortedKeys.push(...this.unSortableFields);
+        const sortedList = sortedKeys.map((key, index) => {
+            const item = projectFields.find(({slug}) => slug === key);
+
+            if (item) item.order = index;
+
+            return item;
+        }).filter(item => !!item);
+
+        sortedList.push(
+            ...this.unSortableFields.map(key => projectFields.find(({slug}) => slug === key))
+        );
 
         this.setState({projectFields: sortedList}, this.saveFieldsSort);
     };
@@ -349,7 +361,7 @@ class ArticleCreatePage extends Component {
         const {form, sectionsTwo, sectionsThree, projectFields} = this.state;
 
         let dataSectionFields = _.cloneDeep(projectFields).filter(({slug}) => {
-            return !['annotation', 'text', 'complete_monitor', 'complete_analytic', 'complete_client'].includes(slug);
+            return !this.unSortableFields.includes(slug);
         });
 
         if (!form.section_main_id || !sectionsTwo || !sectionsTwo.length) {
@@ -400,10 +412,13 @@ class ArticleCreatePage extends Component {
     };
 
     saveFieldsSort = () => {
-        const {projectFields} = this.state;
+        const {projectFields, userTypeId} = this.state;
 
         ProjectService.cancelLast();
-        ProjectService.put(this.projectId, {projectFields});
+        ProjectService.put(this.projectId, {
+            data: projectFields,
+            user_type_id: userTypeId
+        });
     };
 
     checkFormChanges = () => {
@@ -465,6 +480,8 @@ class ArticleCreatePage extends Component {
     };
 
     articleId = this.props.match.params.articleId;
+
+    unSortableFields = ['annotation', 'text', 'complete_monitor', 'complete_analytic', 'complete_client'];
 
     article = null;
 
