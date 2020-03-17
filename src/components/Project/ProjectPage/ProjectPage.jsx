@@ -237,19 +237,25 @@ export default class ProjectPage extends Component {
         this.setState({userType});
     };
 
-    handleCompleteArticles = () => {
+    handleCompleteArticles = (isComplete = true) => {
         const {selectedItemIds, userType} = this.state;
 
         if (userType && userType.slug) {
             const form = {
                 articleIds: selectedItemIds,
                 properties: {
-                    [`complete_${userType.slug}`]: true
+                    [`complete_${userType.slug}`]: isComplete
                 }
             };
 
             this.setState({inProgress: true}, () => {
-                ProjectService.updateMany(form, this.projectId).then(() => this.getArticles());
+                ProjectService
+                    .updateMany(form, this.projectId)
+                    .then(() => {
+                        this.setState({selectedItemIds: []});
+                        this.getArticles();
+                    })
+                    .catch(() => this.setState({inProgress: false}));
             });
         }
     };
@@ -263,7 +269,7 @@ export default class ProjectPage extends Component {
     };
 
     getArticles = (isPagination = false) => {
-        const {pagination, project, filters: {sort, search}, userType} = this.state;
+        const {pagination, filters: {sort, search}, userType} = this.state;
         const selectedColumns = getColumnsFromStorage(this.projectId);
         const fields = this.getFields();
 
@@ -384,6 +390,7 @@ export default class ProjectPage extends Component {
             showUploadArticlesModal,
             showImportArticlesModal,
             showTransferModal,
+            userType,
             inProgress
         } = this.state;
         const countSelected = isAllArticlesSelected ? pagination.totalCount : selectedItemIds.length;
@@ -395,6 +402,7 @@ export default class ProjectPage extends Component {
                 return article;
             });
         const fields = this.getFields();
+        const selectedItems = selectedItemIds.map(selectedId => articles.find(({id}) => id === selectedId));
 
         return (
             <Page {...cls()} withBar>
@@ -414,12 +422,21 @@ export default class ProjectPage extends Component {
                         />
                     )}
 
-                    {hasSelectedItems && (
+                    {(hasSelectedItems && selectedItems.every(item => !item[`complete_${userType.slug}`])) && (
                         <Button
                             {...cls('upload-btn')}
                             text='Завершить'
                             style='info'
-                            onClick={this.handleCompleteArticles}
+                            onClick={() => this.handleCompleteArticles()}
+                        />
+                    )}
+
+                    {(hasSelectedItems && selectedItems.every(item => !!item[`complete_${userType.slug}`])) && (
+                        <Button
+                            {...cls('upload-btn')}
+                            text='Отменить завершение'
+                            style='info'
+                            onClick={() => this.handleCompleteArticles(false)}
                         />
                     )}
 

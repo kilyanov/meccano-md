@@ -26,6 +26,18 @@ $namespace: '.button';
     color: #fff;
   }
 
+  &--warn {
+    background-color: $infoColor;
+    border-color: $infoColor;
+    color: #fff;
+  }
+
+  &--info {
+    background-color: $linkColor;
+    border-color: $linkColor;
+    color: #fff;
+  }
+
   &--inline {
     padding: 0;
     border: none;

@@ -196,7 +196,7 @@ class ArticleCreatePage extends Component {
 
         if (userType) {
             this.setState(state => {
-                state.form[`complete_${userType.slug}`] = true;
+                state.form[`complete_${userType.slug}`] = !state.form[`complete_${userType.slug}`];
                 return state;
             }, this.handleSubmit);
         }
@@ -247,7 +247,12 @@ class ArticleCreatePage extends Component {
                 delete form[key];
             }
 
-            if (!form[key]) delete form[key];
+            if (
+                ((_.isString(form[key]) || _.isArray(form[key])) && !form[key].length) ||
+                (_.isObject(form[key]) && _.isEmpty(form[key]))
+            ) {
+                delete form[key];
+            }
         });
 
         if (_.isEmpty(form)) return;
@@ -680,9 +685,9 @@ class ArticleCreatePage extends Component {
                     <Access permissions={[PROJECT_PERMISSION.EDIT]}>
                         <Button
                             {...cls('done-button')}
-                            text='Завершить статью'
-                            style='success'
-                            disabled={!userType || (userType && form[`complete_${userType.slug}`])}
+                            text={userType && form[`complete_${userType.slug}`] ? 'Отменить завершение' : 'Завершить статью'}
+                            style={userType && form[`complete_${userType.slug}`] ? 'info' : 'success'}
+                            disabled={!userType}
                             onClick={this.handleDoneArticle}
                         />
 
