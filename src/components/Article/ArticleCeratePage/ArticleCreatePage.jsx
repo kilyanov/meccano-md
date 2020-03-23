@@ -20,6 +20,7 @@ import store from "../../../redux/store";
 import {setCurrentProject} from "../../../redux/actions/currentProject";
 import {PROJECT_PERMISSION} from "../../../constants/ProjectPermissions";
 import Access from "../../Shared/Access/Access";
+import {KEY_CODE} from "../../../constants";
 
 const cls = new Bem('article-create-page');
 const sectionsSet = {
@@ -79,6 +80,7 @@ class ArticleCreatePage extends Component {
     componentDidMount() {
         this.setUserType();
         EventEmitter.on(EVENTS.USER.CHANGE_TYPE, this.setUserType);
+        document.addEventListener('keydown', this.handleDocumentKeyDown);
 
         if (this.articleId) {
             this.getArticle();
@@ -116,6 +118,7 @@ class ArticleCreatePage extends Component {
 
     componentWillUnmount() {
         EventEmitter.off(EVENTS.USER.CHANGE_TYPE, this.setUserType);
+        document.removeEventListener('keydown', this.handleDocumentKeyDown);
     }
 
     handleChangeForm = (value, option) => {
@@ -290,6 +293,27 @@ class ArticleCreatePage extends Component {
         }
 
         return submitForm();
+    };
+
+    handleDocumentKeyDown = (event) => {
+        const keyCode = event.keyCode || event.which;
+
+        if (event.ctrlKey) {
+            switch (keyCode) {
+                case KEY_CODE.arrows.right:
+                    this.handleNextArticle();
+                    break;
+                case KEY_CODE.arrows.left:
+                    this.handlePrevArticle();
+                    break;
+                case KEY_CODE.chars.s:
+                    event.preventDefault();
+                    this.handleSubmit();
+                    break;
+                default:
+                    break;
+            }
+        }
     };
 
     getArticle = () => {

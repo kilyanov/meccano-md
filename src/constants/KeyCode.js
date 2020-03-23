@@ -10,5 +10,8 @@ export const KEY_CODE = {
     enter: 13,
     esc: 27,
     space: 32,
-    tab: 9
+    tab: 9,
+    chars: {
+        s: 83
+    }
 };
