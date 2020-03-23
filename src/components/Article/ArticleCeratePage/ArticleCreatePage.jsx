@@ -83,6 +83,7 @@ class ArticleCreatePage extends Component {
         document.addEventListener('keydown', this.handleDocumentKeyDown);
 
         if (this.articleId) {
+            StorageService.set(STORAGE_KEY.LAST_VIEWED_ARTICLE, this.articleId);
             this.getArticle();
         } else {
             ProjectService

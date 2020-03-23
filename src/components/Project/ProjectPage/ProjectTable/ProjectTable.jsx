@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
 import {Link} from 'react-router-dom';
-import {SORT_DIR} from '../../../../constants';
+import {SORT_DIR, STORAGE_KEY} from '../../../../constants';
 import CheckBox from '../../../Form/CheckBox/CheckBox';
 import DropDown from '../../../Shared/DropDown/DropDown';
 import './project-table.scss';
@@ -15,9 +15,11 @@ import SortArrow from './ProjectTableHeader/ProjectTableHeaderSortArrow';
 import {InitScrollbar} from '../../../../helpers/Tools';
 import {FIELD_TYPE} from '../../../../constants/FieldType';
 import ProjectTableColorModal from "./ProjectTableColorModal/ProjectTableColorModal";
+import {StorageService} from "../../../../services";
 
 const cls = new Bem('project-table');
 const headerClasses = new Bem('project-table-header');
+const LAST_ARTICLE_COLOR = '#f2f0f0';
 
 class ProjectTable extends Component {
     static propTypes = {
@@ -254,6 +256,7 @@ class ProjectTable extends Component {
 
     renderArticle = (article, articleKey) => {
         const {selectedIds, projectId, fields, search, sort} = this.props;
+        const lastViewedArticleId = StorageService.get(STORAGE_KEY.LAST_VIEWED_ARTICLE);
         const menuItems = [{
             title: 'Изменить',
             link: `/project/${projectId}/article/${article.id}`
@@ -285,7 +288,13 @@ class ProjectTable extends Component {
             <article
                 {...cls('row')}
                 key={`${article.id}-${articleKey}`}
-                style={{backgroundColor: color && color.color ? color.color : null}}
+                style={{
+                    backgroundColor: lastViewedArticleId && lastViewedArticleId === article.id
+                        ? LAST_ARTICLE_COLOR
+                        : color && color.color
+                            ? color.color
+                            : null
+                }}
             >
                 <div {...cls('cell', 'check')}>
                     <CheckBox
