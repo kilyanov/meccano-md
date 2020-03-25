@@ -12,7 +12,7 @@ import {NotificationManager} from 'react-notifications';
 import ProjectProperties from './ProjectProperties/ProjectProperties';
 import PencilIcon from "../../Shared/SvgIcons/PencilIcon";
 import InlineButton from "../../Shared/InlineButton/InlineButton";
-import {KEY_CODE, PERMISSION} from "../../../constants";
+import {KEY_CODE} from "../../../constants";
 import {OperatedNotification} from '../../../helpers/Tools';
 import ProjectKeyWords from './ProjectKeyWords/ProjectKeyWords';
 import {EventEmitter} from "../../../helpers";
@@ -22,7 +22,6 @@ import store from "../../../redux/store";
 import Select from "react-select";
 import ProjectUsers from "./ProjectUsers/ProjectUsers";
 import Access from "../../Shared/Access/Access";
-import ProjectAccess from "../../Shared/ProjectAccess/ProjectAccess";
 import {PROJECT_PERMISSION} from "../../../constants/ProjectPermissions";
 
 const cls = new Bem('project-create-page');
@@ -201,24 +200,19 @@ class ProjectCreatePage extends Component {
     };
 
     getStepsButtons = () => {
-        const { selectedUserType, projectFields } = this.state;
-        const fields = selectedUserType
-            ? projectFields.find(({user_type_id}) => user_type_id === selectedUserType.value)
-            : projectFields[0];
+        const { projectFields } = this.state;
 
-        // Проверяем на наличие полей sections
-        const foundSections = fields.data.find(({slug}) => {
-            return ['section_main_id', 'section_sub_id', 'section_three_id'].includes(slug);
-        });
+        if (!projectFields || !projectFields.length) return [];
 
+        const hasSectionsFields = this.hasSectionsFields();
         const stepsButtons = Object.keys(STEP_DESCRIPTION).map(key => {
             const active = +key === this.state.step;
 
             return (
                 <button
-                    {...cls('steps-buttons-item', {active})}
+                    {...cls('steps-buttons-item', {active, disabled: (+key === 2 && !hasSectionsFields)})}
                     key={key}
-                    disabled={(+key === 2 && !foundSections) || active}
+                    disabled={(+key === 2 && !hasSectionsFields) || active}
                     onClick={() => this.setState({step: +key, inProgress: false})}
                 >Шаг {key}: {STEP_DESCRIPTION[key]}</button>
             );
@@ -249,12 +243,7 @@ class ProjectCreatePage extends Component {
             ProjectService.put(this.state.projectId, {projectFields: this.state.projectFields}).then(response => {
                 store.dispatch(updateProject(response.data));
 
-                // Проверяем на наличие полей sections
-                const found = this.state.projectFields.find(({slug}) => {
-                    return ['section_main_id', 'section_sub_id', 'section_three_id'].includes(slug);
-                });
-
-                this.setState({step: found ? 2 : 3, inProgress: false});
+                this.setState({step: this.hasSectionsFields() ? 2 : 3, inProgress: false});
             }).catch(() => this.setState({inProgress: false}));
         });
     };
@@ -315,6 +304,24 @@ class ProjectCreatePage extends Component {
         });
     };
 
+    hasSectionsFields = () => {
+        // Проверяем на наличие полей sections
+        const { selectedUserType, projectFields } = this.state;
+
+        if (!projectFields || !projectFields.length) return false;
+
+        const fields = selectedUserType
+            ? projectFields.find(field => field.user_type_id === selectedUserType.value)
+            : projectFields[0];
+
+        // Проверяем на наличие полей sections
+        const foundSections = fields.data.find(({slug}) => {
+            return ['section_main_id', 'section_sub_id', 'section_three_id'].includes(slug);
+        });
+
+        return !!foundSections;
+    };
+
     projectId = this.props.match.params.id;
 
     project = null;
@@ -352,7 +359,7 @@ class ProjectCreatePage extends Component {
                         <div {...cls('container', '', 'container')}>
                             <div {...cls('breadcrumbs')}>
                                 {isEdit ? 'Редактирование' : 'Создание'} проекта:
-                                {isEdit ? this.getStepsButtons() : ` Шаг ${step} - ${STEP_DESCRIPTION[step]}`}
+                                {this.getStepsButtons()}
                             </div>
 
                             {project && (
