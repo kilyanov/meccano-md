@@ -75,10 +75,11 @@ export const isProjectAccess = (permissions = []) => {
     const state = store.getState();
     const currentProject = state.currentProject;
     const userProject = currentProject && currentProject.userProject;
+    const perm = _.isString(permissions) ? [permissions] : permissions;
 
-    if (!userProject || !permissions || !permissions.length) return false;
+    if (!currentProject || !userProject || !permissions || !permissions.length) return false;
 
-    return userProject && permissions.some(pm => userProject.hasOwnProperty(pm) && userProject[pm]);
+    return userProject && perm.some(pm => userProject.hasOwnProperty(pm) && userProject[pm]);
 };
 
 export const isRolesAccess = (roles = []) => {

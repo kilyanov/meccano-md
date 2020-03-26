@@ -19,7 +19,8 @@ const TYPES = {
 
 class ProjectTableColorModal extends Component {
     static propTypes = {
-        articleColors: PropTypes.array
+        articleColors: PropTypes.array,
+        projectId: PropTypes.string.isRequired
     };
 
     constructor(props) {
@@ -63,7 +64,7 @@ class ProjectTableColorModal extends Component {
     };
 
     getArticleColors = () => {
-        ArticleService.color.get(this.projectId).then(response => {
+        ArticleService.color.get(this.props.projectId).then(response => {
             if (response.data) {
                 this.props.onSetArticleColors(response.data);
                 this.setState({inProgress: false});

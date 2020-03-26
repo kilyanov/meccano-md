@@ -1,0 +1,31 @@
+.error-boundary {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+
+    &__header,
+    &__body {
+        width: 800px;
+    }
+
+    &__header {
+        display: flex;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+
+    &__header-title {
+        margin-bottom: 0;
+        font-family: monospace;
+        font-size: 24px;
+    }
+
+    details {
+        padding: 20px;
+        background-color: #ffe5e5;
+        font-family: monospace;
+        outline: none;
+    }
+}
