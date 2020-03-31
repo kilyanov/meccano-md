@@ -28,7 +28,7 @@ import {getColumnsFromStorage} from "./ProjectTable/Columns";
 import ArticleTransferModal from "../../Article/ArticleTransferModal/ArticleTransferModal";
 
 const cls = new Bem('project-page');
-const defaultPagination = {page: 1, pageCount: 1};
+const defaultPagination = {page: 1, pageCount: 1, perPage: 30};
 const defaultSort = {type: null, dir: null};
 const defaultFilters = {search: '', sort: defaultSort};
 
@@ -277,6 +277,7 @@ export default class ProjectPage extends Component {
             project: this.projectId,
             user_type: userType && userType.id || '',
             page: pagination.page,
+            'per-page': pagination.perPage || 30,
             expand: fields
                 .filter(({slug}) => selectedColumns.find(({key}) => key === slug))
                 .map(field => field.relation || field.slug)
