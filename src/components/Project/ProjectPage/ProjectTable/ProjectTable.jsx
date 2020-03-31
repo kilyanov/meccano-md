@@ -145,12 +145,12 @@ class ProjectTable extends Component {
     };
 
     handleMouseUp = () => {
+        updateColumnWidth(this.props.projectId, this.columnKey, this.startWidth + this.diff);
         this.pressed = false;
         this.element = null;
         this.startX = 0;
         this.startWidth = 0;
         this.columnKey = null;
-        updateColumnWidth(this.props.projectId, this.columnKey, this.startWidth + this.diff);
     };
 
     getSettingMenu = () => {
