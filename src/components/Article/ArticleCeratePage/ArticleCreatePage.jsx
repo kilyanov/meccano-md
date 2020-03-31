@@ -60,7 +60,8 @@ class ArticleCreatePage extends Component {
             annotation: '',
             text: ''
         };
-        const userType = StorageService.get(STORAGE_KEY.USER_TYPE);
+        const storageUserType = StorageService.get(STORAGE_KEY.USER_TYPE);
+        const userType = storageUserType ? JSON.parse(storageUserType) : null;
 
         this.state = {
             articlesNavs: {},
@@ -89,6 +90,7 @@ class ArticleCreatePage extends Component {
             ProjectService
                 .get({expand: 'projectFields,sections,users'}, this.projectId)
                 .then(response => {
+                    const {userTypeId} = this.state;
                     const project = response.data;
 
                     if (!this.props.currentProject) {
@@ -96,9 +98,11 @@ class ArticleCreatePage extends Component {
                     }
 
                     if (project && project.projectFields) {
+                        const projectFields = project.projectFields.find(f => f.user_type_id === userTypeId);
+
                         this.setState({
                             sections: project.sections,
-                            projectFields: project.projectFields,
+                            projectFields: projectFields && projectFields.data,
                             inProgress: false
                         }); // , this.getAdditionalDataFields
                     }
@@ -389,8 +393,9 @@ class ArticleCreatePage extends Component {
 
     getDataSectionFields = () => {
         const {form, sectionsTwo, sectionsThree, projectFields} = this.state;
+        const clonedFields = projectFields && projectFields.length ? _.cloneDeep(projectFields) : [];
 
-        let dataSectionFields = _.cloneDeep(projectFields).filter(({slug}) => {
+        let dataSectionFields = clonedFields.filter(({slug}) => {
             return !this.unSortableFields.includes(slug);
         });
 
@@ -409,7 +414,11 @@ class ArticleCreatePage extends Component {
         const storageValue = StorageService.get(STORAGE_KEY.USER_TYPE);
         const userType = storageValue && JSON.parse(storageValue);
 
-        this.setState({userTypeId: userType.id, userType}, this.getArticle);
+        this.setState({userTypeId: userType.id, userType}, () => {
+            if (this.articleId) {
+                this.getArticle();
+            }
+        });
     };
 
     findSectionById = (sectionId, sections) => {
