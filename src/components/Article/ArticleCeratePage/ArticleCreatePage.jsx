@@ -176,7 +176,9 @@ class ArticleCreatePage extends Component {
 
     handleClickBackButton = () => {
         this.checkFormChanges().then(() => {
-            EventEmitter.emit(EVENTS.REDIRECT, `/project/${this.projectId}`);
+            this.props.history
+                ? this.props.history.goBack()
+                : EventEmitter.emit(EVENTS.REDIRECT, `/project/${this.projectId}`);
         });
     };
 

@@ -6,5 +6,6 @@ export const STORAGE_KEY = {
     TOKEN_EXPIRED: 'token-expired',
     USER_TYPE: 'user_type',
     THEME: 'theme',
-    LAST_VIEWED_ARTICLE: 'last-viewed-article'
+    LAST_VIEWED_ARTICLE: 'last-viewed-article',
+    TABLE_PER_PAGE: 'table-per-page'
 };

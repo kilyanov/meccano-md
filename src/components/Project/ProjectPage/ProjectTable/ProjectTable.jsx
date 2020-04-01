@@ -34,7 +34,6 @@ class ProjectTable extends Component {
         onDeleteArticle: PropTypes.func,
         projectId: PropTypes.string.isRequired,
         pagination: PropTypes.object.isRequired,
-        onScrollToEnd: PropTypes.func.isRequired,
         fields: PropTypes.array.isRequired,
         isAllSelected: PropTypes.bool,
         articleColors: PropTypes.array,
@@ -59,7 +58,6 @@ class ProjectTable extends Component {
     }
 
     componentDidUpdate = () => {
-        this.initScrollbar();
         this.syncColumnWidth();
     };
 
@@ -114,12 +112,17 @@ class ProjectTable extends Component {
 
     handleBodyScroll = (e) => {
         const {pagination, onScrollToEnd} = this.props;
+        const isStartPage = e.target.scrollTop === 0;
         const isEndPage = e.target.scrollTop === e.target.scrollHeight - e.target.clientHeight;
 
         this.headerRef.scrollLeft = e.target.scrollLeft;
 
         if (isEndPage && pagination.page < pagination.pageCount) {
             onScrollToEnd(pagination.page + 1);
+        }
+
+        if (isStartPage && pagination.page > 1) {
+            onScrollToEnd(pagination.page - 1);
         }
     };
 
@@ -157,7 +160,7 @@ class ProjectTable extends Component {
         const { currentProject } = this.props;
         const settingsMenu = [{
             id: 'set-columns',
-            title: 'Настроить столбцы',
+            title: 'Параметры таблицы',
             onClick: this.handleClickColumnSettings
         }, {
             id: 'edit-mode',
@@ -210,6 +213,8 @@ class ProjectTable extends Component {
                 });
             }
         });
+
+        this.initScrollbar();
     };
 
     renderHeader = () => {
@@ -369,7 +374,6 @@ class ProjectTable extends Component {
                 <section
                     {...cls('body')}
                     ref={ref => this.bodyRef = ref}
-                    onScroll={this.handleBodyScroll}
                 >
                     {articles.map((article, articleKey) => this.renderArticle(article, articleKey))}
 

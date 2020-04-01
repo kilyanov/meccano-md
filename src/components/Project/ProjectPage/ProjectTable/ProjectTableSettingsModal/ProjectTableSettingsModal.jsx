@@ -4,10 +4,15 @@ import './project-table-settings-modal.scss';
 import ConfirmModal from '../../../../Shared/ConfirmModal/ConfirmModal';
 import {getColumnsFromStorage, getColumnsFromFields, setColumnsToStorage, DEFAULT_COLUMN_WIDTH} from '../Columns';
 import CheckBox from '../../../../Form/CheckBox/CheckBox';
+import {StorageService} from "../../../../../services";
+import {STORAGE_KEY, THEME_TYPE} from "../../../../../constants";
+import Select from "react-select";
+import {ReactSelectStyles} from "../../../../../constants/ReactSelectStyles";
+import {connect} from "react-redux";
 
 const cls = new Bem('project-table-settings-modal');
 
-export default class ProjectTableSettingsModal extends Component {
+class ProjectTableSettingsModal extends Component {
     static propTypes = {
         projectId: PropTypes.string.isRequired,
         projectFields: PropTypes.array.isRequired,
@@ -20,10 +25,12 @@ export default class ProjectTableSettingsModal extends Component {
 
         const projectColumns = getColumnsFromFields(props.projectFields);
         const selectedColumns = getColumnsFromStorage(props.projectId, projectColumns);
+        const perPage = StorageService.get(STORAGE_KEY.TABLE_PER_PAGE) || 50;
 
         this.state = {
             projectColumns,
-            selectedColumns
+            selectedColumns,
+            perPage: this.pageSizeItems.find(({value}) => value === +perPage)
         };
     }
 
@@ -36,6 +43,11 @@ export default class ProjectTableSettingsModal extends Component {
         this.setState({selectedColumns});
     };
 
+    handleChangePerPage = (option) => {
+        this.setState({perPage: option});
+        StorageService.set(STORAGE_KEY.TABLE_PER_PAGE, option.value)
+    };
+
     handleSubmit = () => {
         const {selectedColumns, projectColumns} = this.state;
 
@@ -44,17 +56,25 @@ export default class ProjectTableSettingsModal extends Component {
         this.props.onClose();
     };
 
+    pageSizeItems = [
+        {label: '50', value: 50},
+        {label: '100', value: 100},
+        {label: '150', value: 150}
+    ];
+
     render() {
-        const {projectFields} = this.props;
-        const {projectColumns, selectedColumns} = this.state;
+        const {projectFields, theme} = this.props;
+        const {projectColumns, selectedColumns, perPage} = this.state;
+        const isDarkTheme = theme === THEME_TYPE.DARK;
 
         return (
             <ConfirmModal
-                title='Настройка столбцов'
+                title='Параметры таблицы'
                 onClose={this.props.onClose}
                 onSubmit={this.handleSubmit}
                 width='small'
             >
+                <h3 {...cls('subtitle')}>Столбцы</h3>
                 <div {...cls('items')}>
                     {projectColumns.map(column => (
                         <div {...cls('item')} key={column}>
@@ -66,7 +86,22 @@ export default class ProjectTableSettingsModal extends Component {
                         </div>
                     ))}
                 </div>
+
+                <h3 {...cls('subtitle')}>Количество статей</h3>
+                <Select
+                    value={perPage}
+                    placeholder='Кол-во статей на странице'
+                    classNamePrefix='select'
+                    options={this.pageSizeItems}
+                    onChange={this.handleChangePerPage}
+                    closeMenuOnScroll
+                    menuPlacement='top'
+                    // menuPosition='fixed'
+                    styles={ReactSelectStyles(isDarkTheme)}
+                />
             </ConfirmModal>
         );
     }
 }
+
+export default connect(({theme}) => ({theme}))(ProjectTableSettingsModal);

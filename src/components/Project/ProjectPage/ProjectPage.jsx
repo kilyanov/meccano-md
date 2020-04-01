@@ -26,9 +26,10 @@ import {setCurrentProject} from "../../../redux/actions/currentProject";
 import {clearArticleColors, setArticleColors} from "../../../redux/actions/articleColors";
 import {getColumnsFromStorage} from "./ProjectTable/Columns";
 import ArticleTransferModal from "../../Article/ArticleTransferModal/ArticleTransferModal";
+import ProjectPagination from "./ProjectTable/ProjectPagination/ProjectPagintaion";
 
 const cls = new Bem('project-page');
-const defaultPagination = {page: 1, pageCount: 1, perPage: 30};
+const defaultPagination = {page: 1, pageCount: 1, perPage: 50};
 const defaultSort = {type: null, dir: null};
 const defaultFilters = {search: '', sort: defaultSort};
 
@@ -36,11 +37,14 @@ export default class ProjectPage extends Component {
     constructor(props) {
         super(props);
 
-        const storageValue = StorageService.get(STORAGE_KEY.USER_TYPE);
+        const pagination = {...defaultPagination};
+        const storageUserTpe = StorageService.get(STORAGE_KEY.USER_TYPE);
         let userType = null;
 
+        pagination.perPage = StorageService.get(STORAGE_KEY.TABLE_PER_PAGE) || 50;
+
         try {
-            userType = JSON.parse(storageValue);
+            userType = JSON.parse(storageUserTpe);
         } catch (e) {
             console.error(e);
         }
@@ -50,7 +54,7 @@ export default class ProjectPage extends Component {
             activeArticle: null,
             selectedItemIds: [],
             isAllArticlesSelected: false,
-            pagination: defaultPagination,
+            pagination,
             project: null,
             filters: defaultFilters,
             showArticleModal: false,
@@ -113,7 +117,11 @@ export default class ProjectPage extends Component {
     };
 
     handleChangeColumns = () => {
-        this.setState({inProgress: true}, this.getArticles);
+        this.setState(state => {
+            state.inProgress = true;
+            state.pagination.perPage = StorageService.get(STORAGE_KEY.TABLE_PER_PAGE) || 50;
+            return state;
+        }, this.getArticles);
     };
 
     handleDeleteArticle = (articleId) => {
@@ -191,19 +199,6 @@ export default class ProjectPage extends Component {
         });
     };
 
-    handleScrollToEndArticles = (page) => {
-        const {inProgress} = this.state;
-
-        if (!inProgress) {
-            const newState = this.state;
-
-            newState.pagination.page = page;
-
-            QueueManager.push(this.queueMessage);
-            this.setState(newState, () => this.getArticles(true));
-        }
-    };
-
     handleChangeSort = (sort) => {
         const newState = this.state;
 
@@ -212,6 +207,7 @@ export default class ProjectPage extends Component {
         newState.articles = [];
         newState.inProgress = true;
 
+        console.log(4);
         this.setState(newState, this.getArticles);
     };
 
@@ -260,6 +256,15 @@ export default class ProjectPage extends Component {
         }
     };
 
+    handleChangePage = ({selected}) => {
+        this.searchParams.set('page', (selected + 1).toString());
+        this.setState(state => {
+            state.pagination.page = selected + 1;
+            state.inProgress = true;
+            return state;
+        }, this.getArticles);
+    };
+
     getArticleColors = () => {
         ArticleService.color.get(this.projectId).then(response => {
             if (response.data) {
@@ -268,7 +273,7 @@ export default class ProjectPage extends Component {
         });
     };
 
-    getArticles = (isPagination = false) => {
+    getArticles = () => {
         const {pagination, filters: {sort, search}, userType} = this.state;
         const selectedColumns = getColumnsFromStorage(this.projectId);
         const fields = this.getFields();
@@ -276,7 +281,7 @@ export default class ProjectPage extends Component {
         const form = {
             project: this.projectId,
             user_type: userType && userType.id || '',
-            page: pagination.page,
+            page: this.searchParams.get('page'),
             'per-page': pagination.perPage || 30,
             expand: fields
                 .filter(({slug}) => selectedColumns.find(({key}) => key === slug))
@@ -311,11 +316,12 @@ export default class ProjectPage extends Component {
                     totalCount: +_.get(response.headers, 'x-pagination-total-count')
                 };
 
+                this.searchParams.set('page', responsePagination.page.toString());
                 QueueManager.remove(this.queueMessage.id);
                 this.setSearchParams();
 
                 this.setState({
-                    articles: isPagination ? this.state.articles.concat(response.data) : response.data,
+                    articles: response.data,
                     pagination: responsePagination,
                     inProgress: false
                 });
@@ -404,6 +410,7 @@ export default class ProjectPage extends Component {
             });
         const fields = this.getFields();
         const selectedItems = selectedItemIds.map(selectedId => articles.find(({id}) => id === selectedId));
+        const currentPage = this.searchParams.get('page') || pagination.page;
 
         return (
             <Page {...cls()} withBar>
@@ -542,8 +549,13 @@ export default class ProjectPage extends Component {
                         projectId={this.projectId}
                         articles={articles}
                         pagination={pagination}
-                        onScrollToEnd={this.handleScrollToEndArticles}
                         fields={fields}
+                    />
+
+                    <ProjectPagination
+                        page={currentPage}
+                        pageCount={pagination.pageCount}
+                        onPageChange={this.handleChangePage}
                     />
                 </div>
 

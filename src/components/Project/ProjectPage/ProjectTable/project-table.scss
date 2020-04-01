@@ -6,7 +6,7 @@ $namespace: '.project-table';
 #{$namespace} {
   max-width: 100%;
   min-width: 768px;
-  height: 100%;
+  height: calc(100% - 80px);
   background-color: #fff;
   transition: background-color .3s ease;
 
