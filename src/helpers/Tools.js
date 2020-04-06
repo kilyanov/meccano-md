@@ -71,9 +71,9 @@ export const isAccess = (permissions = [], profile) => {
     return !!profile.permissions.filter(({name}) => permissions.includes(name)).length;
 };
 
-export const isProjectAccess = (permissions = []) => {
+export const isProjectAccess = (permissions = [], project) => {
     const state = store.getState();
-    const currentProject = state.currentProject;
+    const currentProject = project || state.currentProject;
     const userProject = currentProject && currentProject.userProject;
     const perm = _.isString(permissions) ? [permissions] : permissions;
 

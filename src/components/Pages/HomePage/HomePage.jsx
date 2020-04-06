@@ -46,7 +46,6 @@ class HomePage extends Component {
 
     getMenu = () => {
         const {roles} = this.props;
-        const canEditProject = isProjectAccess(PROJECT_PERMISSION.PROJECT_MANAGER) || isRolesAccess(roles.admin);
 
         return (
             [{
@@ -60,11 +59,16 @@ class HomePage extends Component {
                 icon: <ProjectsIcon/>,
                 name: 'Проекты',
                 permissions: [PERMISSION.all],
-                children: this.props.projects.map(({id, name}) => ({
-                    name,
-                    link: `/project/${id}`,
-                    editLink: canEditProject ? `/project-create/${id}` : ''
-                }))
+                children: this.props.projects.map(project => {
+                    const canEditProject = isRolesAccess(roles.admin) ||
+                        isProjectAccess(PROJECT_PERMISSION.PROJECT_MANAGER, project);
+
+                    return {
+                        name: project.name,
+                        link: `/project/${project.id}`,
+                        editLink: canEditProject ? `/project-create/${project.id}` : ''
+                    };
+                })
             }, {
                 id: 'documents',
                 icon: <DocumentIcon/>,
