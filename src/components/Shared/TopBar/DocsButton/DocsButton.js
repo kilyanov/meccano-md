@@ -3,9 +3,11 @@ import {useSelector} from "react-redux";
 import DocumentIcon from '../../SvgIcons/DocumentIcon';
 import Document from "../../../Documents/Document/Document";
 import './docs-button.scss';
+import {Link} from "react-router-dom";
 
 const namespace = 'docs-button';
 const cls = new Bem(namespace);
+const SHOW_COUNT = 5;
 
 const DocsButton = ({className}) => {
     const documents = useSelector(state => state.documents);
@@ -38,7 +40,7 @@ const DocsButton = ({className}) => {
             {isOpen && (
                 <ul {...cls('list')}>
                     {documents.length ? (
-                        documents.map(document => (
+                        documents.slice(0, SHOW_COUNT).map(document => (
                             <li
                                 {...cls('list-item')}
                                 key={document.id}
@@ -51,7 +53,13 @@ const DocsButton = ({className}) => {
                             </li>
                         ))
                     ) : (
-                        <li {...cls('list-item')}>Нет документов</li>
+                        <li {...cls('list-item', 'empty')}>Нет документов</li>
+                    )}
+
+                    {documents.length > SHOW_COUNT && (
+                        <li {...cls('list-item', 'link')}>
+                            <Link to='/documents' target='_blank'>Перейти в документы</Link>
+                        </li>
                     )}
                 </ul>
             )}

@@ -42,8 +42,20 @@ $namespace: '.docs-button';
   }
 
   &__list-item {
-    &:hover {
+    &:hover:not(&--empty):not(&--link) {
       background-color: $gray;
+    }
+
+    &--empty {
+      padding: 10px;
+      font-size: 12px;
+      cursor: default;
+    }
+
+    &--link {
+      text-align: center;
+      padding: 5px 0;
+      font-size: 12px;
     }
   }
 

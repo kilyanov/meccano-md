@@ -7,10 +7,10 @@ import TransferService from '../../../services/TransferService';
 import RadioButton from '../../Form/RadioButton/RadioButton';
 import './articles-export-modal.scss';
 import Notification from '../../../helpers/Notification';
-import {NotificationManager} from 'react-notifications';
+// import {NotificationManager} from 'react-notifications';
 import {OperatedNotification} from "../../../helpers/Tools";
-import store from "../../../redux/store";
-import {openNotificationPanel} from "../../../redux/actions/notificationsPanel";
+// import store from "../../../redux/store";
+// import {openNotificationPanel} from "../../../redux/actions/notificationsPanel";
 import InputText from "../../Form/InputText/InputText";
 
 const cls = new Bem('articles-export-modal');
@@ -88,9 +88,10 @@ export default class ArticlesExportModal extends Component {
                             OperatedNotification.success({
                                 title: 'Экспорт статей',
                                 message: 'Документ успешно заказан',
-                                submitButtonText: 'Показать документы',
+                                submitButtonText: 'Перейти в документы',
                                 timeOut: 10000,
-                                onSubmit: () => store.dispatch(openNotificationPanel())
+                                onSubmit: () => window.open('/documents')
+                                // store.dispatch(openNotificationPanel()
                             });
                         }
 
