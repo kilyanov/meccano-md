@@ -40,7 +40,7 @@ export default class SectionTree extends Component {
 
             this.setState({selectedSection: null});
         } else {
-            data.push({id: _.uniqueId(), name, sectionsTwo: []});
+            data.push({name, sectionsTwo: []});
             this.setState({data});
         }
 

@@ -153,7 +153,11 @@ export default class App extends Component {
 
                 // До появления сокетов обновление делаем раз в 30 сек
                 setInterval(() => {
-                    store.dispatch(getDocuments(currentState.profile.id));
+                    const { profile } = this.getCurrentStateFromStore();
+
+                    if (profile && profile.id) {
+                        store.dispatch(getDocuments(profile.id));
+                    }
                 }, 30000);
 
                 if (currentState.profile.types && currentState.profile.types.length) {
