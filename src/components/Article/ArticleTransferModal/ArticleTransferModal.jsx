@@ -12,7 +12,8 @@ import {NotificationManager} from "react-notifications";
 class ArticleTransferModal extends Component {
     static propTypes = {
         theme: PropTypes.string,
-        onClose: PropTypes.func.isRequired
+        onClose: PropTypes.func.isRequired,
+        onUpdateParent: PropTypes.func.isRequired
     };
 
     state = {
@@ -51,7 +52,10 @@ class ArticleTransferModal extends Component {
                     this.setState({
                         inProgress: false,
                         selectedUser: null
-                    }, this.props.onClose);
+                    }, () => {
+                        this.props.onUpdateParent();
+                        this.props.onClose();
+                    });
                 });
             });
         }

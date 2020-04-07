@@ -260,7 +260,7 @@ class ProjectTable extends Component {
     };
 
     renderArticle = (article, articleKey) => {
-        const {selectedIds, projectId, fields, search, sort} = this.props;
+        const {selectedIds, projectId, fields, search, sort, profile} = this.props;
         const lastViewedArticleId = StorageService.get(STORAGE_KEY.LAST_VIEWED_ARTICLE);
         const menuItems = [{
             title: 'Изменить',
@@ -288,6 +288,11 @@ class ProjectTable extends Component {
 
             return article[key];
         });
+
+        // Подсветка ответственных (кому передана статья)
+        if (article.user && article.user.surname && article.user.id !== profile.id) {
+            color = this.props.articleColors.find(({type}) => type === 'responsible');
+        }
 
         return (
             <article
@@ -418,7 +423,8 @@ class ProjectTable extends Component {
 function mapStateToProps(store) {
     return {
         articleColors: store.articleColors,
-        currentProject: store.currentProject
+        currentProject: store.currentProject,
+        profile: store.profile
     };
 }
 

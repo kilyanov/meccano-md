@@ -14,7 +14,8 @@ const cls = new BEMHelper('project-table-color-modal');
 const TYPES = {
     'complete_monitor': 'Готовность для мониторщика',
     'complete_analytic': 'Готовность для аналитика',
-    'complete_client': 'Готовность для клиента'
+    'complete_client': 'Готовность для клиента',
+    'responsible': 'Ответсвенный (передан)'
 };
 
 class ProjectTableColorModal extends Component {

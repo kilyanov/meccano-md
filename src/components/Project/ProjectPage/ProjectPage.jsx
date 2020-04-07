@@ -591,6 +591,10 @@ export default class ProjectPage extends Component {
                 {showTransferModal && (
                     <ArticleTransferModal
                         onClose={() => this.setState({showTransferModal: false})}
+                        onUpdateParent={() => {
+                            this.handleClearSelected();
+                            this.getArticles();
+                        }}
                         projectId={this.projectId}
                         articleIds={selectedItemIds}
                     />
