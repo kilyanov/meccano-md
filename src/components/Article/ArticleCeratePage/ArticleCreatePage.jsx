@@ -543,7 +543,7 @@ class ArticleCreatePage extends Component {
         const isUpdate = !!this.articleId;
         const dataSectionFields = this.getDataSectionFields();
         const getValue = (prop) => _.isObject(prop) ? prop.value : prop;
-        const readOnly = !isProjectAccess([PROJECT_PERMISSION.EDIT], currentProject && currentProject.userProject);
+        const readOnly = !isProjectAccess([PROJECT_PERMISSION.EDIT]);
         const sectionData = (
             <Sortable
                 {...cls('section', 'sortable')}
