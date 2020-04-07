@@ -151,6 +151,11 @@ export default class App extends Component {
             this.setState({profile: currentState.profile}, () => {
                 store.dispatch(getDocuments(currentState.profile.id));
 
+                // До появления сокетов обновление делаем раз в 30 сек
+                setInterval(() => {
+                    store.dispatch(getDocuments(currentState.profile.id));
+                }, 30000);
+
                 if (currentState.profile.types && currentState.profile.types.length) {
                     let storageUserType = StorageService.get('user_type');
 
