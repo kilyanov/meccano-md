@@ -12,7 +12,7 @@ import Button from '../../Shared/Button/Button';
 import ArticleViewSettings from './ArticleViewSettings/ArticleViewSettings';
 import ProjectCreateField from '../../Project/ProjectCreatePage/ProjectCreatePageField/ProjectCreatePageField';
 import Sortable from 'react-sortablejs';
-import {isMobileScreen, isProjectAccess, OperatedNotification} from '../../../helpers/Tools';
+import {isMobileScreen, isProjectAccess, isRolesAccess, OperatedNotification} from '../../../helpers/Tools';
 import {STORAGE_KEY} from '../../../constants/LocalStorageKeys';
 import {EventEmitter} from "../../../helpers";
 import {EVENTS} from "../../../constants/Events";
@@ -527,7 +527,7 @@ class ArticleCreatePage extends Component {
     article = null;
 
     render() {
-        const {currentProject} = this.props;
+        const {roles} = this.props;
         const {
             articlesNavs,
             form,
@@ -543,12 +543,12 @@ class ArticleCreatePage extends Component {
         const isUpdate = !!this.articleId;
         const dataSectionFields = this.getDataSectionFields();
         const getValue = (prop) => _.isObject(prop) ? prop.value : prop;
-        const readOnly = !isProjectAccess([PROJECT_PERMISSION.EDIT]);
+        const readOnly = !isProjectAccess([PROJECT_PERMISSION.EDIT]) || isRolesAccess(roles.admin);
         const sectionData = (
             <Sortable
                 {...cls('section', 'sortable')}
                 options={{
-                    disabled: isMobileScreen(),
+                    disabled: isMobileScreen() || readOnly,
                     animation: 150,
                     handle: '.drag-handle'
                 }}
@@ -803,8 +803,16 @@ class ArticleCreatePage extends Component {
     }
 }
 
-function mapStateToProps({userTypes, currentProject}) {
-    return {userTypes, currentProject};
+function mapStateToProps(state) {
+    const roles = {};
+
+    state.roles.forEach(({name}) => roles[name] = name);
+
+    return {
+        userTypes: state.userTypes,
+        currentProject: state.currentProject,
+        roles
+    };
 }
 
 export default connect(mapStateToProps)(ArticleCreatePage);

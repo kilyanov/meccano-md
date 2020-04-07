@@ -237,14 +237,20 @@ class ProjectCreatePage extends Component {
     saveFields = () => {
         this.setState({inProgress: true}, () => {
             this.state.projectFields.forEach(fieldsByType => {
-                fieldsByType.data.forEach((field, index) => field.order = index);
+                fieldsByType.data.forEach((field, index) => {
+                    field.order = index;
+                    delete field.hignlightedName;
+                });
             });
 
-            ProjectService.put(this.state.projectId, {projectFields: this.state.projectFields}).then(response => {
-                store.dispatch(updateProject(response.data));
+            ProjectService
+                .put(this.state.projectId, {projectFields: this.state.projectFields})
+                .then(response => {
+                    store.dispatch(updateProject(response.data));
 
-                this.setState({step: this.hasSectionsFields() ? 2 : 3, inProgress: false});
-            }).catch(() => this.setState({inProgress: false}));
+                    this.setState({step: this.hasSectionsFields() ? 2 : 3, inProgress: false});
+                })
+                .catch(() => this.setState({inProgress: false}));
         });
     };
 
