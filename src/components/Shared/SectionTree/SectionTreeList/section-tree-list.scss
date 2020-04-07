@@ -10,9 +10,11 @@ $namespace: '.section-tree-list';
   &__item {
     display: flex;
     flex-direction: column;
+    background-color: #fff;
 
     &--level-0 {
-      border-top: 1px solid $brownGreyColor;
+      margin-top: -1px;
+      border-top: 1px solid $gray;
     }
 
     & #{$namespace}__item {

@@ -35,9 +35,13 @@ httpService.interceptors.response.use(
         if (!axios.isCancel(error) && _.get(response, 'data', []).length || response.status >= 400) {
             const data = response.data instanceof ArrayBuffer ? arrayBufferToArray(response.data) : response.data;
 
-            console.log(data);
-            if (_.isArray(data)) data.forEach(msg => Notify.error(msg.message, 'Ошибка'));
-            if (_.isObject(data)) Notify.error(data.message, 'Ошибка');
+            if (Array.isArray(data)) {
+                return data.forEach(msg => Notify.error(msg.message, 'Ошибка'));
+            }
+
+            if (_.isObject(data) && !Array.isArray(data)) {
+                return Notify.error(data.message, 'Ошибка');
+            }
         }
 
         return Promise.reject(error.response);
