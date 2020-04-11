@@ -97,4 +97,8 @@ $namespace: '.checkbox';
       border-color: $emerald;
     }
   }
+
+  &__label {
+    background-color: $background-dark;
+  }
 }

@@ -127,5 +127,9 @@ $namespace: '.section-tree-list';
     background-color: $superLightBackground-dark;
     color: $white-dark;
   }
+
+  &__item {
+    background-color: $background-dark
+  }
 }
 

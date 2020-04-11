@@ -449,7 +449,12 @@ class ProjectCreatePage extends Component {
                                 viewType='inline'
                                 text={backButtonLabel}
                             />
-
+                            <Button
+                                to={`/project/${this.projectId}`}
+                                {...cls('submit-button', 'margin-left-auto')}
+                                style='inline'
+                                text='Перейти к проекту'
+                            />
                             {((step === 1 || step === 2) && isEdit) && (
                                 <Button
                                     onClick={() => step === 1 ? this.saveProject() : this.saveSections()}
@@ -463,7 +468,7 @@ class ProjectCreatePage extends Component {
                                 {...cls('submit-button')}
                                 disabled={step === 2 && !sections.length}
                                 style='success'
-                                text={step === 3 ? 'Сохранить' : 'Далее'}
+                                text={step === 4 ? 'Сохранить' : 'Далее'}
                             />
                         </div>
                     </section>
