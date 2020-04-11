@@ -1,6 +1,7 @@
 export const DB_STORE = {
     source: {
         name: 'source',
+        fieldSlug: 'source_id',
         params: {keyPath: 'id'}
     },
     sourceType: {

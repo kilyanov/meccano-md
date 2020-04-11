@@ -8,6 +8,7 @@ import InputLink from '../../../Form/InputLink/InputLink';
 import InputNumber from '../../../Form/InputNumber/InputNumber';
 import InputTime from '../../../Form/InputTime/InputTime';
 import {FIELD_TYPE} from '../../../../constants/FieldType';
+import InputDateTimePicker from "../../../Form/InputDateTimePicker/InputDatePicker";
 
 const cls = new Bem('article-create-page');
 const ProjectCreateField = ({field, value, onChange, className}) => {
@@ -92,7 +93,7 @@ const ProjectCreateField = ({field, value, onChange, className}) => {
             </div>;
         case FIELD_TYPE.DATETIME:
             return <div {...cls('field', [field.slug, filedType], className)} data-id={field.slug}>
-                <InputDatePicker
+                <InputDateTimePicker
                     label={field.name}
                     readOnly={field.readOnly}
                     value={value || ''}

@@ -1,0 +1,220 @@
+@import "../../../assets/styles/variables";
+
+$namespace: '.input-date-picker';
+
+#{$namespace} {
+  position: relative;
+  margin-bottom: 20px;
+
+  .react-datetime-picker {
+    height: 40px;
+    border: 1px solid #b2b2b2;
+  }
+
+  .react-datetime-picker__inputGroup {
+    padding-left: 17px;
+  }
+
+  &--readOnly {
+    .react-datetime-picker {
+      color: $fontGrey;
+      background-color: $gray-three;
+      pointer-events: none;
+    }
+
+    .react-datetime-picker__inputGroup__input {
+      color: $fontGrey;
+    }
+  }
+
+  &--succeed {
+    #{$namespace}__label-text {
+      font-weight: 500;
+
+      &:before {
+        content: '✔️ ';
+      }
+    }
+  }
+
+  &--error {
+    &:after {
+      content: "";
+      position: absolute;
+      width: 32px;
+      height: 32px;
+      bottom: 8px;
+      right: 8px;
+    }
+
+    #{$namespace}__label-text {
+      color: $errorColor;
+    }
+
+    #{$namespace}__field {
+      color: $errorColor;
+      padding-right: 40px;
+      border-color: $errorColor;
+    }
+  }
+
+  &--link {
+    #{$namespace}__field {
+      padding-right: 50px;
+    }
+  }
+
+  &:placeholder-shown {
+    color: $fontGrey;
+    opacity: 1;
+  }
+
+  &__label {
+    display: flex;
+    flex-direction: column;
+  }
+
+  &__label-text {
+    font-size: 15px;
+    line-height: 24px;
+    margin-bottom: 8px;
+  }
+
+  .react-date-picker__wrapper {
+    width: 100%;
+    height: 40px;
+    padding: 0 11px 0 17px;
+    border: 1px solid $brownGreyColor;
+    font-size: 15px;
+    line-height: 24px;
+    outline: 0;
+  }
+
+  .react-date-picker__calendar {
+    //max-width: 100%;
+    box-shadow: 2px 2px 8px rgba(0, 0, 0, .3);
+  }
+
+  .react-calendar {
+    padding: 0 10px 10px;
+    border-color: #ccc;
+
+    * {
+      font-family: Roboto, Helvetica, Arial, sans-serif !important;
+    }
+
+    &__navigation button {
+      font-size: 18px;
+    }
+
+    &__tile--active {
+      background: $shamrock;
+    }
+
+    &__navigation__label {
+      font-weight: 600;
+
+      &:first-letter {
+        text-transform: uppercase;
+      }
+    }
+
+    &__month-view__weekdays__weekday {
+      abbr {
+        text-transform: capitalize;
+        text-decoration: none;
+      }
+    }
+
+    &__month-view__days__day--weekend abbr {
+      color: $strawberry !important;
+    }
+
+    &__month-view__days__day--neighboringMonth abbr {
+      color: #757575 !important;
+    }
+  }
+
+  &__clear {
+    position: absolute;
+    width: 32px;
+    height: 32px;
+    background: rgba(255, 255, 255, 0);
+    cursor: pointer;
+    bottom: 8px;
+    right: 8px;
+    z-index: 1;
+  }
+
+  &__message {
+    position: absolute;
+    left: 0;
+    top: 100%;
+    font-size: 12px;
+    line-height: 15px;
+    margin-top: 3px;
+    color: #F62434;
+  }
+
+  &__earth-icon {
+    position: absolute;
+    bottom: 14px;
+    right: 16px;
+  }
+
+  &__icon {
+    font-size: 16px;
+    font-style: normal;
+  }
+}
+
+/* Dark Theme */
+.app--dark #{$namespace} {
+  .react-datetime-picker__button {
+    svg {
+      fill: $border-color-dark
+    }
+  }
+
+  .react-datetime-picker__inputGroup__input {
+    color: $white-dark;
+  }
+
+  .react-calendar {
+    background-color: $lightBackground-dark;
+    border-color: $border-color-dark;
+
+    * {
+      color: $white-dark;
+    }
+  }
+
+  .input-datetime-picker .react-date-picker__calendar {
+    box-shadow: 2px 2px 8px 0 #000;
+  }
+
+  .react-datetime-picker__clock,
+  .react-calendar__tile:enabled:hover,
+  .react-calendar__tile:enabled:focus,
+  .react-calendar__navigation button:enabled:hover,
+  .react-calendar__navigation button:enabled:focus {
+    background-color: $superLightBackground-dark;
+  }
+
+  .react-clock__face {
+    border-color: $white-dark;
+  }
+  .react-clock__mark *,
+  .react-clock__hand * {
+    background-color: $white-dark;
+  }
+
+  &--readOnly {
+    .react-datetime-picker {
+      background-color: $superLightBackground-dark;
+    }
+    .react-datetime-picker__inputGroup__input {
+      color: $fontGrey;
+    }
+  }
+}

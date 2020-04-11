@@ -1,5 +1,4 @@
 import { DB_STORE } from "../constants/DB_STORE";
-import {EventEmitter} from "../helpers";
 
 const indexedDB = window.indexedDB || window.mozIndexedDB || window.webkitIndexedDB || window.msIndexedDB;
 const baseName = 'Meccano_Base';
@@ -157,7 +156,7 @@ export const DBService = {
                     //     return DBService.downloadFromServer[storeName]().then(result => resolve(result));
                     // }
 
-                    return resolve(request.result);
+                    return resolve(request.result || []);
                 };
             });
         });

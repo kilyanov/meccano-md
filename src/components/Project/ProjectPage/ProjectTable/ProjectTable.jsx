@@ -12,10 +12,10 @@ import ProjectTableSettingsModal from './ProjectTableSettingsModal/ProjectTableS
 import {getColumnsFromStorage, getColumnsFromFields, updateColumnWidth} from './Columns';
 import SettingsIcon from '../../../Shared/SvgIcons/SettingsIcon';
 import SortArrow from './ProjectTableHeader/ProjectTableHeaderSortArrow';
-import {InitScrollbar} from '../../../../helpers/Tools';
 import {FIELD_TYPE} from '../../../../constants/FieldType';
 import ProjectTableColorModal from "./ProjectTableColorModal/ProjectTableColorModal";
-import {StorageService} from "../../../../services";
+import {StorageService, CacheService} from "../../../../services";
+import {DB_STORE} from "../../../../constants/DB_STORE";
 
 const cls = new Bem('project-table');
 const headerClasses = new Bem('project-table-header');
@@ -52,12 +52,21 @@ class ProjectTable extends Component {
     };
 
     componentDidMount() {
-        this.initScrollbar();
         document.addEventListener('mousemove', this.handleMouseMove);
         document.addEventListener('mouseup', this.handleMouseUp);
     }
 
-    componentDidUpdate = () => {
+    componentDidUpdate = (prevProps) => {
+        if (!prevProps.fields.length && this.props.fields.length) {
+            this.props.fields.forEach(field => {
+                if (field && field.slug === 'source_id') {
+                    CacheService[DB_STORE.source.name](response => {
+                        this.setState({ sources: response.map(({id, name}) => ({name, value: id})) });
+                    });
+                }
+            });
+        }
+
         this.syncColumnWidth();
     };
 
@@ -128,7 +137,7 @@ class ProjectTable extends Component {
 
     handleMouseDown = (e, key) => {
         this.columnKey = key;
-        this.element = e.target.parentNode;
+        this.element = e.target.parentNode.parentNode;
         this.startX = e.pageX;
         this.startWidth = this.element.clientWidth;
         this.pressed = true;
@@ -194,13 +203,6 @@ class ProjectTable extends Component {
 
     selectedColumns = [];
 
-    initScrollbar = () => {
-        const scroll = InitScrollbar(this.bodyRef);
-
-        if (scroll) this.scrollBar = scroll;
-        else if (this.scrollBar) this.scrollBar.update();
-    };
-
     syncColumnWidth = () => {
         this.selectedColumns.forEach(({key}) => {
             const headerColumn = document.querySelector(`.project-table-header__cell--${key}`);
@@ -213,8 +215,6 @@ class ProjectTable extends Component {
                 });
             }
         });
-
-        this.initScrollbar();
     };
 
     renderHeader = () => {
@@ -236,22 +236,57 @@ class ProjectTable extends Component {
                 {this.selectedColumns.map(({key, width}) => {
                     const active = sort.type === key;
                     const currentField = fields.find(({slug}) => slug === key);
+                    // const fieldType = currentField && currentField.type;
 
                     return (
                         <div
                             key={key}
-                            ref={node => this.headerCellRef[key] = node}
                             {...headerClasses('cell', {[key]: true, active})}
-                            onClick={event => this.handleChangeSort(event, key)}
+                            ref={node => this.headerCellRef[key] = node}
                             style={width ? {flex: `0 0 ${width}px`} : {}}
                         >
-                            {_.get(currentField, 'name')}
-                            {active && <SortArrow classes={headerClasses} dir={sort.dir}/>}
                             <div
-                                {...headerClasses('cell-handler')}
-                                onMouseDown={event => this.handleMouseDown(event, key)}
-                                onMouseMove={this.handleMouseMove}
-                            />
+                                {...headerClasses('cell-content')}
+                                onClick={event => this.handleChangeSort(event, key)}
+                            >
+                                {_.get(currentField, 'name')}
+                                {active && <SortArrow classes={headerClasses} dir={sort.dir}/>}
+                                <div
+                                    {...headerClasses('cell-handler')}
+                                    onMouseDown={event => this.handleMouseDown(event, key)}
+                                    onMouseMove={this.handleMouseMove}
+                                />
+                            </div>
+
+                            {/* TODO: Фильтры */}
+                            {/* _.get(fieldType, 'key', '') && (
+                                <div {...headerClasses('cell-filter')}>
+                                    {fieldType.key === 'text' && (
+                                        <input
+                                            {...headerClasses('cell-filter-field')}
+                                            placeholder='Поиск...'
+                                            type="search"
+                                        />
+                                    )}
+
+                                    {fieldType.key === 'datetime' && (
+                                        <input
+                                            {...headerClasses('cell-filter-field')}
+                                            type="date"
+                                        />
+                                    )}
+
+                                    {fieldType.key === 'uuid' && (
+                                        <select
+                                            {...headerClasses('cell-filter-field')}
+                                        >
+                                            <option value="0">Выберите</option>
+                                            <option value="1">СМИ 1</option>
+                                            <option value="1">СМИ 2</option>
+                                        </select>
+                                    )}
+                                </div>
+                            ) */}
                         </div>
                     );
                 })}
@@ -296,14 +331,12 @@ class ProjectTable extends Component {
 
         return (
             <article
-                {...cls('row')}
+                {...cls('row', {last: lastViewedArticleId && lastViewedArticleId === article.id})}
                 key={`${article.id}-${articleKey}`}
                 style={{
-                    backgroundColor: lastViewedArticleId && lastViewedArticleId === article.id
-                        ? LAST_ARTICLE_COLOR
-                        : color && color.color
-                            ? color.color
-                            : null
+                    backgroundColor: color && color.color
+                        ? color.color
+                        : null
                 }}
             >
                 <div {...cls('cell', 'check')}>

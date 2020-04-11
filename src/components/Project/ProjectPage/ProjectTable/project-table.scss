@@ -12,8 +12,10 @@ $namespace: '.project-table';
 
   &__body {
     margin-bottom: 40px;
-    max-height: calc(100% - 60px);
-    min-height: calc(100% - 60px);
+    max-height: calc(100% - 75px);
+    min-height: calc(100% - 75px);
+    overflow-y: auto;
+    overflow-x: hidden;
   }
 
   &__row {
@@ -33,6 +35,10 @@ $namespace: '.project-table';
       .project-table__menu-button {
         display: flex;
       }
+    }
+
+    &--last {
+      background-color: #f2f0f0;
     }
   }
 
@@ -148,6 +154,10 @@ $namespace: '.project-table';
 
     &:hover {
       background-color: $lightBackground-dark;
+    }
+
+    &--last {
+      background-color: $gray-br;
     }
   }
 
