@@ -292,7 +292,7 @@ export default class ProjectPage extends Component {
 
         if (search) {
             fields
-                .filter(({slug}) => selectedColumns.includes(slug))
+                .filter(({slug}) => selectedColumns.find(({key}) => key === slug))
                 .forEach(field => {
                     form[`query[${field.relation || field.slug}]`] = search;
                 });
