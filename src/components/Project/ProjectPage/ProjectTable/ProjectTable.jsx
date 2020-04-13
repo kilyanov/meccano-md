@@ -326,7 +326,7 @@ class ProjectTable extends Component {
         });
 
         // Подсветка ответственных (кому передана статья)
-        if (article.user && article.user.surname && article.user.id !== profile.id) {
+        if (article.user && article.user.id !== profile.id) {
             color = this.props.articleColors.find(({type}) => type === 'responsible');
         }
 
