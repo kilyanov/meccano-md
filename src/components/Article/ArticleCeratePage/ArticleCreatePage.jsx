@@ -13,9 +13,9 @@ import ArticleViewSettings from './ArticleViewSettings/ArticleViewSettings';
 import ProjectCreateField from '../../Project/ProjectCreatePage/ProjectCreatePageField/ProjectCreatePageField';
 import Sortable from 'react-sortablejs';
 import {isMobileScreen, isProjectAccess, isRolesAccess, OperatedNotification} from '../../../helpers/Tools';
-import {STORAGE_KEY} from '../../../constants/LocalStorageKeys';
+import {STORAGE_KEY} from '../../../constants';
 import {EventEmitter} from "../../../helpers";
-import {EVENTS} from "../../../constants/Events";
+import {EVENTS} from "../../../constants";
 import store from "../../../redux/store";
 import {setCurrentProject} from "../../../redux/actions/currentProject";
 import {PROJECT_PERMISSION} from "../../../constants/ProjectPermissions";
@@ -453,7 +453,10 @@ class ArticleCreatePage extends Component {
     };
 
     saveFieldsSort = () => {
-        const {projectFields, userTypeId} = this.state;
+        const {projectFields, userTypeId, roles} = this.state;
+        const readOnly = !isProjectAccess([PROJECT_PERMISSION.EDIT]) && !isRolesAccess(roles.admin);
+
+        if (readOnly) return;
 
         ProjectService.cancelLast();
         ProjectService.put(this.projectId, {
@@ -544,11 +547,12 @@ class ArticleCreatePage extends Component {
         const dataSectionFields = this.getDataSectionFields();
         const getValue = (prop) => _.isObject(prop) ? prop.value : prop;
         const readOnly = !isProjectAccess([PROJECT_PERMISSION.EDIT]) && !isRolesAccess(roles.admin);
+        console.log('disable drag&drop', isMobileScreen(), readOnly, roles);
         const sectionData = (
             <Sortable
                 {...cls('section', 'sortable')}
                 options={{
-                    disabled: isMobileScreen() || readOnly,
+                    disabled: isMobileScreen() || (!_.isEmpty(roles) && readOnly),
                     animation: 150,
                     handle: '.drag-handle'
                 }}
