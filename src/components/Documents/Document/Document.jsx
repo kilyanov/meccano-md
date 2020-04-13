@@ -1,15 +1,15 @@
 import React, {useState} from 'react';
 import DocumentIcon from '../../Shared/SvgIcons/DocumentIcon';
-import {DOCUMENT_STATUS, DOCUMENT_STATUS_VALUE} from '../../../constants/DocumentStatus';
+import {DOCUMENT_STATUS, DOCUMENT_STATUS_VALUE} from '../../../constants';
 import TrashIcon from '../../Shared/SvgIcons/TrashIcon';
 import DownloadIcon from '../../Shared/SvgIcons/DownloadIcon';
 import {DocumentService} from '../../../services';
 import {saveAs} from 'file-saver';
 import Loader from '../../Shared/Loader/Loader';
 import './document.scss';
-import {FILE_TYPE_ICON} from '../../../constants/FileTypeIcons';
+import {FILE_TYPE_ICON} from '../../../constants';
 import Access from "../../Shared/Access/Access";
-import {PERMISSION} from "../../../constants/Permissions";
+import {PERMISSION} from "../../../constants";
 
 const cls = new Bem('document');
 
@@ -21,7 +21,7 @@ const Document = ({className, document, highlighted, canDelete = true, onDelete 
         DocumentService.download(doc.transactionId).then(response => {
             const blob = new Blob([response.data], {type: 'application/octet-stream'});
 
-            saveAs(blob, response.headers['x-filename']);
+            saveAs(blob, decodeURI(response.headers['x-filename']));
             setProgress(false);
         });
     };

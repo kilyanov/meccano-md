@@ -547,7 +547,6 @@ class ArticleCreatePage extends Component {
         const dataSectionFields = this.getDataSectionFields();
         const getValue = (prop) => _.isObject(prop) ? prop.value : prop;
         const readOnly = !isProjectAccess([PROJECT_PERMISSION.EDIT]) && !isRolesAccess(roles.admin);
-        console.log('disable drag&drop', isMobileScreen(), readOnly, roles);
         const sectionData = (
             <Sortable
                 {...cls('section', 'sortable')}
