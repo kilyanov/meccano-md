@@ -544,6 +544,7 @@ export default class ProjectPage extends Component {
                         onDeleteArticle={this.handleDeleteArticle}
                         sort={filters.sort}
                         search={filters.search}
+                        page={currentPage}
                         selectedIds={selectedItemIds}
                         isAllSelected={isAllArticlesSelected}
                         projectId={this.projectId}

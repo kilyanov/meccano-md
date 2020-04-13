@@ -295,7 +295,7 @@ class ProjectTable extends Component {
     };
 
     renderArticle = (article, articleKey) => {
-        const {selectedIds, projectId, fields, search, sort, profile} = this.props;
+        const {selectedIds, projectId, fields, search, sort, profile, page} = this.props;
         const lastViewedArticleId = StorageService.get(STORAGE_KEY.LAST_VIEWED_ARTICLE);
         const menuItems = [{
             title: 'Изменить',
@@ -313,6 +313,7 @@ class ProjectTable extends Component {
         sp.set('search', search);
         sp.set('sort', sortString || '');
         sp.set('position', articleKey);
+        sp.set('page', page);
 
         url += sp.toString();
 

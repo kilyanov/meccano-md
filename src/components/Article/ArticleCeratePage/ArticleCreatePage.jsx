@@ -155,30 +155,41 @@ class ArticleCreatePage extends Component {
     };
 
     handlePrevArticle = () => {
+        const {location} = this.props;
         const {articlesNavs} = this.state;
+        const sp = new URLSearchParams(location.search);
 
         if (!articlesNavs.prev) return;
 
         this.checkFormChanges().then(() => {
-            EventEmitter.emit(EVENTS.REDIRECT, `/project/${this.projectId}/article/${articlesNavs.prev}`);
+            EventEmitter.emit(
+                EVENTS.REDIRECT,
+                `/project/${this.projectId}/article/${articlesNavs.prev}?page=${sp.get('page')}`
+            );
         });
     };
 
     handleNextArticle = () => {
+        const {location} = this.props;
         const {articlesNavs} = this.state;
+        const sp = new URLSearchParams(location.search);
 
         if (!articlesNavs.next) return;
 
         this.checkFormChanges().then(() => {
-            EventEmitter.emit(EVENTS.REDIRECT, `/project/${this.projectId}/article/${articlesNavs.next}`);
+            EventEmitter.emit(
+                EVENTS.REDIRECT,
+                `/project/${this.projectId}/article/${articlesNavs.next}?page=${sp.get('page')}`
+            );
         });
     };
 
     handleClickBackButton = () => {
+        const {location} = this.props;
+        const sp = new URLSearchParams(location.search);
+
         this.checkFormChanges().then(() => {
-            this.props.history
-                ? this.props.history.goBack()
-                : EventEmitter.emit(EVENTS.REDIRECT, `/project/${this.projectId}`);
+            EventEmitter.emit(EVENTS.REDIRECT, `/project/${this.projectId}?page=${sp.get('page')}`);
         });
     };
 

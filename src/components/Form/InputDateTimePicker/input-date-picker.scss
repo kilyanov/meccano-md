@@ -11,6 +11,10 @@ $namespace: '.input-date-picker';
     border: 1px solid #b2b2b2;
   }
 
+  .react-datetime-picker__wrapper {
+    border: none !important;
+  }
+
   .react-datetime-picker__inputGroup {
     padding-left: 17px;
   }
