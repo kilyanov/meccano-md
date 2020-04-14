@@ -26,6 +26,12 @@ export default class SettingsExportModal extends Component {
     constructor(props) {
         super(props);
 
+        const item = _.cloneDeep(props.item);
+
+        if (item) {
+            item.projects = item.projects.map(({id, name}) => ({label: name, value: id}))
+        }
+
         this.defaultForm = {
             name: '',
             rules: [],
@@ -42,7 +48,7 @@ export default class SettingsExportModal extends Component {
             replace: ''
         };
         this.state = {
-            form: props.item || {...this.defaultForm},
+            form: item || {...this.defaultForm},
             inProgress: false
         };
     }
@@ -104,7 +110,12 @@ export default class SettingsExportModal extends Component {
 
         form.rules = form.rules.map(({id, selector, element}) => ({id, selector, element}));
         form.replaces = form.replaces.map(({id, search, replace}) => ({id, search, replace}));
-        form.projects = form.projects.map(({id}) => id);
+
+        if (form.projects && form.projects.length) {
+            form.projects = form.projects.map(({value}) => value);
+        } else {
+            delete form.projects;
+        }
 
         const formData = objectToFormData(form, {indices: true});
 
@@ -250,7 +261,7 @@ export default class SettingsExportModal extends Component {
                                 label='Проект'
                                 options={form.projects || []}
                                 onChange={val => this.handleChangeForm(val, 'projects')}
-                                value={form.projects}
+                                value={form.projects || []}
                                 requestService={ProjectService.get}
                                 requestCancelService={ProjectService.cancelLast}
                             />
