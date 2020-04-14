@@ -53,6 +53,7 @@ export default class ProjectPage extends Component {
             articles: [],
             activeArticle: null,
             selectedItemIds: [],
+            selectedArticles: [],
             isAllArticlesSelected: false,
             pagination,
             project: null,
@@ -112,8 +113,22 @@ export default class ProjectPage extends Component {
     };
 
     handleChangeSelected = (selectedItemIds) => {
-        if (!selectedItemIds.length) this.handleClearSelected();
-        else this.setState({selectedItemIds});
+        if (!selectedItemIds.length) {
+            return this.handleClearSelected();
+        }
+
+        this.setState(state => {
+            state.selectedItemIds = selectedItemIds;
+
+            selectedItemIds.forEach(selectedId => {
+                const found = state.articles.find(({id}) => id === selectedId);
+
+                if (found && !state.selectedArticles.find(({id}) => id === selectedId)) {
+                    state.selectedArticles.push(found);
+                }
+            });
+            return state;
+        });
     };
 
     handleChangeColumns = () => {
@@ -398,6 +413,7 @@ export default class ProjectPage extends Component {
             showImportArticlesModal,
             showTransferModal,
             userType,
+            selectedArticles,
             inProgress
         } = this.state;
         const countSelected = isAllArticlesSelected ? pagination.totalCount : selectedItemIds.length;
@@ -409,7 +425,6 @@ export default class ProjectPage extends Component {
                 return article;
             });
         const fields = this.getFields();
-        const selectedItems = selectedItemIds.map(selectedId => articles.find(({id}) => id === selectedId));
         const currentPage = this.searchParams.get('page') || pagination.page;
 
         return (
@@ -430,7 +445,7 @@ export default class ProjectPage extends Component {
                         />
                     )}
 
-                    {(hasSelectedItems && selectedItems.every(item => !item[`complete_${userType.slug}`])) && (
+                    {(hasSelectedItems && selectedArticles.every(item => !item[`complete_${userType.slug}`])) && (
                         <Button
                             {...cls('upload-btn')}
                             text='Завершить'
@@ -439,7 +454,7 @@ export default class ProjectPage extends Component {
                         />
                     )}
 
-                    {(hasSelectedItems && selectedItems.every(item => !!item[`complete_${userType.slug}`])) && (
+                    {(hasSelectedItems && selectedArticles.every(item => !!item[`complete_${userType.slug}`])) && (
                         <Button
                             {...cls('upload-btn')}
                             text='Отменить завершение'
