@@ -303,7 +303,8 @@ export default class ProjectPage extends Component {
                 .map(field => field.relation || field.slug)
         };
 
-        form.expand = [...form.expand, 'complete_monitor', 'complete_analytic', 'complete_client'];
+        // Необходимые поля для корректной работы цветовыделения
+        form.expand = [...form.expand, 'complete_monitor', 'complete_analytic', 'complete_client', 'user.surname'];
 
         if (search) {
             fields
