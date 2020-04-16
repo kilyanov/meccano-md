@@ -21,6 +21,7 @@ import {setCurrentProject} from "../../../redux/actions/currentProject";
 import {PROJECT_PERMISSION} from "../../../constants/ProjectPermissions";
 import Access from "../../Shared/Access/Access";
 import {KEY_CODE} from "../../../constants";
+import TinyMCE from "../../Form/TinyMCE/TinyMCE";
 
 const cls = new Bem('article-create-page');
 const sectionsSet = {
@@ -242,6 +243,9 @@ class ArticleCreatePage extends Component {
 
         delete form.project;
         delete form.source;
+
+        form.text = form.text.replace(/\r\n|\r|\n/g, '');
+        form.annotation = form.annotation.replace(/\r\n|\r|\n/g, '');
 
         ['section_main_id', 'section_sub_id', 'section_three_id']
             .forEach(option => {
@@ -680,13 +684,20 @@ class ArticleCreatePage extends Component {
 
         const sectionText = projectFields.find(({slug}) => slug === 'text') ? (
             <section {...cls('section')}>
-                <RichEditor
+                <TinyMCE
                     {...cls('field', 'textarea')}
                     readOnly={readOnly}
                     label='Текст статьи'
                     content={form.text || ''}
                     onChange={value => this.handleChangeForm(value, 'text')}
                 />
+                {/* <RichEditor
+                    {...cls('field', 'textarea')}
+                    readOnly={readOnly}
+                    label='Текст статьи'
+                    content={form.text || ''}
+                    onChange={value => this.handleChangeForm(value, 'text')}
+                /> */}
             </section>
         ) : null;
 
