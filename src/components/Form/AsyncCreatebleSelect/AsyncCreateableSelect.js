@@ -70,6 +70,7 @@ export default function AsyncCreatableSelect({
                     loadOptions={_.debounce(getOptions, 1000)}
                     onChange={handleSelect}
                     value={currentOption}
+                    formatCreateLabel={(inputValue) => `Создать "${inputValue}"`}
 
                     classNamePrefix='select'
                     isDisabled={readOnly}
