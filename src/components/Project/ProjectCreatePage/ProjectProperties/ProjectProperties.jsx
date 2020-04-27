@@ -124,6 +124,8 @@ export default class ProjectProperties extends Component {
             allFields.filter(({name}) => name.toLowerCase().includes(searchUnselectedValue)) :
             allFields;
 
+        console.log(fields);
+
         return (
             <div {...cls('', '', 'container')}>
                 <section {...cls('row', '', 'row')}>

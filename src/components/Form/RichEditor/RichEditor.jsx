@@ -37,10 +37,10 @@ export default class RichEditor extends Component {
             list: generatedFontSizes,
             exec: (editor, text, controls) => {
                 editor.selection.applyCSS({
-                    'font-size': `${Number(controls.args[0])}px`,
+                    'font-size': `${Number(controls.args[0])}px`
                 });
             },
-            template: (key, value) => `<span>${value}</span>`,
+            template: (key, value) => `<span>${value}</span>`
         };
 
         this.config = {

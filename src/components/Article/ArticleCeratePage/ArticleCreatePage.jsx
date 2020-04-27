@@ -101,6 +101,10 @@ class ArticleCreatePage extends Component {
                     if (project && project.projectFields) {
                         const projectFields = project.projectFields.find(f => f.user_type_id === userTypeId);
 
+                        if (projectFields && projectFields.data) {
+                            projectFields.data = projectFields.data.sort((a, b) => a.order - b.order);
+                        }
+
                         this.setState({
                             sections: project.sections,
                             projectFields: projectFields && projectFields.data,
@@ -204,13 +208,13 @@ class ArticleCreatePage extends Component {
             if (item) item.order = index;
 
             return item;
-        }).filter(item => !!item);
+        });
 
         sortedList.push(
             ...this.unSortableFields.map(key => projectFields.find(({slug}) => slug === key))
         );
 
-        this.setState({projectFields: sortedList}, this.saveFieldsSort);
+        this.setState({projectFields: sortedList.filter(item => !!item)}, this.saveFieldsSort);
     };
 
     handleDoneArticle = () => {
@@ -391,6 +395,10 @@ class ArticleCreatePage extends Component {
                     this.article = _.cloneDeep(form);
                     const fields = form.project.projectFields.find(f => f.user_type_id === userTypeId);
 
+                    if (fields && fields.data) {
+                        fields.data = fields.data.sort((a, b) => a.order - b.order);
+                    }
+
                     if (!this.props.currentProject) {
                         store.dispatch(setCurrentProject(form.project));
                     }
@@ -424,7 +432,9 @@ class ArticleCreatePage extends Component {
             dataSectionFields = dataSectionFields.filter(({slug}) => slug !== 'section_three_id');
         }
 
-        return dataSectionFields;
+        return dataSectionFields
+            .filter(({ slug }) => slug !== 'user_id')
+            .sort((a, b) => a.order - b.order);
     };
 
     setUserType = () => {
@@ -475,8 +485,10 @@ class ArticleCreatePage extends Component {
 
         ProjectService.cancelLast();
         ProjectService.put(this.projectId, {
-            data: projectFields,
-            user_type_id: userTypeId
+            projectFields: [{
+                data: projectFields,
+                user_type_id: userTypeId
+            }]
         });
     };
 
@@ -562,6 +574,8 @@ class ArticleCreatePage extends Component {
         const dataSectionFields = this.getDataSectionFields();
         const getValue = (prop) => _.isObject(prop) ? prop.value : prop;
         const readOnly = !isProjectAccess([PROJECT_PERMISSION.EDIT]) && !isRolesAccess(roles.admin);
+
+        console.log(dataSectionFields);
         const sectionData = (
             <Sortable
                 {...cls('section', 'sortable')}
@@ -586,20 +600,20 @@ class ArticleCreatePage extends Component {
                             break;
                         case 'section_main_id':
                             field.options = sections.map(section => ({
-                                name: section.name,
+                                label: section.name,
                                 value: section.id,
                                 sectionsTwo: section.sectionsTwo
                             }));
                             break;
                         case 'section_sub_id':
                             field.options = sectionsTwo.map(section => ({
-                                name: section.name,
+                                label: section.name,
                                 value: section.id,
                                 sectionsThree: section.sectionsThree
                             }));
                             break;
                         case 'section_three_id':
-                            field.options = sectionsThree.map(({name, id}) => ({name, value: id}));
+                            field.options = sectionsThree.map(({name, id}) => ({label: name, value: id}));
                             break;
                         case 'genre_id':
                             field.requestService = ArticleService.genre;
@@ -661,7 +675,7 @@ class ArticleCreatePage extends Component {
                         <ProjectCreateField
                             key={field.slug}
                             field={field}
-                            placeholder={field.placeholder}
+                            placeholder={field.name}
                             value={form[field.slug] || ''}
                             onChange={this.handleChangeForm}
                         />

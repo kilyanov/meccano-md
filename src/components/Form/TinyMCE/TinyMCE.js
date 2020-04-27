@@ -16,8 +16,8 @@ export default function TinyMCE({ className, content, label, onChange, readOnly 
                 initialValue={content}
                 disabled={readOnly}
                 init={{
-                    skin: 'oxide-dark',
-                    content_css: 'dark',
+                    // skin: 'oxide-dark',
+                    // content_css: 'dark',
                     height: 500,
                     menubar: false,
                     plugins: [

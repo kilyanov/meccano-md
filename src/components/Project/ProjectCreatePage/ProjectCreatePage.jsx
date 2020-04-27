@@ -178,6 +178,10 @@ class ProjectCreatePage extends Component {
         ProjectService.get(params, this.projectId).then(projectResponse => {
             const {projectFields, allFields, createdAt, updatedAt} = projectResponse.data;
 
+            projectFields.forEach(fieldsByUserType => {
+                fieldsByUserType.data = fieldsByUserType.data.sort((a, b) => a.order - b.order);
+            });
+
             this.project = projectResponse.data;
             this.project.allFields = allFields;
             this.setState({
@@ -349,6 +353,8 @@ class ProjectCreatePage extends Component {
         } = this.state;
         const backButtonLabel = step === 2 ? 'Назад' : isEdit ? 'Удалить проект' : 'Отменить создание';
         const fieldsByUserType = selectedUserType && projectFields.find(f => f.user_type_id === selectedUserType.value);
+
+        console.log('render', projectFields);
 
         return (
             <Access
