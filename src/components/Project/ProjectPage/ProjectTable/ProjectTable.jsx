@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
 import {Link} from 'react-router-dom';
-import {SORT_DIR, STORAGE_KEY} from '../../../../constants';
+import {KEY_CODE, SORT_DIR, STORAGE_KEY, FIELD_TYPE} from '../../../../constants';
 import CheckBox from '../../../Form/CheckBox/CheckBox';
 import DropDown from '../../../Shared/DropDown/DropDown';
 import './project-table.scss';
@@ -12,14 +12,11 @@ import ProjectTableSettingsModal from './ProjectTableSettingsModal/ProjectTableS
 import {getColumnsFromStorage, getColumnsFromFields, updateColumnWidth} from './Columns';
 import SettingsIcon from '../../../Shared/SvgIcons/SettingsIcon';
 import SortArrow from './ProjectTableHeader/ProjectTableHeaderSortArrow';
-import {FIELD_TYPE} from '../../../../constants/FieldType';
 import ProjectTableColorModal from "./ProjectTableColorModal/ProjectTableColorModal";
-import {StorageService, CacheService} from "../../../../services";
-import {DB_STORE} from "../../../../constants/DB_STORE";
+import {StorageService} from "../../../../services";
 
 const cls = new Bem('project-table');
 const headerClasses = new Bem('project-table-header');
-const LAST_ARTICLE_COLOR = '#f2f0f0';
 
 class ProjectTable extends Component {
     static propTypes = {
@@ -37,7 +34,8 @@ class ProjectTable extends Component {
         fields: PropTypes.array.isRequired,
         isAllSelected: PropTypes.bool,
         articleColors: PropTypes.array,
-        currentProject: PropTypes.object
+        currentProject: PropTypes.object,
+        onChangeFilter: PropTypes.func
     };
 
     static defaultProps = {
@@ -48,6 +46,7 @@ class ProjectTable extends Component {
     };
 
     state = {
+        filters: {},
         showColumnSettingsModal: false
     };
 
@@ -56,17 +55,7 @@ class ProjectTable extends Component {
         document.addEventListener('mouseup', this.handleMouseUp);
     }
 
-    componentDidUpdate = (prevProps) => {
-        if (!prevProps.fields.length && this.props.fields.length) {
-            this.props.fields.forEach(field => {
-                if (field && field.slug === 'source_id') {
-                    CacheService[DB_STORE.source.name](response => {
-                        this.setState({ sources: response.map(({id, name}) => ({name, value: id})) });
-                    });
-                }
-            });
-        }
-
+    componentDidUpdate = () => {
         this.syncColumnWidth();
     };
 
@@ -236,7 +225,7 @@ class ProjectTable extends Component {
                 {this.selectedColumns.map(({key, width}) => {
                     const active = sort.type === key;
                     const currentField = fields.find(({slug}) => slug === key);
-                    // const fieldType = currentField && currentField.type;
+                    const fieldType = currentField && currentField.type;
 
                     return (
                         <div
@@ -258,39 +247,60 @@ class ProjectTable extends Component {
                                 />
                             </div>
 
-                            {/* TODO: Фильтры */}
-                            {/* _.get(fieldType, 'key', '') && (
-                                <div {...headerClasses('cell-filter')}>
-                                    {fieldType.key === 'text' && (
-                                        <input
-                                            {...headerClasses('cell-filter-field')}
-                                            placeholder='Поиск...'
-                                            type="search"
-                                        />
-                                    )}
-
-                                    {fieldType.key === 'datetime' && (
-                                        <input
-                                            {...headerClasses('cell-filter-field')}
-                                            type="date"
-                                        />
-                                    )}
-
-                                    {fieldType.key === 'uuid' && (
-                                        <select
-                                            {...headerClasses('cell-filter-field')}
-                                        >
-                                            <option value="0">Выберите</option>
-                                            <option value="1">СМИ 1</option>
-                                            <option value="1">СМИ 2</option>
-                                        </select>
-                                    )}
-                                </div>
-                            ) */}
+                            {this.renderFilter(fieldType, currentField)}
                         </div>
                     );
                 })}
             </section>
+        );
+    };
+
+    renderFilter = (fieldType, currentField) => {
+        if (!fieldType || !fieldType.key) return;
+        let field;
+        const clearValue = (val) => val.trim().toLowerCase();
+
+        switch (fieldType.key) {
+            case 'datetime':
+                field =
+                    <input
+                        {...headerClasses('cell-filter-field')}
+                        type="date"
+                        onKeyDown={({keyCode, target: { value }}) => {
+                            if (keyCode === KEY_CODE.enter) {
+                                this.props.onChangeFilter(currentField.slug, value);
+                                setTimeout(() => this.props.onUpdateParent(), 0);
+                            }
+                        }}
+                        onBlur={({target: { value }}) => {
+                            this.props.onChangeFilter(currentField.slug, value);
+                            setTimeout(() => this.props.onUpdateParent(), 0);
+                        }}
+                    />;
+                break;
+            default:
+                field =
+                    <input
+                        {...headerClasses('cell-filter-field')}
+                        placeholder='Поиск...'
+                        type="search"
+                        onKeyDown={({keyCode, target: { value }}) => {
+                            if (keyCode === KEY_CODE.enter) {
+                                this.props.onChangeFilter(currentField.slug, clearValue(value));
+                                setTimeout(() => this.props.onUpdateParent(), 0);
+                            }
+                        }}
+                        onBlur={({target: { value }}) => {
+                            this.props.onChangeFilter(currentField.slug, clearValue(value));
+                            setTimeout(() => this.props.onUpdateParent(), 0);
+                        }}
+                    />;
+        }
+
+        return (
+            <div {...headerClasses('cell-filter')}>
+                { field }
+            </div>
         );
     };
 

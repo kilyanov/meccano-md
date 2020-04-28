@@ -103,13 +103,10 @@ export default class ProjectPage extends Component {
     }
 
     handleChangeFilter = (filter, value) => {
-        const newState = this.state;
-
-        if (newState.filters.hasOwnProperty(filter)) {
-            newState.filters[filter] = value;
-        }
-
-        this.setState(newState);
+        this.setState(state => {
+            state.filters[filter] = value;
+            return state;
+        });
     };
 
     handleChangeSelected = (selectedItemIds) => {
@@ -289,7 +286,7 @@ export default class ProjectPage extends Component {
     };
 
     getArticles = () => {
-        const {pagination, filters: {sort, search}, userType} = this.state;
+        const {pagination, filters, userType} = this.state;
         const selectedColumns = getColumnsFromStorage(this.projectId);
         const fields = this.getFields();
 
@@ -306,21 +303,34 @@ export default class ProjectPage extends Component {
         // Необходимые поля для корректной работы цветовыделения
         form.expand = [...form.expand, 'complete_monitor', 'complete_analytic', 'complete_client', 'user.surname'];
 
-        if (search) {
-            fields
-                .filter(({slug}) => selectedColumns.find(({key}) => key === slug))
-                .forEach(field => {
-                    form[`query[${field.relation || field.slug}]`] = search;
-                });
-            this.searchParams.set('search', search);
-        }
+        Object.keys(filters).forEach(filterKey => {
+            const filter = filters[filterKey];
+            const currentField = fields.find(({slug}) => filterKey === 'sort'
+                ? filter.type === slug
+                : filterKey === slug
+            );
 
-        if (sort && sort.type) {
-            const field = fields.find(({slug}) => slug === sort.type);
+            switch (filterKey) {
+                case 'sort':
+                    if (!filter.type) break;
 
-            form.sort = sort.type && `${sort.dir === SORT_DIR.ASC ? '-' : ''}${field.relation || sort.type}`;
-            this.searchParams.set('sort', `${sort.dir === SORT_DIR.ASC ? '-' : ''}${sort.type}`);
-        }
+                    form.sort = filter.type &&
+                        `${filter.dir === SORT_DIR.ASC ? '-' : ''}${currentField.relation || filter.type}`;
+                    this.searchParams.set('sort', `${filter.dir === SORT_DIR.ASC ? '-' : ''}${filter.type}`);
+                    break;
+                case 'search':
+                    fields
+                        .filter(({slug}) => selectedColumns.find(({key}) => key === slug))
+                        .forEach(field => {
+                            form[`query[${field.relation || field.slug}]`] = filter;
+                        });
+                    this.searchParams.set(filterKey, filter);
+                    break;
+                default:
+                    form[`query[${currentField.relation || currentField.slug}]`] = filter;
+                    this.searchParams.set(filterKey, filter);
+            }
+        });
 
         ArticleService
             .getList(form)
@@ -558,6 +568,8 @@ export default class ProjectPage extends Component {
                         onChangeColumns={this.handleChangeColumns}
                         onChangeSort={this.handleChangeSort}
                         onDeleteArticle={this.handleDeleteArticle}
+                        onChangeFilter={this.handleChangeFilter}
+                        onUpdateParent={() => this.getArticles()}
                         sort={filters.sort}
                         search={filters.search}
                         page={currentPage}
