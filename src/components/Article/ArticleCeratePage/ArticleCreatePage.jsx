@@ -75,6 +75,7 @@ class ArticleCreatePage extends Component {
             userTypeId: userType ? userType.id : null,
             userType: null,
             showViewSettings: false,
+            textIsChanged: false,
             inProgress: true
         };
     }
@@ -160,32 +161,34 @@ class ArticleCreatePage extends Component {
     };
 
     handlePrevArticle = () => {
-        const {location} = this.props;
+        const {location, history} = this.props;
         const {articlesNavs} = this.state;
         const sp = new URLSearchParams(location.search);
 
         if (!articlesNavs.prev) return;
 
         this.checkFormChanges().then(() => {
-            EventEmitter.emit(
-                EVENTS.REDIRECT,
-                `/project/${this.projectId}/article/${articlesNavs.prev}?page=${sp.get('page')}`
-            );
+            history.push(`/project/${this.projectId}/article/${articlesNavs.prev}?page=${sp.get('page')}`);
+            // EventEmitter.emit(
+            //     EVENTS.REDIRECT,
+            //     `/project/${this.projectId}/article/${articlesNavs.prev}?page=${sp.get('page')}`
+            // );
         });
     };
 
     handleNextArticle = () => {
-        const {location} = this.props;
+        const {location, history} = this.props;
         const {articlesNavs} = this.state;
         const sp = new URLSearchParams(location.search);
 
         if (!articlesNavs.next) return;
 
         this.checkFormChanges().then(() => {
-            EventEmitter.emit(
-                EVENTS.REDIRECT,
-                `/project/${this.projectId}/article/${articlesNavs.next}?page=${sp.get('page')}`
-            );
+            history.push(`/project/${this.projectId}/article/${articlesNavs.next}?page=${sp.get('page')}`);
+            // EventEmitter.emit(
+            //     EVENTS.REDIRECT,
+            //     `/project/${this.projectId}/article/${articlesNavs.next}?page=${sp.get('page')}`
+            // );
         });
     };
 
@@ -493,7 +496,7 @@ class ArticleCreatePage extends Component {
     };
 
     checkFormChanges = () => {
-        const {prevForm, form} = this.state;
+        const {prevForm, form, textIsChanged} = this.state;
 
         return new Promise((resolve) => {
             const prevFormClone = _.cloneDeep(prevForm);
@@ -501,11 +504,14 @@ class ArticleCreatePage extends Component {
 
             let isEqual = true;
 
+            if (textIsChanged) {
+                isEqual = false;
+            }
+
             delete prevFormClone.project;
             delete formClone.project;
-
-            prevFormClone.text = this.clearString(prevFormClone.text);
-            formClone.text = this.clearString(formClone.text);
+            delete prevFormClone.text;
+            delete formClone.text;
 
             prevFormClone.section_main_id = _.get(prevFormClone.section_main_id, 'value');
             formClone.section_main_id = _.get(formClone.section_main_id, 'value');
@@ -574,8 +580,6 @@ class ArticleCreatePage extends Component {
         const dataSectionFields = this.getDataSectionFields();
         const getValue = (prop) => _.isObject(prop) ? prop.value : prop;
         const readOnly = !isProjectAccess([PROJECT_PERMISSION.EDIT]) && !isRolesAccess(roles.admin);
-
-        console.log(dataSectionFields);
         const sectionData = (
             <Sortable
                 {...cls('section', 'sortable')}
@@ -703,7 +707,8 @@ class ArticleCreatePage extends Component {
                     readOnly={readOnly}
                     label='Текст статьи'
                     content={form.text || ''}
-                    onChange={value => this.handleChangeForm(value, 'text')}
+                    onEditorChange={value => this.handleChangeForm(value, 'text')}
+                    onChange={() => this.setState({ textIsChanged: true })}
                 />
                 {/* <RichEditor
                     {...cls('field', 'textarea')}

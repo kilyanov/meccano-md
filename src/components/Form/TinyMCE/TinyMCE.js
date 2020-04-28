@@ -6,14 +6,14 @@ import {TINY_MCE_KEY} from "../../../constants/TinyMCEApiKey";
 
 const cls = new BEMHelper('tiny-mce');
 
-export default function TinyMCE({ className, content, label, onChange, readOnly }) {
+export default function TinyMCE({ className, content, label, onEditorChange, onChange, readOnly }) {
     return (
         <div {...cls('', {readOnly}, className)}>
             {label && <span {...cls('label')}>{label}</span>}
 
             <Editor
                 apiKey={TINY_MCE_KEY}
-                initialValue={content}
+                value={content}
                 disabled={readOnly}
                 init={{
                     // skin: 'oxide-dark',
@@ -29,7 +29,8 @@ export default function TinyMCE({ className, content, label, onChange, readOnly 
                         'alignleft aligncenter alignright alignjustify | \ ' +
                         'bullist numlist outdent indent | removeformat | help'
                 }}
-                onEditorChange={onChange}
+                onEditorChange={onEditorChange}
+                onChange={onChange}
             />
         </div>
     );

@@ -31,7 +31,6 @@ export default function AsyncCreatableSelect({
         }
 
         return requestService({ 'query[name]': inputValue }).then(({ data }) => {
-            console.log(data);
             const opt = data.map(option => ({
                 label: _.get(option, 'name'),
                 value: _.get(option, 'id')
