@@ -303,6 +303,7 @@ export default class ProjectPage extends Component {
         // Необходимые поля для корректной работы цветовыделения
         form.expand = [...form.expand, 'complete_monitor', 'complete_analytic', 'complete_client', 'user.surname'];
 
+        // Фильтрация по столбцам
         Object.keys(filters).forEach(filterKey => {
             const filter = filters[filterKey];
             const currentField = fields.find(({slug}) => filterKey === 'sort'
