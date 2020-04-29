@@ -3,10 +3,9 @@ import PropTypes from 'prop-types';
 import './select.scss';
 import {InitScrollbar, isMobileScreen} from '../../../helpers/Tools';
 import CheckBox from '../CheckBox/CheckBox';
-import {KEY_CODE} from '../../../constants';
+import {KEY_CODE, EVENTS} from '../../../constants';
 import Loader from '../../Shared/Loader/Loader';
 import {EventEmitter} from '../../../helpers';
-import {EVENTS} from '../../../constants/Events';
 
 const cls = new Bem('select');
 

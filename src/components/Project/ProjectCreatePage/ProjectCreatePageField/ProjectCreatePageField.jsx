@@ -2,7 +2,6 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import InputText from '../../../Form/InputText/InputText';
 import InputDatePicker from '../../../Form/InputDatePicker/InputDatePicker';
-import Select from '../../../Form/Select/Select';
 import InputTags from '../../../Form/InputTags/InputTags';
 import InputLink from '../../../Form/InputLink/InputLink';
 import InputNumber from '../../../Form/InputNumber/InputNumber';
@@ -70,7 +69,7 @@ const ProjectCreateField = ({field, value, onChange, className}) => {
             </div>;
         case FIELD_TYPE.UUID_EXT:
             return <div {...cls('field', [field.slug, filedType], className)} data-id={field.slug}>
-                <Select
+                <AsyncCreatableSelect
                     placeholder={field.placeholder}
                     label={field.name}
                     options={field.options || []}
@@ -80,8 +79,6 @@ const ProjectCreateField = ({field, value, onChange, className}) => {
                     requestService={field.requestService}
                     requestCancelService={field.requestCancelService}
                     depended={field.depended}
-                    withSearch
-                    canAddNewValue
                 />
             </div>;
         case FIELD_TYPE.URL:
