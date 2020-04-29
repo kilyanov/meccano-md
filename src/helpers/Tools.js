@@ -1,6 +1,6 @@
 import PerfectScrollbar from 'perfect-scrollbar';
 import {EventEmitter} from './EventEmitter';
-import {EVENTS} from '../constants/Events';
+import {EVENTS} from '../constants';
 import store from "../redux/store";
 
 export const ParseToRequest = (form) => {
@@ -25,7 +25,9 @@ export const isMobileBrowser = () => {
 
 export const InitScrollbar = (node, options) => {
     if (node && !node.classList.contains('ps')) {
-        if (getComputedStyle(node).position === 'static') node.style.position = 'relative';
+        if (getComputedStyle(node).position === 'static') {
+            node.style.position = 'relative';
+        }
 
         /* eslint-disable no-unused-vars */
         return new PerfectScrollbar(node, options);

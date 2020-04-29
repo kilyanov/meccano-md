@@ -30,14 +30,6 @@ export default class ProjectProperties extends Component {
         searchUnselectedValue: ''
     };
 
-    componentDidMount() {
-        const leftListRef = _.get(this.leftList, 'sortable.el');
-        const rightListRef = _.get(this.rightList, 'sortable.el');
-
-        InitScrollbar(leftListRef, {useBothWheelAxes: false, suppressScrollX: true});
-        InitScrollbar(rightListRef);
-    }
-
     componentDidUpdate() {
         const {fields, allFields} = this.props;
 
