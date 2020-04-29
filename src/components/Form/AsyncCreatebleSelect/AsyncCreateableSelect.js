@@ -8,7 +8,6 @@ import BEMHelper from "react-bem-helper";
 const cls = new BEMHelper('select');
 
 export default function AsyncCreatableSelect({
-    placeholder,
     selected,
     readOnly,
     options,
@@ -24,6 +23,11 @@ export default function AsyncCreatableSelect({
     const handleSelect = (option) => {
         setCurrentOption(option);
         onChange(option);
+    };
+    const handleBlur = () => {
+        if (!currentOption) {
+            getOptions();
+        }
     };
     const getOptions = (inputValue = '', callback = () => {}) => {
         if (requestCancelService) {
@@ -68,6 +72,7 @@ export default function AsyncCreatableSelect({
                     defaultOptions={loadedOptions}
                     loadOptions={_.debounce(getOptions, 1000)}
                     onChange={handleSelect}
+                    onBlur={handleBlur}
                     value={currentOption}
                     formatCreateLabel={(inputValue) => `Создать "${inputValue}"`}
 
