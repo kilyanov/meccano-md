@@ -1,16 +1,17 @@
 import React, {Component} from 'react';
-import {LocationService} from '../../../services';
-import PromiseDialogModal from '../../Shared/PromiseDialogModal/PromiseDialogModal';
-import ConfirmModal from '../../Shared/ConfirmModal/ConfirmModal';
-import PropertiesTable from '../../Shared/PropertiesTable/PropertiesTable';
-import SettingsPage from '../SettingsPage/SettingsPage';
-import InputText from '../../Form/InputText/InputText';
+import {LocationService} from '../../../../services';
+import PromiseDialogModal from '../../../Shared/PromiseDialogModal/PromiseDialogModal';
+import ConfirmModal from '../../../Shared/ConfirmModal/ConfirmModal';
+import PropertiesTable from '../../../Shared/PropertiesTable/PropertiesTable';
+import SettingsPage from '../../SettingsPage/SettingsPage';
+import InputText from '../../../Form/InputText/InputText';
 import {NotificationManager} from 'react-notifications';
-import Loader from '../../Shared/Loader/Loader';
-import Select from '../../Form/Select/Select';
-import ListEndedStub from '../../Shared/ListEndedStub/ListEndedStub';
-import Form from '../../Form/Form/Form';
-import {PERMISSION} from "../../../constants/Permissions";
+import Loader from '../../../Shared/Loader/Loader';
+import Select from '../../../Form/Select/Select';
+import ListEndedStub from '../../../Shared/ListEndedStub/ListEndedStub';
+import Form from '../../../Form/Form/Form';
+import {PERMISSION} from "../../../../constants/Permissions";
+import LocationRegionModal from "./LocationRegionModal";
 
 const columnSettings = {
     name: {
@@ -25,59 +26,30 @@ const columnSettings = {
     }
 };
 
-const defaultForm = {
-    name: '',
-    country_id: ''
-};
-
-export default class SettingsFederal extends Component {
+export default class SettingsRegion extends Component {
     state = {
-        form: defaultForm,
         items: [],
-
         pagination: {
             page: 1,
             pageCount: 1
         },
-
-        countryItems: [],
-        searchQuery: '',
-
         selectedItem: null,
-
+        searchQuery: '',
         showItemModal: false,
-        inProgress: true,
-        modalInProgress: false
+        inProgress: true
     };
 
     componentDidMount() {
-        Promise.all([
-            LocationService.federal.get(),
-            LocationService.country.get()
-        ]).then(([federalResponse, countryResponse]) => {
-            this.setState({
-                items: federalResponse.data,
-                pagination: {
-                    pageCount: +_.get(federalResponse.headers, 'x-pagination-page-count'),
-                    page: +_.get(federalResponse.headers, 'x-pagination-current-page')
-                },
-                countryItems: countryResponse.data.map(({id, name}) => ({name, value: id})),
-                inProgress: false
-            });
-        });
+        this.getRegions(false);
     }
 
-    handleChangeForm = (value, prop) => {
-        this.setState(prev => prev.form[prop] = value);
-    };
-
     handleCloseModal = () => {
-        this.setState({showItemModal: false, form: defaultForm});
+        this.setState({showItemModal: false, selectedItem: null});
     };
 
     handleEditItem = (item) => {
         this.setState({
-            form: item,
+            selectedItem: item,
             showItemModal: true
         });
     };
@@ -87,10 +59,10 @@ export default class SettingsFederal extends Component {
             title: 'Удаление',
             content: `Вы уверены, что хотите удалить "${item.name}"?`,
             submitText: 'Удалить',
-            style: 'danger'
+            danger: true
         }).then(() => {
             this.setState({inProgress: true}, () => {
-                LocationService.federal.delete(item.id).then(() => {
+                LocationService.region.delete(item.id).then(() => {
                     const items = this.state.items.filter(({id}) => id !== item.id);
 
                     NotificationManager.success('Успешно удалено', 'Удаление');
@@ -108,7 +80,7 @@ export default class SettingsFederal extends Component {
 
             newState.pagination.page = newState.pagination.page + 1;
             newState.inProgress = true;
-            this.setState(newState, this.getFederal);
+            this.setState(newState, this.getRegions);
         }
     };
 
@@ -123,14 +95,14 @@ export default class SettingsFederal extends Component {
     handleSubmit = () => {
         const {form} = this.state;
         const method = form.id ? 'update' : 'create';
-        const requestForm = _.pick(form, 'name', 'country_id');
+        const requestForm = _.pick(form, 'name', 'country_id', 'federal_district_id');
 
         if (!requestForm.name.length) {
             NotificationManager.error('Название не может быть пустым', 'Ошибка');
         }
 
         this.setState({modalInProgress: true}, () => {
-            LocationService.federal[method](requestForm, form.id).then(response => {
+            LocationService.region[method](requestForm, form.id).then(response => {
                 let items = [...this.state.items];
 
                 if (form.id) {
@@ -139,25 +111,24 @@ export default class SettingsFederal extends Component {
                     items.push(response.data);
                 }
 
-                NotificationManager.success('Успешно сохранено', 'Сохранено');
                 this.setState({
                     items,
                     form: {name: ''},
-                    modalInProgress: false,
-                    showItemModal: false
+                    showItemModal: false,
+                    modalInProgress: false
                 });
             }).catch(() => this.setState({modalInProgress: false}));
         });
     };
 
-    getFederal = () => {
+    getRegions = (isPagination = true) => {
         const {pagination: {page}, searchQuery} = this.state;
 
-        LocationService.federal
+        LocationService.region
             .get({page, 'query[name]': searchQuery})
             .then(response => {
                 this.setState({
-                    items: this.state.items.concat(response.data),
+                    items: isPagination ? this.state.items.concat(response.data) : response.data,
                     pagination: {
                         pageCount: +_.get(response.headers, 'x-pagination-page-count'),
                         page: +_.get(response.headers, 'x-pagination-current-page')
@@ -171,7 +142,7 @@ export default class SettingsFederal extends Component {
     debouncedSearch = _.debounce((value) => {
         this.setState({inProgress: true}, () => {
             LocationService.cancelLast();
-            LocationService.federal
+            LocationService.region
                 .get({'query[name]': value})
                 .then(response => {
                     this.setState({
@@ -189,21 +160,18 @@ export default class SettingsFederal extends Component {
 
     render() {
         const {
-            form,
             items,
-            countryItems,
-            showItemModal,
             searchQuery,
+            showItemModal,
             pagination,
             inProgress,
-            modalInProgress
+            selectedItem
         } = this.state;
-        const selectedCountry = countryItems.find(({value}) => value === form.country_id);
 
         return (
             <SettingsPage
                 title='Местоположение'
-                subtitle='Федеральный округ'
+                subtitle='Регион'
                 withAddButton
                 onAdd={() => this.setState({showItemModal: true})}
                 onEndPage={this.handleEndPage}
@@ -225,37 +193,11 @@ export default class SettingsFederal extends Component {
                 )}
 
                 {showItemModal && (
-                    <ConfirmModal
-                        title={form.id ? 'Изменить' : 'Добавить'}
-                        width='small'
+                    <LocationRegionModal
                         onClose={this.handleCloseModal}
-                        onSubmit={() => this.form.submit()}
-                    >
-                        <Form
-                            onSubmit={this.handleSubmit}
-                            ref={ref => this.form = ref}
-                            validate
-                        >
-                            <InputText
-                                autoFocus
-                                required
-                                label='Название'
-                                value={form.name}
-                                onChange={value => this.handleChangeForm(value, 'name')}
-                            />
-
-                            <Select
-                                label='Страна'
-                                required
-                                options={countryItems}
-                                selected={selectedCountry}
-                                onChange={({value}) => this.handleChangeForm(value, 'country_id')}
-                                fixedPosList
-                            />
-                        </Form>
-
-                        {modalInProgress && <Loader/>}
-                    </ConfirmModal>
+                        onSubmit={() => this.getRegions(false)}
+                        item={selectedItem}
+                    />
                 )}
 
                 <PromiseDialogModal ref={node => this.dialogModal = node}/>

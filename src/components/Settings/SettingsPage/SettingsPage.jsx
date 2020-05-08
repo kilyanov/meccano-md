@@ -8,7 +8,7 @@ import InputText from '../../Form/InputText/InputText';
 import MenuHamburger from '../../Shared/MenuHamburger/MenuHamburger';
 import SettingsLeftSidebar from './SettingsLeftSidebar/SettingsLeftSidebar';
 import Access from "../../Shared/Access/Access";
-import {PERMISSION} from "../../../constants/Permissions";
+import {PERMISSION} from "../../../constants";
 
 const cls = new Bem('settings-page');
 
@@ -24,17 +24,12 @@ const SettingsPage = ({
     onSearch,
     searchQuery
 }) => {
-    const bodyRef = useRef(null);
     const handleScroll = event => {
         const {target} = event;
         const isEndPage = target.scrollTop === target.scrollHeight - target.clientHeight;
 
         if (isEndPage) onEndPage();
     };
-
-    useEffect(() => {
-        if (bodyRef) InitScrollbar(bodyRef.current);
-    });
 
     return (
         <Page title='Настройки' withBar {...cls()}>
@@ -47,7 +42,6 @@ const SettingsPage = ({
 
                 <div
                     {...cls('body', {empty: !children})}
-                    ref={bodyRef}
                     onScroll={handleScroll}
                 >
                     {!!children && (

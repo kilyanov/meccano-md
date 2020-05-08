@@ -70,6 +70,10 @@ $namespace: '.select';
         #{$namespace}__container {
             border-color: $errorColor;
         }
+
+        #{$namespace}__control {
+            border-color: $errorColor;
+        }
     }
 
     &__label-text {

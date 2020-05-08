@@ -1,16 +1,12 @@
 import React, {Component} from 'react';
-import {LocationService} from '../../../services';
-import PromiseDialogModal from '../../Shared/PromiseDialogModal/PromiseDialogModal';
-import ConfirmModal from '../../Shared/ConfirmModal/ConfirmModal';
-import PropertiesTable from '../../Shared/PropertiesTable/PropertiesTable';
-import SettingsPage from '../SettingsPage/SettingsPage';
-import InputText from '../../Form/InputText/InputText';
+import {LocationService} from '../../../../services';
+import PromiseDialogModal from '../../../Shared/PromiseDialogModal/PromiseDialogModal';
+import PropertiesTable from '../../../Shared/PropertiesTable/PropertiesTable';
+import SettingsPage from '../../SettingsPage/SettingsPage';
 import {NotificationManager} from 'react-notifications';
-import Loader from '../../Shared/Loader/Loader';
-import Select from '../../Form/Select/Select';
-import ListEndedStub from '../../Shared/ListEndedStub/ListEndedStub';
-import Form from '../../Form/Form/Form';
-import {PERMISSION} from "../../../constants/Permissions";
+import ListEndedStub from '../../../Shared/ListEndedStub/ListEndedStub';
+import {PERMISSION} from "../../../../constants";
+import LocationCityModal from "./LocationCityModal";
 
 const columnSettings = {
     name: {
@@ -27,59 +23,38 @@ const columnSettings = {
 
 const defaultForm = {
     name: '',
-    region_id: ''
+    region_id: '',
+    country_id: ''
 };
 
 export default class SettingsCity extends Component {
     state = {
         form: defaultForm,
         items: [],
-
         pagination: {
             page: 1,
             pageCount: 1
         },
-
-        regionItems: [],
         selectedItem: null,
-
         showItemModal: false,
         searchQuery: '',
-        inProgress: true,
-        modalInProgress: false
+        inProgress: true
     };
 
     componentDidMount() {
-        Promise.all([
-            LocationService.city.get(),
-            LocationService.region.get()
-        ]).then(([
-            cityResponse,
-            regionResponse
-        ]) => {
-            this.setState({
-                items: cityResponse.data,
-                pagination: {
-                    pageCount: +_.get(cityResponse.headers, 'x-pagination-page-count'),
-                    page: +_.get(cityResponse.headers, 'x-pagination-current-page')
-                },
-                regionItems: regionResponse.data.map(({id, name}) => ({name, value: id})),
-                inProgress: false
-            });
-        });
+        this.getCities(false);
     }
 
-    handleChangeForm = (value, prop) => {
-        this.setState(prev => prev.form[prop] = value);
-    };
-
     handleCloseModal = () => {
-        this.setState({showItemModal: false, form: defaultForm});
+        this.setState({
+            selectedItem: null,
+            showItemModal: false
+        });
     };
 
     handleEditItem = (item) => {
         this.setState({
-            form: item,
+            selectedItem: item,
             showItemModal: true
         });
     };
@@ -89,7 +64,7 @@ export default class SettingsCity extends Component {
             title: 'Удаление',
             content: `Вы уверены, что хотите удалить "${item.name}"?`,
             submitText: 'Удалить',
-            style: 'danger'
+            danger: true
         }).then(() => {
             this.setState({inProgress: true}, () => {
                 LocationService.city.delete(item.id).then(() => {
@@ -122,44 +97,14 @@ export default class SettingsCity extends Component {
         });
     };
 
-    handleSubmit = () => {
-        const {form} = this.state;
-        const method = form.id ? 'update' : 'create';
-        const requestForm = _.pick(form, 'name', 'region_id');
-
-        if (!requestForm.name.length) {
-            NotificationManager.error('Название не может быть пустым', 'Ошибка');
-        }
-
-        this.setState({modalInProgress: true}, () => {
-            LocationService.city[method](requestForm, form.id).then(response => {
-                let items = [...this.state.items];
-
-                if (form.id) {
-                    items = items.map(item => item.id === form.id ? response.data : item);
-                } else {
-                    items.push(response.data);
-                }
-
-                NotificationManager.success('Успешно сохранено', 'Сохранено');
-                this.setState({
-                    items,
-                    form: {name: ''},
-                    showItemModal: false,
-                    modalInProgress: false
-                });
-            }).catch(() => this.setState({modalInProgress: false}));
-        });
-    };
-
-    getCities = () => {
+    getCities = (isPagination = true) => {
         const {pagination: {page}, searchQuery} = this.state;
 
         LocationService.city
             .get({page, 'query[name]': searchQuery})
             .then(response => {
                 this.setState({
-                    items: this.state.items.concat(response.data),
+                    items: isPagination ? this.state.items.concat(response.data) : response.data,
                     pagination: {
                         pageCount: +_.get(response.headers, 'x-pagination-page-count'),
                         page: +_.get(response.headers, 'x-pagination-current-page')
@@ -191,16 +136,13 @@ export default class SettingsCity extends Component {
 
     render() {
         const {
-            form,
             items,
-            regionItems,
+            selectedItem,
             showItemModal,
             searchQuery,
             pagination,
-            inProgress,
-            modalInProgress
+            inProgress
         } = this.state;
-        const selectedRegion = regionItems.find(({value}) => value === form.region_id);
 
         return (
             <SettingsPage
@@ -227,37 +169,11 @@ export default class SettingsCity extends Component {
                 )}
 
                 {showItemModal && (
-                    <ConfirmModal
-                        title={form.id ? 'Изменить' : 'Добавить'}
-                        width='small'
+                    <LocationCityModal
+                        item={selectedItem}
                         onClose={this.handleCloseModal}
-                        onSubmit={() => this.form.submit()}
-                    >
-                        <Form
-                            onSubmit={this.handleSubmit}
-                            ref={ref => this.form = ref}
-                            validate
-                        >
-                            <InputText
-                                autoFocus
-                                label='Название'
-                                required
-                                value={form.name}
-                                onChange={value => this.handleChangeForm(value, 'name')}
-                            />
-
-                            <Select
-                                label='Регион'
-                                required
-                                options={regionItems}
-                                selected={selectedRegion}
-                                onChange={({value}) => this.handleChangeForm(value, 'region_id')}
-                                fixedPosList
-                            />
-                        </Form>
-
-                        {modalInProgress && <Loader/>}
-                    </ConfirmModal>
+                        onSubmit={() => this.getCities(false)}
+                    />
                 )}
 
                 <PromiseDialogModal ref={node => this.dialogModal = node}/>

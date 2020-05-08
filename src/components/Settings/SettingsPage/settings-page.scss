@@ -89,6 +89,7 @@ $namespace: '.settings-page';
     max-height: 100%;
     padding: 20px 40px;
     border-top: 1px solid $gray;
+    overflow-y: auto;
 
     @include media('mobile') {
       padding: 20px 10px;

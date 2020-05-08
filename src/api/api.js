@@ -32,7 +32,7 @@ httpService.interceptors.response.use(
             AuthService.logOut();
         }
 
-        if (!axios.isCancel(error) && _.get(response, 'data', []).length || response.status >= 400) {
+        if (!axios.isCancel(error) && _.get(response, 'data', []).length || response && response.status >= 400) {
             const data = response.data instanceof ArrayBuffer ? arrayBufferToArray(response.data) : response.data;
 
             if (Array.isArray(data)) {

@@ -22,6 +22,8 @@ import {PROJECT_PERMISSION} from "../../../constants/ProjectPermissions";
 import Access from "../../Shared/Access/Access";
 import {KEY_CODE} from "../../../constants";
 import TinyMCE from "../../Form/TinyMCE/TinyMCE";
+import CreateLocationModal from "./CreateLocationModal";
+import LocationIcon from "../../Shared/SvgIcons/LocationIcon";
 
 const cls = new Bem('article-create-page');
 const sectionsSet = {
@@ -568,6 +570,7 @@ class ArticleCreatePage extends Component {
             articlesNavs,
             form,
             showViewSettings,
+            showLocationModal,
             sections,
             sectionsTwo,
             sectionsThree,
@@ -762,6 +765,14 @@ class ArticleCreatePage extends Component {
                         {/* <span>Отображение статей</span> */}
                     </button>
 
+                    <button
+                        {...cls('location-button')}
+                        title='Добавить город'
+                        onClick={() => this.setState({showLocationModal: true})}
+                    >
+                        <LocationIcon />
+                    </button>
+
                     <Access permissions={[PROJECT_PERMISSION.EDIT]}>
                         <Button
                             {...cls('done-button')}
@@ -838,6 +849,12 @@ class ArticleCreatePage extends Component {
                     <ArticleViewSettings
                         onClose={() => this.setState({showViewSettings: false})}
                         onChange={this.handleChangeViewType}
+                    />
+                )}
+
+                {showLocationModal && (
+                    <CreateLocationModal
+                        onClose={() => this.setState({showLocationModal: false})}
                     />
                 )}
 

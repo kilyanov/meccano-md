@@ -14,10 +14,10 @@ import ArticleCreatePage from '../components/Article/ArticleCeratePage/ArticleCr
 import SettingsPage from '../components/Settings/SettingsPage/SettingsPage';
 import SettingsImport from '../components/Settings/SettingsTemplates/SettingsImport/SettingsImport';
 import SettingsExport from '../components/Settings/SettingsTemplates/SettingsExport/SettingsExport';
-import SettingsCountry from '../components/Settings/SettingsLocation/SettingsCountry';
-import SettingsFederal from '../components/Settings/SettingsLocation/SettingsFederal';
-import SettingsRegion from '../components/Settings/SettingsLocation/SettingsRegion';
-import SettingsCity from '../components/Settings/SettingsLocation/SettingsCity';
+import SettingsCountry from '../components/Settings/SettingsLocation/LocationCountry/SettingsCountry';
+import SettingsFederal from '../components/Settings/SettingsLocation/LocationFederal/SettingsFederal';
+import SettingsRegion from '../components/Settings/SettingsLocation/LocationRegion/SettingsRegion';
+import SettingsCity from '../components/Settings/SettingsLocation/LocationCity/SettingsCity';
 import SettingsSourceList from '../components/Settings/SettingsSource/SettingsSourceList';
 import SettingsSourceType from '../components/Settings/SettingsSource/SettingsSourceType';
 import SettingsAuthors from '../components/Settings/SettingsAuthors/SettingsAuthors';

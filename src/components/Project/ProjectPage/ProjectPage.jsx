@@ -301,7 +301,7 @@ export default class ProjectPage extends Component {
         };
 
         // Необходимые поля для корректной работы цветовыделения
-        form.expand = [...form.expand, 'complete_monitor', 'complete_analytic', 'complete_client', 'user.surname'];
+        form.expand = [...form.expand, 'complete_monitor', 'complete_analytic', 'complete_client', 'user'];
 
         // Фильтрация по столбцам
         Object.keys(filters).forEach(filterKey => {
