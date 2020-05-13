@@ -9,6 +9,7 @@ import InputTime from '../../../Form/InputTime/InputTime';
 import {FIELD_TYPE} from '../../../../constants';
 import InputDateTimePicker from "../../../Form/InputDateTimePicker/InputDatePicker";
 import AsyncCreatableSelect from "../../../Form/AsyncCreatebleSelect/AsyncCreateableSelect";
+import Select from '../../../Form/Select/ReactSelect/ReactSelect';
 
 const cls = new Bem('article-create-page');
 const ProjectCreateField = ({field, value, onChange, className}) => {
@@ -44,28 +45,32 @@ const ProjectCreateField = ({field, value, onChange, className}) => {
             </div>;
         case FIELD_TYPE.UUID:
             return <div {...cls('field', [field.slug, filedType], className)} data-id={field.slug}>
-                <AsyncCreatableSelect
-                    placeholder={field.placeholder}
-                    label={field.name}
-                    options={field.options || []}
-                    selected={value}
-                    readOnly={field.readOnly}
-                    onChange={val => onChange(val, field.slug)}
-                    requestService={field.requestService}
-                    requestCancelService={field.requestCancelService}
-                    depended={field.depended}
-                />
-                {/* <Select
-                    placeholder={field.placeholder}
-                    label={field.name}
-                    options={field.options || []}
-                    selected={value}
-                    readOnly={field.readOnly}
-                    onChange={val => onChange(val, field.slug)}
-                    requestService={field.requestService}
-                    requestCancelService={field.requestCancelService}
-                    depended={field.depended}
-                /> */}
+                {field.requestService ? (
+                    <AsyncCreatableSelect
+                        placeholder={field.placeholder}
+                        label={field.name}
+                        options={field.options || []}
+                        selected={value}
+                        fieldKey={field.slug}
+                        readOnly={field.readOnly}
+                        onChange={val => onChange(val, field.slug)}
+                        requestService={field.requestService}
+                        requestCancelService={field.requestCancelService}
+                        depended={field.depended}
+                    />
+                ) : (
+                    <Select
+                        placeholder={field.placeholder}
+                        label={field.name}
+                        options={field.options || []}
+                        selected={value}
+                        readOnly={field.readOnly}
+                        onChange={val => onChange(val, field.slug)}
+                        requestService={field.requestService}
+                        requestCancelService={field.requestCancelService}
+                        depended={field.depended}
+                    />
+                )}
             </div>;
         case FIELD_TYPE.UUID_EXT:
             return <div {...cls('field', [field.slug, filedType], className)} data-id={field.slug}>
@@ -74,6 +79,7 @@ const ProjectCreateField = ({field, value, onChange, className}) => {
                     label={field.name}
                     options={field.options || []}
                     selected={value}
+                    fieldKey={field.slug}
                     readOnly={field.readOnly}
                     onChange={val => onChange(val, field.slug)}
                     requestService={field.requestService}

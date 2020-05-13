@@ -140,14 +140,14 @@ class ArticleCreatePage extends Component {
         newState.form[option] = _.get(value, 'value', value); // if object and has "value"
 
         if (option === 'section_main_id') {
-            newState.sectionsTwo = value.sectionsTwo;
+            newState.sectionsTwo = value ? value.sectionsTwo : [];
             newState.sectionsThree = [];
             newState.form.section_sub_id = null;
             newState.form.section_three_id = null;
         }
 
         if (option === 'section_sub_id') {
-            newState.sectionsThree = value.sectionsThree;
+            newState.sectionsThree = value ? value.sectionsThree : [];
             newState.form.section_three_id = null;
         }
 
@@ -391,7 +391,7 @@ class ArticleCreatePage extends Component {
                             const found = this.findSectionById(form[option], sections);
 
                             if (found) {
-                                form[option] = {name: found.name, value: found.id, ...found};
+                                // form[option] = {name: found.name, value: found.id, ...found};
                                 newState[sectionsSet[option]] = found[sectionsSet[option]];
                             }
                         }
@@ -564,16 +564,113 @@ class ArticleCreatePage extends Component {
 
     article = null;
 
+    renderField = (field) => {
+        const { roles } = this.props;
+        const { form, sections, sectionsTwo, sectionsThree } = this.state;
+        const getValue = (prop) => _.isObject(prop) ? prop.value : prop;
+
+        field.readOnly = !isProjectAccess([PROJECT_PERMISSION.EDIT]) && !isRolesAccess(roles.admin);
+
+        switch (field.slug) {
+            case 'source_id':
+                field.requestService = SourceService.get;
+                field.requestCancelService = SourceService.cancelLast;
+                break;
+            case 'source_type_id':
+                field.requestService = SourceService.type.get;
+                field.requestCancelService = SourceService.cancelLast;
+                break;
+            case 'section_main_id':
+                field.options = sections.map(section => ({
+                    label: section.name,
+                    value: section.id,
+                    sectionsTwo: section.sectionsTwo
+                }));
+                break;
+            case 'section_sub_id':
+                field.options = sectionsTwo.map(section => ({
+                    label: section.name,
+                    value: section.id,
+                    sectionsThree: section.sectionsThree
+                }));
+                break;
+            case 'section_three_id':
+                field.options = sectionsThree.map(({name, id}) => ({label: name, value: id}));
+                break;
+            case 'genre_id':
+                field.requestService = ArticleService.genre;
+                field.requestCancelService = ArticleService.cancelLast;
+                break;
+            case 'type_id':
+                field.requestService = ArticleService.types;
+                field.requestCancelService = ArticleService.cancelLast;
+                break;
+            case 'heading_id':
+                field.requestService = ArticleService.heading;
+                field.requestCancelService = ArticleService.cancelLast;
+                break;
+            case 'rating_id':
+                field.requestService = ArticleService.rating;
+                field.requestCancelService = ArticleService.cancelLast;
+                break;
+            case 'country_id':
+                field.requestService = LocationService.country.get;
+                field.requestCancelService = LocationService.cancelLast;
+                break;
+            case 'federal_district_id':
+                field.requestService = LocationService.federal.get;
+                field.requestCancelService = LocationService.cancelLast;
+                field.depended = [{
+                    name: 'query[country_id]',
+                    value: getValue(form.country_id)
+                }];
+                break;
+            case 'region_id':
+                field.requestService = LocationService.region.get;
+                field.requestCancelService = LocationService.cancelLast;
+                field.depended = [{
+                    name: 'query[federal_district_id]',
+                    value: getValue(form.federal_district_id)
+                }, {
+                    name: 'query[country_id]',
+                    value: getValue(form.country_id)
+                }];
+                break;
+            case 'city_id':
+                field.requestService = LocationService.city.get;
+                field.requestCancelService = LocationService.cancelLast;
+                field.depended = [{
+                    name: 'query[region_id]',
+                    value: getValue(form.region_id)
+                }];
+                break;
+            case 'authors':
+                field.options = form.authors;
+                field.requestService = ArticleService.author;
+                field.requestCancelService = ArticleService.cancelLast;
+                break;
+            default:
+                field.options = [];
+        }
+
+        return (
+            <ProjectCreateField
+                key={field.slug}
+                field={field}
+                placeholder={field.name}
+                value={form[field.slug] || ''}
+                onChange={this.handleChangeForm}
+            />
+        );
+    };
+
     render() {
-        const {roles} = this.props;
+        const { roles } = this.props;
         const {
             articlesNavs,
             form,
             showViewSettings,
             showLocationModal,
-            sections,
-            sectionsTwo,
-            sectionsThree,
             viewType,
             projectFields,
             userType,
@@ -581,7 +678,6 @@ class ArticleCreatePage extends Component {
         } = this.state;
         const isUpdate = !!this.articleId;
         const dataSectionFields = this.getDataSectionFields();
-        const getValue = (prop) => _.isObject(prop) ? prop.value : prop;
         const readOnly = !isProjectAccess([PROJECT_PERMISSION.EDIT]) && !isRolesAccess(roles.admin);
         const sectionData = (
             <Sortable
@@ -593,105 +689,11 @@ class ArticleCreatePage extends Component {
                 }}
                 onChange={this.handleEndSort}
             >
-                {dataSectionFields.map(field => {
-                    field.readOnly = readOnly;
-
-                    switch (field.slug) {
-                        case 'source_id':
-                            field.requestService = SourceService.get;
-                            field.requestCancelService = SourceService.cancelLast;
-                            break;
-                        case 'source_type_id':
-                            field.requestService = SourceService.type.get;
-                            field.requestCancelService = SourceService.cancelLast;
-                            break;
-                        case 'section_main_id':
-                            field.options = sections.map(section => ({
-                                label: section.name,
-                                value: section.id,
-                                sectionsTwo: section.sectionsTwo
-                            }));
-                            break;
-                        case 'section_sub_id':
-                            field.options = sectionsTwo.map(section => ({
-                                label: section.name,
-                                value: section.id,
-                                sectionsThree: section.sectionsThree
-                            }));
-                            break;
-                        case 'section_three_id':
-                            field.options = sectionsThree.map(({name, id}) => ({label: name, value: id}));
-                            break;
-                        case 'genre_id':
-                            field.requestService = ArticleService.genre;
-                            field.requestCancelService = ArticleService.cancelLast;
-                            break;
-                        case 'type_id':
-                            field.requestService = ArticleService.types;
-                            field.requestCancelService = ArticleService.cancelLast;
-                            break;
-                        case 'heading_id':
-                            field.requestService = ArticleService.heading;
-                            field.requestCancelService = ArticleService.cancelLast;
-                            break;
-                        case 'rating_id':
-                            field.requestService = ArticleService.rating;
-                            field.requestCancelService = ArticleService.cancelLast;
-                            break;
-                        case 'country_id':
-                            field.requestService = LocationService.country.get;
-                            field.requestCancelService = LocationService.cancelLast;
-                            break;
-                        case 'federal_district_id':
-                            field.requestService = LocationService.federal.get;
-                            field.requestCancelService = LocationService.cancelLast;
-                            field.depended = [{
-                                name: 'query[country_id]',
-                                value: getValue(form.country_id)
-                            }];
-                            break;
-                        case 'region_id':
-                            field.requestService = LocationService.region.get;
-                            field.requestCancelService = LocationService.cancelLast;
-                            field.depended = [{
-                                name: 'query[federal_district_id]',
-                                value: getValue(form.federal_district_id)
-                            }, {
-                                name: 'query[country_id]',
-                                value: getValue(form.country_id)
-                            }];
-                            break;
-                        case 'city_id':
-                            field.requestService = LocationService.city.get;
-                            field.requestCancelService = LocationService.cancelLast;
-                            field.depended = [{
-                                name: 'query[region_id]',
-                                value: getValue(form.region_id)
-                            }];
-                            break;
-                        case 'authors':
-                            field.options = form.authors;
-                            field.requestService = ArticleService.author;
-                            field.requestCancelService = ArticleService.cancelLast;
-                            break;
-                        default:
-                            field.options = [];
-                    }
-
-                    return (
-                        <ProjectCreateField
-                            key={field.slug}
-                            field={field}
-                            placeholder={field.name}
-                            value={form[field.slug] || ''}
-                            onChange={this.handleChangeForm}
-                        />
-                    );
-                })}
+                { dataSectionFields.map(this.renderField) }
             </Sortable>
         );
 
-        const sectionAnnotation = projectFields.find(({slug}) => slug === 'annotation') ? (
+        const sectionAnnotation = projectFields.find(({ slug }) => slug === 'annotation') ? (
             <section {...cls('section')}>
                 <RichEditor
                     {...cls('field', 'annotation')}
@@ -703,7 +705,7 @@ class ArticleCreatePage extends Component {
             </section>
         ) : null;
 
-        const sectionText = projectFields.find(({slug}) => slug === 'text') ? (
+        const sectionText = projectFields.find(({ slug }) => slug === 'text') ? (
             <section {...cls('section')}>
                 <TinyMCE
                     {...cls('field', 'textarea')}

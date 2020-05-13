@@ -16,21 +16,21 @@ class AsyncCreatableSelect extends Component {
     }
 
     componentDidMount() {
-        const { required, requestService, selected } = this.props;
+        const { required, requestService, selected, fieldKey } = this.props;
 
         if (required) {
             EventEmitter.on(EVENTS.FORM.ON_VALIDATE, this.validate);
         }
 
         if (requestService) {
-            this.getOptions();
+            this.getOptions('', () => {}, false);
 
             if (selected) {
-                requestService({'query[id]': selected}).then(({ data }) => {
-                    if (data && data.length) {
-                        const { name, id } = data[0];
+                requestService({ 'query[id]': selected }).then(response => {
+                    if (response && response.data && response.data.length) {
+                        const { name, id } = response.data[0];
 
-                        this.setState({currentOption: { label: name, value: id }});
+                        this.setState({ currentOption: { label: name, value: id } });
                     }
                 });
             }
@@ -51,11 +51,11 @@ class AsyncCreatableSelect extends Component {
         }
     };
 
-    getOptions = (inputValue = '', callback = () => {}) => {
+    getOptions = (inputValue = '', callback = () => {}, cancelLastRequest = true) => {
         const { requestService, requestCancelService, extendRequestForm } = this.props;
         let form = {};
 
-        if (requestCancelService) {
+        if (requestCancelService && cancelLastRequest) {
             requestCancelService();
         }
 
@@ -73,7 +73,7 @@ class AsyncCreatableSelect extends Component {
                 value: _.get(option, 'id')
             }));
 
-            this.setState({loadedOptions: opt});
+            this.setState({ loadedOptions: opt });
             callback(opt);
             return opt;
         });
