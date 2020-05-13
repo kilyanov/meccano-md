@@ -98,14 +98,22 @@ class AsyncCreatableSelect extends Component {
             menuPosition = 'absolute',
             validateErrorMessage = 'Поле обязательно для заполнения',
             label,
+            draggable,
             theme
         } = this.props;
         const isDarkTheme = theme === THEME_TYPE.DARK;
 
         return (
-            <div {...cls('', {error: isError, disabled}, {validated: required, [className]: !!className})}>
+            <div
+                {...cls('', {
+                    error: isError,
+                    disabled,
+                    validated: required,
+                    succeed: !!currentOption
+                }, { [className]: !!className })}
+            >
                 <label {...cls('label')}>
-                    {label && <span {...cls('label-text', '', 'drag-handle')}>{label}</span>}
+                    {label && <span {...cls('label-text', '', { 'drag-handle': draggable })}>{label}</span>}
 
                     <AsyncCreatable
                         cacheOptions

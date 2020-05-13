@@ -270,7 +270,8 @@ export default class InputTime extends React.Component {
             label,
             openOnFocus,
             disabled,
-            validateErrorMessage
+            validateErrorMessage,
+            draggable
         } = this.props;
         const isFocused = this.inputRef === document.activeElement;
         const isError = error; // && !isFocused
@@ -290,7 +291,7 @@ export default class InputTime extends React.Component {
                 onClick={() => !isOpen && this.open()}
             >
                 <label {...cls('label')}>
-                    {label && <span {...cls('label-text', '', 'drag-handle')}>{label}</span>}
+                    {label && <span {...cls('label-text', '', { 'drag-handle': draggable })}>{label}</span>}
 
                     <input
                         autoFocus={autoFocus}

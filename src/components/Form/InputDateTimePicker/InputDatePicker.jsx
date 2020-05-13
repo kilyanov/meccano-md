@@ -32,13 +32,13 @@ export default class InputDateTimePicker extends Component {
     };
 
     render() {
-        const {className, clearable, label, format, readOnly} = this.props;
+        const {className, clearable, label, format, readOnly, draggable} = this.props;
         const {value} = this.state;
 
         return (
             <div {...cls('', {readOnly}, className)}>
                 <label {...cls('label')}>
-                    {label && <span {...cls('label-text', '', 'drag-handle')}>{label}</span>}
+                    {label && <span {...cls('label-text', '', { 'drag-handle': draggable })}>{label}</span>}
 
                     <DatePicker
                         calendarIcon={<CalendarIcon/>}

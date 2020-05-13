@@ -11,6 +11,7 @@ export default function ReactSelect({
     readOnly,
     options,
     onChange,
+    draggable,
     label
 }) {
     const theme = useSelector(state => state.theme);
@@ -18,10 +19,10 @@ export default function ReactSelect({
     const selectedValue = options.find(({ value }) => value === selected);
 
     return (
-        <div {...cls()}>
+        <div {...cls('', { succeed: !!selectedValue })}>
             {label && (
-                <label {...cls('label', '', 'drag-handle')}>
-                    <span {...cls('label-text', '', 'drag-handle')}>{label}</span>
+                <label {...cls('label', '', { 'drag-handle': draggable })}>
+                    <span {...cls('label-text', '', { 'drag-handle': draggable })}>{label}</span>
                 </label>
             )}
 

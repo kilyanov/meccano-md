@@ -3,10 +3,10 @@ import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
 import Select from 'react-select/async-creatable';
 import {EventEmitter} from '../../../helpers';
-import {EVENTS} from '../../../constants/Events';
-import './input-tags.scss';
-import {THEME_TYPE} from '../../../constants/ThemeType';
+import {EVENTS} from '../../../constants';
+import {THEME_TYPE} from '../../../constants';
 import {ReactSelectStyles} from "../../../constants/ReactSelectStyles";
+import './input-tags.scss';
 
 const cls = new Bem('input-tags');
 
@@ -14,11 +14,13 @@ class InputTags extends Component {
     static propTypes = {
         required: PropTypes.bool,
         theme: PropTypes.string.isRequired,
-        readOnly: PropTypes.bool
+        readOnly: PropTypes.bool,
+        draggable: PropTypes.bool,
+        options: PropTypes.array
     };
 
     state = {
-        defaultOptions: []
+        defaultOptions: this.props.options || []
     };
 
     componentDidMount() {
@@ -34,7 +36,7 @@ class InputTags extends Component {
         if (!this.props.requestService) return;
 
         this.props.requestService().then(response => {
-            const defaultOptions = response.data.map(({id, name}) => ({value: id, label: name}));
+            const defaultOptions = response.data.map(({ id, name }) => ({ value: id, label: name }));
 
             this.setState({defaultOptions});
         });
@@ -43,8 +45,8 @@ class InputTags extends Component {
     onLoadOptions = (value) => {
         if (!this.props.requestService) return;
 
-        return this.props.requestService({'query[name]': value}).then(response => {
-            return response.data.map(({id, name}) => ({value: id, label: name}));
+        return this.props.requestService({ 'query[name]': value }).then(response => {
+            return response.data.map(({ id, name }) => ({ value: id, label: name }));
         });
     };
 
@@ -56,15 +58,15 @@ class InputTags extends Component {
     };
 
     render() {
-        const {label, theme, onChange, options, readOnly} = this.props;
+        const {label, theme, onChange, selected, draggable, readOnly} = this.props;
         const {defaultOptions} = this.state;
         const isDarkTheme = theme === THEME_TYPE.DARK;
 
         return (
-            <div {...cls('', {succeed: !!this.props.value.length})}>
+            <div {...cls('', {succeed: !!this.props.selected.length})}>
                 {label && (
-                    <label {...cls('label', '', 'drag-handle')}>
-                        <span {...cls('label-text', '', 'drag-handle')}>{label}</span>
+                    <label {...cls('label', '', { 'drag-handle': draggable })}>
+                        <span {...cls('label-text', '', { 'drag-handle': draggable })}>{label}</span>
                     </label>
                 )}
 
@@ -75,7 +77,7 @@ class InputTags extends Component {
                     isSearchable
                     onChange={onChange}
                     readOnly={readOnly}
-                    value={options}
+                    value={selected}
                     defaultOptions={defaultOptions}
                     loadingMessage={() => 'Загрузка...'}
                     noOptionsMessage={() => 'Нет элементов'}

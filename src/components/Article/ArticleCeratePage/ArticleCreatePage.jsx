@@ -13,7 +13,7 @@ import ArticleViewSettings from './ArticleViewSettings/ArticleViewSettings';
 import ProjectCreateField from '../../Project/ProjectCreatePage/ProjectCreatePageField/ProjectCreatePageField';
 import Sortable from 'react-sortablejs';
 import {isMobileScreen, isProjectAccess, isRolesAccess, OperatedNotification} from '../../../helpers/Tools';
-import {STORAGE_KEY} from '../../../constants';
+import {FIELD_TYPE, STORAGE_KEY} from '../../../constants';
 import {EventEmitter} from "../../../helpers";
 import {EVENTS} from "../../../constants";
 import store from "../../../redux/store";
@@ -89,7 +89,6 @@ class ArticleCreatePage extends Component {
 
         if (this.articleId) {
             StorageService.set(STORAGE_KEY.LAST_VIEWED_ARTICLE, this.articleId);
-            this.getArticle();
         } else {
             ProjectService
                 .get({expand: 'projectFields,sections,users'}, this.projectId)
@@ -348,8 +347,9 @@ class ArticleCreatePage extends Component {
     };
 
     getArticle = () => {
-        const {location} = this.props;
-        const {userTypeId} = this.state;
+        console.log(1);
+        const { location } = this.props;
+        const { userTypeId } = this.state;
         const searchParams = location.search && new URLSearchParams(location.search);
         const requestForm = {
             expand: 'project.projectFields,project.sections,' +
@@ -365,7 +365,7 @@ class ArticleCreatePage extends Component {
             }
         }
 
-        this.setState({inProgress: true}, () => {
+        this.setState({ inProgress: true }, () => {
             ArticleService
                 .get(this.articleId, requestForm)
                 .then(response => {
@@ -650,7 +650,7 @@ class ArticleCreatePage extends Component {
                 field.requestCancelService = ArticleService.cancelLast;
                 break;
             default:
-                field.options = [];
+                break;
         }
 
         return (

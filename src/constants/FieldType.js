@@ -8,5 +8,6 @@ export const FIELD_TYPE = {
     DATE: 'date',
     TIME: 'time',
     UUID: 'uuid',
-    UUID_EXT: 'uuidExt'
+    UUID_EXT: 'uuidExt',
+    SELECT: 'select'
 };

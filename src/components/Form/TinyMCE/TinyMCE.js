@@ -6,10 +6,10 @@ import {TINY_MCE_KEY} from "../../../constants/TinyMCEApiKey";
 
 const cls = new BEMHelper('tiny-mce');
 
-export default function TinyMCE({ className, content, label, onEditorChange, onChange, readOnly }) {
+export default function TinyMCE({ className, content, label, onEditorChange, onChange, readOnly, draggable }) {
     return (
         <div {...cls('', {readOnly}, className)}>
-            {label && <span {...cls('label')}>{label}</span>}
+            {label && <span {...cls('label', '', { 'drag-handle': draggable })}>{label}</span>}
 
             <Editor
                 apiKey={TINY_MCE_KEY}

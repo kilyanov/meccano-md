@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 
 import './input-text.scss';
 import {EventEmitter} from '../../../helpers';
-import {EVENTS} from '../../../constants/Events';
+import {EVENTS} from '../../../constants';
 import {KEY_CODE} from '../../../constants';
 import EarthIcon from '../../Shared/SvgIcons/EarthIcon';
 
@@ -24,6 +24,7 @@ export default class InputText extends Component {
         onClick: PropTypes.func,
         onEnter: PropTypes.func,
         disabled: PropTypes.bool,
+        draggable: PropTypes.bool,
         controlled: PropTypes.bool,
         clearable: PropTypes.bool,
         placeholder: PropTypes.string,
@@ -176,6 +177,7 @@ export default class InputText extends Component {
             onClick,
             validateType,
             readOnly,
+            draggable,
             validateErrorMessage,
             children
         } = this.props;
@@ -205,7 +207,7 @@ export default class InputText extends Component {
                 })}
             >
                 <label {...cls('label')}>
-                    {label && <span {...cls('label-text', '', 'drag-handle')} title={label}>{label}</span>}
+                    {label && <span {...cls('label-text', '', { 'drag-handle': draggable })} title={label}>{label}</span>}
 
                     <input
                         {...cls("field")}

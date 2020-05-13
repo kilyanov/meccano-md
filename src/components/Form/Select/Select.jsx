@@ -441,7 +441,8 @@ export default class Select extends Component {
             validateErrorMessage,
             className,
             canAddNewValue,
-            readOnly
+            readOnly,
+            draggable
         } = this.props;
         const {opened, searchString, searchFocused, inProgress, error} = this.state;
         const options = this.getOptions();
@@ -467,8 +468,8 @@ export default class Select extends Component {
                 })}
             >
                 {label && (
-                    <label {...cls('label', '', 'drag-handle')}>
-                        <span {...cls('label-text', '', 'drag-handle')}>{label}</span>
+                    <label {...cls('label', '', { 'drag-handle': draggable })}>
+                        <span {...cls('label-text', '', { 'drag-handle': draggable })}>{label}</span>
                     </label>
                 )}
 

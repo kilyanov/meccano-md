@@ -10,7 +10,8 @@ export default class InputNumber extends Component {
         value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
         onChange: PropTypes.func.isRequired,
         label: PropTypes.string.isRequired,
-        readOnly: PropTypes.bool
+        readOnly: PropTypes.bool,
+        draggable: PropTypes.bool
     };
 
     state = {
@@ -24,7 +25,7 @@ export default class InputNumber extends Component {
     };
 
     render() {
-        const {className, label, value, readOnly} = this.props;
+        const {className, label, value, readOnly, draggable} = this.props;
         const {error} = this.state;
         const isFocused = this.inputRef === document.activeElement;
         const isError = error;
@@ -42,7 +43,7 @@ export default class InputNumber extends Component {
                 }, className)}
             >
                 <label {...cls('label')}>
-                    {label && <span {...cls('label-text', '', 'drag-handle')}>{label}</span>}
+                    {label && <span {...cls('label-text', '', { 'drag-handle': draggable })}>{label}</span>}
 
                     <input
                         {...cls('field')}
