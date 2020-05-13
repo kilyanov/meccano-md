@@ -150,7 +150,7 @@ export default class ProjectKeyWords extends Component {
 
     getItems = () => {
         ProjectService.wordSearch
-            .get({project: this.props.projectId})
+            .get({ project: this.props.projectId, 'per-page': 100 })
             .then(response => {
                 this.setState({
                     keyWords: response.data,
@@ -158,7 +158,7 @@ export default class ProjectKeyWords extends Component {
                 });
             }).catch(() => this.setState({inProgress: false}));
     };
-    
+
     render() {
         const {projectId} = this.props;
         const {
