@@ -116,6 +116,7 @@ export default class ProjectPage extends Component {
 
         this.setState(state => {
             state.selectedItemIds = selectedItemIds;
+            state.selectedArticles = [];
 
             selectedItemIds.forEach(selectedId => {
                 const found = state.articles.find(({id}) => id === selectedId);
