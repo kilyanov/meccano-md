@@ -1,22 +1,22 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import './settings-export.scss';
 import SettingsPage from '../../SettingsPage/SettingsPage';
 import TransferService from '../../../../services/TransferService';
-import {NotificationManager} from 'react-notifications';
+import { NotificationManager } from 'react-notifications';
 import PropertiesTable from '../../../Shared/PropertiesTable/PropertiesTable';
 import PromiseDialogModal from '../../../Shared/PromiseDialogModal/PromiseDialogModal';
 import Loader from '../../../Shared/Loader/Loader';
 import SettingsExportModal from './SettingsExportModal/SettingsExportModal';
-import {PERMISSION} from "../../../../constants/Permissions";
+import { PERMISSION } from "../../../../constants";
 
 const columnSettings = {
     name: {
         name: 'Название',
-        style: {width: '60%'}
+        style: { width: '60%' }
     },
     type: {
         name: 'Тип',
-        style: {width: '40%'}
+        style: { width: '40%' }
     }
 };
 
@@ -29,13 +29,13 @@ export default class SettingsExport extends Component {
     };
 
     componentDidMount() {
-        this.setState({inProgress: true}, () => {
+        this.setState({ inProgress: true }, () => {
             TransferService.export.get().then(response => {
                 this.setState({
-                    items: response.data.map(item => ({...item, value: item.id})),
+                    items: response.data.map(item => ({ ...item, value: item.id })),
                     inProgress: false
                 });
-            }).catch(() => this.setState({inProgress: false}));
+            }).catch(() => this.setState({ inProgress: false }));
         });
     }
 
@@ -53,7 +53,7 @@ export default class SettingsExport extends Component {
             submitText: 'Удалить',
             style: 'danger'
         }).then(() => {
-            this.setState({items: this.state.items.filter(({id}) => id !== item.id)});
+            this.setState({ items: this.state.items.filter(({ id }) => id !== item.id) });
             TransferService.export.delete(item.id).then(() => {
                 NotificationManager.success('Успешно удален', 'Удалено');
             });
@@ -61,7 +61,7 @@ export default class SettingsExport extends Component {
     };
 
     handleSubmitItem = (item, method = 'save') => {
-        let items = [...this.state.items];
+        let items = [ ...this.state.items ];
 
         if (method === 'update') {
             items = items.map(i => (i.id === item.id) ? item : i);
@@ -69,21 +69,21 @@ export default class SettingsExport extends Component {
             items.push(item);
         }
 
-        this.setState({items, selectedItem: null});
+        this.setState({ items, selectedItem: null });
     };
 
     render() {
-        const {showItemModal, selectedItem, inProgress} = this.state;
+        const { showItemModal, selectedItem, inProgress } = this.state;
 
         return (
             <SettingsPage
                 title='Шаблоны'
                 subtitle='Экспорт'
                 withAddButton
-                onAdd={() => this.setState({showItemModal: true, selectedItem: null})}
+                onAdd={() => this.setState({ showItemModal: true, selectedItem: null })}
             >
                 <PropertiesTable
-                    editPermissions={[PERMISSION.editSettings]}
+                    editPermissions={[ PERMISSION.editSettings ]}
                     columnSettings={columnSettings}
                     items={this.state.items}
                     onEditItem={this.handleClickItem}
@@ -94,7 +94,7 @@ export default class SettingsExport extends Component {
                 {showItemModal && (
                     <SettingsExportModal
                         item={selectedItem}
-                        onClose={() => this.setState({selectedItem: null, showItemModal: false})}
+                        onClose={() => this.setState({ selectedItem: null, showItemModal: false })}
                         onSubmit={this.handleSubmitItem}
                     />
                 )}

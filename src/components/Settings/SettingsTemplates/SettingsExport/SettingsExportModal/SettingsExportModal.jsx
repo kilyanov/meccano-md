@@ -1,17 +1,17 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import ConfirmModal from '../../../../Shared/ConfirmModal/ConfirmModal';
 import InputText from '../../../../Form/InputText/InputText';
 import TransferService from '../../../../../services/TransferService';
 import Form from '../../../../Form/Form/Form';
 import Loader from '../../../../Shared/Loader/Loader';
-import {NotificationManager} from 'react-notifications';
+import { NotificationManager } from 'react-notifications';
 import InputFile from '../../../../Form/InputFile/InputFile';
 import objectToFormData from 'object-to-formdata';
 import Select from '../../../../Form/Select/Select';
 import InlineButton from '../../../../Shared/InlineButton/InlineButton';
 import InputTags from '../../../../Form/InputTags/InputTags';
-import {ProjectService} from '../../../../../services';
+import { ProjectService } from '../../../../../services';
 import './settings-export-modal.scss';
 
 const cls = new Bem('settings-export-modal');
@@ -29,7 +29,7 @@ export default class SettingsExportModal extends Component {
         const item = _.cloneDeep(props.item);
 
         if (item) {
-            item.projects = item.projects.map(({id, name}) => ({label: name, value: id}))
+            item.projects = item.projects.map(({ id, name }) => ({ label: name, value: id }));
         }
 
         this.defaultForm = {
@@ -48,7 +48,7 @@ export default class SettingsExportModal extends Component {
             replace: ''
         };
         this.state = {
-            form: item || {...this.defaultForm},
+            form: item || { ...this.defaultForm },
             inProgress: false
         };
     }
@@ -61,11 +61,11 @@ export default class SettingsExportModal extends Component {
     };
 
     handleAddRule = () => {
-        const {form: {rules}} = this.state;
+        const { form: { rules } } = this.state;
         const hasEmpty = rules.some(rule => !rule.selector || !rule.element);
 
         if (!hasEmpty) {
-            this.setState(prev => prev.form.rules.push({...this.defaultRule}));
+            this.setState(prev => prev.form.rules.push({ ...this.defaultRule }));
         }
     };
 
@@ -82,11 +82,11 @@ export default class SettingsExportModal extends Component {
     };
 
     handleAddReplace = () => {
-        const {form: {replaces}} = this.state;
+        const { form: { replaces } } = this.state;
         const hasEmpty = replaces.some(join => !join.search || !join.replace);
 
         if (!hasEmpty) {
-            this.setState(prev => prev.form.replaces.push({...this.defaultReplace}));
+            this.setState(prev => prev.form.replaces.push({ ...this.defaultReplace }));
         }
     };
 
@@ -103,21 +103,21 @@ export default class SettingsExportModal extends Component {
     };
 
     handleSubmit = () => {
-        const form = _.pick(this.state.form, ['name', 'rules', 'replaces', 'projects', 'file', 'type']);
+        const form = _.pick(this.state.form, [ 'name', 'rules', 'replaces', 'projects', 'file', 'type' ]);
         const method = this.state.form.id ? 'update' : 'set';
 
         if (_.get(form.file, 'id')) delete form.file;
 
-        form.rules = form.rules.map(({id, selector, element}) => ({id, selector, element}));
-        form.replaces = form.replaces.map(({id, search, replace}) => ({id, search, replace}));
+        form.rules = form.rules.map(({ id, selector, element }) => ({ id, selector, element }));
+        form.replaces = form.replaces.map(({ id, search, replace }) => ({ id, search, replace }));
 
         if (form.projects && form.projects.length) {
-            form.projects = form.projects.map(({value}) => value);
+            form.projects = form.projects.map(({ value }) => value);
         } else {
             delete form.projects;
         }
 
-        const formData = objectToFormData(form, {indices: true});
+        const formData = objectToFormData(form, { indices: true });
 
         if (!form.rules.length) return NotificationManager.error('Не заполнены "Правила замены"', 'Ошибка');
         if (!form.rules.every(item => item.selector && item.element)) {
@@ -129,28 +129,28 @@ export default class SettingsExportModal extends Component {
         //     return NotificationManager.error('Не верно заполнены поля "Список замен"', ' Ошибка');
         // }
 
-        this.setState({inProgress: true}, () => {
+        this.setState({ inProgress: true }, () => {
             TransferService.export[method](formData, this.state.form.id).then(response => {
                 NotificationManager.success('Успешно сохранено', 'Сохранено');
                 this.setState({
-                    form: {...this.defaultForm},
+                    form: { ...this.defaultForm },
                     inProgress: false
                 });
                 this.props.onSubmit(response.data, method);
                 this.props.onClose();
-            }).catch(() => this.setState({inProgress: false}));
+            }).catch(() => this.setState({ inProgress: false }));
         });
     };
 
     types = [
         // {name: 'xml', value: 'xml'},
-        {name: 'xlsx', value: 'xlsx'},
-        {name: 'html', value: 'html'},
-        {name: 'docx', value: 'docx'}
+        { name: 'xlsx', value: 'xlsx' },
+        { name: 'html', value: 'html' },
+        { name: 'docx', value: 'docx' }
     ];
 
     renderRule = (rule, ruleIndex) => (
-        <div {...cls('rule')}  key={ruleIndex}>
+        <div {...cls('rule')} key={ruleIndex}>
             <div {...cls('rule-row', '', 'row')}>
                 <div {...cls('item', '', 'col-xs-6')}>
                     <InputText
@@ -174,13 +174,14 @@ export default class SettingsExportModal extends Component {
                     type='button'
                     {...cls('button', 'remove')}
                     onClick={() => this.handleDeleteRule(ruleIndex)}
-                >✕</button>
+                >✕
+                </button>
             </div>
         </div>
     );
 
     renderReplace = (replace, replaceIndex) => (
-        <div {...cls('rule')}  key={replaceIndex}>
+        <div {...cls('rule')} key={replaceIndex}>
             <div {...cls('rule-row', '', 'row')}>
                 <div {...cls('item', '', 'col-xs-6')}>
                     <InputText
@@ -204,15 +205,16 @@ export default class SettingsExportModal extends Component {
                     type='button'
                     {...cls('button', 'remove')}
                     onClick={() => this.handleDeleteJoin(replaceIndex)}
-                >✕</button>
+                >✕
+                </button>
             </div>
         </div>
     );
 
     render() {
-        const {onClose} = this.props;
-        const {form, inProgress} = this.state;
-        const fileName = form.file ? [form.file] : [];
+        const { onClose } = this.props;
+        const { form, inProgress } = this.state;
+        const fileName = form.file ? [ form.file ] : [];
 
         return (
             <ConfirmModal
@@ -241,7 +243,7 @@ export default class SettingsExportModal extends Component {
                                 options={this.types}
                                 required
                                 onChange={item => this.handleChangeForm(item.value, 'type')}
-                                selected={this.types.find(({value}) => value === form.type)}
+                                selected={this.types.find(({ value }) => value === form.type) || []}
                             />
                         </div>
                     </div>
