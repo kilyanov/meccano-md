@@ -78,6 +78,7 @@ class ArticleCreatePage extends Component {
             userType: null,
             showViewSettings: false,
             textIsChanged: false,
+            annotationIsChanged: false,
             inProgress: true
         };
     }
@@ -347,7 +348,6 @@ class ArticleCreatePage extends Component {
     };
 
     getArticle = () => {
-        console.log(1);
         const { location } = this.props;
         const { userTypeId } = this.state;
         const searchParams = location.search && new URLSearchParams(location.search);
@@ -498,7 +498,7 @@ class ArticleCreatePage extends Component {
     };
 
     checkFormChanges = () => {
-        const {prevForm, form, textIsChanged} = this.state;
+        const {prevForm, form, textIsChanged, annotationIsChanged} = this.state;
 
         return new Promise((resolve) => {
             const prevFormClone = _.cloneDeep(prevForm);
@@ -506,7 +506,7 @@ class ArticleCreatePage extends Component {
 
             let isEqual = true;
 
-            if (textIsChanged) {
+            if (textIsChanged || annotationIsChanged) {
                 isEqual = false;
             }
 
@@ -514,6 +514,8 @@ class ArticleCreatePage extends Component {
             delete formClone.project;
             delete prevFormClone.text;
             delete formClone.text;
+            delete prevFormClone.annotation;
+            delete formClone.annotation;
 
             prevFormClone.section_main_id = _.get(prevFormClone.section_main_id, 'value');
             formClone.section_main_id = _.get(formClone.section_main_id, 'value');
@@ -695,13 +697,21 @@ class ArticleCreatePage extends Component {
 
         const sectionAnnotation = projectFields.find(({ slug }) => slug === 'annotation') ? (
             <section {...cls('section')}>
-                <RichEditor
+                <TinyMCE
+                    {...cls('field', 'annotation')}
+                    readOnly={readOnly}
+                    label='Аннотация'
+                    content={form.annotation || ''}
+                    onEditorChange={value => this.handleChangeForm(value, 'annotation')}
+                    onChange={() => this.setState({ annotationIsChanged: true })}
+                />
+                {/* <RichEditor
                     {...cls('field', 'annotation')}
                     label='Аннотация'
                     readOnly={readOnly}
                     content={form.annotation || ''}
                     onChange={value => this.handleChangeForm(value, 'annotation')}
-                />
+                /> */}
             </section>
         ) : null;
 
