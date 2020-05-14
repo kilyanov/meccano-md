@@ -1,27 +1,27 @@
-import React, {Component, Fragment} from 'react';
+import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
-import {connect} from 'react-redux';
+import { connect } from 'react-redux';
 import Page from '../../Shared/Page/Page';
 import Button from '../../Shared/Button/Button';
 import './project-create-page.scss';
 import ProjectSections from './ProjectSections/ProjectSections';
 import Loader from '../../Shared/Loader/Loader';
-import {ProjectService} from '../../../services';
+import { ProjectService } from '../../../services';
 import PromiseDialogModal from '../../Shared/PromiseDialogModal/PromiseDialogModal';
-import {NotificationManager} from 'react-notifications';
+import { NotificationManager } from 'react-notifications';
 import ProjectProperties from './ProjectProperties/ProjectProperties';
 import PencilIcon from "../../Shared/SvgIcons/PencilIcon";
 import InlineButton from "../../Shared/InlineButton/InlineButton";
-import {KEY_CODE, EVENTS} from "../../../constants";
-import {OperatedNotification} from '../../../helpers/Tools';
+import { KEY_CODE, EVENTS } from "../../../constants";
+import { OperatedNotification } from '../../../helpers/Tools';
 import ProjectKeyWords from './ProjectKeyWords/ProjectKeyWords';
-import {EventEmitter} from "../../../helpers";
-import {deleteProject, updateProject} from "../../../redux/actions/project";
+import { EventEmitter } from "../../../helpers";
+import { deleteProject, updateProject } from "../../../redux/actions/project";
 import store from "../../../redux/store";
 import Select from "react-select";
 import ProjectUsers from "./ProjectUsers/ProjectUsers";
 import Access from "../../Shared/Access/Access";
-import {PROJECT_PERMISSION} from "../../../constants/ProjectPermissions";
+import { PROJECT_PERMISSION } from "../../../constants/ProjectPermissions";
 
 const cls = new Bem('project-create-page');
 const STEP_DESCRIPTION = {
@@ -85,7 +85,7 @@ class ProjectCreatePage extends Component {
     };
 
     handleChangeSelectedFields = (newFieldSet) => {
-        const {projectFields, selectedUserType} = this.state;
+        const { projectFields, selectedUserType } = this.state;
 
         projectFields.forEach(fieldSet => {
             if (fieldSet.user_type_id === selectedUserType.value) {
@@ -93,18 +93,21 @@ class ProjectCreatePage extends Component {
             }
         });
 
-        this.setState({projectFields});
+        this.setState({ projectFields });
     };
 
     handleClickBackButton = () => {
-        const {step} = this.state;
+        const { step } = this.state;
 
-        if (step === 2) this.setState({step: 1});
-        else this.deleteProject();
+        if (step === 2) {
+            this.setState({ step: 1 });
+        } else {
+            this.deleteProject();
+        }
     };
 
     handleChangeSections = (sections) => {
-        this.setState({sections});
+        this.setState({ sections });
     };
 
     handleStartEditTile = () => {
@@ -117,11 +120,11 @@ class ProjectCreatePage extends Component {
     handleEditTitle = (event) => {
         const value = event.target.value;
 
-        this.setState({editTitleValue: value});
+        this.setState({ editTitleValue: value });
     };
 
     handleEndEditTitle = () => {
-        const newState = {...this.state};
+        const newState = { ...this.state };
 
         newState.project.name = newState.editTitleValue;
         newState.editTitleValue = '';
@@ -147,12 +150,12 @@ class ProjectCreatePage extends Component {
     };
 
     handleCreateField = (field) => {
-        this.setState(({allFields}) => allFields.unshift(field));
+        this.setState(({ allFields }) => allFields.unshift(field));
     };
 
     handleEditField = (field) => {
-        this.setState(({allFields}) => {
-            return {allFields: allFields.map(f => f.id === field.id ? field : f)};
+        this.setState(({ allFields }) => {
+            return { allFields: allFields.map(f => f.id === field.id ? field : f) };
         });
     };
 
@@ -178,7 +181,7 @@ class ProjectCreatePage extends Component {
         };
 
         ProjectService.get(params, this.projectId).then(projectResponse => {
-            const {projectFields, allFields, createdAt, updatedAt} = projectResponse.data;
+            const { projectFields, allFields, createdAt, updatedAt } = projectResponse.data;
 
             projectFields.forEach(fieldsByUserType => {
                 fieldsByUserType.data = fieldsByUserType.data.sort((a, b) => a.order - b.order);
@@ -193,11 +196,11 @@ class ProjectCreatePage extends Component {
                 isEdit: createdAt !== updatedAt,
                 inProgress: false
             });
-        }).catch(() => this.setState({inProgress: false}));
+        }).catch(() => this.setState({ inProgress: false }));
     };
 
     getUserTypes = () => {
-        const userTypes = this.props.userTypes.map(({id, name}) => ({label: name, value: id}));
+        const userTypes = this.props.userTypes.map(({ id, name }) => ({ label: name, value: id }));
 
         this.setState({
             userTypes,
@@ -216,10 +219,10 @@ class ProjectCreatePage extends Component {
 
             return (
                 <button
-                    {...cls('steps-buttons-item', {active, disabled: (+key === 2 && !hasSectionsFields)})}
+                    {...cls('steps-buttons-item', { active, disabled: (+key === 2 && !hasSectionsFields) })}
                     key={key}
                     disabled={(+key === 2 && !hasSectionsFields) || active}
-                    onClick={() => this.setState({step: +key, inProgress: false})}
+                    onClick={() => this.setState({ step: +key, inProgress: false })}
                 >Шаг {key}: {STEP_DESCRIPTION[key]}</button>
             );
         });
@@ -241,7 +244,7 @@ class ProjectCreatePage extends Component {
     };
 
     saveFields = () => {
-        this.setState({inProgress: true}, () => {
+        this.setState({ inProgress: true }, () => {
             this.state.projectFields.forEach(fieldsByType => {
                 fieldsByType.data.forEach((field, index) => {
                     field.order = index;
@@ -250,37 +253,37 @@ class ProjectCreatePage extends Component {
             });
 
             ProjectService
-                .put(this.state.projectId, {projectFields: this.state.projectFields})
+                .put(this.state.projectId, { projectFields: this.state.projectFields })
                 .then(response => {
                     store.dispatch(updateProject(response.data));
 
-                    this.setState({step: this.hasSectionsFields() ? 2 : 3, inProgress: false});
+                    this.setState({ step: this.hasSectionsFields() ? 2 : 3, inProgress: false });
                 })
-                .catch(() => this.setState({inProgress: false}));
+                .catch(() => this.setState({ inProgress: false }));
         });
     };
 
     saveSections = () => {
-        const {step, sections} = this.state;
+        const { step, sections } = this.state;
 
         if (step === 2 && (!sections || !sections.length)) return;
 
-        this.setState({inProgress: true}, () => {
+        this.setState({ inProgress: true }, () => {
             ProjectService.sections.create(
                 this.projectId,
                 sections
             ).then(() => {
-                this.setState({step: 3, inProgress: false});
-            }).catch(() => this.setState({inProgress: false}));
+                this.setState({ step: 3, inProgress: false });
+            }).catch(() => this.setState({ inProgress: false }));
         });
     };
 
     saveProject = () => {
-        const {project, projectFields} = this.state;
+        const { project, projectFields } = this.state;
 
         project.projectFields = projectFields;
 
-        this.setState({inProgress: true}, () => {
+        this.setState({ inProgress: true }, () => {
             ProjectService.put(this.state.projectId, project).then(response => {
                 store.dispatch(updateProject(response.data));
                 OperatedNotification.success({
@@ -291,13 +294,13 @@ class ProjectCreatePage extends Component {
                     timeOut: 10000,
                     onSubmit: () => EventEmitter.emit(EVENTS.REDIRECT, `/project/${this.projectId}`)
                 });
-                this.setState({inProgress: false});
-            }).catch(() => this.setState({inProgress: false}));
+                this.setState({ inProgress: false });
+            }).catch(() => this.setState({ inProgress: false }));
         });
     };
 
     deleteProject = () => {
-        const {isEdit} = this.state;
+        const { isEdit } = this.state;
 
         this.promiseDialogModal.open({
             title: isEdit ? 'Удаление проекта' : 'Отмена создания проекта',
@@ -327,8 +330,8 @@ class ProjectCreatePage extends Component {
             : projectFields[0];
 
         // Проверяем на наличие полей sections
-        const foundSections = fields.data.find(({slug}) => {
-            return ['section_main_id', 'section_sub_id', 'section_three_id'].includes(slug);
+        const foundSections = fields.data.find(({ slug }) => {
+            return [ 'section_main_id', 'section_sub_id', 'section_three_id' ].includes(slug);
         });
 
         return !!foundSections;
@@ -339,7 +342,7 @@ class ProjectCreatePage extends Component {
     project = null;
 
     render() {
-        const {roles} = this.props;
+        const { roles } = this.props;
         const {
             step,
             projectFields,
@@ -360,8 +363,8 @@ class ProjectCreatePage extends Component {
 
         return (
             <Access
-                permissions={[PROJECT_PERMISSION.PROJECT_MANAGER]}
-                roles={[roles.admin]}
+                permissions={[ PROJECT_PERMISSION.PROJECT_MANAGER ]}
+                roles={[ roles.admin ]}
                 redirect='/'
             >
                 <Page
@@ -401,7 +404,7 @@ class ProjectCreatePage extends Component {
                                         <h2 {...cls('title')}>{project.name}</h2>
                                         <PencilIcon
                                             {...cls('title-edit-icon')}
-                                            size={{width: 20, height: 20}}
+                                            size={{ width: 20, height: 20 }}
                                         />
                                     </div>
                             )}
@@ -411,7 +414,7 @@ class ProjectCreatePage extends Component {
                                     {...cls('viewer-select')}
                                     options={userTypes}
                                     value={selectedUserType}
-                                    onChange={value => this.setState({selectedUserType: value})}
+                                    onChange={value => this.setState({ selectedUserType: value })}
                                 />
                             )}
                         </div>
@@ -444,7 +447,7 @@ class ProjectCreatePage extends Component {
                         )}
 
                         {(this.project && step === 4) && (
-                            <ProjectUsers projectId={this.projectId} />
+                            <ProjectUsers projectId={this.projectId}/>
                         )}
                     </section>
 
@@ -463,9 +466,9 @@ class ProjectCreatePage extends Component {
                                 style='inline'
                                 text='Перейти к проекту'
                             />
-                            {((step === 1 || step === 2) && isEdit) && (
+                            {([ 1, 2, 3 ].includes(step) && isEdit) && (
                                 <Button
-                                    onClick={() => step === 1 ? this.saveProject() : this.saveSections()}
+                                    onClick={() => step === 2 ? this.saveSections() : this.saveProject()}
                                     {...cls('submit-button', 'margin-left-auto')}
                                     style='inline'
                                     text='Сохранить'
@@ -481,7 +484,7 @@ class ProjectCreatePage extends Component {
                         </div>
                     </section>
 
-                    <PromiseDialogModal ref={node => this.promiseDialogModal = node} />
+                    <PromiseDialogModal ref={node => this.promiseDialogModal = node}/>
 
                     {(!this.project || inProgress) && <Loader fixed/>}
                 </Page>
@@ -493,7 +496,7 @@ class ProjectCreatePage extends Component {
 function mapStateToProps(state) {
     const roles = {};
 
-    state.roles.forEach(({name}) => roles[name] = name);
+    state.roles.forEach(({ name }) => roles[name] = name);
 
     return {
         profile: state.profile,
