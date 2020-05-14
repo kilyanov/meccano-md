@@ -164,6 +164,9 @@ class ProjectCreatePage extends Component {
             case 2:
                 this.saveSections();
                 break;
+            case 3:
+                this.setState({ step: 4 });
+                break;
             default:
                 EventEmitter.emit(EVENTS.REDIRECT, `/project/${this.projectId}`);
         }
