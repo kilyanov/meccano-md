@@ -1,19 +1,19 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import {connect} from 'react-redux';
-import {Link} from 'react-router-dom';
-import {KEY_CODE, SORT_DIR, STORAGE_KEY, FIELD_TYPE} from '../../../../constants';
+import { connect } from 'react-redux';
+import { Link } from 'react-router-dom';
+import { KEY_CODE, SORT_DIR, STORAGE_KEY, FIELD_TYPE } from '../../../../constants';
 import CheckBox from '../../../Form/CheckBox/CheckBox';
 import DropDown from '../../../Shared/DropDown/DropDown';
 import './project-table.scss';
 import './ProjectTableHeader/project-table-header.scss';
 import DropDownMenuIcon from '../../../Shared/SvgIcons/DropDownMenuIcon';
 import ProjectTableSettingsModal from './ProjectTableSettingsModal/ProjectTableSettingsModal';
-import {getColumnsFromStorage, getColumnsFromFields, updateColumnWidth} from './Columns';
+import { getColumnsFromStorage, getColumnsFromFields, updateColumnWidth } from './Columns';
 import SettingsIcon from '../../../Shared/SvgIcons/SettingsIcon';
 import SortArrow from './ProjectTableHeader/ProjectTableHeaderSortArrow';
 import ProjectTableColorModal from "./ProjectTableColorModal/ProjectTableColorModal";
-import {StorageService} from "../../../../services";
+import { StorageService } from "../../../../services";
 
 const cls = new Bem('project-table');
 const headerClasses = new Bem('project-table-header');
@@ -41,8 +41,10 @@ class ProjectTable extends Component {
     static defaultProps = {
         articles: [],
         selectedIds: [],
-        onChangeSelected: () => {},
-        onClickArticle: () => {}
+        onChangeSelected: () => {
+        },
+        onClickArticle: () => {
+        }
     };
 
     state = {
@@ -61,7 +63,7 @@ class ProjectTable extends Component {
 
     handleSelectAllArticles = (checked) => {
         this.props.onChangeSelected(
-            checked ? this.props.articles.map(({id}) => id) : []
+            checked ? this.props.articles.map(({ id }) => id) : []
         );
     };
 
@@ -70,7 +72,7 @@ class ProjectTable extends Component {
             return;
         }
 
-        let {sort} = this.props;
+        let { sort } = this.props;
 
         if (sort.type === sortType) {
             if (sort.dir === SORT_DIR.ASC) {
@@ -90,18 +92,21 @@ class ProjectTable extends Component {
     };
 
     handleSelectArticle = (articleId) => {
-        const {selectedIds} = this.props;
+        const { selectedIds } = this.props;
 
-        let newSelected = [...selectedIds];
+        let newSelected = [ ...selectedIds ];
 
-        if (newSelected.includes(articleId)) newSelected = newSelected.filter(id => id !== articleId);
-        else newSelected.push(articleId);
+        if (newSelected.includes(articleId)) {
+            newSelected = newSelected.filter(id => id !== articleId);
+        } else {
+            newSelected.push(articleId);
+        }
 
         this.props.onChangeSelected(newSelected);
     };
 
     handleClickColumnSettings = () => {
-        this.setState({showColumnSettingsModal: true});
+        this.setState({ showColumnSettingsModal: true });
     };
 
     handleChangeColumns = (selectedColumns) => {
@@ -109,7 +114,7 @@ class ProjectTable extends Component {
     };
 
     handleBodyScroll = (e) => {
-        const {pagination, onScrollToEnd} = this.props;
+        const { pagination, onScrollToEnd } = this.props;
         const isStartPage = e.target.scrollTop === 0;
         const isEndPage = e.target.scrollTop === e.target.scrollHeight - e.target.clientHeight;
 
@@ -137,6 +142,8 @@ class ProjectTable extends Component {
 
         this.diff = e.pageX - this.startX;
         this.element.style.flex = `0 0 ${this.startWidth + this.diff}px`;
+        this.element.style.maxWidth = `${this.startWidth + this.diff}px`;
+        this.element.style.minWidth = `${this.startWidth + this.diff}px`;
         const bodyColumns = document.querySelectorAll(`.project-table__cell--${this.columnKey}`);
 
         bodyColumns.forEach(column => {
@@ -156,7 +163,7 @@ class ProjectTable extends Component {
 
     getSettingMenu = () => {
         const { currentProject } = this.props;
-        const settingsMenu = [{
+        const settingsMenu = [ {
             id: 'set-columns',
             title: 'Параметры таблицы',
             onClick: this.handleClickColumnSettings
@@ -164,7 +171,7 @@ class ProjectTable extends Component {
             id: 'edit-mode',
             title: 'Режим редактирования',
             onClick: () => console.log('Функционал еще не написан))')
-        }];
+        } ];
 
         if (currentProject && currentProject.userProject) {
             const isProjectManager = currentProject.userProject.access_project_manager;
@@ -173,7 +180,7 @@ class ProjectTable extends Component {
                 settingsMenu.push({
                     id: 'set-color',
                     title: 'Цветовое выделение строк',
-                    onClick: () => this.setState({showColorModal: true})
+                    onClick: () => this.setState({ showColorModal: true })
                 });
             }
         }
@@ -193,7 +200,7 @@ class ProjectTable extends Component {
     selectedColumns = [];
 
     syncColumnWidth = () => {
-        this.selectedColumns.forEach(({key}) => {
+        this.selectedColumns.forEach(({ key }) => {
             const headerColumn = document.querySelector(`.project-table-header__cell--${key}`);
             const bodyColumns = document.querySelectorAll(`.project-table__cell--${key}`);
 
@@ -207,7 +214,7 @@ class ProjectTable extends Component {
     };
 
     renderHeader = () => {
-        const {articles, selectedIds, sort, fields, projectId} = this.props;
+        const { articles, selectedIds, sort, fields, projectId } = this.props;
         const projectColumns = getColumnsFromFields(fields);
 
         this.selectedColumns = getColumnsFromStorage(projectId, projectColumns);
@@ -222,17 +229,17 @@ class ProjectTable extends Component {
                     />
                 </div>
 
-                {this.selectedColumns.map(({key, width}) => {
+                {this.selectedColumns.map(({ key, width }) => {
                     const active = sort.type === key;
-                    const currentField = fields.find(({slug}) => slug === key);
+                    const currentField = fields.find(({ slug }) => slug === key);
                     const fieldType = currentField && currentField.type;
 
                     return (
                         <div
                             key={key}
-                            {...headerClasses('cell', {[key]: true, active})}
+                            {...headerClasses('cell', { [key]: true, active })}
                             ref={node => this.headerCellRef[key] = node}
-                            style={width ? {flex: `0 0 ${width}px`} : {}}
+                            style={width ? { minWidth: `${width}px`, maxWidth: `${width}px` } : {}}
                         >
                             <div
                                 {...headerClasses('cell-content')}
@@ -266,13 +273,13 @@ class ProjectTable extends Component {
                     <input
                         {...headerClasses('cell-filter-field')}
                         type="date"
-                        onKeyDown={({keyCode, target: { value }}) => {
+                        onKeyDown={({ keyCode, target: { value } }) => {
                             if (keyCode === KEY_CODE.enter) {
                                 this.props.onChangeFilter(currentField.slug, value);
                                 setTimeout(() => this.props.onUpdateParent(), 0);
                             }
                         }}
-                        onBlur={({target: { value }}) => {
+                        onBlur={({ target: { value } }) => {
                             this.props.onChangeFilter(currentField.slug, value);
                             setTimeout(() => this.props.onUpdateParent(), 0);
                         }}
@@ -284,13 +291,13 @@ class ProjectTable extends Component {
                         {...headerClasses('cell-filter-field')}
                         placeholder='Поиск...'
                         type="search"
-                        onKeyDown={({keyCode, target: { value }}) => {
+                        onKeyDown={({ keyCode, target: { value } }) => {
                             if (keyCode === KEY_CODE.enter) {
                                 this.props.onChangeFilter(currentField.slug, clearValue(value));
                                 setTimeout(() => this.props.onUpdateParent(), 0);
                             }
                         }}
-                        onBlur={({target: { value }}) => {
+                        onBlur={({ target: { value } }) => {
                             this.props.onChangeFilter(currentField.slug, clearValue(value));
                             setTimeout(() => this.props.onUpdateParent(), 0);
                         }}
@@ -299,22 +306,22 @@ class ProjectTable extends Component {
 
         return (
             <div {...headerClasses('cell-filter')}>
-                { field }
+                {field}
             </div>
         );
     };
 
     renderArticle = (article, articleKey) => {
-        const {selectedIds, projectId, fields, search, sort, profile, page} = this.props;
+        const { selectedIds, projectId, fields, search, sort, profile, page } = this.props;
         const lastViewedArticleId = StorageService.get(STORAGE_KEY.LAST_VIEWED_ARTICLE);
-        const menuItems = [{
+        const menuItems = [ {
             title: 'Изменить',
             link: `/project/${projectId}/article/${article.id}`
         }, {
             danger: true,
             title: 'Удвлить',
             onClick: () => this.props.onDeleteArticle(article.id)
-        }];
+        } ];
         const sortString = sort.type && `${sort.dir === SORT_DIR.ASC ? '-' : ''}${sort.type}`;
         const sp = new URLSearchParams();
         let url = `/project/${projectId}/article/${article.id}?`;
@@ -329,12 +336,12 @@ class ProjectTable extends Component {
 
         // Подсветка ответственных (кому передана статья)еку
         if (article.user && article.user.id !== profile.id) {
-            color = this.props.articleColors.find(({type}) => type === 'responsible');
+            color = this.props.articleColors.find(({ type }) => type === 'responsible');
         }
 
-        ['complete_monitor', 'complete_analytic', 'complete_client'].some(key => {
+        [ 'complete_monitor', 'complete_analytic', 'complete_client' ].some(key => {
             if (article.hasOwnProperty(key) && article[key]) {
-                color = this.props.articleColors.find(({type}) => type === key);
+                color = this.props.articleColors.find(({ type }) => type === key);
             }
 
             return article[key];
@@ -342,7 +349,7 @@ class ProjectTable extends Component {
 
         return (
             <article
-                {...cls('row', {last: lastViewedArticleId && lastViewedArticleId === article.id})}
+                {...cls('row', { last: lastViewedArticleId && lastViewedArticleId === article.id })}
                 key={`${article.id}-${articleKey}`}
                 style={{
                     backgroundColor: color && color.color
@@ -357,8 +364,8 @@ class ProjectTable extends Component {
                     />
                 </div>
 
-                {this.selectedColumns.map(({key}) => {
-                    const currentField = fields.find(({slug}) => slug === key);
+                {this.selectedColumns.map(({ key }) => {
+                    const currentField = fields.find(({ slug }) => slug === key);
                     const relation = currentField && currentField.relation;
 
                     let columnValue = _.get(article, relation, article[key]);
@@ -399,7 +406,7 @@ class ProjectTable extends Component {
                 <button
                     {...cls('menu-button')}
                     onClick={() => {
-                        this.articleDropDown[article.id].toggle({style: {right: '10px'}});
+                        this.articleDropDown[article.id].toggle({ style: { right: '10px' } });
                     }}
                 >
                     <DropDownMenuIcon {...cls('menu-button-icon')}/>
@@ -413,8 +420,8 @@ class ProjectTable extends Component {
     };
 
     render() {
-        const {className, articles, projectId, fields} = this.props;
-        const {showColumnSettingsModal, showColorModal} = this.state;
+        const { className, articles, projectId, fields } = this.props;
+        const { showColumnSettingsModal, showColorModal } = this.state;
 
         return (
             <div {...cls('', '', className)}>
@@ -433,7 +440,7 @@ class ProjectTable extends Component {
                     {...cls('settings-button')}
                     onClick={() => {
                         if (this.settingsMenuRef) {
-                            this.settingsMenuRef.toggle({style: {right: '25px'}});
+                            this.settingsMenuRef.toggle({ style: { right: '25px' } });
                         }
                     }}
                 >
@@ -447,7 +454,7 @@ class ProjectTable extends Component {
                 {showColumnSettingsModal && (
                     <ProjectTableSettingsModal
                         onChange={this.handleChangeColumns}
-                        onClose={() => this.setState({showColumnSettingsModal: false})}
+                        onClose={() => this.setState({ showColumnSettingsModal: false })}
                         projectId={projectId}
                         projectFields={fields}
                     />
@@ -455,7 +462,7 @@ class ProjectTable extends Component {
 
                 {showColorModal && (
                     <ProjectTableColorModal
-                        onClose={() => this.setState({showColorModal: false})}
+                        onClose={() => this.setState({ showColorModal: false })}
                         projectId={projectId}
                     />
                 )}

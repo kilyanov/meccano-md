@@ -1,4 +1,4 @@
-import React, {Fragment, Component} from 'react';
+import React, { Fragment, Component } from 'react';
 import './project-page.scss';
 import Button from '../../Shared/Button/Button';
 import IconButton from '../../Shared/IconButton/IconButton';
@@ -10,34 +10,34 @@ import ProjectTable from './ProjectTable/ProjectTable';
 import PromiseDialogModal from '../../Shared/PromiseDialogModal/PromiseDialogModal';
 import ArticleCreateModal from '../../Article/ArticleCreateModal/ArticleCreateModal';
 import ArticlesExportModal from '../../Article/ArticlesExportModal/ArticlesExportModal';
-import {ArticleService, ProjectService, StorageService} from '../../../services';
-import {NotificationManager} from 'react-notifications';
+import { ArticleService, ProjectService, StorageService } from '../../../services';
+import { NotificationManager } from 'react-notifications';
 import DropDownButton from '../../Shared/DropDownButton/DropDownButton';
 import ArticlesImportModal from '../../Article/ArticlesImportModal/ArticlesImportModal';
 import Page from '../../Shared/Page/Page';
 import Loader from '../../Shared/Loader/Loader';
-import {EVENTS, SORT_DIR, STORAGE_KEY} from '../../../constants';
+import { EVENTS, SORT_DIR, STORAGE_KEY } from '../../../constants';
 import RightLoader from '../../Shared/Loader/RightLoader/RightLoader';
-import {Plural, QueueManager} from '../../../helpers/Tools';
+import { Plural, QueueManager } from '../../../helpers/Tools';
 import InlineButton from '../../Shared/InlineButton/InlineButton';
-import {EventEmitter} from "../../../helpers";
+import { EventEmitter } from "../../../helpers";
 import store from "../../../redux/store";
-import {setCurrentProject} from "../../../redux/actions/currentProject";
-import {clearArticleColors, setArticleColors} from "../../../redux/actions/articleColors";
-import {getColumnsFromStorage} from "./ProjectTable/Columns";
+import { setCurrentProject } from "../../../redux/actions/currentProject";
+import { clearArticleColors, setArticleColors } from "../../../redux/actions/articleColors";
+import { getColumnsFromStorage } from "./ProjectTable/Columns";
 import ArticleTransferModal from "../../Article/ArticleTransferModal/ArticleTransferModal";
 import ProjectPagination from "./ProjectTable/ProjectPagination/ProjectPagintaion";
 
 const cls = new Bem('project-page');
-const defaultPagination = {page: 1, pageCount: 1, perPage: 50};
-const defaultSort = {type: null, dir: null};
-const defaultFilters = {search: '', sort: defaultSort};
+const defaultPagination = { page: 1, pageCount: 1, perPage: 50 };
+const defaultSort = { type: null, dir: null };
+const defaultFilters = { search: '', sort: defaultSort };
 
 export default class ProjectPage extends Component {
     constructor(props) {
         super(props);
 
-        const pagination = {...defaultPagination};
+        const pagination = { ...defaultPagination };
         const storageUserTpe = StorageService.get(STORAGE_KEY.USER_TYPE);
         let userType = null;
 
@@ -119,9 +119,9 @@ export default class ProjectPage extends Component {
             state.selectedArticles = [];
 
             selectedItemIds.forEach(selectedId => {
-                const found = state.articles.find(({id}) => id === selectedId);
+                const found = state.articles.find(({ id }) => id === selectedId);
 
-                if (found && !state.selectedArticles.find(({id}) => id === selectedId)) {
+                if (found && !state.selectedArticles.find(({ id }) => id === selectedId)) {
                     state.selectedArticles.push(found);
                 }
             });
@@ -138,8 +138,8 @@ export default class ProjectPage extends Component {
     };
 
     handleDeleteArticle = (articleId) => {
-        const {articles, project} = this.state;
-        const article = articles.find(({id}) => id === articleId);
+        const { articles, project } = this.state;
+        const article = articles.find(({ id }) => id === articleId);
 
         if (articleId && article) {
             this.promiseDialogModal.open({
@@ -148,60 +148,62 @@ export default class ProjectPage extends Component {
                 submitText: 'Удалить',
                 danger: true
             }).then(() => {
-                this.setState({inProgress: true}, () => {
-                    ArticleService.delete({articleIds: [articleId]}, project.id)
+                this.setState({ inProgress: true }, () => {
+                    ArticleService.delete({ articleIds: [ articleId ] }, project.id)
                         .then(() => {
                             NotificationManager.success('Статья была успешно удалена', 'Удаление статьи');
                             this.setState({
-                                articles: this.state.articles.filter(({id}) => id !== articleId),
+                                articles: this.state.articles.filter(({ id }) => id !== articleId),
                                 inProgress: false
                             }, this.getTotalCountArticles);
                         })
-                        .catch(() => this.setState({inProgress: false}));
+                        .catch(() => this.setState({ inProgress: false }));
                 });
             });
         }
     };
 
     handleDeleteArticles = () => {
-        const {articles, selectedItemIds, isAllArticlesSelected, pagination, project} = this.state;
+        const { articles, selectedItemIds, isAllArticlesSelected, pagination, project } = this.state;
         const countSelected = isAllArticlesSelected ? pagination.totalCount : selectedItemIds.length;
 
         if (countSelected) {
             this.promiseDialogModal.open({
                 title: 'Удаление статей',
                 content: `Вы уверены, что хотите удалить  ${Plural(
-                    countSelected, 
+                    countSelected,
                     `${countSelected} `,
-                    ['статью', 'статьи', 'статей'])}?`,
+                    [ 'статью', 'статьи', 'статей' ])}?`,
                 submitText: 'Удалить',
                 style: 'danger'
             }).then(() => {
-                this.setState({inProgress: true}, () => {
-                    ArticleService.delete(isAllArticlesSelected ? {all: true} : {articleIds: selectedItemIds}, project.id)
+                this.setState({ inProgress: true }, () => {
+                    ArticleService.delete(isAllArticlesSelected ? { all: true } : { articleIds: selectedItemIds }, project.id)
                         .then(() => {
                             pagination.page = 1;
                             NotificationManager.success('Выбранные статьи успешно удалены', 'Удаление');
 
                             this.setState({
                                 pagination,
-                                articles: isAllArticlesSelected ? [] : articles.filter(({id}) => !selectedItemIds.includes(id)),
+                                articles: isAllArticlesSelected
+                                    ? []
+                                    : articles.filter(({ id }) => !selectedItemIds.includes(id)),
                                 selectedItemIds: [],
                                 isAllArticlesSelected: false
                             }, this.getArticles);
                         })
-                        .catch(() => this.setState({inProgress: false}));
+                        .catch(() => this.setState({ inProgress: false }));
                 });
             });
         }
     };
 
     handleCreateArticle = (article) => {
-        const {articles} = this.state;
+        const { articles } = this.state;
 
         articles.unshift(article);
 
-        this.setState({articles});
+        this.setState({ articles });
     };
 
     handleUpdateArticle = (newArticle) => {
@@ -243,11 +245,11 @@ export default class ProjectPage extends Component {
     };
 
     handleChangeUserType = (userType) => {
-        this.setState({userType});
+        this.setState({ userType });
     };
 
     handleCompleteArticles = (isComplete = true) => {
-        const {selectedItemIds, userType} = this.state;
+        const { selectedItemIds, userType } = this.state;
 
         if (userType && userType.slug) {
             const form = {
@@ -257,19 +259,19 @@ export default class ProjectPage extends Component {
                 }
             };
 
-            this.setState({inProgress: true}, () => {
+            this.setState({ inProgress: true }, () => {
                 ProjectService
                     .updateMany(form, this.projectId)
                     .then(() => {
-                        this.setState({selectedItemIds: []});
+                        this.setState({ selectedItemIds: [] });
                         this.getArticles();
                     })
-                    .catch(() => this.setState({inProgress: false}));
+                    .catch(() => this.setState({ inProgress: false }));
             });
         }
     };
 
-    handleChangePage = ({selected}) => {
+    handleChangePage = ({ selected }) => {
         this.searchParams.set('page', (selected + 1).toString());
         this.setState(state => {
             state.pagination.page = selected + 1;
@@ -287,7 +289,7 @@ export default class ProjectPage extends Component {
     };
 
     getArticles = () => {
-        const {pagination, filters, userType} = this.state;
+        const { pagination, filters, userType } = this.state;
         const selectedColumns = getColumnsFromStorage(this.projectId);
         const fields = this.getFields();
 
@@ -297,17 +299,17 @@ export default class ProjectPage extends Component {
             page: this.searchParams.get('page'),
             'per-page': pagination.perPage || 30,
             expand: fields
-                .filter(({slug}) => selectedColumns.find(({key}) => key === slug))
+                .filter(({ slug }) => selectedColumns.find(({ key }) => key === slug))
                 .map(field => field.relation || field.slug)
         };
 
         // Необходимые поля для корректной работы цветовыделения
-        form.expand = [...form.expand, 'complete_monitor', 'complete_analytic', 'complete_client', 'user'];
+        form.expand = [ ...form.expand, 'complete_monitor', 'complete_analytic', 'complete_client', 'user' ];
 
         // Фильтрация по столбцам
         Object.keys(filters).forEach(filterKey => {
             const filter = filters[filterKey];
-            const currentField = fields.find(({slug}) => filterKey === 'sort'
+            const currentField = fields.find(({ slug }) => filterKey === 'sort'
                 ? filter.type === slug
                 : filterKey === slug
             );
@@ -322,7 +324,7 @@ export default class ProjectPage extends Component {
                     break;
                 case 'search':
                     fields
-                        .filter(({slug}) => selectedColumns.find(({key}) => key === slug))
+                        .filter(({ slug }) => selectedColumns.find(({ key }) => key === slug))
                         .forEach(field => {
                             form[`query[${field.relation || field.slug}]`] = filter;
                         });
@@ -354,18 +356,18 @@ export default class ProjectPage extends Component {
                     inProgress: false
                 });
             })
-            .catch(() => this.setState({inProgress: false}));
+            .catch(() => this.setState({ inProgress: false }));
     };
 
     getProject = (projectId) => {
-        return ProjectService.get({expand: 'projectFields,users', pageSize: 50}, projectId).then(response => {
+        return ProjectService.get({ expand: 'projectFields,users', pageSize: 50 }, projectId).then(response => {
             store.dispatch(setCurrentProject(response.data));
-            return this.setState({project: response.data});
+            return this.setState({ project: response.data });
         });
     };
 
     getFields = () => {
-        const {project, userType} = this.state;
+        const { project, userType } = this.state;
 
         if (!project || !project.projectFields || !project.projectFields.length) {
             return [];
@@ -380,7 +382,7 @@ export default class ProjectPage extends Component {
 
     getTotalCountArticles = () => {
         ArticleService
-            .getList({project: this.projectId})
+            .getList({ project: this.projectId })
             .then(response => {
                 const newState = this.state;
 
@@ -390,24 +392,24 @@ export default class ProjectPage extends Component {
     };
 
     setSearchParams = () => {
-        const {location, history} = this.props;
+        const { location, history } = this.props;
 
         location.search = this.searchParams.toString();
         history.replace(location);
     };
 
-    queueMessage = {id: 'articles', text: 'Загрузка статей...'};
+    queueMessage = { id: 'articles', text: 'Загрузка статей...' };
 
     projectId = this.props.match.params.id;
 
-    addMenuItems = [{
+    addMenuItems = [ {
         title: 'Добавить новую',
         link: `/project/${this.projectId}/article`
     }, {
         title: 'Импорт статей',
         closeOnClick: true,
-        onClick: () => this.setState({showImportArticlesModal: true})
-    }];
+        onClick: () => this.setState({ showImportArticlesModal: true })
+    } ];
 
     isMounted = true;
 
@@ -449,12 +451,12 @@ export default class ProjectPage extends Component {
                             {...cls('upload-btn')}
                             text={!countSelected || isAllArticlesSelected ? 'Выгрузить все' :
                                 `Выгрузить ${Plural(
-                                    countSelected, 
+                                    countSelected,
                                     `${countSelected} `,
-                                    ['статью', 'статьи', 'статей']
+                                    [ 'статью', 'статьи', 'статей' ]
                                 )}`}
                             style='success'
-                            onClick={() => this.setState({showUploadArticlesModal: true})}
+                            onClick={() => this.setState({ showUploadArticlesModal: true })}
                         />
                     )}
 
@@ -481,7 +483,7 @@ export default class ProjectPage extends Component {
                             {...cls('upload-btn')}
                             text='Передать'
                             style='info'
-                            onClick={() => this.setState({showTransferModal: true})}
+                            onClick={() => this.setState({ showTransferModal: true })}
                         />
                     )}
                 </section>
@@ -520,11 +522,11 @@ export default class ProjectPage extends Component {
                     {!!selectedItemIds.length && (
                         <Fragment>
                             <span>
-                                {Plural(countSelected, '', ['Выбрана', 'Выбраны', 'Выбраны'])}
+                                {Plural(countSelected, '', [ 'Выбрана', 'Выбраны', 'Выбраны' ])}
                                 {Plural(
                                     countSelected,
                                     ` ${countSelected} `,
-                                    ['статья', 'статьи', 'статей']
+                                    [ 'статья', 'статьи', 'статей' ]
                                 )}
                             </span>
 
@@ -532,7 +534,7 @@ export default class ProjectPage extends Component {
                                 <InlineButton
                                     {...cls('filter-item')}
                                     small
-                                    onClick={() => this.setState({isAllArticlesSelected: true})}
+                                    onClick={() => this.setState({ isAllArticlesSelected: true })}
                                 >
                                     Выбрать все статьи в проекте
                                 </InlineButton>
@@ -594,7 +596,7 @@ export default class ProjectPage extends Component {
                     <ArticleCreateModal
                         article={activeArticle || {}}
                         projectId={this.projectId}
-                        onClose={() => this.setState({activeArticle: null, showArticleModal: false})}
+                        onClose={() => this.setState({ activeArticle: null, showArticleModal: false })}
                         onAddArticle={this.handleCreateArticle}
                         onUpdateArticle={this.handleUpdateArticle}
                     />
@@ -605,14 +607,14 @@ export default class ProjectPage extends Component {
                         projectId={this.projectId}
                         selectedArticleIds={isAllArticlesSelected || selectedItemIds}
                         onUpdateParent={this.handleClearSelected}
-                        onClose={() => this.setState({showUploadArticlesModal: false})}
+                        onClose={() => this.setState({ showUploadArticlesModal: false })}
                     />
                 )}
 
                 {showImportArticlesModal && (
                     <ArticlesImportModal
                         onClose={() => {
-                            if (this.isMounted) this.setState({showImportArticlesModal: false});
+                            if (this.isMounted) this.setState({ showImportArticlesModal: false });
                         }}
                         onSubmit={this.handleImportArticlesSubmit}
                         projectId={this.projectId}
@@ -621,7 +623,7 @@ export default class ProjectPage extends Component {
 
                 {showTransferModal && (
                     <ArticleTransferModal
-                        onClose={() => this.setState({showTransferModal: false})}
+                        onClose={() => this.setState({ showTransferModal: false })}
                         onUpdateParent={() => {
                             this.handleClearSelected();
                             this.getArticles();

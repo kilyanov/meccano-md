@@ -3,9 +3,7 @@
 $namespace: '.project-table-header';
 
 #{$namespace} {
-  position: sticky;
-  position: -webkit-sticky;
-  top: 0;
+  position: relative;
   display: flex;
   height: 75px;
   background-color: #fff;
