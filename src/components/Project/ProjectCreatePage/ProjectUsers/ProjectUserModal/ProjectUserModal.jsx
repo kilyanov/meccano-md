@@ -1,15 +1,15 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import ConfirmModal from "../../../../Shared/ConfirmModal/ConfirmModal";
-import {UserService} from "../../../../../services";
+import { UserService } from "../../../../../services";
 import Select from 'react-select';
 import './project-user-modal.scss';
 import Loader from "../../../../Shared/Loader/Loader";
-import {connect} from "react-redux";
+import { connect } from "react-redux";
 import CheckBox from "../../../../Form/CheckBox/CheckBox";
-import {PROJECT_USER_PERMISSIONS, PROJECT_USER_TRANSMIT} from "../consts";
-import {ReactSelectStyles} from "../../../../../constants/ReactSelectStyles";
-import {THEME_TYPE} from "../../../../../constants";
+import { PROJECT_USER_PERMISSIONS, PROJECT_USER_TRANSMIT } from "../consts";
+import { ReactSelectStyles } from "../../../../../constants/ReactSelectStyles";
+import { THEME_TYPE } from "../../../../../constants";
 
 const cls = new Bem('project-user-modal');
 const defaulForm = {
@@ -31,7 +31,7 @@ class ProjectUserModal extends Component {
     };
 
     state = {
-        form: {...defaulForm},
+        form: { ...defaulForm },
         user: null,
         users: [],
         userTypes: [],
@@ -39,8 +39,11 @@ class ProjectUserModal extends Component {
     };
 
     componentDidMount() {
-        if (this.props.projectUser) this.prepareProjectUser();
-        else this.getUsers();
+        if (this.props.projectUser) {
+            this.prepareProjectUser();
+        } else {
+            this.getUsers();
+        }
 
         this.getUserTypes();
     }
@@ -52,14 +55,14 @@ class ProjectUserModal extends Component {
     }
 
     handleChangeForm = (prop, value) => {
-        this.setState(({form}) => {
+        this.setState(({ form }) => {
             if (prop === 'userProjectTypes' && !value) {
-                return {form};
+                return { form };
             }
 
             form[prop] = value;
 
-            return {form};
+            return { form };
         }, () => {
             if (prop.includes('access')) {
                 this.checkAccessRights(prop, value);
@@ -68,42 +71,42 @@ class ProjectUserModal extends Component {
     };
 
     handleSubmit = () => {
-        const {projectId} = this.props;
-        const {form} = this.state;
+        const { projectId } = this.props;
+        const { form } = this.state;
 
         if (!form.user_id || !projectId || !form.userProjectTypes.length) return;
 
-        this.setState({inProgress: true}, () => {
-            const requestForm = {...form};
+        this.setState({ inProgress: true }, () => {
+            const requestForm = { ...form };
 
             requestForm.user_id = requestForm.user_id.value;
-            requestForm.userProjectTypes = requestForm.userProjectTypes.map(({id, value}) => ({id, user_type_id: value}));
+            requestForm.userProjectTypes = requestForm.userProjectTypes.map(({ id, value }) => ({ id, user_type_id: value }));
             requestForm.project_id = projectId;
 
             UserService.project.create(requestForm, projectId).then(response => {
                 this.props.onChange(response.data);
-                this.setState({inProgress: false}, this.close);
-            }).catch(() => this.setState({inProgress: false}));
+                this.setState({ inProgress: false }, this.close);
+            }).catch(() => this.setState({ inProgress: false }));
         });
     };
 
     getUsers = () => {
         UserService.get().then(response => {
             this.setState({
-                users: response.data.map(({username, id}) => ({label: username, value: id})),
+                users: response.data.map(({ username, id }) => ({ label: username, value: id })),
                 inProgress: false
             });
         });
     };
 
     getUserTypes = () => {
-        const userTypes = this.props.userTypes.map(({id, name}) => ({label: name, value: id}));
+        const userTypes = this.props.userTypes.map(({ id, name }) => ({ label: name, value: id }));
 
         this.setState(state => {
             state.userTypes = userTypes;
 
             if (!state.form.userProjectTypes || !state.form.userProjectTypes.length) {
-                state.form.userProjectTypes = [userTypes[0]];
+                state.form.userProjectTypes = [ userTypes[0] ];
             }
 
             return state;
@@ -111,16 +114,16 @@ class ProjectUserModal extends Component {
     };
 
     prepareProjectUser = () => {
-        const {projectUser} = this.props;
-        const user = {label: projectUser.user.username, value: projectUser.user.id};
+        const { projectUser } = this.props;
+        const user = { label: projectUser.user.username, value: projectUser.user.id };
 
         this.setState({
-            users: [user],
+            users: [ user ],
             form: {
                 ...projectUser,
                 user_id: user,
-                userProjectTypes: projectUser.userProjectTypes.map(({userType: {name, id}}) => (
-                    {label: name, value: id}
+                userProjectTypes: projectUser.userProjectTypes.map(({ userType: { name, id } }) => (
+                    { label: name, value: id }
                 ))
             },
             inProgress: false
@@ -130,8 +133,8 @@ class ProjectUserModal extends Component {
     checkAccessRights = (current, checked) => {
         let sets = true;
 
-        this.setState(({form}) => {
-            PROJECT_USER_PERMISSIONS.forEach(({id}) => {
+        this.setState(({ form }) => {
+            PROJECT_USER_PERMISSIONS.forEach(({ id }) => {
                 if (current === id) {
                     sets = false;
                 }
@@ -143,13 +146,13 @@ class ProjectUserModal extends Component {
                 }
             });
 
-            return {form};
+            return { form };
         });
     };
 
     close = () => {
         this.setState(state => {
-            state.form = {...defaulForm};
+            state.form = { ...defaulForm };
             return state;
         }, this.props.onClose);
     };
@@ -157,8 +160,8 @@ class ProjectUserModal extends Component {
     isEdit = this.props.projectUser && !_.isEmpty(this.props.projectUser);
 
     render() {
-        const {theme} = this.props;
-        const {users, userTypes, form, inProgress} = this.state;
+        const { theme } = this.props;
+        const { users, userTypes, form, inProgress } = this.state;
         const isDarkTheme = theme === THEME_TYPE.DARK;
 
         return (
@@ -243,10 +246,10 @@ class ProjectUserModal extends Component {
                     </ul>
                 </section>
 
-                {inProgress && <Loader />}
+                {inProgress && <Loader/>}
             </ConfirmModal>
         );
     }
 }
 
-export default connect(({userTypes, theme}) => ({userTypes, theme}))(ProjectUserModal);
+export default connect(({ userTypes, theme }) => ({ userTypes, theme }))(ProjectUserModal);

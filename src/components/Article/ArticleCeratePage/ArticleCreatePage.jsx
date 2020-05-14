@@ -413,6 +413,8 @@ class ArticleCreatePage extends Component {
                     newState.sections = sections;
                     newState.form = form;
                     newState.prevForm = _.cloneDeep(form);
+                    newState.textIsChanged = false;
+                    newState.annotationIsChanged = false;
                     newState.inProgress = false;
 
                     this.setState(newState);
