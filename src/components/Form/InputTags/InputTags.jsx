@@ -63,7 +63,7 @@ class InputTags extends Component {
         const isDarkTheme = theme === THEME_TYPE.DARK;
 
         return (
-            <div {...cls('', {succeed: !!this.props.selected.length})}>
+            <div {...cls('', {succeed: !!this.props.value.length})}>
                 {label && (
                     <label {...cls('label', '', { 'drag-handle': draggable })}>
                         <span {...cls('label-text', '', { 'drag-handle': draggable })}>{label}</span>
