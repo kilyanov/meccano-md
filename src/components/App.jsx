@@ -172,6 +172,7 @@ export default class App extends Component {
 
                     if (!storageUserType || !currentState.profile.types.find(({id}) => id === storageUserType)) {
                         StorageService.set(STORAGE_KEY.USER_TYPE, JSON.stringify(currentState.profile.types[0]));
+                        EventEmitter.emit(EVENTS.USER.CHANGE_TYPE, currentState.profile.types[0]);
                     }
                 }
                 // this.getDocumentsForUser();

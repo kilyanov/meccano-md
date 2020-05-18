@@ -53,10 +53,8 @@ class ProfileButton extends Component {
         const storageValue = StorageService.get(STORAGE_KEY.USER_TYPE);
         let userType = null;
 
-        try {
+        if (storageValue) {
             userType = JSON.parse(storageValue);
-        } catch (e) {
-            console.error(e);
         }
 
         return userType;

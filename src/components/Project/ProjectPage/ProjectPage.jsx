@@ -43,10 +43,8 @@ export default class ProjectPage extends Component {
 
         pagination.perPage = StorageService.get(STORAGE_KEY.TABLE_PER_PAGE) || 50;
 
-        try {
+        if (storageUserTpe) {
             userType = JSON.parse(storageUserTpe);
-        } catch (e) {
-            console.error(e);
         }
 
         this.state = {
@@ -222,7 +220,6 @@ export default class ProjectPage extends Component {
         newState.articles = [];
         newState.inProgress = true;
 
-        console.log(4);
         this.setState(newState, this.getArticles);
     };
 
@@ -245,7 +242,11 @@ export default class ProjectPage extends Component {
     };
 
     handleChangeUserType = (userType) => {
-        this.setState({ userType });
+        this.setState({ userType }, () => {
+            if (!this.state.articles || !this.state.articles.length) {
+                this.getArticles();
+            }
+        });
     };
 
     handleCompleteArticles = (isComplete = true) => {
@@ -292,6 +293,8 @@ export default class ProjectPage extends Component {
         const { pagination, filters, userType } = this.state;
         const selectedColumns = getColumnsFromStorage(this.projectId);
         const fields = this.getFields();
+
+        if (!userType) return;
 
         const form = {
             project: this.projectId,
@@ -369,7 +372,7 @@ export default class ProjectPage extends Component {
     getFields = () => {
         const { project, userType } = this.state;
 
-        if (!project || !project.projectFields || !project.projectFields.length) {
+        if (!project || !project.projectFields || !project.projectFields.length || !userType) {
             return [];
         }
 

@@ -24,7 +24,7 @@ export default class ErrorBoundary extends React.Component {
                 {isError ? (
                     <div {...cls()}>
                         <div {...cls('header')}>
-                            <h3 {...cls('header-title')}>Внимание. Что-то пошло не так.</h3>
+                            <h3 {...cls('header-title')}>Что-то пошло не так.</h3>
                         </div>
                         <div {...cls('body')}>
                             <details style={ { whiteSpace: 'pre-wrap' } }>

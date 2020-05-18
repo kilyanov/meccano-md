@@ -448,6 +448,8 @@ class ArticleCreatePage extends Component {
         const storageValue = StorageService.get(STORAGE_KEY.USER_TYPE);
         const userType = storageValue && JSON.parse(storageValue);
 
+        if (!userType) return;
+
         this.setState({userTypeId: userType.id, userType}, () => {
             if (this.articleId) {
                 this.getArticle();
