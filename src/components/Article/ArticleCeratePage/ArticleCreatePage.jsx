@@ -1,8 +1,8 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import {connect} from 'react-redux';
+import { connect } from 'react-redux';
 import Page from '../../Shared/Page/Page';
-import {ArticleService, LocationService, ProjectService, SourceService, StorageService} from '../../../services';
+import { ArticleService, LocationService, ProjectService, SourceService, StorageService } from '../../../services';
 import './article-create-page.scss';
 import Form from '../../Form/Form/Form';
 import RichEditor from '../../Form/RichEditor/RichEditor';
@@ -12,15 +12,15 @@ import Button from '../../Shared/Button/Button';
 import ArticleViewSettings from './ArticleViewSettings/ArticleViewSettings';
 import ProjectCreateField from '../../Project/ProjectCreatePage/ProjectCreatePageField/ProjectCreatePageField';
 import Sortable from 'react-sortablejs';
-import {isMobileScreen, isProjectAccess, isRolesAccess, OperatedNotification} from '../../../helpers/Tools';
-import {FIELD_TYPE, STORAGE_KEY} from '../../../constants';
-import {EventEmitter} from "../../../helpers";
-import {EVENTS} from "../../../constants";
+import { isMobileScreen, isProjectAccess, isRolesAccess, OperatedNotification } from '../../../helpers/Tools';
+import { FIELD_TYPE, STORAGE_KEY } from '../../../constants';
+import { EventEmitter } from "../../../helpers";
+import { EVENTS } from "../../../constants";
 import store from "../../../redux/store";
-import {setCurrentProject} from "../../../redux/actions/currentProject";
-import {PROJECT_PERMISSION} from "../../../constants/ProjectPermissions";
+import { setCurrentProject } from "../../../redux/actions/currentProject";
+import { PROJECT_PERMISSION } from "../../../constants/ProjectPermissions";
 import Access from "../../Shared/Access/Access";
-import {KEY_CODE} from "../../../constants";
+import { KEY_CODE } from "../../../constants";
 import TinyMCE from "../../Form/TinyMCE/TinyMCE";
 import CreateLocationModal from "./CreateLocationModal";
 import LocationIcon from "../../Shared/SvgIcons/LocationIcon";
@@ -46,15 +46,15 @@ class ArticleCreatePage extends Component {
     constructor(props) {
         super(props);
 
-        this.articleId = props.match.params.articleId;
-        this.projectId = props.match.params.projectId;
+        const projectId = props.match.params.projectId;
+
         this.defaultForm = {
             title: '',
             source_id: null,
             date: new Date(),
             media: '',
             url: '',
-            projectId: this.projectId,
+            projectId,
             section_main_id: null,
             section_sub_id: null,
             section_three_id: null,
@@ -67,6 +67,8 @@ class ArticleCreatePage extends Component {
         const userType = storageUserType ? JSON.parse(storageUserType) : null;
 
         this.state = {
+            articleId: props.match.params.articleId,
+            projectId,
             articlesNavs: {},
             projectFields: [],
             sources: [],
@@ -74,8 +76,8 @@ class ArticleCreatePage extends Component {
             form: _.clone(this.defaultForm),
             selectedMedia: {},
             viewType: StorageService.get(STORAGE_KEY.ARTICLE_VIEW_TYPE) || 1,
-            userTypeId: userType ? userType.id : null,
-            userType: null,
+            userTypeId: userType && userType.id || null,
+            userType: userType || null,
             showViewSettings: false,
             textIsChanged: false,
             annotationIsChanged: false,
@@ -88,13 +90,17 @@ class ArticleCreatePage extends Component {
         EventEmitter.on(EVENTS.USER.CHANGE_TYPE, this.setUserType);
         document.addEventListener('keydown', this.handleDocumentKeyDown);
 
-        if (this.articleId) {
-            StorageService.set(STORAGE_KEY.LAST_VIEWED_ARTICLE, this.articleId);
+        if (this.state.articleId) {
+            StorageService.set(STORAGE_KEY.LAST_VIEWED_ARTICLE, this.state.articleId);
+
+            if (this.state.userTypeId) {
+                this.getArticle();
+            }
         } else {
             ProjectService
-                .get({expand: 'projectFields,sections,users'}, this.projectId)
+                .get({ expand: 'projectFields,sections,users' }, this.state.projectId)
                 .then(response => {
-                    const {userTypeId} = this.state;
+                    const { userTypeId } = this.state;
                     const project = response.data;
 
                     if (!this.props.currentProject) {
@@ -115,17 +121,21 @@ class ArticleCreatePage extends Component {
                         }); // , this.getAdditionalDataFields
                     }
                 })
-                .catch(() => this.setState({inProgress: false}));
+                .catch(() => this.setState({ inProgress: false }));
         }
     }
 
-    componentDidUpdate(prevProps) {
+    componentDidUpdate(prevProps, prevState) {
         if (prevProps.match.params.articleId !== this.props.match.params.articleId) {
-            this.articleId = this.props.match.params.articleId;
-            this.getArticle();
+            this.setState({ articleId: this.props.match.params.articleId }, this.getArticle);
         }
+
         if (!_.isEqual(prevProps.userTypes, this.props.userTypes)) {
             this.setUserType();
+        }
+
+        if (prevState.userTypeId !== this.state.userTypeId) {
+            this.getArticle();
         }
     }
 
@@ -155,60 +165,60 @@ class ArticleCreatePage extends Component {
     };
 
     handleShowViewSettings = () => {
-        this.setState({showViewSettings: true});
+        this.setState({ showViewSettings: true });
     };
 
     handleChangeViewType = (key) => {
-        this.setState({viewType: key});
+        this.setState({ viewType: key });
     };
 
     handlePrevArticle = () => {
-        const {location, history} = this.props;
-        const {articlesNavs} = this.state;
+        const { location, history } = this.props;
+        const { articlesNavs, projectId } = this.state;
         const sp = new URLSearchParams(location.search);
 
         if (!articlesNavs.prev) return;
 
         this.checkFormChanges().then(() => {
-            history.push(`/project/${this.projectId}/article/${articlesNavs.prev}?page=${sp.get('page')}`);
+            history.push(`/project/${projectId}/article/${articlesNavs.prev}?page=${sp.get('page')}`);
             // EventEmitter.emit(
             //     EVENTS.REDIRECT,
-            //     `/project/${this.projectId}/article/${articlesNavs.prev}?page=${sp.get('page')}`
+            //     `/project/${projectId}/article/${articlesNavs.prev}?page=${sp.get('page')}`
             // );
         });
     };
 
     handleNextArticle = () => {
-        const {location, history} = this.props;
-        const {articlesNavs} = this.state;
+        const { location, history } = this.props;
+        const { articlesNavs, projectId } = this.state;
         const sp = new URLSearchParams(location.search);
 
         if (!articlesNavs.next) return;
 
         this.checkFormChanges().then(() => {
-            history.push(`/project/${this.projectId}/article/${articlesNavs.next}?page=${sp.get('page')}`);
+            history.push(`/project/${projectId}/article/${articlesNavs.next}?page=${sp.get('page')}`);
             // EventEmitter.emit(
             //     EVENTS.REDIRECT,
-            //     `/project/${this.projectId}/article/${articlesNavs.next}?page=${sp.get('page')}`
+            //     `/project/${projectId}/article/${articlesNavs.next}?page=${sp.get('page')}`
             // );
         });
     };
 
     handleClickBackButton = () => {
-        const {location} = this.props;
+        const { location } = this.props;
         const sp = new URLSearchParams(location.search);
 
         this.checkFormChanges().then(() => {
-            EventEmitter.emit(EVENTS.REDIRECT, `/project/${this.projectId}?page=${sp.get('page')}`);
+            EventEmitter.emit(EVENTS.REDIRECT, `/project/${this.state.projectId}?page=${sp.get('page')}`);
         });
     };
 
     handleEndSort = (sortedKeys) => {
-        const {projectFields} = this.state;
+        const { projectFields } = this.state;
 
         sortedKeys.push(...this.unSortableFields);
         const sortedList = sortedKeys.map((key, index) => {
-            const item = projectFields.find(({slug}) => slug === key);
+            const item = projectFields.find(({ slug }) => slug === key);
 
             if (item) item.order = index;
 
@@ -216,10 +226,10 @@ class ArticleCreatePage extends Component {
         });
 
         sortedList.push(
-            ...this.unSortableFields.map(key => projectFields.find(({slug}) => slug === key))
+            ...this.unSortableFields.map(key => projectFields.find(({ slug }) => slug === key))
         );
 
-        this.setState({projectFields: sortedList.filter(item => !!item)}, this.saveFieldsSort);
+        this.setState({ projectFields: sortedList.filter(item => !!item) }, this.saveFieldsSort);
     };
 
     handleDoneArticle = () => {
@@ -235,11 +245,11 @@ class ArticleCreatePage extends Component {
 
     handleSubmit = () => {
         const form = _.cloneDeep(this.state.form);
-        const isUpdate = !!this.articleId;
+        const isUpdate = !!this.state.articleId;
         const invalidateFields = [];
 
         form.date = moment(form.date).format();
-        form.project_id = this.projectId;
+        form.project_id = this.state.projectId;
 
         // При обновлении статьи сбрасываем ее готовность
         // if (resetComplete && userType) {
@@ -247,7 +257,7 @@ class ArticleCreatePage extends Component {
         // }
 
         if (form.authors && form.authors.length) {
-            form.authors = form.authors.map(({label, value}) => ({id: value, name: label}));
+            form.authors = form.authors.map(({ label, value }) => ({ id: value, name: label }));
         }
 
         delete form.project;
@@ -256,7 +266,7 @@ class ArticleCreatePage extends Component {
         form.text = form.text.replace(/\r\n|\r|\n/g, '');
         form.annotation = form.annotation.replace(/\r\n|\r|\n/g, '');
 
-        ['section_main_id', 'section_sub_id', 'section_three_id']
+        [ 'section_main_id', 'section_sub_id', 'section_three_id' ]
             .forEach(option => {
                 if (form[option] && form[option].value) {
                     form[option] = form[option].value;
@@ -265,7 +275,7 @@ class ArticleCreatePage extends Component {
 
         // Check required
         this.state.projectFields
-            .filter(({required}) => required)
+            .filter(({ required }) => required)
             .forEach(field => {
                 if (!form[field.slug] ||
                     (form[field.slug] instanceof Array && _.isEmpty(form[field.slug])) ||
@@ -277,7 +287,7 @@ class ArticleCreatePage extends Component {
 
         // Check new properties and clear empty
         Object.keys(form).forEach(key => {
-            if (isUpdate && form[key] === this.article[key] && !['id', 'project_id'].includes(key)) {
+            if (isUpdate && form[key] === this.article[key] && ![ 'id', 'project_id' ].includes(key)) {
                 delete form[key];
             }
 
@@ -293,7 +303,7 @@ class ArticleCreatePage extends Component {
 
         const submitForm = () => {
             return new Promise(resolve => {
-                this.setState({inProgress: true}, () => {
+                this.setState({ inProgress: true }, () => {
                     ArticleService[isUpdate ? 'update' : 'create'](form, form.id, this.state.userTypeId)
                         .then(response => {
                             OperatedNotification.success({
@@ -301,14 +311,16 @@ class ArticleCreatePage extends Component {
                                 message: `Статья успешно ${isUpdate ? 'обновлена' : 'создана'}`,
                                 submitButtonText: '← Перейти ко всем статьям',
                                 timeOut: 10000,
-                                onSubmit: () => EventEmitter.emit(EVENTS.REDIRECT, `/project/${this.projectId}`)
+                                onSubmit: () => EventEmitter.emit(EVENTS.REDIRECT, `/project/${this.state.projectId}`)
                             });
-                            this.articleId = response.data.id;
-                            this.setState({inProgress: false}, () => {
+                            this.setState({
+                                articleId: response.data.id,
+                                inProgress: false
+                            }, () => {
                                 this.getArticle();
                                 resolve();
                             });
-                        }).catch(() => this.setState({inProgress: false}, resolve));
+                        }).catch(() => this.setState({ inProgress: false }, resolve));
                 });
             });
         };
@@ -316,10 +328,11 @@ class ArticleCreatePage extends Component {
         if (invalidateFields.length) {
             return OperatedNotification.warning({
                 title: 'Внимание',
-                message: `Не заполнены обязательные поля: \n${invalidateFields.map(({name}) => name).join(',\n')}`,
+                message: `Не заполнены обязательные поля: \n${invalidateFields.map(({ name }) => name).join(',\n')}`,
                 submitButtonText: isUpdate ? 'Обновить' : 'Создать',
                 onSubmit: () => submitForm(),
-                onCancel: () => {}
+                onCancel: () => {
+                }
             });
         }
 
@@ -332,9 +345,11 @@ class ArticleCreatePage extends Component {
         if (event.ctrlKey) {
             switch (keyCode) {
                 case KEY_CODE.arrows.right:
+                    event.preventDefault();
                     this.handleNextArticle();
                     break;
                 case KEY_CODE.arrows.left:
+                    event.preventDefault();
                     this.handlePrevArticle();
                     break;
                 case KEY_CODE.chars.s:
@@ -367,9 +382,9 @@ class ArticleCreatePage extends Component {
 
         this.setState({ inProgress: true }, () => {
             ArticleService
-                .get(this.articleId, requestForm)
+                .get(this.state.articleId, requestForm)
                 .then(response => {
-                    const newState = this.state;
+                    const newState = { ...this.state };
                     const form = response.data;
                     const sections = form.project.sections;
                     const articlesNavs = {
@@ -380,13 +395,13 @@ class ArticleCreatePage extends Component {
                     };
 
                     form.date = new Date(form.date);
-                    form.authors = (form.authors || []).map(({id, name}) => ({label: name, value: id}));
+                    form.authors = (form.authors || []).map(({ id, name }) => ({ label: name, value: id }));
 
                     if (form.source && form.source.id) {
-                        form.source = {name: form.source.name, value: form.source.id};
+                        form.source = { name: form.source.name, value: form.source.id };
                     }
 
-                    ['section_main_id', 'section_sub_id', 'section_three_id'].forEach(option => {
+                    [ 'section_main_id', 'section_sub_id', 'section_three_id' ].forEach(option => {
                         if (form[option]) {
                             const found = this.findSectionById(form[option], sections);
 
@@ -408,6 +423,7 @@ class ArticleCreatePage extends Component {
                         store.dispatch(setCurrentProject(form.project));
                     }
 
+                    newState.articleId = form.id;
                     newState.articlesNavs = articlesNavs;
                     newState.projectFields = fields ? fields.data : [];
                     newState.sections = sections;
@@ -419,24 +435,24 @@ class ArticleCreatePage extends Component {
 
                     this.setState(newState);
                 })
-                .catch(() => this.setState({inProgress: false}));
+                .catch(() => this.setState({ inProgress: false }));
         });
     };
 
     getDataSectionFields = () => {
-        const {form, sectionsTwo, sectionsThree, projectFields} = this.state;
+        const { form, sectionsTwo, sectionsThree, projectFields } = this.state;
         const clonedFields = projectFields && projectFields.length ? _.cloneDeep(projectFields) : [];
 
-        let dataSectionFields = clonedFields.filter(({slug}) => {
+        let dataSectionFields = clonedFields.filter(({ slug }) => {
             return !this.unSortableFields.includes(slug);
         });
 
         if (!form.section_main_id || !sectionsTwo || !sectionsTwo.length) {
-            dataSectionFields = dataSectionFields.filter(({slug}) => slug !== 'section_sub_id');
+            dataSectionFields = dataSectionFields.filter(({ slug }) => slug !== 'section_sub_id');
         }
 
         if (!form.section_sub_id || !sectionsThree || !sectionsThree.length) {
-            dataSectionFields = dataSectionFields.filter(({slug}) => slug !== 'section_three_id');
+            dataSectionFields = dataSectionFields.filter(({ slug }) => slug !== 'section_three_id');
         }
 
         return dataSectionFields
@@ -450,11 +466,7 @@ class ArticleCreatePage extends Component {
 
         if (!userType) return;
 
-        this.setState({userTypeId: userType.id, userType}, () => {
-            if (this.articleId) {
-                this.getArticle();
-            }
-        });
+        this.setState({ userTypeId: userType.id, userType });
     };
 
     findSectionById = (sectionId, sections) => {
@@ -487,22 +499,22 @@ class ArticleCreatePage extends Component {
     };
 
     saveFieldsSort = () => {
-        const {projectFields, userTypeId, roles} = this.state;
-        const readOnly = !isProjectAccess([PROJECT_PERMISSION.EDIT]) && !isRolesAccess(roles.admin);
+        const { projectFields, userTypeId, roles } = this.state;
+        const readOnly = !isProjectAccess([ PROJECT_PERMISSION.EDIT ]) && !isRolesAccess(roles.admin);
 
         if (readOnly) return;
 
         ProjectService.cancelLast();
-        ProjectService.put(this.projectId, {
-            projectFields: [{
+        ProjectService.put(this.state.projectId, {
+            projectFields: [ {
                 data: projectFields,
                 user_type_id: userTypeId
-            }]
+            } ]
         });
     };
 
     checkFormChanges = () => {
-        const {prevForm, form, textIsChanged, annotationIsChanged} = this.state;
+        const { prevForm, form, textIsChanged, annotationIsChanged } = this.state;
 
         return new Promise((resolve) => {
             const prevFormClone = _.cloneDeep(prevForm);
@@ -533,7 +545,7 @@ class ArticleCreatePage extends Component {
             }
 
             Object.keys(prevFormClone).forEach(key => {
-                if (!_.isEqual(prevFormClone[key],  formClone[key])) {
+                if (!_.isEqual(prevFormClone[key], formClone[key])) {
                     isEqual = false;
                 }
             });
@@ -566,7 +578,7 @@ class ArticleCreatePage extends Component {
 
     articleId = this.props.match.params.articleId;
 
-    unSortableFields = ['annotation', 'text', 'complete_monitor', 'complete_analytic', 'complete_client'];
+    unSortableFields = [ 'annotation', 'text', 'complete_monitor', 'complete_analytic', 'complete_client' ];
 
     article = null;
 
@@ -575,7 +587,7 @@ class ArticleCreatePage extends Component {
         const { form, sections, sectionsTwo, sectionsThree } = this.state;
         const getValue = (prop) => _.isObject(prop) ? prop.value : prop;
 
-        field.readOnly = !isProjectAccess([PROJECT_PERMISSION.EDIT]) && !isRolesAccess(roles.admin);
+        field.readOnly = !isProjectAccess([ PROJECT_PERMISSION.EDIT ]) && !isRolesAccess(roles.admin);
 
         switch (field.slug) {
             case 'source_id':
@@ -601,7 +613,7 @@ class ArticleCreatePage extends Component {
                 }));
                 break;
             case 'section_three_id':
-                field.options = sectionsThree.map(({name, id}) => ({label: name, value: id}));
+                field.options = sectionsThree.map(({ name, id }) => ({ label: name, value: id }));
                 break;
             case 'genre_id':
                 field.requestService = ArticleService.genre;
@@ -626,29 +638,29 @@ class ArticleCreatePage extends Component {
             case 'federal_district_id':
                 field.requestService = LocationService.federal.get;
                 field.requestCancelService = LocationService.cancelLast;
-                field.depended = [{
+                field.depended = [ {
                     name: 'query[country_id]',
                     value: getValue(form.country_id)
-                }];
+                } ];
                 break;
             case 'region_id':
                 field.requestService = LocationService.region.get;
                 field.requestCancelService = LocationService.cancelLast;
-                field.depended = [{
+                field.depended = [ {
                     name: 'query[federal_district_id]',
                     value: getValue(form.federal_district_id)
                 }, {
                     name: 'query[country_id]',
                     value: getValue(form.country_id)
-                }];
+                } ];
                 break;
             case 'city_id':
                 field.requestService = LocationService.city.get;
                 field.requestCancelService = LocationService.cancelLast;
-                field.depended = [{
+                field.depended = [ {
                     name: 'query[region_id]',
                     value: getValue(form.region_id)
-                }];
+                } ];
                 break;
             case 'authors':
                 field.options = form.authors;
@@ -682,9 +694,9 @@ class ArticleCreatePage extends Component {
             userType,
             inProgress
         } = this.state;
-        const isUpdate = !!this.articleId;
+        const isUpdate = !!this.state.articleId;
         const dataSectionFields = this.getDataSectionFields();
-        const readOnly = !isProjectAccess([PROJECT_PERMISSION.EDIT]) && !isRolesAccess(roles.admin);
+        const readOnly = !isProjectAccess([ PROJECT_PERMISSION.EDIT ]) && !isRolesAccess(roles.admin);
         const sectionData = (
             <Sortable
                 {...cls('section', 'sortable')}
@@ -695,7 +707,7 @@ class ArticleCreatePage extends Component {
                 }}
                 onChange={this.handleEndSort}
             >
-                { dataSectionFields.map(this.renderField) }
+                {dataSectionFields.map(this.renderField)}
             </Sortable>
         );
 
@@ -784,12 +796,12 @@ class ArticleCreatePage extends Component {
                     <button
                         {...cls('location-button')}
                         title='Добавить город'
-                        onClick={() => this.setState({showLocationModal: true})}
+                        onClick={() => this.setState({ showLocationModal: true })}
                     >
-                        <LocationIcon />
+                        <LocationIcon/>
                     </button>
 
-                    <Access permissions={[PROJECT_PERMISSION.EDIT]}>
+                    <Access permissions={[ PROJECT_PERMISSION.EDIT ]}>
                         <Button
                             {...cls('done-button')}
                             text={userType && form[`complete_${userType.slug}`] ? 'Отменить завершение' : 'Завершить статью'}
@@ -863,14 +875,14 @@ class ArticleCreatePage extends Component {
 
                 {showViewSettings && (
                     <ArticleViewSettings
-                        onClose={() => this.setState({showViewSettings: false})}
+                        onClose={() => this.setState({ showViewSettings: false })}
                         onChange={this.handleChangeViewType}
                     />
                 )}
 
                 {showLocationModal && (
                     <CreateLocationModal
-                        onClose={() => this.setState({showLocationModal: false})}
+                        onClose={() => this.setState({ showLocationModal: false })}
                     />
                 )}
 
@@ -883,7 +895,7 @@ class ArticleCreatePage extends Component {
 function mapStateToProps(state) {
     const roles = {};
 
-    state.roles.forEach(({name}) => roles[name] = name);
+    state.roles.forEach(({ name }) => roles[name] = name);
 
     return {
         userTypes: state.userTypes,
