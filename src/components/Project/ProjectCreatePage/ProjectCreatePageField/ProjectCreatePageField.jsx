@@ -23,7 +23,7 @@ const ProjectCreateField = ({field, value, onChange, className}) => {
                     options={field.options || []}
                     placeholder={field.placeholder}
                     label={field.name}
-                    selected={value}
+                    value={value}
                     readOnly={field.readOnly}
                     requestService={field.requestService}
                     requestCancelService={field.requestCancelService}
