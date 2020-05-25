@@ -115,7 +115,6 @@ $namespace: '.vertical-menu';
     display: flex;
     align-items: center;
     height: 48px;
-    transition: background-color .3s ease;
 
     &--active {
       background-color: $gray-two;
