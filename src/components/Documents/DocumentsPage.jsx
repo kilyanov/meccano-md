@@ -1,16 +1,15 @@
 import React, {Component} from 'react';
 import Page from '../Shared/Page/Page';
 import './documents-page.scss';
-import Document from './Document/Document';
+import Index from './Document';
 import InputText from '../Form/InputText/InputText';
 import InputDatePicker from '../Form/InputDatePicker/InputDatePicker';
 import Select from '../Form/Select/Select';
-import {DOCUMENT_STATUS} from '../../constants/DocumentStatus';
+import {DOCUMENT_STATUS, EVENTS} from '../../constants';
 import PromiseDialogModal from '../Shared/PromiseDialogModal/PromiseDialogModal';
 import {DocumentService} from '../../services';
 import Loader from '../Shared/Loader/Loader';
 import {EventEmitter} from "../../helpers";
-import {EVENTS} from "../../constants/Events";
 
 const cls = new Bem('documents-page');
 
@@ -156,7 +155,7 @@ export default class DocumentsPage extends Component {
 
                 <section {...cls('document-list')}>
                     {documents.map((document, documentIndex) => (
-                        <Document
+                        <Index
                             {...cls('document')}
                             key={documentIndex}
                             document={document}

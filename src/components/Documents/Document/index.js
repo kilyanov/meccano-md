@@ -13,7 +13,7 @@ import {PERMISSION} from "../../../constants";
 
 const cls = new Bem('document');
 
-const Document = ({className, document, highlighted, canDelete = true, onDelete = () => {}}) => {
+const Index = ({className, document, highlighted, canDelete = true, onDelete = () => {}}) => {
     const [inProgress, setProgress] = useState(false);
 
     const handleDownload = (doc) => {
@@ -76,4 +76,4 @@ const Document = ({className, document, highlighted, canDelete = true, onDelete 
     );
 };
 
-export default Document;
+export default Index;

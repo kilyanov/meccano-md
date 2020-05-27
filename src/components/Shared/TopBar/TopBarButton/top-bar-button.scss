@@ -1,6 +1,6 @@
 @import "../../../../assets/styles/variables";
 
-$namespace: '.docs-button';
+$namespace: '.top-bar-button';
 
 #{$namespace} {
   position: relative;
@@ -28,20 +28,46 @@ $namespace: '.docs-button';
     fill: #333;
   }
 
-  &__list {
+  &__list-container {
     position: absolute;
-    top: 100%;
+    top: 110%;
     right: 0;
     width: 500px;
     max-width: 90vw;
     background: $white;
     box-shadow: 0 4px 15px 0 rgba(0, 0, 0, 0.2);
+
+    &:before {
+      content: '';
+      position: absolute;
+      top: -8px;
+      right: 26px;
+      display: block;
+      width: 16px;
+      height: 16px;
+      background: #fff;
+      box-shadow: 0px -15px 15px 0 rgba(0, 0, 0, 0.2);
+      transform: rotate(45deg);
+    }
+  }
+
+  &__list {
+    width: 100%;
     margin: 0;
     padding: 0;
     list-style: none;
+    max-height: 400px;
+    overflow-y: auto;
+  }
+
+  &__list-title {
+    margin: 10px 0;
+    padding: 0 10px;
   }
 
   &__list-item {
+    border-top: 1px solid $gray-three;
+
     &:hover:not(&--empty):not(&--link) {
       background-color: $gray;
     }

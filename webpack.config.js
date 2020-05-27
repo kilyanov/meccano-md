@@ -55,7 +55,12 @@ module.exports = (env, argv) => {
             ]
         },
         resolve: {
-            extensions: ['.js', '.jsx']
+            extensions: ['.js', '.jsx'],
+            alias: {
+                'const': path.join(__dirname, './src/constants'),
+                'helpers': path.join(__dirname, './src/helpers'),
+                'services': path.join(__dirname, './src/services')
+            }
         },
         output: {
             path: path.join(__dirname, 'web'),
