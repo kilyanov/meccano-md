@@ -463,7 +463,7 @@ export default class ProjectPage extends Component {
                         />
                     )}
 
-                    {(hasSelectedItems && selectedArticles.every(item => !item[`complete_${userType.slug}`])) && (
+                    {(hasSelectedItems && selectedArticles.some(item => !item[`complete_${userType.slug}`])) && (
                         <Button
                             {...cls('upload-btn')}
                             text='Завершить'
