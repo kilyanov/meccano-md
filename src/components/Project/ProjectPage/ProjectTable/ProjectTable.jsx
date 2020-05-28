@@ -41,10 +41,8 @@ class ProjectTable extends Component {
     static defaultProps = {
         articles: [],
         selectedIds: [],
-        onChangeSelected: () => {
-        },
-        onClickArticle: () => {
-        }
+        onChangeSelected: () => {},
+        onClickArticle: () => {}
     };
 
     state = {

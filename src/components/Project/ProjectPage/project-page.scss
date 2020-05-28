@@ -11,6 +11,14 @@
     flex-direction: column;
   }
 
+  &__footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 80px;
+    border-top: 1px solid $gray;
+  }
+
   &__title-wrapper {
     display: flex;
     flex: 0 0 58px;
@@ -38,7 +46,11 @@
   }
 
   &__filter-item {
-
+    &--select {
+      min-width: 160px;
+      margin-bottom: 0;
+      z-index: 2;
+    }
   }
 
   &__articles-count {

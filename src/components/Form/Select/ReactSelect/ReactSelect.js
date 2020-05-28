@@ -7,19 +7,22 @@ import { ReactSelectStyles } from "../../../../constants/ReactSelectStyles";
 const cls = new Bem('select');
 
 export default function ReactSelect({
+    className,
     selected,
     readOnly,
     options,
     onChange,
     draggable,
-    label
+    label,
+    placeholder,
+    isMulti
 }) {
     const theme = useSelector(state => state.theme);
     const isDarkTheme = theme === THEME_TYPE.DARK;
     const selectedValue = options.find(({ value }) => value === selected);
 
     return (
-        <div {...cls('', { succeed: !!selectedValue })}>
+        <div {...cls('', { succeed: !!selectedValue }, className)}>
             {label && (
                 <label {...cls('label', '', { 'drag-handle': draggable })}>
                     <span {...cls('label-text', '', { 'drag-handle': draggable })}>{label}</span>
@@ -27,10 +30,11 @@ export default function ReactSelect({
             )}
 
             <Select
-                placeholder='Выберите...'
+                placeholder={placeholder || 'Выберите...'}
                 label={label}
                 options={options || []}
                 value={selectedValue}
+                isMulti={isMulti}
                 isDisabled={readOnly}
                 onChange={onChange}
                 styles={ReactSelectStyles(isDarkTheme)}

@@ -27,6 +27,7 @@ import { clearArticleColors, setArticleColors } from "../../../redux/actions/art
 import { getColumnsFromStorage } from "./ProjectTable/Columns";
 import ArticleTransferModal from "../../Article/ArticleTransferModal/ArticleTransferModal";
 import ProjectPagination from "./ProjectTable/ProjectPagination/ProjectPagintaion";
+import ReactSelect from "../../Form/Select/ReactSelect/ReactSelect";
 
 const cls = new Bem('project-page');
 const defaultPagination = { page: 1, pageCount: 1, perPage: 50 };
@@ -52,6 +53,7 @@ export default class ProjectPage extends Component {
             activeArticle: null,
             selectedItemIds: [],
             selectedArticles: [],
+            selectedStatus: [],
             isAllArticlesSelected: false,
             pagination,
             project: null,
@@ -78,6 +80,7 @@ export default class ProjectPage extends Component {
                 articles: [],
                 activeArticle: null,
                 selectedItemIds: [],
+                selectedStatus: [],
                 isAllArticlesSelected: false,
                 pagination: defaultPagination,
                 project: null,
@@ -281,6 +284,10 @@ export default class ProjectPage extends Component {
         }, this.getArticles);
     };
 
+    handleChangeStatus = (selectedStatus) => {
+        this.setState({ selectedStatus }, this.getArticles);
+    };
+
     getArticleColors = () => {
         ArticleService.color.get(this.projectId).then(response => {
             if (response.data) {
@@ -290,9 +297,10 @@ export default class ProjectPage extends Component {
     };
 
     getArticles = () => {
-        const { pagination, filters, userType } = this.state;
+        const { pagination, filters, userType, selectedStatus } = this.state;
         const selectedColumns = getColumnsFromStorage(this.projectId);
         const fields = this.getFields();
+        const statusValues = (selectedStatus || []).map(({ value }) => value);
 
         if (!userType) return;
 
@@ -338,6 +346,20 @@ export default class ProjectPage extends Component {
                     this.searchParams.set(filterKey, filter);
             }
         });
+
+        // Фильтр Статусов
+        if (statusValues.includes('open') && userType) {
+            form[`query[complete_${userType.slug}]`] = false;
+            form['query[user_id]'] = 'null';
+        }
+
+        if (statusValues.includes('complete') && userType) {
+            form[`query[complete_${userType.slug}]`] = true;
+        }
+
+        if (statusValues.includes('user')) {
+            form['query[user_id]'] = 'not null';
+        }
 
         ArticleService
             .getList(form)
@@ -394,6 +416,29 @@ export default class ProjectPage extends Component {
             });
     };
 
+    getStatusOptions = () => {
+        const { selectedStatus } = this.state;
+        const values = (selectedStatus || []).map(({ value }) => value);
+
+        return [
+            {
+                label: 'Открыта',
+                value: 'open',
+                isDisabled: values.includes('complete') || values.includes('user')
+            },
+            {
+                label: 'Завершена',
+                value: 'complete',
+                isDisabled: values.includes('open')
+            },
+            {
+                label: 'Передана',
+                value: 'user',
+                isDisabled: values.includes('open')
+            }
+        ];
+    }
+
     setSearchParams = () => {
         const { location, history } = this.props;
 
@@ -432,6 +477,7 @@ export default class ProjectPage extends Component {
             showTransferModal,
             userType,
             selectedArticles,
+            selectedStatus,
             inProgress
         } = this.state;
         const countSelected = isAllArticlesSelected ? pagination.totalCount : selectedItemIds.length;
@@ -559,7 +605,14 @@ export default class ProjectPage extends Component {
                         onSearch={() => this.getArticles()}
                     />
 
-                    <span {...cls('articles-count')}>Всего статей: {pagination.totalCount || 0}</span>
+                    <ReactSelect
+                        {...cls('filter-item', 'select')}
+                        isMulti
+                        options={this.getStatusOptions()}
+                        onChange={this.handleChangeStatus}
+                        selected={selectedStatus}
+                        placeholder='Статус'
+                    />
 
                     <DropDownButton
                         {...cls('article-add-btn')}
@@ -588,11 +641,21 @@ export default class ProjectPage extends Component {
                         fields={fields}
                     />
 
-                    <ProjectPagination
-                        page={currentPage}
-                        pageCount={pagination.pageCount}
-                        onPageChange={this.handleChangePage}
-                    />
+                    <div {...cls('footer')}>
+                        <ProjectPagination
+                            page={currentPage}
+                            pageCount={pagination.pageCount}
+                            onPageChange={this.handleChangePage}
+                        />
+
+                        <span {...cls('articles-count')}>
+                            Всего {Plural(
+                                pagination.totalCount || 0,
+                                `${pagination.totalCount || 0} `,
+                                ['статья', 'статьи', 'статей']
+                            )}
+                        </span>
+                    </div>
                 </div>
 
                 {showArticleModal && (
