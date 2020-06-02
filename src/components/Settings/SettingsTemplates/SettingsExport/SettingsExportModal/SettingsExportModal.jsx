@@ -13,6 +13,7 @@ import InlineButton from '../../../../Shared/InlineButton/InlineButton';
 import InputTags from '../../../../Form/InputTags/InputTags';
 import { ProjectService } from '../../../../../services';
 import './settings-export-modal.scss';
+import Sortable from "react-sortablejs";
 
 const cls = new Bem('settings-export-modal');
 
@@ -102,13 +103,23 @@ export default class SettingsExportModal extends Component {
         this.setState(newState);
     };
 
+    handleEndSort = (sortedKeys) => {
+        this.setState(state => {
+            state.form.rules = sortedKeys
+                .map(key => state.form.rules.find(({ id }) => id === key))
+                .filter(item => !!item);
+
+            return state;
+        });
+    };
+
     handleSubmit = () => {
         const form = _.pick(this.state.form, [ 'name', 'rules', 'replaces', 'projects', 'file', 'type' ]);
         const method = this.state.form.id ? 'update' : 'set';
 
         if (_.get(form.file, 'id')) delete form.file;
 
-        form.rules = form.rules.map(({ id, selector, element }) => ({ id, selector, element }));
+        form.rules = form.rules.map(({ id, selector, element }, index) => ({ id, selector, element, position: index }));
         form.replaces = form.replaces.map(({ id, search, replace }) => ({ id, search, replace }));
 
         if (form.projects && form.projects.length) {
@@ -150,7 +161,7 @@ export default class SettingsExportModal extends Component {
     ];
 
     renderRule = (rule, ruleIndex) => (
-        <div {...cls('rule')} key={ruleIndex}>
+        <div {...cls('rule')} key={ruleIndex} data-id={rule.id}>
             <div {...cls('rule-row', '', 'row')}>
                 <div {...cls('item', '', 'col-xs-6')}>
                     <InputText
@@ -181,7 +192,7 @@ export default class SettingsExportModal extends Component {
     );
 
     renderReplace = (replace, replaceIndex) => (
-        <div {...cls('rule')} key={replaceIndex}>
+        <div {...cls('rule')} key={replaceIndex} data-id={replace.id}>
             <div {...cls('rule-row', '', 'row')}>
                 <div {...cls('item', '', 'col-xs-6')}>
                     <InputText
@@ -273,19 +284,23 @@ export default class SettingsExportModal extends Component {
                     <section {...cls('rules')}>
                         <h3 {...cls('title')}>Правила замены</h3>
 
-                        {form.rules.map(this.renderRule)}
-                        <InlineButton onClick={this.handleAddRule}>
-                            + Добавить
-                        </InlineButton>
+                        <Sortable
+                            {...cls('list', 'left')}
+                            options={{ animation: 150 }}
+                            onChange={this.handleEndSort}
+                        >
+                            {form.rules.map(this.renderRule)}
+                        </Sortable>
+
+                        <InlineButton onClick={this.handleAddRule}>+ Добавить</InlineButton>
                     </section>
 
                     <section {...cls('joins')}>
                         <h3 {...cls('title')}>Список замен</h3>
 
                         {form.replaces.map(this.renderReplace)}
-                        <InlineButton onClick={this.handleAddReplace}>
-                            + Добавить
-                        </InlineButton>
+
+                        <InlineButton onClick={this.handleAddReplace}>+ Добавить</InlineButton>
                     </section>
                 </Form>
 

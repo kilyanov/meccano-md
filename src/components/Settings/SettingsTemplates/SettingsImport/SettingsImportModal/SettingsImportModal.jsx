@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import ConfirmModal from '../../../../Shared/ConfirmModal/ConfirmModal';
 import './settings-import-modal.scss';
@@ -7,8 +7,9 @@ import Select from '../../../../Form/Select/Select';
 import TransferService from '../../../../../services/TransferService';
 import Form from '../../../../Form/Form/Form';
 import Loader from '../../../../Shared/Loader/Loader';
-import {NotificationManager} from 'react-notifications';
+import { NotificationManager } from 'react-notifications';
 import InlineButton from '../../../../Shared/InlineButton/InlineButton';
+import Sortable from "react-sortablejs";
 
 const cls = new Bem('settings-import-modal');
 
@@ -39,7 +40,7 @@ export default class SettingsImportModal extends Component {
             value: ''
         };
         this.state = {
-            form: props.item || {...this.defaultForm},
+            form: props.item || { ...this.defaultForm },
             types: [],
             inProgress: true
         };
@@ -48,10 +49,10 @@ export default class SettingsImportModal extends Component {
     componentDidMount() {
         TransferService.type.get().then(response => {
             this.setState({
-                types: response.data.map(({name}) => ({name, value: name})),
+                types: response.data.map(({ name }) => ({ name, value: name })),
                 inProgress: false
             });
-        }).catch(() => this.setState({inProgress: false}));
+        }).catch(() => this.setState({ inProgress: false }));
     }
 
     handleChangeForm = (value, prop) => {
@@ -62,11 +63,11 @@ export default class SettingsImportModal extends Component {
     };
 
     handleAddRule = () => {
-        const {form: {rules}} = this.state;
+        const { form: { rules } } = this.state;
         const hasEmpty = rules.some(rule => !rule.field_name || !rule.path_value);
 
         if (!hasEmpty) {
-            this.setState(prev => prev.form.rules.push({...this.defaultRule}));
+            this.setState(prev => prev.form.rules.push({ ...this.defaultRule }));
         }
     };
 
@@ -83,11 +84,11 @@ export default class SettingsImportModal extends Component {
     };
 
     handleAddJoin = () => {
-        const {form: {joins}} = this.state;
+        const { form: { joins } } = this.state;
         const hasEmpty = joins.some(join => !join.name || !join.value);
 
         if (!hasEmpty) {
-            this.setState(prev => prev.form.joins.push({...this.defaultJoin}));
+            this.setState(prev => prev.form.joins.push({ ...this.defaultJoin }));
         }
     };
 
@@ -103,8 +104,18 @@ export default class SettingsImportModal extends Component {
         this.setState(newState);
     };
 
+    handleEndSort = (sortedKeys) => {
+        this.setState(state => {
+            state.form.rules = sortedKeys
+                .map(key => state.form.rules.find(({ id }) => id === key))
+                .filter(item => !!item);
+
+            return state;
+        });
+    };
+
     handleSubmit = () => {
-        const form = {...this.state.form};
+        const form = { ...this.state.form };
         const method = form.id ? 'update' : 'set';
 
         delete form.id;
@@ -113,32 +124,33 @@ export default class SettingsImportModal extends Component {
         delete form.value;
         delete form.slug;
 
+        form.rules = form.rules.map((item, index) => ({ ...item, position: index }));
 
         if (!form.rules.length) return NotificationManager.error('Не заполнены "Правила"', 'Ошибка');
         if (!form.rules.every(item => item.field_name && item.path_value)) {
             return NotificationManager.error('Не верно заполнены поля "Правила"', ' Ошибка');
         }
 
-        if (!form.joins.length) return  NotificationManager.error('Не заполнено "Объединение полей"', 'Ошибка');
+        if (!form.joins.length) return NotificationManager.error('Не заполнено "Объединение полей"', 'Ошибка');
         if (!form.joins.every(item => item.name && item.value)) {
             return NotificationManager.error('Не верно заполнены поля "Объединение полей"', ' Ошибка');
         }
 
-        this.setState({inProgress: true}, () => {
+        this.setState({ inProgress: true }, () => {
             TransferService.import[method](form, this.state.form.id).then(response => {
                 NotificationManager.success('Успешно сохранено', 'Сохранено');
                 this.setState({
-                    form: {...this.defaultForm},
+                    form: { ...this.defaultForm },
                     inProgress: false
                 });
                 this.props.onSubmit(response.data, method);
                 this.props.onClose();
-            }).catch(() => this.setState({inProgress: false}));
+            }).catch(() => this.setState({ inProgress: false }));
         });
     };
 
     renderRule = (rule, ruleIndex) => (
-        <div {...cls('rule')}  key={ruleIndex}>
+        <div {...cls('rule')} key={ruleIndex} data-id={rule.id}>
             <div {...cls('rule-row', '', 'row')}>
                 <div {...cls('item', '', 'col-xs-6')}>
                     <InputText
@@ -161,13 +173,14 @@ export default class SettingsImportModal extends Component {
                     type='button'
                     {...cls('button', 'remove')}
                     onClick={() => this.handleDeleteRule(ruleIndex)}
-                >✕</button>
+                >✕
+                </button>
             </div>
         </div>
     );
 
     renderJoin = (join, joinIndex) => (
-        <div {...cls('rule')}  key={joinIndex}>
+        <div {...cls('rule')} key={joinIndex}>
             <div {...cls('rule-row', '', 'row')}>
                 <div {...cls('item', '', 'col-xs-6')}>
                     <InputText
@@ -190,15 +203,16 @@ export default class SettingsImportModal extends Component {
                     type='button'
                     {...cls('button', 'remove')}
                     onClick={() => this.handleDeleteJoin(joinIndex)}
-                >✕</button>
+                >✕
+                </button>
             </div>
         </div>
     );
 
     render() {
-        const {onClose} = this.props;
-        const {form, types, inProgress} = this.state;
-        const selectedType = types.find(({value}) => value === form.type);
+        const { onClose } = this.props;
+        const { form, types, inProgress } = this.state;
+        const selectedType = types.find(({ value }) => value === form.type);
 
         return (
             <ConfirmModal
@@ -226,7 +240,7 @@ export default class SettingsImportModal extends Component {
                                 label='Тип файла'
                                 required
                                 options={types}
-                                onChange={({value}) => this.handleChangeForm(value, 'type')}
+                                onChange={({ value }) => this.handleChangeForm(value, 'type')}
                                 selected={selectedType}
                             />
                         </div>
@@ -249,7 +263,14 @@ export default class SettingsImportModal extends Component {
                     <section {...cls('rules')}>
                         <h3 {...cls('title')}>Правила</h3>
 
-                        {form.rules.map(this.renderRule)}
+                        <Sortable
+                            {...cls('list', 'left')}
+                            options={{ animation: 150 }}
+                            onChange={this.handleEndSort}
+                        >
+                            {form.rules.map(this.renderRule)}
+                        </Sortable>
+
                         <InlineButton onClick={this.handleAddRule}>
                             + Добавить
                         </InlineButton>

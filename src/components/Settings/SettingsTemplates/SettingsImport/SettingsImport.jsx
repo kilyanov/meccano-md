@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import './settings-import.scss';
 import PropertiesTable from '../../../Shared/PropertiesTable/PropertiesTable';
 import SettingsPage from '../../SettingsPage/SettingsPage';
@@ -6,17 +6,17 @@ import PromiseDialogModal from '../../../Shared/PromiseDialogModal/PromiseDialog
 import SettingsImportModal from './SettingsImportModal/SettingsImportModal';
 import TransferService from '../../../../services/TransferService';
 import Loader from '../../../Shared/Loader/Loader';
-import {NotificationManager} from 'react-notifications';
-import {PERMISSION} from "../../../../constants/Permissions";
+import { NotificationManager } from 'react-notifications';
+import { PERMISSION } from "../../../../constants";
 
 const columnSettings = {
     name: {
         name: 'Название',
-        style: {width: '60%'}
+        style: { width: '60%' }
     },
     type: {
         name: 'Тип',
-        style: {width: '40%'}
+        style: { width: '40%' }
     }
 };
 
@@ -29,13 +29,15 @@ export default class SettingsImport extends Component {
     };
 
     componentDidMount() {
-        this.setState({inProgress: true}, () => {
+        this.setState({ inProgress: true }, () => {
             TransferService.import.get().then(response => {
                 this.setState({
-                    items: response.data.map(item => ({...item, value: item.id})),
+                    items: response.data
+                        .map(item => ({ ...item, value: item.id }))
+                        .sort((a, b) => a.position - b.position),
                     inProgress: false
                 });
-            }).catch(() => this.setState({inProgress: false}));
+            }).catch(() => this.setState({ inProgress: false }));
         });
     }
 
@@ -53,7 +55,7 @@ export default class SettingsImport extends Component {
             submitText: 'Удалить',
             style: 'danger'
         }).then(() => {
-            this.setState({items: this.state.items.filter(({id}) => id !== item.id)});
+            this.setState({ items: this.state.items.filter(({ id }) => id !== item.id) });
             TransferService.import.delete(item.id).then(() => {
                 NotificationManager.success('Успешно удален', 'Удалено');
             });
@@ -61,7 +63,7 @@ export default class SettingsImport extends Component {
     };
 
     handleSubmitItem = (item, method = 'save') => {
-        let items = [...this.state.items];
+        let items = [ ...this.state.items ];
 
         if (method === 'update') {
             items = items.map(i => (i.id === item.id) ? item : i);
@@ -69,21 +71,21 @@ export default class SettingsImport extends Component {
             items.push(item);
         }
 
-        this.setState({items, selectedItem: null});
+        this.setState({ items, selectedItem: null });
     };
 
     render() {
-        const {showItemModal, selectedItem, inProgress} = this.state;
+        const { showItemModal, selectedItem, inProgress } = this.state;
 
         return (
             <SettingsPage
                 title='Шаблоны'
                 subtitle='Импорт'
                 withAddButton
-                onAdd={() => this.setState({showItemModal: true, selectedItem: null})}
+                onAdd={() => this.setState({ showItemModal: true, selectedItem: null })}
             >
                 <PropertiesTable
-                    editPermissions={[PERMISSION.editSettings]}
+                    editPermissions={[ PERMISSION.editSettings ]}
                     columnSettings={columnSettings}
                     items={this.state.items}
                     onEditItem={this.handleClickItem}
@@ -94,7 +96,7 @@ export default class SettingsImport extends Component {
                 {showItemModal && (
                     <SettingsImportModal
                         item={selectedItem}
-                        onClose={() => this.setState({selectedItem: null, showItemModal: false})}
+                        onClose={() => this.setState({ selectedItem: null, showItemModal: false })}
                         onSubmit={this.handleSubmitItem}
                     />
                 )}

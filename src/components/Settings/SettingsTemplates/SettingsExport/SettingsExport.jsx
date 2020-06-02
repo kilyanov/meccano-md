@@ -32,7 +32,9 @@ export default class SettingsExport extends Component {
         this.setState({ inProgress: true }, () => {
             TransferService.export.get().then(response => {
                 this.setState({
-                    items: response.data.map(item => ({ ...item, value: item.id })),
+                    items: response.data
+                        .map(item => ({ ...item, value: item.id }))
+                        .sort((a, b) => a.position - b.position),
                     inProgress: false
                 });
             }).catch(() => this.setState({ inProgress: false }));
