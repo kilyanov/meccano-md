@@ -1,24 +1,22 @@
-import React, {Component, Fragment} from 'react';
+import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
-import {AuthService, DocumentService, StorageService} from "../services";
-import {EventEmitter} from "../helpers";
-import {NotificationContainer} from 'react-notifications';
-import {Redirect} from 'react-router-dom';
+import { AuthService, DocumentService, StorageService } from "../services";
+import { EventEmitter } from "../helpers";
+import { NotificationContainer } from 'react-notifications';
+import { Redirect } from 'react-router-dom';
 import '../assets/styles/main.scss';
-import {storeMainActions} from '../redux/storeMainActions';
-import {InitScrollbar} from '../helpers/Tools';
-import {EVENTS} from '../constants/Events';
+import { storeMainActions } from '../redux/storeMainActions';
+import { InitScrollbar } from '../helpers/Tools';
 import OperatedNotification from './Shared/OperatedNotifiction/OperatedNotification';
 import QueueManager from './Shared/QueeManager/QueueManager';
 // import NotificationsPanel from './Shared/NotificationsPanel/NotificationsPanel';
 import store from '../redux/store';
-import {switchTheme} from '../redux/actions/theme';
-import {THEME_TYPE} from '../constants/ThemeType';
+import { switchTheme } from '../redux/actions/theme';
 import Notification from "../helpers/Notification";
-import {DOCUMENT_STATUS} from "../constants/DocumentStatus";
-import {saveAs} from "file-saver";
-import {getDocuments} from "../redux/actions/document";
-import {STORAGE_KEY} from "../constants";
+import { saveAs } from "file-saver";
+import { getDocuments } from "../redux/actions/document";
+import { EVENTS, THEME_TYPE, STORAGE_KEY, DOCUMENT_STATUS } from "../constants";
+import moment from "moment-timezone";
 
 const cls = new Bem('app');
 
@@ -37,13 +35,13 @@ export default class App extends Component {
 
         EventEmitter.setMaxListeners(0);
         EventEmitter.on(EVENTS.REDIRECT, (url, callback) => {
-            self.setState({redirect: url}, () => {
-                self.setState({redirect: false}, callback);
+            self.setState({ redirect: url }, () => {
+                self.setState({ redirect: false }, callback);
             });
         });
 
-        EventEmitter.on(EVENTS.OPERATED_NOTIFICATION.SHOW, notification => this.setState({notification}));
-        EventEmitter.on(EVENTS.OPERATED_NOTIFICATION.HIDE, () => this.setState({notification: null}));
+        EventEmitter.on(EVENTS.OPERATED_NOTIFICATION.SHOW, notification => this.setState({ notification }));
+        EventEmitter.on(EVENTS.OPERATED_NOTIFICATION.HIDE, () => this.setState({ notification: null }));
     }
 
     state = {
@@ -65,7 +63,7 @@ export default class App extends Component {
         const storeState = this.getCurrentStateFromStore();
 
         if (storeState.theme) {
-            this.setState({theme: storeState.theme});
+            this.setState({ theme: storeState.theme });
         }
 
         this.unsubscribeStore = store.subscribe(this.updateStateFromStore);
@@ -78,15 +76,19 @@ export default class App extends Component {
     }
 
     componentWillUnmount() {
-        EventEmitter.off(EVENTS.REDIRECT, () => {});
-        EventEmitter.off(EVENTS.OPERATED_NOTIFICATION.SHOW, () => {});
-        EventEmitter.off(EVENTS.OPERATED_NOTIFICATION.HIDE, () => {});
-        window.removeEventListener('load', () => {});
+        EventEmitter.off(EVENTS.REDIRECT, () => {
+        });
+        EventEmitter.off(EVENTS.OPERATED_NOTIFICATION.SHOW, () => {
+        });
+        EventEmitter.off(EVENTS.OPERATED_NOTIFICATION.HIDE, () => {
+        });
+        window.removeEventListener('load', () => {
+        });
         this.unsubscribeStore();
     }
 
     handleScroll = (event) => {
-        const {target} = event;
+        const { target } = event;
         const isEndPage = target.scrollTop === target.scrollHeight - target.clientHeight;
 
         if (isEndPage) EventEmitter.emit(EVENTS.APP_CONTAINER_SCROLL_END);
@@ -94,7 +96,7 @@ export default class App extends Component {
 
     handleDownloadDocument = (transactionId) => {
         DocumentService.download(transactionId).then(response => {
-            const blob = new Blob([response.data], {type: 'application/octet-stream'});
+            const blob = new Blob([ response.data ], { type: 'application/octet-stream' });
 
             saveAs(blob, response.headers['x-filename']);
         });
@@ -108,7 +110,7 @@ export default class App extends Component {
     };
 
     getDocumentsForUser = () => {
-        const {profile} = this.state;
+        const { profile } = this.state;
 
         if (_.isEmpty(profile) || !profile.id) return;
 
@@ -130,10 +132,10 @@ export default class App extends Component {
                             // link: `/documents/${document.transactionId}`,
                             transactionId: document.transactionId,
                             message: DOCUMENT_STATUS[document.status],
-                            buttons: [{
+                            buttons: [ {
                                 label: 'Скачать',
                                 onClick: () => this.handleDownloadDocument(document.transactionId)
-                            }]
+                            } ]
                         });
                     });
                 }
@@ -144,12 +146,13 @@ export default class App extends Component {
         const currentState = this.getCurrentStateFromStore();
 
         if (this.state.theme !== currentState.theme) {
-            this.setState({theme: currentState.theme});
+            this.setState({ theme: currentState.theme });
         }
 
         if (!_.isEmpty(currentState.profile) && currentState.profile.id !== this.state.profile.id) {
-            this.setState({profile: currentState.profile}, () => {
+            this.setState({ profile: currentState.profile }, () => {
                 store.dispatch(getDocuments(currentState.profile.id));
+                moment.tz.setDefault(currentState.profile.timeZone);
 
                 // До появления сокетов обновление делаем раз в 30 сек
                 setInterval(() => {
@@ -170,7 +173,7 @@ export default class App extends Component {
                         storageUserType = null;
                     }
 
-                    if (!storageUserType || !currentState.profile.types.find(({id}) => id === storageUserType)) {
+                    if (!storageUserType || !currentState.profile.types.find(({ id }) => id === storageUserType)) {
                         StorageService.set(STORAGE_KEY.USER_TYPE, JSON.stringify(currentState.profile.types[0]));
                         EventEmitter.emit(EVENTS.USER.CHANGE_TYPE, currentState.profile.types[0]);
                     }
@@ -181,15 +184,15 @@ export default class App extends Component {
     };
 
     render() {
-        const {children} = this.props;
-        const {redirect, notification, theme} = this.state;
+        const { children } = this.props;
+        const { redirect, notification, theme } = this.state;
 
         return redirect ? (
             <Redirect push to={redirect}/>
         ) : (
             <Fragment>
                 <div
-                    {...cls('', {blur: false, [theme]: !!theme})}
+                    {...cls('', { blur: false, [theme]: !!theme })}
                     ref={node => this.containerRef = node}
                     onScroll={this.handleScroll}
                 >

@@ -90,10 +90,10 @@ module.exports = (env, argv) => {
             ]),
             new webpack.ProvidePlugin({
                 'window._': 'lodash',
-                _: 'lodash',
+                '_': 'lodash',
                 'window.moment': 'moment',
-                moment: 'moment',
-                Bem: 'react-bem-helper'
+                'moment': 'moment',
+                'Bem': 'react-bem-helper'
             }),
             assetsPluginInstance
         ],
