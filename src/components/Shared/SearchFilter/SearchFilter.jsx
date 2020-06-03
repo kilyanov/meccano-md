@@ -43,7 +43,7 @@ export default class SearchFilter extends Component {
                     <input
                         ref={ref => this.inputRef = ref}
                         {...cls('field')}
-                        type='text'
+                        type='search'
                         value={value}
                         onChange={e => onChange(e.target.value)}
                         onKeyDown={this.handleKeyDown}

@@ -359,8 +359,6 @@ class ProjectCreatePage extends Component {
         const backButtonLabel = step === 2 ? 'Назад' : isEdit ? 'Удалить проект' : 'Отменить создание';
         const fieldsByUserType = selectedUserType && projectFields.find(f => f.user_type_id === selectedUserType.value);
 
-        console.log('render', projectFields);
-
         return (
             <Access
                 permissions={[ PROJECT_PERMISSION.PROJECT_MANAGER ]}

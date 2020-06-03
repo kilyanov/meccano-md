@@ -59,7 +59,8 @@ module.exports = (env, argv) => {
             alias: {
                 'const': path.join(__dirname, './src/constants'),
                 'helpers': path.join(__dirname, './src/helpers'),
-                'services': path.join(__dirname, './src/services')
+                'services': path.join(__dirname, './src/services'),
+                '@styles': path.join(__dirname, './src/assets/styles')
             }
         },
         output: {

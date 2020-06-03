@@ -58,6 +58,7 @@ const ProjectCreateField = ({field, value, onChange, className}) => {
                         requestService={field.requestService}
                         requestCancelService={field.requestCancelService}
                         depended={field.depended}
+                        isDisabled={field.readOnly}
                         draggable
                     />
                 ) : (
@@ -67,6 +68,7 @@ const ProjectCreateField = ({field, value, onChange, className}) => {
                         options={field.options || []}
                         selected={value}
                         readOnly={field.readOnly}
+                        disabled={field.disabled}
                         onChange={val => onChange(val, field.slug)}
                         draggable
                     />
@@ -81,6 +83,7 @@ const ProjectCreateField = ({field, value, onChange, className}) => {
                     selected={value}
                     fieldKey={field.slug}
                     readOnly={field.readOnly}
+                    isDisabled={field.readOnly}
                     onChange={val => onChange(val, field.slug)}
                     requestService={field.requestService}
                     requestCancelService={field.requestCancelService}

@@ -15,7 +15,8 @@ export default class InputDatePicker extends Component {
         onChange: PropTypes.func,
         clearable: PropTypes.bool,
         format: PropTypes.string,
-        readOnly: PropTypes.bool
+        readOnly: PropTypes.bool,
+        disabled: PropTypes.bool
     };
 
     static defaultProps = {
@@ -28,16 +29,16 @@ export default class InputDatePicker extends Component {
     };
 
     handleChange = (value) => {
-        this.setState({value});
+        this.setState({ value });
         this.props.onChange(value);
     };
 
     render() {
-        const {className, clearable, label, format, readOnly, draggable} = this.props;
-        const {value} = this.state;
+        const { className, clearable, label, format, readOnly, disabled, draggable } = this.props;
+        const { value } = this.state;
 
         return (
-            <div {...cls('', {readOnly}, className)}>
+            <div {...cls('', { readOnly: readOnly || disabled }, className)}>
                 <label {...cls('label')}>
                     {label && <span {...cls('label-text', '', { 'drag-handle': draggable })}>{label}</span>}
 
@@ -45,7 +46,7 @@ export default class InputDatePicker extends Component {
                         calendarIcon={<CalendarIcon/>}
                         clearIcon={clearable && value ? <i {...cls('icon')}>✕</i> : null} // <CloseIcon/>
                         value={value}
-                        readOnly={readOnly}
+                        readOnly={readOnly || disabled}
                         onChange={this.handleChange}
                         locale='ru-RU'
                         format={format}

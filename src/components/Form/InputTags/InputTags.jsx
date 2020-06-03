@@ -76,7 +76,7 @@ class InputTags extends Component {
                     isMulti
                     isSearchable
                     onChange={onChange}
-                    readOnly={readOnly}
+                    isDisabled={readOnly}
                     value={value}
                     defaultOptions={defaultOptions}
                     loadingMessage={() => 'Загрузка...'}

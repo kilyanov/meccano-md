@@ -10,6 +10,7 @@ const ProjectsButton = ({ className }) => {
     return (
         <TopBarButton
             title='Проекты'
+            withList
             IconComponent={ProjectsIcon}
             options={projects}
             className={className}

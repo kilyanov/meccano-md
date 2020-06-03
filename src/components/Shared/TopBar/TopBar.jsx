@@ -6,18 +6,18 @@ import Logo from '../Logo/Logo';
 import DocsButton from './DocsButton/DocsButton';
 import ProjectsButton from "./ProjectsButton";
 import ProfileButton from "./ProfileButton/ProfileButton";
-import {clearCurrentProject} from "../../../redux/actions/currentProject";
+import { clearCurrentProject } from "../../../redux/actions/currentProject";
 import store from "../../../redux/store";
 // import ArchiveButton from "./ArchiveButton";
 
 const cls = new Bem('top-bar');
-const TopBar = ({isStatic, className}) => {
+const TopBar = ({ isStatic, className }) => {
     const handleClickLogo = () => store.dispatch(clearCurrentProject());
 
     return (
-        <section {...cls('', {static: isStatic}, className)}>
+        <section {...cls('', { static: isStatic }, className)}>
             <div {...cls('container', '', 'container')}>
-                <Logo onClick={handleClickLogo} />
+                <Logo onClick={handleClickLogo}/>
 
                 <section {...cls('buttons')}>
                     {/* <ArchiveButton {...cls('button', 'archive')} /> */}

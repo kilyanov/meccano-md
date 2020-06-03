@@ -11,6 +11,8 @@ export default function TopBarButton({
     className,
     IconComponent,
     options = [],
+    withList = false,
+    onClick = () => {},
     linkToPage = ''
 }) {
     const [ isOpen, setIsOpen ] = useState(false);
@@ -31,11 +33,15 @@ export default function TopBarButton({
             title={title}
             onClick={(event) => {
                 if (
-                    event.target.classList.contains(namespace) ||
-                    event.target.classList.contains(`${namespace}__icon`)
+                    withList && (
+                        event.target.classList.contains(namespace) ||
+                        event.target.classList.contains(`${namespace}__icon`)
+                    )
                 ) {
                     setIsOpen(!isOpen);
                 }
+
+                onClick();
             }}
         >
             {IconComponent && <IconComponent {...cls('icon')}/>}

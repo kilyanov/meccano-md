@@ -11,6 +11,7 @@ const DocsButton = ({ className }) => {
     return (
         <TopBarButton
             title='Документы'
+            withList
             className={className}
             IconComponent={DocumentIcon}
             options={documents.slice(0, SHOW_COUNT)}

@@ -5,7 +5,6 @@ import Page from '../../Shared/Page/Page';
 import { ArticleService, LocationService, ProjectService, SourceService, StorageService } from '../../../services';
 import './article-create-page.scss';
 import Form from '../../Form/Form/Form';
-import RichEditor from '../../Form/RichEditor/RichEditor';
 import Loader from '../../Shared/Loader/Loader';
 import ArrowIcon from '../../Shared/SvgIcons/ArrowIcon';
 import Button from '../../Shared/Button/Button';
@@ -13,7 +12,7 @@ import ArticleViewSettings from './ArticleViewSettings/ArticleViewSettings';
 import ProjectCreateField from '../../Project/ProjectCreatePage/ProjectCreatePageField/ProjectCreatePageField';
 import Sortable from 'react-sortablejs';
 import { isMobileScreen, isProjectAccess, isRolesAccess, OperatedNotification } from '../../../helpers/Tools';
-import { FIELD_TYPE, STORAGE_KEY } from '../../../constants';
+import { STORAGE_KEY } from '../../../constants';
 import { EventEmitter } from "../../../helpers";
 import { EVENTS } from "../../../constants";
 import store from "../../../redux/store";
@@ -24,6 +23,7 @@ import { KEY_CODE } from "../../../constants";
 import TinyMCE from "../../Form/TinyMCE/TinyMCE";
 import CreateLocationModal from "./CreateLocationModal";
 import LocationIcon from "../../Shared/SvgIcons/LocationIcon";
+import moment from 'moment-timezone';
 
 const cls = new Bem('article-create-page');
 const sectionsSet = {
@@ -395,6 +395,8 @@ class ArticleCreatePage extends Component {
                     };
 
                     form.date = new Date(form.date);
+                    form.createdAt = new Date(form.createdAt);
+                    form.updatedAt = new Date(form.updatedAt);
                     form.authors = (form.authors || []).map(({ id, name }) => ({ label: name, value: id }));
 
                     if (form.source && form.source.id) {
@@ -666,6 +668,11 @@ class ArticleCreatePage extends Component {
                 field.options = form.authors;
                 field.requestService = ArticleService.author;
                 field.requestCancelService = ArticleService.cancelLast;
+                break;
+            case 'createdAt':
+            case 'updatedAt':
+                // Из-за ленятев в бэкенде
+                field.readOnly = true;
                 break;
             default:
                 break;
