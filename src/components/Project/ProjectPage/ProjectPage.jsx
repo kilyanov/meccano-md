@@ -297,12 +297,15 @@ export default class ProjectPage extends Component {
     };
 
     getArticles = () => {
-        const { pagination, filters, userType, selectedStatus } = this.state;
+        const { pagination, filters, userType, selectedStatus, inProgress } = this.state;
         const selectedColumns = getColumnsFromStorage(this.projectId);
         const fields = this.getFields();
         const statusValues = (selectedStatus || []).map(({ value }) => value);
 
         if (!userType) return;
+        if (!inProgress) {
+            this.setState({ inProgress: true });
+        }
 
         const form = {
             project: this.projectId,
@@ -337,13 +340,22 @@ export default class ProjectPage extends Component {
                     fields
                         .filter(({ slug }) => selectedColumns.find(({ key }) => key === slug))
                         .forEach(field => {
-                            form[`query[${field.relation || field.slug}]`] = filter;
+                            if (filter && filter.length) {
+                                form[`query[${field.relation || field.slug}]`] = filter;
+                            } else {
+                                delete form[`query[${field.relation || field.slug}]`];
+                            }
                         });
                     this.searchParams.set(filterKey, filter);
                     break;
                 default:
-                    form[`query[${currentField.relation || currentField.slug}]`] = filter;
-                    this.searchParams.set(filterKey, filter);
+                    if (filter && filter.length) {
+                        form[`filter[${currentField.relation || currentField.slug}]`] = filter;
+                        this.searchParams.set(filterKey, filter);
+                    } else {
+                        delete [`filter[${currentField.relation || currentField.slug}]`];
+                        this.searchParams.delete(filterKey);
+                    }
             }
         });
 

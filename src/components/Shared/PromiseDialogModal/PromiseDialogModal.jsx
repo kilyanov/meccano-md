@@ -1,7 +1,7 @@
 import React, {PureComponent} from 'react';
 import './dialog-modal.scss';
 import Button from '../Button/Button';
-import { KEY_CODE } from '../../../constants/KeyCode';
+import { KEY_CODE } from '../../../constants';
 
 const cls = new Bem('dialog-modal');
 
