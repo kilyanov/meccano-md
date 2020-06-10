@@ -26,6 +26,7 @@ import LocationIcon from "../../Shared/SvgIcons/LocationIcon";
 import moment from 'moment-timezone';
 
 const cls = new Bem('article-create-page');
+const defaultTimeZone = 'Europe/Moscow';
 const sectionsSet = {
     'section_main_id': 'sectionsTwo',
     'section_sub_id': 'sectionsThree'
@@ -81,6 +82,7 @@ class ArticleCreatePage extends Component {
             showViewSettings: false,
             textIsChanged: false,
             annotationIsChanged: false,
+            timeZone: defaultTimeZone,
             inProgress: true
         };
     }
@@ -123,6 +125,10 @@ class ArticleCreatePage extends Component {
                 })
                 .catch(() => this.setState({ inProgress: false }));
         }
+
+        if (this.props.profile) {
+            this.setState({ timeZone: this.props.profile.timeZone });
+        }
     }
 
     componentDidUpdate(prevProps, prevState) {
@@ -136,6 +142,10 @@ class ArticleCreatePage extends Component {
 
         if (prevState.userTypeId !== this.state.userTypeId) {
             this.getArticle();
+        }
+
+        if (prevProps.profile !== this.props.profile) {
+            this.setState({ timeZone: this.props.profile.timeZone });
         }
     }
 
@@ -362,6 +372,13 @@ class ArticleCreatePage extends Component {
         }
     };
 
+    getDateWithTimeZone = (date) => {
+        const { timeZone } = this.state;
+        const utcDate = new Date(date).toLocaleString('ru-RU', { timeZone });
+
+        return new Date(utcDate);
+    };
+
     getArticle = () => {
         const { location } = this.props;
         const { userTypeId } = this.state;
@@ -394,9 +411,9 @@ class ArticleCreatePage extends Component {
                         total: _.get(response.headers, 'x-total-count')
                     };
 
-                    form.date = new Date(form.date);
-                    form.createdAt = new Date(form.createdAt);
-                    form.updatedAt = new Date(form.updatedAt);
+                    form.date = this.getDateWithTimeZone(form.date);
+                    form.createdAt = this.getDateWithTimeZone(form.createdAt);
+                    form.updatedAt = this.getDateWithTimeZone(form.updatedAt);
                     form.authors = (form.authors || []).map(({ id, name }) => ({ label: name, value: id }));
 
                     if (form.source && form.source.id) {
@@ -907,6 +924,7 @@ function mapStateToProps(state) {
     return {
         userTypes: state.userTypes,
         currentProject: state.currentProject,
+        profile: state.profile,
         roles
     };
 }

@@ -20,7 +20,7 @@ export default class InputDateTimePicker extends Component {
 
     static defaultProps = {
         onChange: () => {},
-        format: 'dd.MM.y hh:mm'
+        format: 'dd.MM.y HH:mm'
     };
 
     state = {
