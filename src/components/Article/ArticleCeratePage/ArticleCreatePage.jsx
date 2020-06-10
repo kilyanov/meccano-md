@@ -23,7 +23,6 @@ import { KEY_CODE } from "../../../constants";
 import TinyMCE from "../../Form/TinyMCE/TinyMCE";
 import CreateLocationModal from "./CreateLocationModal";
 import LocationIcon from "../../Shared/SvgIcons/LocationIcon";
-import moment from 'moment-timezone';
 
 const cls = new Bem('article-create-page');
 const defaultTimeZone = 'Europe/Moscow';
@@ -374,9 +373,10 @@ class ArticleCreatePage extends Component {
 
     getDateWithTimeZone = (date) => {
         const { timeZone } = this.state;
-        const utcDate = new Date(date).toLocaleString('ru-RU', { timeZone });
+        const localeString = new Date(date).toLocaleString('ru-RU', { timeZone });
+        const formatted = moment(localeString, 'DD.MM.YYYY, HH:mm:ss').format('DD.MM.YYYY HH:mm:ss');
 
-        return new Date(utcDate);
+        return new Date(formatted);
     };
 
     getArticle = () => {
@@ -411,9 +411,10 @@ class ArticleCreatePage extends Component {
                         total: _.get(response.headers, 'x-total-count')
                     };
 
-                    form.date = this.getDateWithTimeZone(form.date);
-                    form.createdAt = this.getDateWithTimeZone(form.createdAt);
-                    form.updatedAt = this.getDateWithTimeZone(form.updatedAt);
+                    form.date = new Date(form.date);
+                    form.createdAt = new Date(form.createdAt);
+                    form.updatedAt = new Date(form.updatedAt);
+                    console.log(form)
                     form.authors = (form.authors || []).map(({ id, name }) => ({ label: name, value: id }));
 
                     if (form.source && form.source.id) {
