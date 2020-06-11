@@ -26,6 +26,12 @@ import LocationIcon from "../../Shared/SvgIcons/LocationIcon";
 
 const cls = new Bem('article-create-page');
 const defaultTimeZone = 'Europe/Moscow';
+const toDateWithoutTimeZone = (date) => {
+    if (!date) return new Date();
+    const removeTimeZone = moment(date).format('YYYY-MM-DD HH:mm:ss');
+
+    return new Date(removeTimeZone);
+}
 const sectionsSet = {
     'section_main_id': 'sectionsTwo',
     'section_sub_id': 'sectionsThree'
@@ -411,10 +417,9 @@ class ArticleCreatePage extends Component {
                         total: _.get(response.headers, 'x-total-count')
                     };
 
-                    form.date = new Date(form.date);
-                    form.createdAt = new Date(form.createdAt);
-                    form.updatedAt = new Date(form.updatedAt);
-                    console.log(form)
+                    form.date = toDateWithoutTimeZone(form.date);
+                    form.createdAt = toDateWithoutTimeZone(form.createdAt);
+                    form.updatedAt = toDateWithoutTimeZone(form.updatedAt);
                     form.authors = (form.authors || []).map(({ id, name }) => ({ label: name, value: id }));
 
                     if (form.source && form.source.id) {
