@@ -27,7 +27,9 @@ export default function TinyMCE({ className, content, label, onEditorChange, onC
                     ],
                     toolbar: 'undo redo | formatselect | bold italic backcolor | \ ' +
                         'alignleft aligncenter alignright alignjustify | \ ' +
-                        'bullist numlist outdent indent | removeformat | help'
+                        'bullist numlist outdent indent | removeformat | code help',
+                    code_dialog_height: 200,
+                    code_dialog_width: 300
                 }}
                 onEditorChange={onEditorChange}
                 onChange={onChange}
