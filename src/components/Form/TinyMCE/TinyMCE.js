@@ -20,6 +20,7 @@ export default function TinyMCE({ className, content, label, onEditorChange, onC
                     // content_css: 'dark',
                     height: 500,
                     menubar: false,
+                    entity_encoding: 'raw',
                     plugins: [
                         'advlist autolink lists link image charmap print preview anchor',
                         'searchreplace visualblocks code fullscreen',
