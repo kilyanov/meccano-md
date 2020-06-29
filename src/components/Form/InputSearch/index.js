@@ -5,9 +5,9 @@ import './input-search.scss';
 
 const cls = new BEMHelper('input-search');
 
-export default function InputSearch({ value = '', onChange = () => {}, placeholder = 'Поиск' }) {
+export default function InputSearch({ className, value = '', onChange = () => {}, placeholder = 'Поиск' }) {
     return (
-        <div {...cls()}>
+        <div {...cls('', '', className)}>
             <SearchIcon {...cls('icon')} width={18} height={18} />
             <input
                 {...cls('field')}

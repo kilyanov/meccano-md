@@ -94,6 +94,10 @@ $namespace: '.input-date-picker';
     outline: 0;
   }
 
+  .react-datetime-picker__calendar {
+    z-index: 2;
+  }
+
   .react-date-picker__calendar {
     //max-width: 100%;
     box-shadow: 2px 2px 8px rgba(0, 0, 0, .3);

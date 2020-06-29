@@ -23,6 +23,7 @@ export default class ConfirmModal extends PureComponent {
         submitDisabled: PropTypes.bool,
         closeOnEsc: PropTypes.bool,
         buttons: PropTypes.array,
+        submitStyle: PropTypes.oneOf(['default', 'success', 'error', 'info', 'inline']),
         width: PropTypes.oneOf(['wide', 'normal', 'small'])
     };
 
@@ -61,6 +62,7 @@ export default class ConfirmModal extends PureComponent {
             cancelText,
             submitText,
             submitDisabled,
+            submitStyle,
             buttons,
             width
         } = this.props;
@@ -100,7 +102,7 @@ export default class ConfirmModal extends PureComponent {
                                     {...cls('button', 'cancel')}
                                     text={submitText}
                                     type='submit'
-                                    style='success'
+                                    style={submitStyle || 'success'}
                                     disabled={submitDisabled}
                                     tabIndex={0}
                                     onClick={() => {

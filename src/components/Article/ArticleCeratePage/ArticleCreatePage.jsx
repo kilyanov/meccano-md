@@ -196,10 +196,6 @@ class ArticleCreatePage extends Component {
 
         this.checkFormChanges().then(() => {
             history.push(`/project/${projectId}/article/${articlesNavs.prev}?page=${sp.get('page')}`);
-            // EventEmitter.emit(
-            //     EVENTS.REDIRECT,
-            //     `/project/${projectId}/article/${articlesNavs.prev}?page=${sp.get('page')}`
-            // );
         });
     };
 
@@ -212,10 +208,6 @@ class ArticleCreatePage extends Component {
 
         this.checkFormChanges().then(() => {
             history.push(`/project/${projectId}/article/${articlesNavs.next}?page=${sp.get('page')}`);
-            // EventEmitter.emit(
-            //     EVENTS.REDIRECT,
-            //     `/project/${projectId}/article/${articlesNavs.next}?page=${sp.get('page')}`
-            // );
         });
     };
 
@@ -265,11 +257,6 @@ class ArticleCreatePage extends Component {
 
         form.date = moment(form.date).format();
         form.project_id = this.state.projectId;
-
-        // При обновлении статьи сбрасываем ее готовность
-        // if (resetComplete && userType) {
-        //     form[`complete_${userType.slug}`] = false;
-        // }
 
         if (form.authors && form.authors.length) {
             form.authors = form.authors.map(({ label, value }) => ({ id: value, name: label }));

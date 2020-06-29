@@ -14,3 +14,4 @@ export * from './UserService';
 export * from './DocumentService';
 export * from './AuthorService';
 export * from './CacheService';
+export * from './ArchiveService';

@@ -10,7 +10,7 @@ import ProjectTable from './ProjectTable/ProjectTable';
 import PromiseDialogModal from '../../Shared/PromiseDialogModal/PromiseDialogModal';
 import ArticleCreateModal from '../../Article/ArticleCreateModal/ArticleCreateModal';
 import ArticlesExportModal from '../../Article/ArticlesExportModal/ArticlesExportModal';
-import { ArticleService, ProjectService, StorageService } from '../../../services';
+import { ArchiveService, ArticleService, ProjectService, StorageService } from '../../../services';
 import { NotificationManager } from 'react-notifications';
 import DropDownButton from '../../Shared/DropDownButton/DropDownButton';
 import ArticlesImportModal from '../../Article/ArticlesImportModal/ArticlesImportModal';
@@ -28,6 +28,7 @@ import { getColumnsFromStorage } from "./ProjectTable/Columns";
 import ArticleTransferModal from "../../Article/ArticleTransferModal/ArticleTransferModal";
 import ProjectPagination from "./ProjectTable/ProjectPagination/ProjectPagintaion";
 import ReactSelect from "../../Form/Select/ReactSelect/ReactSelect";
+import ArchiveCreateModal from "../../Archieve/ArchiveCreateModal";
 
 const cls = new Bem('project-page');
 const defaultPagination = { page: 1, pageCount: 1, perPage: 50 };
@@ -62,6 +63,7 @@ export default class ProjectPage extends Component {
             showUploadArticlesModal: false,
             showImportArticlesModal: false,
             showTransferModal: false,
+            showCreateArchiveModal: false,
             userType,
             inProgress: true
         };
@@ -246,7 +248,7 @@ export default class ProjectPage extends Component {
 
     handleChangeUserType = (userType) => {
         this.setState({ userType }, () => {
-            if (!this.state.articles || !this.state.articles.length) {
+            if (!this.state.articles || !this.state.articles.length && !this.state.inProgress) {
                 this.getArticles();
             }
         });
@@ -287,6 +289,10 @@ export default class ProjectPage extends Component {
     handleChangeStatus = (selectedStatus) => {
         this.setState({ selectedStatus }, this.getArticles);
     };
+
+    handleReplaceToArchive = () => {
+        this.setState({ showCreateArchiveModal: true })
+    }
 
     getArticleColors = () => {
         ArticleService.color.get(this.projectId).then(response => {
@@ -383,7 +389,10 @@ export default class ProjectPage extends Component {
                     totalCount: +_.get(response.headers, 'x-pagination-total-count')
                 };
 
-                this.searchParams.set('page', responsePagination.page.toString());
+                if (responsePagination.page) {
+                    this.searchParams.set('page', responsePagination.page.toString());
+                }
+
                 QueueManager.remove(this.queueMessage.id);
                 this.setSearchParams();
 
@@ -487,6 +496,7 @@ export default class ProjectPage extends Component {
             showUploadArticlesModal,
             showImportArticlesModal,
             showTransferModal,
+            showCreateArchiveModal,
             userType,
             selectedArticles,
             selectedStatus,
@@ -545,6 +555,15 @@ export default class ProjectPage extends Component {
                             text='Передать'
                             style='info'
                             onClick={() => this.setState({ showTransferModal: true })}
+                        />
+                    )}
+
+                    {hasSelectedItems && (
+                        <Button
+                            {...cls('upload-btn')}
+                            text='В архив'
+                            style='error'
+                            onClick={this.handleReplaceToArchive}
                         />
                     )}
                 </section>
@@ -708,6 +727,18 @@ export default class ProjectPage extends Component {
                         }}
                         projectId={this.projectId}
                         articleIds={selectedItemIds}
+                    />
+                )}
+
+                {showCreateArchiveModal && (
+                    <ArchiveCreateModal
+                        onClose={() => this.setState({ showCreateArchiveModal: false })}
+                        projectId={this.projectId}
+                        articleIds={selectedArticles.map(({ id }) => id)}
+                        onSuccessCreate={() => {
+                            this.setState({ selectedArticles: [] });
+                            this.getArticles();
+                        }}
                     />
                 )}
 

@@ -8,7 +8,7 @@ import ProjectsButton from "./ProjectsButton";
 import ProfileButton from "./ProfileButton/ProfileButton";
 import { clearCurrentProject } from "../../../redux/actions/currentProject";
 import store from "../../../redux/store";
-// import ArchiveButton from "./ArchiveButton";
+import ArchiveButton from "./ArchiveButton";
 
 const cls = new Bem('top-bar');
 const TopBar = ({ isStatic, className }) => {
@@ -20,7 +20,7 @@ const TopBar = ({ isStatic, className }) => {
                 <Logo onClick={handleClickLogo}/>
 
                 <section {...cls('buttons')}>
-                    {/* <ArchiveButton {...cls('button', 'archive')} /> */}
+                    <ArchiveButton {...cls('button', 'archive')} />
                     <ProjectsButton {...cls('button', 'notifications')} />
                     <DocsButton {...cls('button', 'notifications')} />
                     {/* <NotificationsButton {...cls('button', 'notifications')} /> */}

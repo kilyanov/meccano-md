@@ -2,9 +2,11 @@ import React, { useState } from 'react';
 import TopBarButton from "../TopBarButton";
 import StorageIcon from "../../SvgIcons/StorageIcon";
 import ArchiveModal from "../../../Archieve/ArchiveModal";
+import { useSelector } from "react-redux";
 
 export default function ArchiveButton({ className }) {
     const [ showModal, setShowModal ] = useState(false);
+    const currentProject = useSelector(state => state.currentProject);
 
     return (
         <>
@@ -15,7 +17,12 @@ export default function ArchiveButton({ className }) {
                 onClick={() => setShowModal(true)}
             />
 
-            {showModal && <ArchiveModal onClose={() => setShowModal(false)}/>}
+            {(showModal && currentProject) &&  (
+                <ArchiveModal
+                    projectId={currentProject.id}
+                    onClose={() => setShowModal(false)}
+                />
+            )}
         </>
     );
 }

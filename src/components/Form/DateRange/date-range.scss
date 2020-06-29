@@ -1,0 +1,14 @@
+.date-range {
+    .DateRangePickerInput {
+        display: flex;
+        align-items: center;
+    }
+
+    .DateInput {
+        width: 100px;
+
+        &_input {
+            font-size: 14px;
+        }
+    }
+}

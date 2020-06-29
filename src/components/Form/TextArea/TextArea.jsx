@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import './textarea.scss';
 
@@ -15,12 +15,14 @@ export default class TextArea extends Component {
         required: PropTypes.bool,
         controlled: PropTypes.bool,
         validateErrorMessage: PropTypes.string,
-        onValidate: PropTypes.func
+        onValidate: PropTypes.func,
+        placeholder: PropTypes.string
     };
 
     static defaultProps = {
         label: '',
-        onChange: () => {},
+        onChange: () => {
+        },
         validateErrorMessage: 'Error message'
     };
 
@@ -31,22 +33,25 @@ export default class TextArea extends Component {
 
     static getDerivedStateFromProps(nextProps, prevState) {
         if (nextProps.value !== prevState.value) {
-            return {value: nextProps.value};
+            return { value: nextProps.value };
         }
 
         return null;
     }
 
     handleChange = (event) => {
-        const {controlled, onValidate, onChange} = this.props;
+        const { controlled, onValidate, onChange } = this.props;
         const value = event.target.value.replace(/^\s*/, '');
 
         if (value || value === '') {
-            if (controlled) onChange(value);
-            else this.setValue(value);
+            if (controlled) {
+                onChange(value);
+            } else {
+                this.setValue(value);
+            }
 
             if (onValidate) {
-                this.setState({error: !this.isValidate(value)});
+                this.setState({ error: !this.isValidate(value) });
             }
         }
     };
@@ -67,7 +72,7 @@ export default class TextArea extends Component {
     };
 
     isValidate = (value) => {
-        const {required, onValidate} = this.props;
+        const { required, onValidate } = this.props;
 
         if (onValidate && onValidate instanceof Function) {
             return onValidate(value);
@@ -83,8 +88,8 @@ export default class TextArea extends Component {
     };
 
     render() {
-        const {className, label, name, controlled, draggable} = this.props;
-        const {error} = this.state;
+        const { className, label, name, controlled, draggable, placeholder } = this.props;
+        const { error } = this.state;
         const isFocused = this.inputRef === document.activeElement;
         const isError = error; // && !isFocused
         const value = controlled ? this.props.value : this.state.value;
@@ -106,6 +111,7 @@ export default class TextArea extends Component {
                         name={name}
                         value={value}
                         onChange={this.handleChange}
+                        placeholder={placeholder}
                     />
                 </label>
             </div>

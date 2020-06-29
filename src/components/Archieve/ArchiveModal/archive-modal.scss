@@ -1,6 +1,60 @@
+@import "../../../assets/styles/variables";
+
 .archive-modal {
+    &__filters {
+        display: flex;
+        margin-bottom: 20px;
+    }
 
     &__body {
-        padding: 20px 0;
+        overflow-y: auto;
+    }
+
+    &__list {
+        margin: 0;
+        padding-left: 0;
+        border-top: 1px solid $gray;
+        list-style: none;
+    }
+
+    &__item {
+        display: flex;
+        align-items: center;
+        padding: 10px 0;
+        border-bottom: 1px solid $gray;
+        cursor: pointer;
+
+        &:hover {
+            background-color: $gray-three;
+
+            .archive-modal__item-icon path {
+                fill: $shamrock
+            }
+
+            .archive-modal__item-name {
+                color: $shamrock;
+            }
+        }
+    }
+
+    &__item-data {
+        display: flex;
+        flex-direction: column;
+        padding-left: 10px;
+    }
+
+    &__item-description {
+        font-size: 14px;
+        color: $fontGrey;
+    }
+
+    &__filter-item + &__filter-item  {
+        margin-left: 16px;
+    }
+
+    .confirm-modal__body {
+        display: flex;
+        flex-direction: column;
+        min-height: 400px;
     }
 }

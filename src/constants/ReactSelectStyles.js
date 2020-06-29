@@ -24,7 +24,8 @@ export function ReactSelectStyles(isDarkTheme, readOnly) {
         }),
         menu: (provided) => ({
             ...provided,
-            backgroundColor: isDarkTheme ? darkColor : lightColor
+            backgroundColor: isDarkTheme ? darkColor : lightColor,
+            zIndex: 2
         }),
         option: (provided, {isDisabled, isFocused, isSelected}) => {
             return {

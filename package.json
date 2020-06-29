@@ -31,6 +31,7 @@
     "react": "^16.8.1",
     "react-bem-helper": "^1.4.1",
     "react-date-picker": "^7.5.0",
+    "react-dates": "^21.8.0",
     "react-datetime-picker": "^3.0.1",
     "react-dom": "^16.8.1",
     "react-notifications": "^1.4.3",

@@ -10,6 +10,9 @@ const List = {
         genre: '/article/genre',
         color: '/article/color'
     },
+    archive: {
+        archive: '/archive'
+    },
     city: '/city',
     country: '/country',
     federal: '/federal',
