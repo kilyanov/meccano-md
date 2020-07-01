@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import TopBarButton from "../TopBarButton";
 import StorageIcon from "../../SvgIcons/StorageIcon";
-import ArchiveModal from "../../../Archieve/ArchiveModal";
+import ArchiveModal from "../../../Archive/ArchiveModal";
 import { useSelector } from "react-redux";
 
 export default function ArchiveButton({ className }) {

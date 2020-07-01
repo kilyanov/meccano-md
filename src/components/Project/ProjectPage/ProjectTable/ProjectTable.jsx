@@ -29,13 +29,14 @@ class ProjectTable extends Component {
         onChangeSort: PropTypes.func,
         onChangeColumns: PropTypes.func.isRequired,
         onDeleteArticle: PropTypes.func,
+        archiveId: PropTypes.string.isRequired,
         projectId: PropTypes.string.isRequired,
         pagination: PropTypes.object.isRequired,
         fields: PropTypes.array.isRequired,
         isAllSelected: PropTypes.bool,
         articleColors: PropTypes.array,
         currentProject: PropTypes.object,
-        onChangeFilter: PropTypes.func
+        onChangeFilter: PropTypes.func,
     };
 
     static defaultProps = {
@@ -310,7 +311,7 @@ class ProjectTable extends Component {
     };
 
     renderArticle = (article, articleKey) => {
-        const { selectedIds, projectId, fields, search, sort, profile, page } = this.props;
+        const { selectedIds, projectId, fields, search, sort, profile, page, archiveId } = this.props;
         const lastViewedArticleId = StorageService.get(STORAGE_KEY.LAST_VIEWED_ARTICLE);
         const menuItems = [ {
             title: 'Изменить',
@@ -322,7 +323,7 @@ class ProjectTable extends Component {
         } ];
         const sortString = sort.type && `${sort.dir === SORT_DIR.ASC ? '-' : ''}${sort.type}`;
         const sp = new URLSearchParams();
-        let url = `/project/${projectId}/article/${article.id}?`;
+        let url = archiveId ? `/archive/${archiveId}/article/${article.id}?` : `/project/${projectId}/article/${article.id}?`;
         let color = '';
 
         sp.set('search', search);

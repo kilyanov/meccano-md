@@ -1,6 +1,6 @@
 import {ParseToRequest} from '../helpers/Tools';
 
-const List = {
+export const List = {
     article: {
         article: '/article',
         type: '/article/type',

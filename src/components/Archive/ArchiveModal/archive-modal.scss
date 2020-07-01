@@ -17,12 +17,13 @@
         list-style: none;
     }
 
-    &__item {
+    &__item-link {
         display: flex;
         align-items: center;
         padding: 10px 0;
         border-bottom: 1px solid $gray;
         cursor: pointer;
+        text-decoration: none !important;
 
         &:hover {
             background-color: $gray-three;
@@ -46,6 +47,12 @@
     &__item-description {
         font-size: 14px;
         color: $fontGrey;
+        text-decoration: none;
+    }
+
+    &__item-name {
+        color: $black;
+        text-decoration: none;
     }
 
     &__filter-item + &__filter-item  {

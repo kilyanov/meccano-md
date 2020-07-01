@@ -9,6 +9,7 @@ import { ArchiveService } from "../../../services";
 import DateRange from "../../Form/DateRange";
 import StorageIcon from "../../Shared/SvgIcons/StorageIcon";
 import Loader from "../../Shared/Loader/Loader";
+import { Link } from "react-router-dom";
 
 
 const cls = new BEMHelper('archive-modal');
@@ -48,7 +49,7 @@ export default class ArchiveModal extends Component {
         const { startDate, endDate } = this.state;
 
         ArchiveService
-            .list(projectId, startDate.format(), endDate.format())
+            .list(projectId, startDate.format('YYYY-MM-DD'), endDate.format('YYYY-MM-DD'))
             .then(response => {
                 this.setState({ archives: response.data, inProgress: false });
             })
@@ -56,7 +57,7 @@ export default class ArchiveModal extends Component {
     }
 
     render() {
-        const { onClose } = this.props;
+        const { onClose, projectId } = this.props;
         const { archives, search, startDate, endDate, inProgress } = this.state;
 
         return (
@@ -86,15 +87,17 @@ export default class ArchiveModal extends Component {
                         <ul { ...cls('list') }>
                             {archives.map(archive => (
                                 <li { ...cls('item') } key={archive.id}>
-                                    <StorageIcon { ...cls('item-icon') }/>
-                                    <div { ...cls('item-data') }>
-                                        <span { ...cls('item-name') }>
-                                            {moment(archive.date).format('DD.MM.YYYY [в] HH:mm')}
-                                        </span>
-                                        <span { ...cls('item-description') }>
-                                            { archive.description }
-                                        </span>
-                                    </div>
+                                    <Link { ...cls('item-link') } to={`/archive/${projectId}/${archive.id}`} target='_blank'>
+                                        <StorageIcon { ...cls('item-icon') }/>
+                                        <div { ...cls('item-data') }>
+                                            <span { ...cls('item-name') }>
+                                                {moment(archive.date).format('DD.MM.YYYY [в] HH:mm')}
+                                            </span>
+                                            <span { ...cls('item-description') }>
+                                                { archive.description }
+                                            </span>
+                                        </div>
+                                    </Link>
                                 </li>
                             ))}
                         </ul>

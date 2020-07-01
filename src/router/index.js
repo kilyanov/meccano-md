@@ -1,7 +1,7 @@
 import React from 'react';
 import {BrowserRouter as Router, Route, Switch} from 'react-router-dom';
 import AuthRoute from './AuthRoute';
-import {PERMISSION} from "../constants/Permissions";
+import {PERMISSION} from "../constants";
 
 import App from '../components/App';
 import HomePage from '../components/Pages/HomePage/HomePage';
@@ -23,6 +23,8 @@ import SettingsSourceType from '../components/Settings/SettingsSource/SettingsSo
 import SettingsAuthors from '../components/Settings/SettingsAuthors/SettingsAuthors';
 import SettingsSystem from "../components/Settings/SettingsSystem/SettingsSystem";
 import UsersPage from "../components/Users/UsersPage";
+import ArchivePage from "../components/Archive/ArchivePage";
+import ArchiveArticlePage from "../components/Archive/ArchiveArticlePage";
 
 export default (
     <Router basename='/'>
@@ -32,7 +34,9 @@ export default (
                 <AuthRoute exact component={HomePage} path="/"/>
 
                 <AuthRoute exact component={ProjectPage} path="/project/:id"/>
+                <AuthRoute exact component={ArchivePage} path="/archive/:projectId/:id"/>
                 <AuthRoute exact component={ArticleCreatePage} path="/project/:projectId/article/:articleId?"/>
+                <AuthRoute exact component={ArchiveArticlePage} path="/archive/:archiveId/article/:articleId?"/>
                 <AuthRoute
                     exact
                     permissions={[PERMISSION.createProject]}

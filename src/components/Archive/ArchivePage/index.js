@@ -1,16 +1,16 @@
 import React, { Fragment, Component } from 'react';
-import './project-page.scss';
+import './archive-page.scss';
 import Button from '../../Shared/Button/Button';
 import IconButton from '../../Shared/IconButton/IconButton';
 import TrashIcon from '../../Shared/SvgIcons/TrashIcon';
 import ServicesIcon from '../../Shared/SvgIcons/ServicesIcon';
 import StarIcon from '../../Shared/SvgIcons/StarIcon';
 import SearchFilter from '../../Shared/SearchFilter/SearchFilter';
-import ProjectTable from './ProjectTable/ProjectTable';
+import ProjectTable from '../../Project/ProjectPage/ProjectTable/ProjectTable';
 import PromiseDialogModal from '../../Shared/PromiseDialogModal/PromiseDialogModal';
 import ArticleCreateModal from '../../Article/ArticleCreateModal/ArticleCreateModal';
 import ArticlesExportModal from '../../Article/ArticlesExportModal/ArticlesExportModal';
-import { ArticleService, ProjectService, StorageService } from '../../../services';
+import { ArchiveService, ArticleService, ProjectService, StorageService } from '../../../services';
 import { NotificationManager } from 'react-notifications';
 import DropDownButton from '../../Shared/DropDownButton/DropDownButton';
 import ArticlesImportModal from '../../Article/ArticlesImportModal/ArticlesImportModal';
@@ -18,24 +18,25 @@ import Page from '../../Shared/Page/Page';
 import Loader from '../../Shared/Loader/Loader';
 import { EVENTS, SORT_DIR, STORAGE_KEY } from '../../../constants';
 import RightLoader from '../../Shared/Loader/RightLoader/RightLoader';
-import { Plural, QueueManager } from '../../../helpers/Tools';
+import { Plural } from '../../../helpers/Tools';
 import InlineButton from '../../Shared/InlineButton/InlineButton';
 import { EventEmitter } from "../../../helpers";
 import store from "../../../redux/store";
-import { setCurrentProject } from "../../../redux/actions/currentProject";
 import { clearArticleColors, setArticleColors } from "../../../redux/actions/articleColors";
-import { getColumnsFromStorage } from "./ProjectTable/Columns";
+import { getColumnsFromStorage } from "../../Project/ProjectPage/ProjectTable/Columns";
 import ArticleTransferModal from "../../Article/ArticleTransferModal/ArticleTransferModal";
-import ProjectPagination from "./ProjectTable/ProjectPagination/ProjectPagintaion";
+import ProjectPagination from "../../Project/ProjectPage/ProjectTable/ProjectPagination/ProjectPagintaion";
 import ReactSelect from "../../Form/Select/ReactSelect/ReactSelect";
-import ArchiveCreateModal from "../../Archive/ArchiveCreateModal";
+import ArchiveCreateModal from "../ArchiveCreateModal";
+import { setCurrentProject } from "../../../redux/actions/currentProject";
+import StorageIcon from "../../Shared/SvgIcons/StorageIcon";
 
-const cls = new Bem('project-page');
+const cls = new Bem('archive-page');
 const defaultPagination = { page: 1, pageCount: 1, perPage: 50 };
 const defaultSort = { type: null, dir: null };
 const defaultFilters = { search: '', sort: defaultSort };
 
-export default class ProjectPage extends Component {
+export default class ArchivePage extends Component {
     constructor(props) {
         super(props);
 
@@ -50,53 +51,47 @@ export default class ProjectPage extends Component {
         }
 
         this.state = {
+            archive: null,
+            project: null,
             articles: [],
             activeArticle: null,
             selectedItemIds: [],
             selectedArticles: [],
-            selectedStatus: [],
             isAllArticlesSelected: false,
             pagination,
-            project: null,
-            filters: defaultFilters,
-            showArticleModal: false,
-            showUploadArticlesModal: false,
-            showImportArticlesModal: false,
-            showTransferModal: false,
-            showCreateArchiveModal: false,
             userType,
+            filters: defaultFilters,
             inProgress: true
         };
     }
 
     componentDidMount() {
-        this.getProject(this.projectId).then(this.getArticles);
-        this.getArticleColors();
-        EventEmitter.on(EVENTS.USER.CHANGE_TYPE, this.handleChangeUserType);
+        this.getArchive();
+        this.getProject().then(this.getArticles);
     }
 
     componentDidUpdate(prevProps) {
-        if (prevProps.match.params.id !== this.props.match.params.id) {
-            this.projectId = this.props.match.params.id;
-            this.setState({
-                articles: [],
-                activeArticle: null,
-                selectedItemIds: [],
-                selectedStatus: [],
-                isAllArticlesSelected: false,
-                pagination: defaultPagination,
-                project: null,
-                filters: defaultFilters,
-                showArticleModal: false,
-                showUploadArticlesModal: false,
-                showImportArticlesModal: false,
-                showTransferModal: false,
-                inProgress: true
-            }, () => {
-                this.getProject(this.projectId).then(this.getArticles);
-                this.getArticleColors();
-            });
-        }
+        // if (prevProps.match.params.id !== this.props.match.params.id) {
+        //     this.projectId = this.props.match.params.id;
+        //     this.setState({
+        //         articles: [],
+        //         activeArticle: null,
+        //         selectedItemIds: [],
+        //         selectedStatus: [],
+        //         isAllArticlesSelected: false,
+        //         pagination: defaultPagination,
+        //         project: null,
+        //         filters: defaultFilters,
+        //         showArticleModal: false,
+        //         showUploadArticlesModal: false,
+        //         showImportArticlesModal: false,
+        //         showTransferModal: false,
+        //         inProgress: true
+        //     }, () => {
+        //         this.getProject(this.projectId).then(this.getArticles);
+        //         this.getArticleColors();
+        //     });
+        // }
     }
 
     componentWillUnmount() {
@@ -291,8 +286,8 @@ export default class ProjectPage extends Component {
     };
 
     handleReplaceToArchive = () => {
-        this.setState({ showCreateArchiveModal: true })
-    }
+        this.setState({ showCreateArchiveModal: true });
+    };
 
     getArticleColors = () => {
         ArticleService.color.get(this.projectId).then(response => {
@@ -303,30 +298,30 @@ export default class ProjectPage extends Component {
     };
 
     getArticles = () => {
-        const { pagination, filters, userType, selectedStatus, inProgress } = this.state;
+        const { pagination, filters, userType, inProgress } = this.state;
         const selectedColumns = getColumnsFromStorage(this.projectId);
         const fields = this.getFields();
-        const statusValues = (selectedStatus || []).map(({ value }) => value);
-
-        if (!userType) return;
+        
         if (!inProgress) {
             this.setState({ inProgress: true });
         }
 
         const form = {
-            project: this.projectId,
+            // project: this.projectId,
             user_type: userType && userType.id || '',
             page: this.searchParams.get('page'),
             'per-page': pagination.perPage || 30,
             expand: fields
-                .filter(({ slug }) => selectedColumns.find(({ key }) => key === slug))
+                .filter(({ code, slug }) => selectedColumns.find(({ key }) => key === code || key === slug))
                 .map(field => field.relation || field.slug)
+                .join(',')
         };
 
-        // Необходимые поля для корректной работы цветовыделения
-        form.expand = [ ...form.expand, 'complete_monitor', 'complete_analytic', 'complete_client', 'user' ];
 
-        // Фильтрация по столбцам
+        // // Необходимые поля для корректной работы цветовыделения
+        // form.expand = [ ...form.expand, 'complete_monitor', 'complete_analytic', 'complete_client', 'user' ];
+
+        // // Фильтрация по столбцам
         Object.keys(filters).forEach(filterKey => {
             const filter = filters[filterKey];
             const currentField = fields.find(({ slug }) => filterKey === 'sort'
@@ -359,29 +354,31 @@ export default class ProjectPage extends Component {
                         form[`filter[${currentField.relation || currentField.slug}]`] = filter;
                         this.searchParams.set(filterKey, filter);
                     } else {
-                        delete [`filter[${currentField.relation || currentField.slug}]`];
+                        delete [ `filter[${currentField.relation || currentField.slug}]` ];
                         this.searchParams.delete(filterKey);
                     }
             }
         });
 
-        // Фильтр Статусов
-        if (statusValues.includes('open') && userType) {
-            form[`query[complete_${userType.slug}]`] = false;
-            form['query[user_id]'] = 'null';
-        }
+        // // Фильтр Статусов
+        // if (statusValues.includes('open') && userType) {
+        //     form[`query[complete_${userType.slug}]`] = false;
+        //     form['query[user_id]'] = 'null';
+        // }
+        //
+        // if (statusValues.includes('complete') && userType) {
+        //     form[`query[complete_${userType.slug}]`] = true;
+        // }
+        //
+        // if (statusValues.includes('user')) {
+        //     form['query[user_id]'] = 'not null';
+        // }
 
-        if (statusValues.includes('complete') && userType) {
-            form[`query[complete_${userType.slug}]`] = true;
-        }
-
-        if (statusValues.includes('user')) {
-            form['query[user_id]'] = 'not null';
-        }
-
-        ArticleService
-            .getList(form)
+        ArchiveService
+            .articles
+            .list(this.archiveId, form)
             .then(response => {
+                console.log(response)
                 const responsePagination = {
                     pageCount: +_.get(response.headers, 'x-pagination-page-count'),
                     page: +_.get(response.headers, 'x-pagination-current-page'),
@@ -393,7 +390,6 @@ export default class ProjectPage extends Component {
                     this.searchParams.set('page', responsePagination.page.toString());
                 }
 
-                QueueManager.remove(this.queueMessage.id);
                 this.setSearchParams();
 
                 this.setState({
@@ -405,11 +401,21 @@ export default class ProjectPage extends Component {
             .catch(() => this.setState({ inProgress: false }));
     };
 
-    getProject = (projectId) => {
-        return ProjectService.get({ expand: 'projectFields,users', pageSize: 50 }, projectId).then(response => {
-            store.dispatch(setCurrentProject(response.data));
-            return this.setState({ project: response.data });
-        });
+    getArchive = () => {
+        ArchiveService
+            .get(this.projectId, this.archiveId, { expand: 'user' })
+            .then(response => {
+                this.setState({ archive: response.data, inProgress: false });
+            });
+    };
+
+    getProject = () => {
+        return ProjectService
+            .get({ expand: 'projectFields,users', pageSize: 50 }, this.projectId)
+            .then(response => {
+                store.dispatch(setCurrentProject(response.data));
+                return this.setState({ project: response.data });
+            });
     };
 
     getFields = () => {
@@ -424,6 +430,20 @@ export default class ProjectPage extends Component {
         if (fields && fields.data) {
             return fields.data;
         }
+    };
+
+    getUserName = () => {
+        if (!this.state.archive || !this.state.archive.user) {
+            return '';
+        }
+
+        const { user } = this.state.archive;
+
+        if (!user.name && !user.surname) {
+            return user.username || '';
+        }
+
+        return `${user.surname ? `${user.surname} ` : ''}${user.name ? `${user.name} ` : ''}`;
     };
 
     getTotalCountArticles = () => {
@@ -458,7 +478,7 @@ export default class ProjectPage extends Component {
                 isDisabled: values.includes('open')
             }
         ];
-    }
+    };
 
     setSearchParams = () => {
         const { location, history } = this.props;
@@ -467,18 +487,9 @@ export default class ProjectPage extends Component {
         history.replace(location);
     };
 
-    queueMessage = { id: 'articles', text: 'Загрузка статей...' };
+    projectId = this.props.match.params.projectId;
 
-    projectId = this.props.match.params.id;
-
-    addMenuItems = [ {
-        title: 'Добавить новую',
-        link: `/project/${this.projectId}/article`
-    }, {
-        title: 'Импорт статей',
-        closeOnClick: true,
-        onClick: () => this.setState({ showImportArticlesModal: true })
-    } ];
+    archiveId = this.props.match.params.id;
 
     isMounted = true;
 
@@ -486,24 +497,23 @@ export default class ProjectPage extends Component {
 
     render() {
         const {
+            archive,
+            project,
             activeArticle,
             selectedItemIds,
             isAllArticlesSelected,
             filters,
-            project,
             showArticleModal,
             pagination,
             showUploadArticlesModal,
             showImportArticlesModal,
             showTransferModal,
             showCreateArchiveModal,
-            userType,
             selectedArticles,
             selectedStatus,
             inProgress
         } = this.state;
         const countSelected = isAllArticlesSelected ? pagination.totalCount : selectedItemIds.length;
-        const hasSelectedItems = !!selectedItemIds.length;
         const articles = _.cloneDeep(this.state.articles)
             .map(article => {
                 article.date = new Date(article.date);
@@ -512,11 +522,23 @@ export default class ProjectPage extends Component {
             });
         const fields = this.getFields();
         const currentPage = this.searchParams.get('page') || pagination.page;
+        const userName = this.getUserName();
 
         return (
             <Page {...cls()} withBar>
-                <section {...cls('title-wrapper')}>
-                    <h2 {...cls('title')}>{_.get(project, 'name')}</h2>
+                <section {...cls('title-wrapper')} title={_.get(archive, 'description')}>
+                    <StorageIcon { ...cls('title-icon') } />
+                    {archive && <h2 {...cls('title')}>Архив</h2>}
+                    {archive && project && (
+                        <div {...cls('additional-data')}>
+                            <span { ...cls('additional-data-project') }>{project.name}</span>
+                            <div>
+                                <span { ...cls('additional-data-user') }>{userName ? `${userName}, ` : ''}</span>
+                                <span>{moment(archive.date).format('D MMM YYYY[г. в] HH:mm')}</span>
+                            </div>
+                        </div>
+                    )}
+
                     {!!articles.length && (
                         <Button
                             {...cls('upload-btn')}
@@ -530,75 +552,9 @@ export default class ProjectPage extends Component {
                             onClick={() => this.setState({ showUploadArticlesModal: true })}
                         />
                     )}
-
-                    {(hasSelectedItems && selectedArticles.some(item => !item[`complete_${userType.slug}`])) && (
-                        <Button
-                            {...cls('upload-btn')}
-                            text='Завершить'
-                            style='info'
-                            onClick={() => this.handleCompleteArticles()}
-                        />
-                    )}
-
-                    {(hasSelectedItems && selectedArticles.every(item => !!item[`complete_${userType.slug}`])) && (
-                        <Button
-                            {...cls('upload-btn')}
-                            text='Отменить завершение'
-                            style='info'
-                            onClick={() => this.handleCompleteArticles(false)}
-                        />
-                    )}
-
-                    {hasSelectedItems && (
-                        <Button
-                            {...cls('upload-btn')}
-                            text='Передать'
-                            style='info'
-                            onClick={() => this.setState({ showTransferModal: true })}
-                        />
-                    )}
-
-                    {hasSelectedItems && (
-                        <Button
-                            {...cls('upload-btn')}
-                            text='В архив'
-                            style='error'
-                            onClick={this.handleReplaceToArchive}
-                        />
-                    )}
                 </section>
 
                 <section {...cls('filters')}>
-                    <IconButton
-                        {...cls('filter-item')}
-                        iconComponent={<TrashIcon/>}
-                        text='Удалить'
-                        danger
-                        disabled={!hasSelectedItems}
-                        onClick={this.handleDeleteArticles}
-                    />
-
-                    <IconButton
-                        {...cls('filter-item', '', 'd-none')}
-                        iconComponent={<TrashIcon/>}
-                        text='Дублировать'
-                        disabled={!hasSelectedItems}
-                    />
-
-                    <IconButton
-                        {...cls('filter-item', '', 'd-none')}
-                        iconComponent={<ServicesIcon/>}
-                        text='Сгруппировать'
-                        disabled={!hasSelectedItems}
-                    />
-
-                    <IconButton
-                        {...cls('filter-item', '', 'd-none')}
-                        iconComponent={<StarIcon/>}
-                        text='Добавить в избранное'
-                        disabled={!hasSelectedItems}
-                    />
-
                     {!!selectedItemIds.length && (
                         <Fragment>
                             <span>
@@ -616,7 +572,7 @@ export default class ProjectPage extends Component {
                                     small
                                     onClick={() => this.setState({ isAllArticlesSelected: true })}
                                 >
-                                    Выбрать все статьи в проекте
+                                    Выбрать все статьи в архиве
                                 </InlineButton>
                             )}
 
@@ -644,13 +600,6 @@ export default class ProjectPage extends Component {
                         selected={selectedStatus}
                         placeholder='Статус'
                     />
-
-                    <DropDownButton
-                        {...cls('article-add-btn')}
-                        buttonText='Добавить'
-                        dropDownItems={this.addMenuItems}
-                        dropDownRight
-                    />
                 </section>
 
                 <div {...cls('project-table-wrapper')}>
@@ -667,6 +616,7 @@ export default class ProjectPage extends Component {
                         selectedIds={selectedItemIds}
                         isAllSelected={isAllArticlesSelected}
                         projectId={this.projectId}
+                        archiveId={this.archiveId}
                         articles={articles}
                         pagination={pagination}
                         fields={fields}
@@ -681,10 +631,9 @@ export default class ProjectPage extends Component {
 
                         <span {...cls('articles-count')}>
                             Всего {Plural(
-                                pagination.totalCount || 0,
-                                `${pagination.totalCount || 0} `,
-                                ['статья', 'статьи', 'статей']
-                            )}
+                            pagination.totalCount || 0,
+                            `${pagination.totalCount || 0} `,
+                            [ 'статья', 'статьи', 'статей' ])}
                         </span>
                     </div>
                 </div>
