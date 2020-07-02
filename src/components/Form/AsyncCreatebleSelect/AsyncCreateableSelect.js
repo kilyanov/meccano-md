@@ -12,11 +12,12 @@ class AsyncCreatableSelect extends Component {
     state = {
         loadedOptions: [],
         currentOption: {},
-        isError: false
+        isError: false,
+        inProgress: true
     }
 
     componentDidMount() {
-        const { required, requestService, selected, fieldKey } = this.props;
+        const { required, requestService, selected } = this.props;
 
         if (required) {
             EventEmitter.on(EVENTS.FORM.ON_VALIDATE, this.validate);
@@ -30,9 +31,38 @@ class AsyncCreatableSelect extends Component {
                     if (response && response.data && response.data.length) {
                         const { name, id } = response.data[0];
 
-                        this.setState({ currentOption: { label: name, value: id } });
+                        this.setState({ currentOption: { label: name, value: id }, inProgress: false });
                     }
                 });
+            }
+        }
+    }
+
+    componentDidUpdate() {
+        const { selected, requestService } = this.props;
+        const { currentOption, loadedOptions, inProgress } = this.state;
+
+        if (selected !== currentOption.value) {
+            if (!selected) {
+                if (!_.isEmpty(currentOption)) {
+                    this.setState({ currentOption: {}, inProgress: false });
+                }
+            } else {
+                const found = loadedOptions.find(({ value }) => value === selected);
+
+                if (found) {
+                    this.setState({ currentOption: found, inProgress: false });
+                } else if (requestService && !inProgress) {
+                    this.setState({ inProgress: true }, () => {
+                        requestService({ 'query[id]': selected }).then(response => {
+                            if (response && response.data && response.data.length) {
+                                const { name, id } = response.data[0];
+
+                                this.setState({ currentOption: { label: name, value: id }, inProgress: false });
+                            }
+                        });
+                    });
+                }
             }
         }
     }
@@ -73,7 +103,7 @@ class AsyncCreatableSelect extends Component {
                 value: _.get(option, 'id')
             }));
 
-            this.setState({ loadedOptions: opt });
+            this.setState({ loadedOptions: opt, inProgress: false });
             callback(opt);
             return opt;
         });
