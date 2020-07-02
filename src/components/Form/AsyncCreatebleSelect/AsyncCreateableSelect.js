@@ -42,7 +42,7 @@ class AsyncCreatableSelect extends Component {
         const { selected, requestService } = this.props;
         const { currentOption, loadedOptions, inProgress } = this.state;
 
-        if (selected !== currentOption.value) {
+        if (currentOption && selected !== currentOption.value) {
             if (!selected) {
                 if (!_.isEmpty(currentOption)) {
                     this.setState({ currentOption: {}, inProgress: false });
