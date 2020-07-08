@@ -8,7 +8,7 @@ export default function ArchiveButton({ className }) {
     const [ showModal, setShowModal ] = useState(false);
     const currentProject = useSelector(state => state.currentProject);
 
-    return (
+    return currentProject ? (
         <>
             <TopBarButton
                 title='Архив'
@@ -24,5 +24,5 @@ export default function ArchiveButton({ className }) {
                 />
             )}
         </>
-    );
+    ) : null;
 }
