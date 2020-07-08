@@ -140,7 +140,7 @@ class ProjectTable extends Component {
         if (!this.pressed) return;
 
         this.diff = e.pageX - this.startX;
-        this.element.style.flex = `0 0 ${this.startWidth + this.diff}px`;
+        // this.element.style.flex = `0 0 ${this.startWidth + this.diff}px`;
         this.element.style.maxWidth = `${this.startWidth + this.diff}px`;
         this.element.style.minWidth = `${this.startWidth + this.diff}px`;
         const bodyColumns = document.querySelectorAll(`.project-table__cell--${this.columnKey}`);
@@ -240,12 +240,14 @@ class ProjectTable extends Component {
                             ref={node => this.headerCellRef[key] = node}
                             style={width ? { minWidth: `${width}px`, maxWidth: `${width}px` } : {}}
                         >
-                            <div
-                                {...headerClasses('cell-content')}
-                                onClick={event => this.handleChangeSort(event, key)}
-                            >
-                                {_.get(currentField, 'name')}
-                                {active && <SortArrow classes={headerClasses} dir={sort.dir}/>}
+                            <div {...headerClasses('cell-content')}>
+                                <span
+                                    {...headerClasses('cell-name')}
+                                    onClick={event => this.handleChangeSort(event, key)}
+                                >
+                                    {_.get(currentField, 'name')}
+                                    {active && <SortArrow classes={headerClasses} dir={sort.dir}/>}
+                                </span>
                                 <div
                                     {...headerClasses('cell-handler')}
                                     onMouseDown={event => this.handleMouseDown(event, key)}

@@ -60,6 +60,11 @@ $namespace: '.project-table-header';
     }
   }
 
+  &__cell-name {
+    display: flex;
+    align-items: center;
+  }
+
   &__cell-content {
     display: flex;
     align-items: center;
