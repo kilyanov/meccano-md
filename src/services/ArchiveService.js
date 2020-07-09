@@ -8,14 +8,14 @@ export const ArchiveService = {
     list: (project, startDate, endDate) => {
         return API.get(urlGenerator('archive')(project, { 'date-start': startDate, 'date-end': endDate }));
     },
-    delete: (form, projectId) => API.delete(urlGenerator('archive')({ project: projectId }), { data: form }),
+    delete: (projectId, archiveId) => API.delete(`/archive/${projectId}/${archiveId}`),
     create: (projectId, articlesIds, description = '') => {
         return API.post(urlGenerator('archive')(projectId), { articles: articlesIds, description });
     },
     update: (form, id, userTypeId) => API.put(urlGenerator('archive')(id, { user_type: userTypeId }), form),
     articles: {
-        list: (archiveId, form) => API.get(`/archive/${archiveId}/article`, { params: form } ),
-        get: (archiveId, articleId, form) => API.get(`/archive/${archiveId}/article/${articleId}`, { params: form } )
+        list: (archiveId, form) => API.get(`/archive/${archiveId}/article`, { params: form }),
+        get: (archiveId, articleId, form) => API.get(`/archive/${archiveId}/article/${articleId}`, { params: form }),
+        delete: (archiveId, form) => API.delete(`/archive/${archiveId}/article/`, { data: form })
     },
-    getArticles: (archiveId, form) => API.get(`/archive/${archiveId}/article`, { params: form } )
 };

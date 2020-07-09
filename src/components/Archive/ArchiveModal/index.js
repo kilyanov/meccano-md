@@ -10,6 +10,8 @@ import DateRange from "../../Form/DateRange";
 import StorageIcon from "../../Shared/SvgIcons/StorageIcon";
 import Loader from "../../Shared/Loader/Loader";
 import { Link } from "react-router-dom";
+import TrashIcon from "../../Shared/SvgIcons/TrashIcon";
+import PromiseDialogModal from "../../Shared/PromiseDialogModal/PromiseDialogModal";
 
 
 const cls = new BEMHelper('archive-modal');
@@ -42,6 +44,23 @@ export default class ArchiveModal extends Component {
 
     handleSearch = (value) => {
         this.setState({ search: value });
+    };
+
+    handleDelete  = (archive) => {
+        const { projectId } = this.props;
+
+        if (archive && archive.id && projectId) {
+            this.promiseDialogModal.open({
+                title: 'Удаление архива',
+                content: `Вы уверены, что хотите удалить архив от ${moment(archive.date).format('D MMM YYYY[г.] HH:mm')}?`,
+                submitText: 'Удалить',
+                danger: true
+            }).then(() => {
+                this.setState({ inProgress: true }, () => {
+                    ArchiveService.delete(projectId, archive.id).then(this.getArchives);
+                });
+            });
+        }
     };
 
     getArchives = () => {
@@ -98,11 +117,17 @@ export default class ArchiveModal extends Component {
                                             </span>
                                         </div>
                                     </Link>
+                                    <button
+                                        { ...cls('item-delete') }
+                                        onClick={() => this.handleDelete(archive)}
+                                    ><TrashIcon/></button>
                                 </li>
                             ))}
                         </ul>
-                    ) : 'Нет элементов'}
+                    ) : 'Нет элементов в выбранном периоде'}
                 </section>
+
+                <PromiseDialogModal ref={node => this.promiseDialogModal = node}/>
 
                 {inProgress && <Loader/>}
             </ConfirmModal>

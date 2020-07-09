@@ -736,7 +736,7 @@ export default class ProjectPage extends Component {
                         projectId={this.projectId}
                         articleIds={selectedArticles.map(({ id }) => id)}
                         onSuccessCreate={() => {
-                            this.setState({ selectedArticles: [] });
+                            this.setState({ selectedItemIds: [] });
                             this.getArticles();
                         }}
                     />

@@ -3,8 +3,8 @@ import './archive-page.scss';
 import Button from '../../Shared/Button/Button';
 import IconButton from '../../Shared/IconButton/IconButton';
 import TrashIcon from '../../Shared/SvgIcons/TrashIcon';
-import ServicesIcon from '../../Shared/SvgIcons/ServicesIcon';
-import StarIcon from '../../Shared/SvgIcons/StarIcon';
+// import ServicesIcon from '../../Shared/SvgIcons/ServicesIcon';
+// import StarIcon from '../../Shared/SvgIcons/StarIcon';
 import SearchFilter from '../../Shared/SearchFilter/SearchFilter';
 import ProjectTable from '../../Project/ProjectPage/ProjectTable/ProjectTable';
 import PromiseDialogModal from '../../Shared/PromiseDialogModal/PromiseDialogModal';
@@ -12,7 +12,7 @@ import ArticleCreateModal from '../../Article/ArticleCreateModal/ArticleCreateMo
 import ArticlesExportModal from '../../Article/ArticlesExportModal/ArticlesExportModal';
 import { ArchiveService, ArticleService, ProjectService, StorageService } from '../../../services';
 import { NotificationManager } from 'react-notifications';
-import DropDownButton from '../../Shared/DropDownButton/DropDownButton';
+// import DropDownButton from '../../Shared/DropDownButton/DropDownButton';
 import ArticlesImportModal from '../../Article/ArticlesImportModal/ArticlesImportModal';
 import Page from '../../Shared/Page/Page';
 import Loader from '../../Shared/Loader/Loader';
@@ -70,7 +70,7 @@ export default class ArchivePage extends Component {
         this.getProject().then(this.getArticles);
     }
 
-    componentDidUpdate(prevProps) {
+    componentDidUpdate(/* prevProps */) {
         // if (prevProps.match.params.id !== this.props.match.params.id) {
         //     this.projectId = this.props.match.params.id;
         //     this.setState({
@@ -136,7 +136,7 @@ export default class ArchivePage extends Component {
     };
 
     handleDeleteArticle = (articleId) => {
-        const { articles, project } = this.state;
+        const { articles } = this.state;
         const article = articles.find(({ id }) => id === articleId);
 
         if (articleId && article) {
@@ -147,11 +147,14 @@ export default class ArchivePage extends Component {
                 danger: true
             }).then(() => {
                 this.setState({ inProgress: true }, () => {
-                    ArticleService.delete({ articleIds: [ articleId ] }, project.id)
+                    ArchiveService
+                        .articles
+                        .delete(this.archiveId, { articleIds: [ articleId ] })
                         .then(() => {
                             NotificationManager.success('Статья была успешно удалена', 'Удаление статьи');
                             this.setState({
                                 articles: this.state.articles.filter(({ id }) => id !== articleId),
+                                selectedItemIds: [],
                                 inProgress: false
                             }, this.getTotalCountArticles);
                         })
@@ -162,7 +165,7 @@ export default class ArchivePage extends Component {
     };
 
     handleDeleteArticles = () => {
-        const { articles, selectedItemIds, isAllArticlesSelected, pagination, project } = this.state;
+        const { articles, selectedItemIds, isAllArticlesSelected, pagination } = this.state;
         const countSelected = isAllArticlesSelected ? pagination.totalCount : selectedItemIds.length;
 
         if (countSelected) {
@@ -173,10 +176,13 @@ export default class ArchivePage extends Component {
                     `${countSelected} `,
                     [ 'статью', 'статьи', 'статей' ])}?`,
                 submitText: 'Удалить',
-                style: 'danger'
+                style: 'danger',
+                danger: true
             }).then(() => {
                 this.setState({ inProgress: true }, () => {
-                    ArticleService.delete(isAllArticlesSelected ? { all: true } : { articleIds: selectedItemIds }, project.id)
+                    ArchiveService
+                        .articles
+                        .delete(this.archiveId, isAllArticlesSelected ? { all: true } : { articleIds: selectedItemIds })
                         .then(() => {
                             pagination.page = 1;
                             NotificationManager.success('Выбранные статьи успешно удалены', 'Удаление');
@@ -378,7 +384,6 @@ export default class ArchivePage extends Component {
             .articles
             .list(this.archiveId, form)
             .then(response => {
-                console.log(response)
                 const responsePagination = {
                     pageCount: +_.get(response.headers, 'x-pagination-page-count'),
                     page: +_.get(response.headers, 'x-pagination-current-page'),
@@ -514,6 +519,7 @@ export default class ArchivePage extends Component {
             inProgress
         } = this.state;
         const countSelected = isAllArticlesSelected ? pagination.totalCount : selectedItemIds.length;
+        const hasSelectedItems = !!selectedItemIds.length;
         const articles = _.cloneDeep(this.state.articles)
             .map(article => {
                 article.date = new Date(article.date);
@@ -555,6 +561,15 @@ export default class ArchivePage extends Component {
                 </section>
 
                 <section {...cls('filters')}>
+                    <IconButton
+                        {...cls('filter-item')}
+                        iconComponent={<TrashIcon/>}
+                        text='Удалить'
+                        danger
+                        disabled={!hasSelectedItems}
+                        onClick={this.handleDeleteArticles}
+                    />
+
                     {!!selectedItemIds.length && (
                         <Fragment>
                             <span>
@@ -630,10 +645,8 @@ export default class ArchivePage extends Component {
                         />
 
                         <span {...cls('articles-count')}>
-                            Всего {Plural(
-                            pagination.totalCount || 0,
-                            `${pagination.totalCount || 0} `,
-                            [ 'статья', 'статьи', 'статей' ])}
+                            Всего {Plural(pagination.totalCount || 0, `${pagination.totalCount || 0} `,
+                                [ 'статья', 'статьи', 'статей' ])}
                         </span>
                     </div>
                 </div>

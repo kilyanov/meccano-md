@@ -17,13 +17,9 @@
         list-style: none;
     }
 
-    &__item-link {
+    &__item {
         display: flex;
-        align-items: center;
-        padding: 10px 0;
-        border-bottom: 1px solid $gray;
-        cursor: pointer;
-        text-decoration: none !important;
+        border-bottom: 1px solid #d9d9d9;
 
         &:hover {
             background-color: $gray-three;
@@ -36,6 +32,15 @@
                 color: $shamrock;
             }
         }
+    }
+
+    &__item-link {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        padding: 10px 0;
+        cursor: pointer;
+        text-decoration: none !important;
     }
 
     &__item-data {
@@ -57,6 +62,20 @@
 
     &__filter-item + &__filter-item  {
         margin-left: 16px;
+    }
+
+    &__item-delete {
+        padding: 0 8px;
+        background: none;
+        border: none;
+
+        &:hover svg {
+            fill: $strawberry
+        }
+    }
+
+    &__item-delete svg {
+        fill: $brown-grey
     }
 
     .confirm-modal__body {
