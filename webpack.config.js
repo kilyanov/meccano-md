@@ -5,6 +5,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const AssetsPlugin = require('assets-webpack-plugin');
+const config = require('./src/config');
 const assetsPluginInstance = new AssetsPlugin({
     filename: './web/assets.json',
     fullPath: false
@@ -12,6 +13,9 @@ const assetsPluginInstance = new AssetsPlugin({
 
 module.exports = (env, argv) => {
     const productionMode = argv.mode === 'production';
+    const HOST = argv.api_host || config.apiURL;
+
+    console.log(5555, HOST);
 
     return {
         entry: './src/index.js',
@@ -33,7 +37,7 @@ module.exports = (env, argv) => {
                 },
                 {
                     test: /\.(gif|png|jpe?g|svg)$/i,
-                    use: [{
+                    use: [ {
                         loader: 'file-loader',
                         options: {
                             name: 'assets/images/[hash].[ext]'
@@ -43,7 +47,7 @@ module.exports = (env, argv) => {
                         options: {
                             bypassOnDebug: true
                         }
-                    }]
+                    } ]
                 },
                 {
                     test: /\.(ttf|eot|woff|woff2)$/,
@@ -55,7 +59,7 @@ module.exports = (env, argv) => {
             ]
         },
         resolve: {
-            extensions: ['.js', '.jsx'],
+            extensions: [ '.js', '.jsx' ],
             alias: {
                 'const': path.join(__dirname, './src/constants'),
                 'helpers': path.join(__dirname, './src/helpers'),
@@ -78,16 +82,16 @@ module.exports = (env, argv) => {
                 ]
             }),
             new webpack.HotModuleReplacementPlugin(),
-            new MiniCssExtractPlugin({filename: `styles${productionMode ? '-[hash]' : ''}.css`}),
-            new webpack.DefinePlugin({'process.env.NODE_ENV': JSON.stringify(argv.mode)}),
+            new MiniCssExtractPlugin({ filename: `styles${productionMode ? '-[hash]' : ''}.css` }),
+            new webpack.DefinePlugin({ 'process.env': { NODE_ENV: JSON.stringify(argv.mode), HOST: JSON.stringify(HOST) } }),
             new HtmlWebpackPlugin({
-                inject: false,
+                inject: 'body',
                 hash: true,
                 template: './src/index.html',
                 filename: 'index.html'
             }),
             new CopyWebpackPlugin([
-                {from: './src/assets/img/favicons/', to: `${__dirname}/web/favicons/`}
+                { from: './src/assets/img/favicons/', to: `${__dirname}/web/favicons/` }
             ]),
             new webpack.ProvidePlugin({
                 'window._': 'lodash',
@@ -99,7 +103,7 @@ module.exports = (env, argv) => {
             assetsPluginInstance
         ],
         devServer: {
-            headers: {'Access-Control-Allow-Origin': '*'},
+            headers: { 'Access-Control-Allow-Origin': '*' },
             contentBase: path.join(__dirname, 'web'),
             hot: true,
             port: 5001,
