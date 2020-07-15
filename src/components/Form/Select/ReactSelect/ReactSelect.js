@@ -33,7 +33,7 @@ export default function ReactSelect({
                 placeholder={placeholder || 'Выберите...'}
                 label={label}
                 options={options || []}
-                value={selectedValue}
+                value={selectedValue || null}
                 isMulti={isMulti}
                 isDisabled={readOnly}
                 onChange={onChange}
