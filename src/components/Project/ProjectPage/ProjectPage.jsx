@@ -119,10 +119,10 @@ export default class ProjectPage extends Component {
 
         this.setState(state => {
             state.selectedItemIds = selectedItemIds;
-            state.selectedArticles = [
+            state.selectedArticles = [ ...new Set([
                 ...state.selectedArticles.filter(({ id }) => selectedItemIds.includes(id)),
                 ...state.articles.filter(({ id }) => selectedItemIds.includes(id))
-            ];
+            ]) ];
 
             return state;
         });
@@ -288,8 +288,8 @@ export default class ProjectPage extends Component {
     };
 
     handleReplaceToArchive = () => {
-        this.setState({ showCreateArchiveModal: true })
-    }
+        this.setState({ showCreateArchiveModal: true });
+    };
 
     getArticleColors = () => {
         ArticleService.color.get(this.projectId).then(response => {
@@ -356,7 +356,7 @@ export default class ProjectPage extends Component {
                         form[`filter[${currentField.relation || currentField.slug}]`] = filter;
                         this.searchParams.set(filterKey, filter);
                     } else {
-                        delete [`filter[${currentField.relation || currentField.slug}]`];
+                        delete [ `filter[${currentField.relation || currentField.slug}]` ];
                         this.searchParams.delete(filterKey);
                     }
             }
@@ -455,7 +455,7 @@ export default class ProjectPage extends Component {
                 isDisabled: values.includes('open')
             }
         ];
-    }
+    };
 
     setSearchParams = () => {
         const { location, history } = this.props;
@@ -678,10 +678,10 @@ export default class ProjectPage extends Component {
 
                         <span {...cls('articles-count')}>
                             Всего {Plural(
-                                pagination.totalCount || 0,
-                                `${pagination.totalCount || 0} `,
-                                ['статья', 'статьи', 'статей']
-                            )}
+                            pagination.totalCount || 0,
+                            `${pagination.totalCount || 0} `,
+                            [ 'статья', 'статьи', 'статей' ]
+                        )}
                         </span>
                     </div>
                 </div>
