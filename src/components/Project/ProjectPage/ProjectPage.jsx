@@ -119,15 +119,11 @@ export default class ProjectPage extends Component {
 
         this.setState(state => {
             state.selectedItemIds = selectedItemIds;
-            state.selectedArticles = [];
+            state.selectedArticles = [
+                ...state.selectedArticles.filter(({ id }) => selectedItemIds.includes(id)),
+                ...state.articles.filter(({ id }) => selectedItemIds.includes(id))
+            ];
 
-            selectedItemIds.forEach(selectedId => {
-                const found = state.articles.find(({ id }) => id === selectedId);
-
-                if (found && !state.selectedArticles.find(({ id }) => id === selectedId)) {
-                    state.selectedArticles.push(found);
-                }
-            });
             return state;
         });
     };
@@ -242,6 +238,7 @@ export default class ProjectPage extends Component {
     handleClearSelected = () => {
         this.setState({
             selectedItemIds: [],
+            selectedArticles: [],
             isAllArticlesSelected: false
         });
     };
