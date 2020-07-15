@@ -23,18 +23,8 @@ export default class InputDateTimePicker extends Component {
         format: 'dd.MM.y HH:mm'
     };
 
-    state = {
-        value: this.props.value || ''
-    };
-
-    handleChange = (value) => {
-        this.setState({ value });
-        this.props.onChange(value);
-    };
-
     render() {
-        const { className, clearable, label, format, readOnly, disabled, draggable } = this.props;
-        const { value } = this.state;
+        const { className, clearable, label, format, readOnly, disabled, draggable, value } = this.props;
 
         return (
             <div {...cls('', { readOnly: readOnly || disabled }, className)}>
@@ -46,7 +36,7 @@ export default class InputDateTimePicker extends Component {
                         clearIcon={clearable && value ? <i {...cls('icon')}>✕</i> : null} // <CloseIcon/>
                         value={value}
                         readOnly={readOnly || disabled}
-                        onChange={this.handleChange}
+                        onChange={this.props.onChange}
                         locale='ru-RU'
                         format={format}
                     />
