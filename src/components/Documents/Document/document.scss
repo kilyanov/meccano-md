@@ -6,6 +6,7 @@ $namespace: '.document';
   display: flex;
   align-items: center;
   padding: 5px 10px;
+  text-decoration: none !important;
 
   &--highlighted {
     animation: highlight 3000ms ease-out 2 alternate;
