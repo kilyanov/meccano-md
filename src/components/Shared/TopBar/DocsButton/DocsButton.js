@@ -16,6 +16,7 @@ const DocsButton = ({ className }) => {
             IconComponent={DocumentIcon}
             options={documents.slice(0, SHOW_COUNT)}
             linkToPage='/documents'
+            showLinkForGoToSection
         />
     );
 };

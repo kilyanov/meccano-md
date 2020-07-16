@@ -14,6 +14,7 @@ const ProjectsButton = ({ className }) => {
             IconComponent={ProjectsIcon}
             options={projects}
             className={className}
+            linkToPage='/project'
         />
     );
 };

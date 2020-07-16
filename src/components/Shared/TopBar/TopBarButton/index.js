@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import Index from "../../../Documents/Document";
+import Document from "../../../Documents/Document";
 import { Link } from "react-router-dom";
 import './top-bar-button.scss';
 
@@ -13,7 +13,8 @@ export default function TopBarButton({
     options = [],
     withList = false,
     onClick = () => {},
-    linkToPage = ''
+    linkToPage = '',
+    showLinkForGoToSection = false
 }) {
     const [ isOpen, setIsOpen ] = useState(false);
     const buttonRef = useRef(null);
@@ -57,9 +58,11 @@ export default function TopBarButton({
                                     {...cls('list-item')}
                                     key={document.id}
                                 >
-                                    <Index
+                                    <Document
                                         {...cls('document')}
                                         document={document}
+                                        linkPrefix={linkToPage}
+                                        onClick={() => setIsOpen(false)}
                                         canDelete={false}
                                     />
                                 </li>
@@ -68,7 +71,7 @@ export default function TopBarButton({
                             <li {...cls('list-item', 'empty')}>Нет элементов</li>
                         )}
 
-                        {linkToPage && (
+                        {linkToPage && showLinkForGoToSection && (
                             <li {...cls('list-item', 'link')}>
                                 <Link to={linkToPage} target='_blank'>Перейти в { title }</Link>
                             </li>

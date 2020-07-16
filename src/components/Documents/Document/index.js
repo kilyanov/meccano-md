@@ -10,12 +10,12 @@ import './document.scss';
 import {FILE_TYPE_ICON} from '../../../constants';
 import Access from "../../Shared/Access/Access";
 import {PERMISSION} from "../../../constants";
+import { Link } from "react-router-dom";
 
 const cls = new Bem('document');
 
-const Index = ({className, document, highlighted, canDelete = true, onDelete = () => {}}) => {
+const Document = ({className, document, highlighted, canDelete = true, onDelete = () => {}, onClick = () => {}, linkPrefix}) => {
     const [inProgress, setProgress] = useState(false);
-
     const handleDownload = (doc) => {
         setProgress(true);
         DocumentService.download(doc.transactionId).then(response => {
@@ -25,7 +25,6 @@ const Index = ({className, document, highlighted, canDelete = true, onDelete = (
             setProgress(false);
         });
     };
-
     const getIcon = (ext) => {
         if (FILE_TYPE_ICON.hasOwnProperty(ext)) {
             return <img {...cls('icon')} src={FILE_TYPE_ICON[ext]()} alt=''/>;
@@ -33,9 +32,16 @@ const Index = ({className, document, highlighted, canDelete = true, onDelete = (
 
         return <DocumentIcon {...cls('icon')} />;
     };
+    
+    console.log(document)
 
     return (
-        <div {...cls('', {highlighted}, className)} data-id={document.id}>
+        <Link
+            to={`${linkPrefix}/${document.id}`}
+            {...cls('', {highlighted}, className)}
+            data-id={document.id}
+            onClick={onClick}
+        >
             {getIcon(document.ext)}
 
             <section {...cls('main')}>
@@ -72,8 +78,8 @@ const Index = ({className, document, highlighted, canDelete = true, onDelete = (
                     </Access>
                 )}
             </section>
-        </div>
+        </Link>
     );
 };
 
-export default Index;
+export default Document;
