@@ -3,8 +3,6 @@ import './archive-page.scss';
 import Button from '../../Shared/Button/Button';
 import IconButton from '../../Shared/IconButton/IconButton';
 import TrashIcon from '../../Shared/SvgIcons/TrashIcon';
-// import ServicesIcon from '../../Shared/SvgIcons/ServicesIcon';
-// import StarIcon from '../../Shared/SvgIcons/StarIcon';
 import SearchFilter from '../../Shared/SearchFilter/SearchFilter';
 import ProjectTable from '../../Project/ProjectPage/ProjectTable/ProjectTable';
 import PromiseDialogModal from '../../Shared/PromiseDialogModal/PromiseDialogModal';
@@ -12,7 +10,6 @@ import ArticleCreateModal from '../../Article/ArticleCreateModal/ArticleCreateMo
 import ArticlesExportModal from '../../Article/ArticlesExportModal/ArticlesExportModal';
 import { ArchiveService, ArticleService, ProjectService, StorageService } from '../../../services';
 import { NotificationManager } from 'react-notifications';
-// import DropDownButton from '../../Shared/DropDownButton/DropDownButton';
 import ArticlesImportModal from '../../Article/ArticlesImportModal/ArticlesImportModal';
 import Page from '../../Shared/Page/Page';
 import Loader from '../../Shared/Loader/Loader';
@@ -663,6 +660,7 @@ export default class ArchivePage extends Component {
 
                 {showUploadArticlesModal && (
                     <ArticlesExportModal
+                        archiveId={this.archiveId}
                         projectId={this.projectId}
                         selectedArticleIds={isAllArticlesSelected || selectedItemIds}
                         onUpdateParent={this.handleClearSelected}

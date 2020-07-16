@@ -17,6 +17,7 @@ const cls = new Bem('articles-export-modal');
 
 export default class ArticlesExportModal extends Component {
     static propTypes= {
+        archiveId: PropTypes.string,
         projectId: PropTypes.string.isRequired,
         selectedArticleIds: PropTypes.oneOfType([PropTypes.array, PropTypes.string]),
         onClose: PropTypes.func.isRequired,
@@ -61,7 +62,7 @@ export default class ArticlesExportModal extends Component {
     };
 
     handleSubmit = () => {
-        const {projectId, selectedArticleIds} = this.props;
+        const {archiveId, projectId, selectedArticleIds} = this.props;
         const {selectedTemplateId, filename} = this.state;
 
         if (selectedTemplateId) {
@@ -70,7 +71,8 @@ export default class ArticlesExportModal extends Component {
                     selectedArticleIds.length ? selectedArticleIds : null;
 
                 ExportService
-                    .articles(
+                    [archiveId ? 'archiveArticles' : 'articles'](
+                        archiveId,
                         projectId,
                         selectedTemplateId,
                         articleIds,
