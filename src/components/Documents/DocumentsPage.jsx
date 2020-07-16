@@ -1,15 +1,17 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import Page from '../Shared/Page/Page';
 import './documents-page.scss';
-import Index from './Document';
 import InputText from '../Form/InputText/InputText';
 import InputDatePicker from '../Form/InputDatePicker/InputDatePicker';
 import Select from '../Form/Select/Select';
-import {DOCUMENT_STATUS, EVENTS} from '../../constants';
+import { DOCUMENT_STATUS, EVENTS, PERMISSION } from '../../constants';
 import PromiseDialogModal from '../Shared/PromiseDialogModal/PromiseDialogModal';
-import {DocumentService} from '../../services';
+import { DocumentService } from '../../services';
 import Loader from '../Shared/Loader/Loader';
-import {EventEmitter} from "../../helpers";
+import { EventEmitter } from "../../helpers";
+import Access from "../Shared/Access/Access";
+import Document from "./Document";
+import { isAccess } from "../../helpers/Tools";
 
 const cls = new Bem('documents-page');
 
@@ -88,14 +90,14 @@ export default class DocumentsPage extends Component {
     };
 
     getDocuments = () => {
-        DocumentService.get('', {sort: '-updated_at'})
+        DocumentService.get('', { sort: '-updated_at' })
             .then(response => {
                 this.setState({
                     documents: response.data,
                     inProgress: false
                 }, this.scrollToHighlighted);
             })
-            .catch(() => this.setState({inProgress: false}));
+            .catch(() => this.setState({ inProgress: false }));
     };
 
     scrollToHighlighted = () => {
@@ -104,75 +106,81 @@ export default class DocumentsPage extends Component {
             const documentDOM = document.querySelector(`[data-id="${this.highlightDocumentId}"]`);
 
             if (appDOM && documentDOM && documentDOM.offsetTop) {
-                appDOM.scrollTo({top: documentDOM.offsetTop + 50, behavior: 'smooth'});
+                appDOM.scrollTo({ top: documentDOM.offsetTop + 50, behavior: 'smooth' });
             }
         }
     };
 
-    statusOptions = Object.keys(DOCUMENT_STATUS).map(value => ({name: DOCUMENT_STATUS[value], value}));
+    statusOptions = Object.keys(DOCUMENT_STATUS).map(value => ({ name: DOCUMENT_STATUS[value], value }));
 
     render() {
-        const {filteredDocuments, filters, inProgress} = this.state;
+        const { filteredDocuments, filters, inProgress } = this.state;
         const inSearch = filters.name || filters.date || !_.isEmpty(filters.status) || filters.date;
         const documents = inSearch ? filteredDocuments : this.state.documents;
 
         return (
-            <Page title='Документы' {...cls()} withBar>
-                <section {...cls('filter-panel')}>
-                    <InputText
-                        {...cls('filter-field')}
-                        label='Название документа'
-                        placeholder='Введите название'
-                        value={filters.name}
-                        clearable
-                        onChange={value => this.handleSearch(value, 'name')}
-                    />
-                    <InputDatePicker
-                        {...cls('filter-field')}
-                        label='Дата'
-                        value={filters.date}
-                        clearable
-                        onChange={value => this.handleSearch(value, 'date')}
-                    />
-                    {/* <InputText */}
-                    {/*    {...cls('filter-field')}*/}
-                    {/*    label='Имя пользователя'*/}
-                    {/*    placeholder='Введите имя пользователя'*/}
-                    {/*    value={filters.owner}*/}
-                    {/*    clearable*/}
-                    {/*    onChange={value => this.handleSearch(value, 'owner')}*/}
-                    {/* /> */}
-                    <Select
-                        {...cls('filter-field')}
-                        label='Статус'
-                        placeholder='Выберите статус'
-                        options={this.statusOptions}
-                        selected={filters.status}
-                        onChange={value => this.handleSearch(value, 'status')}
-                        withSearch
-                    />
-                </section>
-
-                <section {...cls('document-list')}>
-                    {documents.map((document, documentIndex) => (
-                        <Index
-                            {...cls('document')}
-                            key={documentIndex}
-                            document={document}
-                            highlighted={document.id === this.highlightDocumentId}
-                            onDelete={this.handleDelete}
+            <Access
+                permissions={[ PERMISSION.viewSettings, PERMISSION.editSettings ]}
+                redirect='/'
+            >
+                <Page title='Документы' {...cls()} withBar>
+                    <section {...cls('filter-panel')}>
+                        <InputText
+                            {...cls('filter-field')}
+                            label='Название документа'
+                            placeholder='Введите название'
+                            value={filters.name}
+                            clearable
+                            onChange={value => this.handleSearch(value, 'name')}
                         />
-                    ))}
+                        <InputDatePicker
+                            {...cls('filter-field')}
+                            label='Дата'
+                            value={filters.date}
+                            clearable
+                            onChange={value => this.handleSearch(value, 'date')}
+                        />
+                        {/* <InputText */}
+                        {/*    {...cls('filter-field')}*/}
+                        {/*    label='Имя пользователя'*/}
+                        {/*    placeholder='Введите имя пользователя'*/}
+                        {/*    value={filters.owner}*/}
+                        {/*    clearable*/}
+                        {/*    onChange={value => this.handleSearch(value, 'owner')}*/}
+                        {/* /> */}
+                        <Select
+                            {...cls('filter-field')}
+                            label='Статус'
+                            placeholder='Выберите статус'
+                            options={this.statusOptions}
+                            selected={filters.status}
+                            onChange={value => this.handleSearch(value, 'status')}
+                            withSearch
+                        />
+                    </section>
 
-                    {!documents.length && (
-                        <span {...cls('empty-msg')}>{inSearch ? 'Нет результатов' : 'Нет документов'}</span>
-                    )}
-                </section>
+                    <section {...cls('document-list')}>
+                        {documents.map((document, documentIndex) => (
+                            <Document
+                                {...cls('document')}
+                                key={documentIndex}
+                                document={document}
+                                canDelete={isAccess(PERMISSION.editDocuments)}
+                                highlighted={document.id === this.highlightDocumentId}
+                                onDelete={this.handleDelete}
+                            />
+                        ))}
 
-                <PromiseDialogModal ref={ref => this.promiseModal = ref} />
+                        {!documents.length && (
+                            <span {...cls('empty-msg')}>{inSearch ? 'Нет результатов' : 'Нет документов'}</span>
+                        )}
+                    </section>
 
-                {inProgress && <Loader fixed />}
-            </Page>
+                    <PromiseDialogModal ref={ref => this.promiseModal = ref}/>
+
+                    {inProgress && <Loader fixed/>}
+                </Page>
+            </Access>
         );
     }
 }

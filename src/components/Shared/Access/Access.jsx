@@ -1,17 +1,16 @@
 import React from 'react';
-import {} from 'react-redux';
-import {isAccess, isProjectAccess, isRolesAccess} from "../../../helpers/Tools";
-import {PERMISSION} from "../../../constants/Permissions";
-import {EventEmitter} from "../../../helpers";
-import {EVENTS} from "../../../constants";
-import {useSelector} from "react-redux";
+import { isAccess, isProjectAccess, isRolesAccess } from "../../../helpers/Tools";
+import { PERMISSION } from "../../../constants";
+import { EventEmitter } from "../../../helpers";
+import { EVENTS } from "../../../constants";
+import { useSelector } from "react-redux";
 import Loader from "../Loader/Loader";
 
-const Access = ({permissions, roles, children, replaceComponent, redirect}) => {
+const Access = ({ permissions, roles, children, replaceComponent, redirect }) => {
     const profile = useSelector(state => state.profile);
 
     if (_.isEmpty(profile)) {
-        return <Loader />;
+        return <Loader/>;
     }
 
     const canByProfilePermissions = !permissions

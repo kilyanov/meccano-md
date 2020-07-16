@@ -10,6 +10,8 @@ import Loader from '../../../../Shared/Loader/Loader';
 import { NotificationManager } from 'react-notifications';
 import InlineButton from '../../../../Shared/InlineButton/InlineButton';
 import Sortable from "react-sortablejs";
+import { isAccess } from "../../../../../helpers/Tools";
+import { PERMISSION } from "../../../../../constants";
 
 const cls = new Bem('settings-import-modal');
 
@@ -149,6 +151,8 @@ export default class SettingsImportModal extends Component {
         });
     };
 
+    canEdit = isAccess(PERMISSION.editSettings);
+
     renderRule = (rule, ruleIndex) => (
         <div {...cls('rule')} key={ruleIndex} data-id={rule.id}>
             <div {...cls('rule-row', '', 'row')}>
@@ -158,6 +162,7 @@ export default class SettingsImportModal extends Component {
                         label='Элемент'
                         value={rule.field_name}
                         onChange={val => this.handleChangeRule(val, 'field_name', ruleIndex)}
+                        disabled={!this.canEdit}
                     />
                 </div>
                 <div {...cls('item', '', 'col-xs-6')}>
@@ -165,6 +170,7 @@ export default class SettingsImportModal extends Component {
                         label='Селектор'
                         value={rule.path_value}
                         onChange={val => this.handleChangeRule(val, 'path_value', ruleIndex)}
+                        disabled={!this.canEdit}
                     />
                 </div>
             </div>
@@ -173,6 +179,7 @@ export default class SettingsImportModal extends Component {
                     type='button'
                     {...cls('button', 'remove')}
                     onClick={() => this.handleDeleteRule(ruleIndex)}
+                    disabled={!this.canEdit}
                 >✕
                 </button>
             </div>
@@ -188,6 +195,7 @@ export default class SettingsImportModal extends Component {
                         label='Элемент'
                         value={join.name}
                         onChange={val => this.handleChangeJoin(val, 'name', joinIndex)}
+                        disabled={!this.canEdit}
                     />
                 </div>
                 <div {...cls('item', '', 'col-xs-6')}>
@@ -195,6 +203,7 @@ export default class SettingsImportModal extends Component {
                         label='Значение'
                         value={join.value}
                         onChange={val => this.handleChangeJoin(val, 'value', joinIndex)}
+                        disabled={!this.canEdit}
                     />
                 </div>
             </div>
@@ -203,6 +212,7 @@ export default class SettingsImportModal extends Component {
                     type='button'
                     {...cls('button', 'remove')}
                     onClick={() => this.handleDeleteJoin(joinIndex)}
+                    disabled={!this.canEdit}
                 >✕
                 </button>
             </div>
@@ -219,6 +229,7 @@ export default class SettingsImportModal extends Component {
                 title={form.id ? 'Изменить' : 'Добавить'}
                 onClose={onClose}
                 onSubmit={() => this.form.submit()}
+                submitDisabled={!this.canEdit}
             >
                 <Form
                     onSubmit={this.handleSubmit}
@@ -233,6 +244,7 @@ export default class SettingsImportModal extends Component {
                                 label='Название'
                                 value={form.name}
                                 onChange={val => this.handleChangeForm(val, 'name')}
+                                disabled={!this.canEdit}
                             />
                         </div>
                         <div {...cls('item', '', 'col-md-6')}>
@@ -242,6 +254,7 @@ export default class SettingsImportModal extends Component {
                                 options={types}
                                 onChange={({ value }) => this.handleChangeForm(value, 'type')}
                                 selected={selectedType}
+                                disabled={!this.canEdit}
                             />
                         </div>
                         <div {...cls('item', '', 'col-md-6')}>
@@ -249,6 +262,7 @@ export default class SettingsImportModal extends Component {
                                 label='Селектор для контейнера статей'
                                 value={form.itemsContainer}
                                 onChange={val => this.handleChangeForm(val, 'itemsContainer')}
+                                disabled={!this.canEdit}
                             />
                         </div>
                         <div {...cls('item', '', 'col-md-6')}>
@@ -256,6 +270,7 @@ export default class SettingsImportModal extends Component {
                                 label='Селектор для статьи'
                                 value={form.item}
                                 onChange={val => this.handleChangeForm(val, 'item')}
+                                disabled={!this.canEdit}
                             />
                         </div>
                     </div>
@@ -265,13 +280,14 @@ export default class SettingsImportModal extends Component {
 
                         <Sortable
                             {...cls('list', 'left')}
-                            options={{ animation: 150 }}
+                            options={{ animation: 150, disabled: !this.canEdit }}
                             onChange={this.handleEndSort}
+                            disabled={!this.canEdit}
                         >
                             {form.rules.map(this.renderRule)}
                         </Sortable>
 
-                        <InlineButton onClick={this.handleAddRule}>
+                        <InlineButton onClick={this.handleAddRule} disabled={!this.canEdit}>
                             + Добавить
                         </InlineButton>
                     </section>
@@ -280,7 +296,7 @@ export default class SettingsImportModal extends Component {
                         <h3 {...cls('title')}>Объединение полей</h3>
 
                         {form.joins.map(this.renderJoin)}
-                        <InlineButton onClick={this.handleAddJoin}>
+                        <InlineButton onClick={this.handleAddJoin} disabled={!this.canEdit}>
                             + Добавить
                         </InlineButton>
                     </section>

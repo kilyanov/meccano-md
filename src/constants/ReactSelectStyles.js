@@ -1,14 +1,21 @@
 export function ReactSelectStyles(isDarkTheme, readOnly) {
     const darkColor = readOnly ? '#525252' : '#313131';
     const lightColor = readOnly ? '#f2f2f2' : '#fff';
+    const lightDisabled = 'rgba(59, 59, 59, 0.3));';
 
     return {
-        control: (provided, {isFocused, isSelected}) => {
+        control: (provided, {isFocused, isSelected, isDisabled}) => {
             return {
                 ...provided,
                 borderRadius: 0,
                 minHeight: 40,
-                backgroundColor: isDarkTheme ? darkColor : lightColor,
+                backgroundColor: isDarkTheme
+                    ? isDisabled
+                        ? darkColor
+                        : darkColor
+                    : isDisabled
+                        ? lightDisabled
+                        : lightColor,
                 borderColor: isFocused || isSelected ? '#ccc' : '#ccc',
                 pointerEvents: readOnly ? 'none' : 'all',
                 '&:hover, &:active': {

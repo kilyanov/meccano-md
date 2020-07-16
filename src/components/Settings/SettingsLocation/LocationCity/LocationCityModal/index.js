@@ -6,6 +6,8 @@ import Select from "../../../../Form/Select/Select";
 import Loader from "../../../../Shared/Loader/Loader";
 import {NotificationManager} from "react-notifications";
 import {LocationService} from "../../../../../services";
+import { isAccess } from "../../../../../helpers/Tools";
+import { PERMISSION } from "../../../../../constants";
 
 const defaultForm = {
     name: '',
@@ -80,6 +82,8 @@ export default class LocationCityModal extends Component {
         });
     };
 
+    canEdit = isAccess(PERMISSION.editSettings);
+
     render() {
         const { form, regionItems, countryItems, inProgress } = this.state;
         const selectedRegion = regionItems.find(({value}) => value === form.region_id);
@@ -91,6 +95,7 @@ export default class LocationCityModal extends Component {
                 width='small'
                 onClose={this.props.onClose}
                 onSubmit={() => this.form.submit()}
+                submitDisabled={!this.canEdit}
             >
                 <Form
                     onSubmit={this.handleSubmit}
@@ -103,6 +108,7 @@ export default class LocationCityModal extends Component {
                         required
                         value={form.name}
                         onChange={value => this.handleChangeForm(value, 'name')}
+                        disabled={!this.canEdit}
                     />
 
                     <Select
@@ -112,6 +118,7 @@ export default class LocationCityModal extends Component {
                         selected={selectedRegion}
                         onChange={({value}) => this.handleChangeForm(value, 'region_id')}
                         fixedPosList
+                        disabled={!this.canEdit}
                     />
 
                     <Select
@@ -121,6 +128,7 @@ export default class LocationCityModal extends Component {
                         selected={selectedCountry}
                         onChange={({value}) => this.handleChangeForm(value, 'country_id')}
                         fixedPosList
+                        disabled={!this.canEdit}
                     />
                 </Form>
 

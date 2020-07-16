@@ -7,6 +7,8 @@ import InputText from "../../../../Form/InputText/InputText";
 import Select from "../../../../Form/Select/Select";
 import Loader from "../../../../Shared/Loader/Loader";
 import ConfirmModal from "../../../../Shared/ConfirmModal/ConfirmModal";
+import { isAccess } from "../../../../../helpers/Tools";
+import { PERMISSION } from "../../../../../constants";
 
 const defaultForm = {
     name: '',
@@ -67,6 +69,8 @@ export default class LocationFederalModal extends Component {
         });
     };
 
+    canEdit = isAccess(PERMISSION.editSettings);
+
     render() {
         const { form, inProgress, countryItems } = this.state;
         const selectedCountry = countryItems.find(({value}) => value === form.country_id);
@@ -77,6 +81,7 @@ export default class LocationFederalModal extends Component {
                 width='small'
                 onClose={this.props.onClose}
                 onSubmit={() => this.form.submit()}
+                submitDisabled={!this.canEdit}
             >
                 <Form
                     onSubmit={this.handleSubmit}
@@ -89,6 +94,7 @@ export default class LocationFederalModal extends Component {
                         label='Название'
                         value={form.name}
                         onChange={value => this.handleChangeForm(value, 'name')}
+                        disabled={!this.canEdit}
                     />
 
                     <Select
@@ -98,6 +104,7 @@ export default class LocationFederalModal extends Component {
                         selected={selectedCountry}
                         onChange={({value}) => this.handleChangeForm(value, 'country_id')}
                         fixedPosList
+                        disabled={!this.canEdit}
                     />
                 </Form>
 

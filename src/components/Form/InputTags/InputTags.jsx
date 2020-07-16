@@ -16,7 +16,8 @@ class InputTags extends Component {
         theme: PropTypes.string.isRequired,
         readOnly: PropTypes.bool,
         draggable: PropTypes.bool,
-        options: PropTypes.array
+        options: PropTypes.array,
+        disabled: PropTypes.bool
     };
 
     state = {
@@ -58,7 +59,7 @@ class InputTags extends Component {
     };
 
     render() {
-        const { label, theme, onChange, value, draggable, readOnly } = this.props;
+        const { label, theme, onChange, value, draggable, readOnly, disabled } = this.props;
         const { defaultOptions } = this.state;
         const isDarkTheme = theme === THEME_TYPE.DARK;
 
@@ -76,7 +77,7 @@ class InputTags extends Component {
                     isMulti
                     isSearchable
                     onChange={onChange}
-                    isDisabled={readOnly}
+                    isDisabled={readOnly || disabled}
                     value={value}
                     defaultOptions={defaultOptions}
                     loadingMessage={() => 'Загрузка...'}

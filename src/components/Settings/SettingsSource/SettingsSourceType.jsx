@@ -10,6 +10,7 @@ import Loader from '../../Shared/Loader/Loader';
 import ListEndedStub from '../../Shared/ListEndedStub/ListEndedStub';
 import Form from '../../Form/Form/Form';
 import {PERMISSION} from "../../../constants/Permissions";
+import { isAccess } from "../../../helpers/Tools";
 
 const columnSettings = {
     name: {
@@ -172,6 +173,8 @@ export default class SettingsSourceType extends Component {
         });
     }, 1000);
 
+    canEdit = isAccess(PERMISSION.editSettings);
+
     render() {
         const {
             form,
@@ -213,6 +216,7 @@ export default class SettingsSourceType extends Component {
                         width='small'
                         onClose={this.handleCloseModal}
                         onSubmit={() => this.form.submit()}
+                        submitDisabled={!this.canEdit}
                     >
                         <Form
                             validate
@@ -225,6 +229,7 @@ export default class SettingsSourceType extends Component {
                                 label='Название'
                                 value={form.name}
                                 onChange={value => this.handleChangeForm(value, 'name')}
+                                disabled={!this.canEdit}
                             />
                         </Form>
 

@@ -14,6 +14,8 @@ import InputTags from '../../../../Form/InputTags/InputTags';
 import { ProjectService } from '../../../../../services';
 import './settings-export-modal.scss';
 import Sortable from "react-sortablejs";
+import { isAccess } from "../../../../../helpers/Tools";
+import { PERMISSION } from "../../../../../constants";
 
 const cls = new Bem('settings-export-modal');
 
@@ -160,6 +162,8 @@ export default class SettingsExportModal extends Component {
         { name: 'docx', value: 'docx' }
     ];
 
+    canEdit = isAccess(PERMISSION.editSettings);
+
     renderRule = (rule, ruleIndex) => (
         <div {...cls('rule')} key={ruleIndex} data-id={rule.id}>
             <div {...cls('rule-row', '', 'row')}>
@@ -168,6 +172,7 @@ export default class SettingsExportModal extends Component {
                         autoFocus
                         label='Селектор'
                         value={rule.selector}
+                        disabled={!this.canEdit}
                         onChange={val => this.handleChangeRule(val, 'selector', ruleIndex)}
                     />
                 </div>
@@ -175,6 +180,7 @@ export default class SettingsExportModal extends Component {
                     <InputText
                         label='Элемент'
                         value={rule.element}
+                        disabled={!this.canEdit}
                         onChange={val => this.handleChangeRule(val, 'element', ruleIndex)}
                     />
                 </div>
@@ -184,6 +190,7 @@ export default class SettingsExportModal extends Component {
                     tabIndex={-1}
                     type='button'
                     {...cls('button', 'remove')}
+                    disabled={!this.canEdit}
                     onClick={() => this.handleDeleteRule(ruleIndex)}
                 >✕
                 </button>
@@ -198,6 +205,7 @@ export default class SettingsExportModal extends Component {
                     <InputText
                         label='Замена'
                         value={replace.replace}
+                        disabled={!this.canEdit}
                         onChange={val => this.handleChangeReplace(val, 'replace', replaceIndex)}
                     />
                 </div>
@@ -206,6 +214,7 @@ export default class SettingsExportModal extends Component {
                         autoFocus
                         label='Элемент'
                         value={replace.search}
+                        disabled={!this.canEdit}
                         onChange={val => this.handleChangeReplace(val, 'search', replaceIndex)}
                     />
                 </div>
@@ -215,6 +224,7 @@ export default class SettingsExportModal extends Component {
                     tabIndex={-1}
                     type='button'
                     {...cls('button', 'remove')}
+                    disabled={!this.canEdit}
                     onClick={() => this.handleDeleteJoin(replaceIndex)}
                 >✕
                 </button>
@@ -232,6 +242,7 @@ export default class SettingsExportModal extends Component {
                 title={form.id ? 'Изменить' : 'Добавить'}
                 onClose={onClose}
                 onSubmit={() => this.form.submit()}
+                submitDisabled={!this.canEdit}
             >
                 <Form
                     onSubmit={this.handleSubmit}
@@ -246,6 +257,7 @@ export default class SettingsExportModal extends Component {
                                 label='Название'
                                 value={form.name}
                                 onChange={val => this.handleChangeForm(val, 'name')}
+                                disabled={!this.canEdit}
                             />
                         </div>
                         <div {...cls('item', '', 'col-md-6')}>
@@ -255,6 +267,7 @@ export default class SettingsExportModal extends Component {
                                 required
                                 onChange={item => this.handleChangeForm(item.value, 'type')}
                                 selected={this.types.find(({ value }) => value === form.type) || []}
+                                disabled={!this.canEdit}
                             />
                         </div>
                     </div>
@@ -264,6 +277,7 @@ export default class SettingsExportModal extends Component {
                             <InputFile
                                 files={fileName}
                                 onChange={file => this.handleChangeForm(file, 'file')}
+                                disabled={!this.canEdit}
                             />
                         </div>
                     </div>
@@ -277,6 +291,7 @@ export default class SettingsExportModal extends Component {
                                 value={form.projects || []}
                                 requestService={ProjectService.get}
                                 requestCancelService={ProjectService.cancelLast}
+                                disabled={!this.canEdit}
                             />
                         </div>
                     </div>
@@ -286,13 +301,14 @@ export default class SettingsExportModal extends Component {
 
                         <Sortable
                             {...cls('list', 'left')}
-                            options={{ animation: 150 }}
+                            options={{ animation: 150, disabled: !this.canEdit }}
+                            disabled={!this.canEdit}
                             onChange={this.handleEndSort}
                         >
                             {form.rules.map(this.renderRule)}
                         </Sortable>
 
-                        <InlineButton onClick={this.handleAddRule}>+ Добавить</InlineButton>
+                        <InlineButton onClick={this.handleAddRule} disabled={!this.canEdit}>+ Добавить</InlineButton>
                     </section>
 
                     <section {...cls('joins')}>
@@ -300,7 +316,7 @@ export default class SettingsExportModal extends Component {
 
                         {form.replaces.map(this.renderReplace)}
 
-                        <InlineButton onClick={this.handleAddReplace}>+ Добавить</InlineButton>
+                        <InlineButton onClick={this.handleAddReplace} disabled={!this.canEdit}>+ Добавить</InlineButton>
                     </section>
                 </Form>
 

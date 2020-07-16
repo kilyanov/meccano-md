@@ -5,6 +5,11 @@ $namespace: '.input-file';
     position: relative;
     margin-bottom: 20px;
 
+    &--disabled {
+        opacity: .5;
+        pointer-events: none;
+    }
+
     &__field {
         display: none;
     }

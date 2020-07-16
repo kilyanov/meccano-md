@@ -8,6 +8,12 @@
   text-decoration: none;
   user-select: none;
 
+  &--disabled {
+    opacity: .5;
+    pointer-events: none;
+    cursor: not-allowed;
+  }
+
   &--small {
     margin-bottom: 0;
     border-bottom: 1px dashed $linkColor;

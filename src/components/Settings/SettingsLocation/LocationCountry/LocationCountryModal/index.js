@@ -6,6 +6,8 @@ import Loader from "../../../../Shared/Loader/Loader";
 import ConfirmModal from "../../../../Shared/ConfirmModal/ConfirmModal";
 import {NotificationManager} from "react-notifications";
 import {LocationService} from "../../../../../services";
+import { isAccess } from "../../../../../helpers/Tools";
+import { PERMISSION } from "../../../../../constants";
 
 const defaultForm = {name: ''};
 
@@ -52,6 +54,8 @@ export default class LocationCountryModal extends Component {
         });
     };
 
+    canEdit = isAccess(PERMISSION.editSettings);
+
     render() {
         const { form, inProgress } = this.state;
 
@@ -61,6 +65,7 @@ export default class LocationCountryModal extends Component {
                 width='small'
                 onClose={this.props.onClose}
                 onSubmit={() => this.form.submit()}
+                submitDisabled={!this.canEdit}
             >
                 <Form
                     validate
@@ -73,6 +78,7 @@ export default class LocationCountryModal extends Component {
                         onChange={this.handleChangeInput}
                         autoFocus
                         required
+                        disabled={!this.canEdit}
                     />
                 </Form>
 

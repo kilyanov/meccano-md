@@ -7,6 +7,8 @@ import Select from "../../../../Form/Select/Select";
 import Loader from "../../../../Shared/Loader/Loader";
 import ConfirmModal from "../../../../Shared/ConfirmModal/ConfirmModal";
 import {NotificationManager} from "react-notifications";
+import { isAccess } from "../../../../../helpers/Tools";
+import { PERMISSION } from "../../../../../constants";
 
 const defaultForm = {
     name: '',
@@ -98,6 +100,8 @@ export default class LocationRegionModal extends Component {
             .catch(() => this.setState({modalInProgress: false}));
     };
 
+    canEdit = isAccess(PERMISSION.editSettings);
+
     render() {
         const { form, countryItems, federalItems, inProgress } = this.state;
         const selectedCountry = countryItems.find(({value}) => value === form.country_id);
@@ -109,6 +113,7 @@ export default class LocationRegionModal extends Component {
                 width='small'
                 onClose={this.props.onClose}
                 onSubmit={() => this.form.submit()}
+                submitDisabled={!this.canEdit}
             >
                 <Form
                     onSubmit={this.handleSubmit}
@@ -121,6 +126,7 @@ export default class LocationRegionModal extends Component {
                         label='Название'
                         value={form.name}
                         onChange={value => this.handleChangeForm(value, 'name')}
+                        disabled={!this.canEdit}
                     />
 
                     <Select
@@ -130,6 +136,7 @@ export default class LocationRegionModal extends Component {
                         selected={selectedCountry}
                         onChange={({value}) => this.handleChangeForm(value, 'country_id')}
                         fixedPosList
+                        disabled={!this.canEdit}
                     />
 
                     {!!form.country_id && (
@@ -140,6 +147,7 @@ export default class LocationRegionModal extends Component {
                             selected={selectedFederal}
                             onChange={({value}) => this.handleChangeForm(value, 'federal_district_id')}
                             fixedPosList
+                            disabled={!this.canEdit}
                         />
                     )}
                 </Form>

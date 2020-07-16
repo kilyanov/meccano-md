@@ -7,6 +7,8 @@ import Loader from '../../Shared/Loader/Loader';
 import ConfirmModal from '../../Shared/ConfirmModal/ConfirmModal';
 import {LocationService, SourceService} from '../../../services';
 import {NotificationManager} from 'react-notifications';
+import { isAccess } from "../../../helpers/Tools";
+import { PERMISSION } from "../../../constants";
 
 const defaultForm = {
     name: '',
@@ -191,6 +193,8 @@ export default class SettingsSourceModal extends Component {
             .catch(() => this.setState({inProgress: false}));
     };
 
+    canEdit = isAccess(PERMISSION.editSettings);
+
     render() {
         const {typeItems, countryItems} = this.props;
         const {form, federalItems, regionItems, cityItems, inProgress} = this.state;
@@ -206,6 +210,7 @@ export default class SettingsSourceModal extends Component {
                 width='small'
                 onClose={this.props.onClose}
                 onSubmit={() => this.form.submit()}
+                submitDisabled={!this.canEdit}
             >
                 <Form
                     validate
@@ -218,6 +223,7 @@ export default class SettingsSourceModal extends Component {
                         label='Название'
                         value={form.name}
                         onChange={value => this.handleChangeForm(value, 'name')}
+                        disabled={!this.canEdit}
                     />
 
                     <Select
@@ -227,6 +233,7 @@ export default class SettingsSourceModal extends Component {
                         selected={selectedType}
                         onChange={({value}) => this.handleChangeForm(value, 'source_type_id')}
                         fixedPosList
+                        disabled={!this.canEdit}
                     />
 
                     <Select
@@ -236,6 +243,7 @@ export default class SettingsSourceModal extends Component {
                         selected={selectedCountry}
                         onChange={({value}) => this.handleChangeForm(value, 'country_id')}
                         fixedPosList
+                        disabled={!this.canEdit}
                     />
 
                     {(!!form.country_id && !!federalItems.length) && (
@@ -246,6 +254,7 @@ export default class SettingsSourceModal extends Component {
                             selected={selectedFederal}
                             onChange={({value}) => this.handleChangeForm(value, 'federal_district_id')}
                             fixedPosList
+                            disabled={!this.canEdit}
                         />
                     )}
 
@@ -257,6 +266,7 @@ export default class SettingsSourceModal extends Component {
                             selected={selectedRegion}
                             onChange={({value}) => this.handleChangeForm(value, 'region_id')}
                             fixedPosList
+                            disabled={!this.canEdit}
                         />
                     )}
 
@@ -268,6 +278,7 @@ export default class SettingsSourceModal extends Component {
                             selected={selectedCity}
                             onChange={({value}) => this.handleChangeForm(value, 'city_id')}
                             fixedPosList
+                            disabled={!this.canEdit}
                         />
                     )}
                 </Form>

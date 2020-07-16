@@ -13,7 +13,8 @@ export default class InlineButton extends Component {
         children: PropTypes.node,
         text: PropTypes.string,
         small: PropTypes.bool,
-        danger: PropTypes.bool
+        danger: PropTypes.bool,
+        disabled: PropTypes.bool
     };
 
     handleKeyDown = (event) => {
@@ -27,15 +28,16 @@ export default class InlineButton extends Component {
     };
 
     render() {
-        const {className, onClick, text, children, small, danger} = this.props;
+        const {className, onClick, text, children, small, danger, disabled} = this.props;
 
         return (
             <a
                 ref={ref => this.inlineButton = ref}
-                {...cls('', {small, danger}, className)}
+                {...cls('', {small, danger, disabled}, className)}
                 role='button'
                 onClick={onClick}
                 onKeyDown={this.handleKeyDown}
+                disabled={disabled}
                 tabIndex={0}
             >
                 {text || children}

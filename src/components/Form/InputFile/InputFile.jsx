@@ -2,22 +2,23 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import Button from '../../Shared/Button/Button';
 import './input-file.scss';
-import {EventEmitter} from '../../../helpers';
-import {EVENTS} from '../../../constants/Events';
+import { EventEmitter } from '../../../helpers';
+import { EVENTS } from '../../../constants';
 import DownloadIcon from '../../Shared/SvgIcons/DownloadIcon';
-import {saveAs} from 'file-saver';
-import {FileService} from '../../../services/FileService';
+import { saveAs } from 'file-saver';
+import { FileService } from '../../../services/FileService';
 
 const cls = new Bem('input-file');
 
 export default class InputFile extends Component {
     static propTypes = {
-        accept: PropTypes.oneOfType([PropTypes.string, PropTypes.array]),
+        accept: PropTypes.oneOfType([ PropTypes.string, PropTypes.array ]),
         className: PropTypes.string,
         required: PropTypes.bool,
         files: PropTypes.array,
         onChange: PropTypes.func.isRequired,
-        validateErrorMessage: PropTypes.string
+        validateErrorMessage: PropTypes.string,
+        disabled: PropTypes.bool
     };
 
     static defaultProps = {
@@ -51,34 +52,34 @@ export default class InputFile extends Component {
         const files = Array.from(event.target.files).map(file => file);
 
         this.props.onChange(files);
-        this.setState({files, error: false});
+        this.setState({ files, error: false });
     };
 
     handleDownloadFile = (file) => {
-        this.setState({inProgress: true}, () => {
+        this.setState({ inProgress: true }, () => {
             FileService
-                .download({id: file.id, isTemplate: 1})
+                .download({ id: file.id, isTemplate: 1 })
                 .then(response => {
-                    const blob = new Blob([response.data], {type: 'application/octet-stream'});
+                    const blob = new Blob([ response.data ], { type: 'application/octet-stream' });
 
                     saveAs(blob, response.headers['x-filename']);
-                    this.setState({inProgress: false});
+                    this.setState({ inProgress: false });
                 })
-                .catch(() => this.setState({inProgress: false}));
+                .catch(() => this.setState({ inProgress: false }));
         });
     };
 
     validate = () => {
         const invalid = this.props.required && !this.state.files.length;
 
-        this.setState({error: invalid});
+        this.setState({ error: invalid });
         return EventEmitter.emit(invalid ? EVENTS.FORM.ON_VALIDATE_FAILURE : EVENTS.FORM.ON_VALIDATE_SUCCESS);
     };
 
     renderFile = (file, fileIndex) => (
         <div {...cls('file')} key={fileIndex}>
             <span
-                {...cls('file-name', {'downloading': !!file.url})}
+                {...cls('file-name', { 'downloading': !!file.url })}
                 title='Скачать файл'
                 onClick={() => this.handleDownloadFile(file)}
             >
@@ -90,17 +91,18 @@ export default class InputFile extends Component {
                 {...cls('file-button')}
                 title='Удалить файл'
                 onClick={() => this.handleDelete(fileIndex)}
-            >✕</button>
+            >✕
+            </button>
         </div>
     );
 
     render() {
-        const {accept, className, required, validateErrorMessage} = this.props;
-        const {files, error} = this.state;
+        const { accept, className, required, validateErrorMessage, disabled } = this.props;
+        const { files, error } = this.state;
         const acceptMIME = accept instanceof Array ? accept.join(', ') : accept;
 
         return (
-            <div {...cls('', {error}, {
+            <div {...cls('', { error, disabled }, {
                 validated: required,
                 [className]: !!className
             })}
@@ -109,6 +111,7 @@ export default class InputFile extends Component {
                     {...cls('button')}
                     text="Выберите файл"
                     style='inline'
+                    disabled={disabled}
                     onClick={() => this.inputFile.click()}
                 />
 
@@ -119,6 +122,7 @@ export default class InputFile extends Component {
                     ref={node => this.inputFile = node}
                     type="file"
                     accept={acceptMIME}
+                    disabled={disabled}
                     onChange={this.handleChange}
                 />
 

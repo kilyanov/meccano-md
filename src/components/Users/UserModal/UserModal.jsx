@@ -9,6 +9,8 @@ import {connect} from 'react-redux';
 import {NotificationManager} from "react-notifications";
 import Select from "../../Form/Select/Select";
 import {slugify} from 'transliteration';
+import { isAccess } from "../../../helpers/Tools";
+import { PERMISSION } from "../../../constants";
 
 const classes = new Bem('user-modal');
 
@@ -105,6 +107,7 @@ class UserModal extends Component {
         const {form, inProgress} = this.state;
         const isEdit = !!userId;
         const userTypeOptions = userTypes.map(({id, name}) => ({name, value: id}));
+        const canEdit = isAccess(PERMISSION.editUsers);
 
         return (
             <ConfirmModal
@@ -121,6 +124,7 @@ class UserModal extends Component {
                     <InputText
                         label='Фамилия'
                         placeholder='Фамилия'
+                        disabled={!canEdit}
                         value={form.surname || ''}
                         onChange={value => this.handleChangeForm(value, 'surname')}
                     />
@@ -128,6 +132,7 @@ class UserModal extends Component {
                     <InputText
                         label='Имя'
                         placeholder='Имя'
+                        disabled={!canEdit}
                         value={form.name || ''}
                         onChange={value => this.handleChangeForm(value, 'name')}
                     />
@@ -136,6 +141,7 @@ class UserModal extends Component {
                         label='Логин'
                         placeholder='Логин'
                         required
+                        disabled={!canEdit}
                         value={form.username || this.username }
                         onChange={value => this.handleChangeForm(value, 'username')}
                     />
@@ -143,6 +149,7 @@ class UserModal extends Component {
                     <InputText
                         label='Отдел'
                         placeholder='Отдел'
+                        disabled={!canEdit}
                         value={form.department || ''}
                         onChange={value => this.handleChangeForm(value, 'department')}
                     />
@@ -152,6 +159,7 @@ class UserModal extends Component {
                         required
                         options={this.roleOptions}
                         selected={form.roles}
+                        disabled={!canEdit}
                         onChange={value => this.handleChangeForm(value, 'roles')}
                     />
 
@@ -160,6 +168,7 @@ class UserModal extends Component {
                         required
                         options={userTypeOptions}
                         selected={form.types}
+                        disabled={!canEdit}
                         onChange={value => this.handleChangeForm(value, 'types')}
                     />
 
@@ -168,6 +177,7 @@ class UserModal extends Component {
                         type='email'
                         placeholder='example@mail.ru'
                         required
+                        disabled={!canEdit}
                         value={form.email}
                         onChange={value => this.handleChangeForm(value, 'email')}
                     />
@@ -176,6 +186,7 @@ class UserModal extends Component {
                         label='Пароль'
                         type='password'
                         required={!isEdit}
+                        disabled={!canEdit}
                         value={form.password || ''}
                         onChange={value => this.handleChangeForm(value, 'password')}
                     />

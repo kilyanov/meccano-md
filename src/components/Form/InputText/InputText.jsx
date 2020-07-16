@@ -169,6 +169,7 @@ export default class InputText extends Component {
             className,
             label,
             name,
+            disabled,
             placeholder,
             controlled,
             required,
@@ -214,6 +215,7 @@ export default class InputText extends Component {
                         autoFocus={autoFocus}
                         placeholder={placeholder}
                         type={type}
+                        disabled={disabled}
                         required={required}
                         name={name}
                         value={value}

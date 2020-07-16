@@ -1,7 +1,7 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import './home-page.scss';
-import {connect} from 'react-redux';
+import { connect } from 'react-redux';
 import PromiseDialogModal from '../../Shared/PromiseDialogModal/PromiseDialogModal';
 import EarthIcon from '../../Shared/SvgIcons/EarthIcon';
 import ProjectsIcon from '../../Shared/SvgIcons/ProjectsIcon';
@@ -11,11 +11,11 @@ import ProjectCreateModal from '../../Project/ProjectCreateModal/ProjectCreateMo
 import VerticalMenu from '../../Shared/VerticalMenu/VerticalMenu';
 import Page from '../../Shared/Page/Page';
 import DocumentIcon from '../../Shared/SvgIcons/DocumentIcon';
-import {PERMISSION} from "../../../constants/Permissions";
+import { PERMISSION } from "../../../constants";
 import Access from "../../Shared/Access/Access";
 import Loader from "../../Shared/Loader/Loader";
-import {isProjectAccess, isRolesAccess} from "../../../helpers/Tools";
-import {PROJECT_PERMISSION} from "../../../constants/ProjectPermissions";
+import { isProjectAccess, isRolesAccess } from "../../../helpers/Tools";
+import { PROJECT_PERMISSION } from "../../../constants/ProjectPermissions";
 
 class HomePage extends Component {
     static propTypes = {
@@ -45,20 +45,20 @@ class HomePage extends Component {
     };
 
     getMenu = () => {
-        const {roles} = this.props;
+        const { roles } = this.props;
 
         return (
-            [{
+            [ {
                 id: 'articles',
                 icon: <EarthIcon/>,
                 name: 'Статьи',
                 children: [],
-                permissions: ['HIDDEN']
+                permissions: [ 'HIDDEN' ]
             }, {
                 id: 'projects',
                 icon: <ProjectsIcon/>,
                 name: 'Проекты',
-                permissions: [PERMISSION.all],
+                permissions: [ PERMISSION.all ],
                 children: this.props.projects.map(project => {
                     const canEditProject = isRolesAccess(roles.admin) ||
                         isProjectAccess(PROJECT_PERMISSION.PROJECT_MANAGER, project);
@@ -74,27 +74,27 @@ class HomePage extends Component {
                 icon: <DocumentIcon/>,
                 name: 'Документы',
                 link: '/documents',
-                permissions: [PERMISSION.viewDocuments, PERMISSION.editDocuments]
+                permissions: [ PERMISSION.viewDocuments, PERMISSION.editDocuments ]
             }, {
                 id: 'users',
                 icon: <UsersIcon/>,
                 name: 'Пользователи',
                 link: '/users',
-                permissions: [PERMISSION.viewUsers, PERMISSION.editUsers]
+                permissions: [ PERMISSION.viewUsers, PERMISSION.editUsers ]
             }, {
                 id: 'settings',
                 icon: <SettingsIcon/>,
                 name: 'Настройки',
                 link: '/settings',
-                permissions: [PERMISSION.viewSettings, PERMISSION.editSettings]
-            }]
+                permissions: [ PERMISSION.viewSettings, PERMISSION.editSettings ]
+            } ]
         );
     };
 
     render() {
         const cls = new Bem('home-page');
-        const {showProjectCreateModal} = this.state;
-        const {profile} = this.props;
+        const { showProjectCreateModal } = this.state;
+        const { profile } = this.props;
         const menu = this.getMenu();
 
         return (
@@ -102,7 +102,7 @@ class HomePage extends Component {
                 {_.get(profile, 'username') && (
                     <h1 {...cls('title')}>Добро пожаловать, {profile.username}!</h1>
                 )}
-                <Access permissions={[PERMISSION.createProject]}>
+                <Access permissions={[ PERMISSION.createProject ]}>
                     <h5 {...cls('sub-title')}>
                         Выберите ваш текущий проект, или
                         {' '}
@@ -114,7 +114,7 @@ class HomePage extends Component {
                     </h5>
                 </Access>
 
-                <div {...cls('row', '', ['row', 'row--align-h-center'])}>
+                <div {...cls('row', '', [ 'row', 'row--align-h-center' ])}>
                     <div {...cls('column', '', 'col-md-6')}>
                         <VerticalMenu list={menu} onClick={this.handleClick}/>
                     </div>
@@ -126,7 +126,7 @@ class HomePage extends Component {
                     />
                 )}
 
-                {_.isEmpty(profile) && <Loader />}
+                {_.isEmpty(profile) && <Loader/>}
 
                 <PromiseDialogModal ref={node => this.dialogModal = node}/>
             </Page>
@@ -136,7 +136,7 @@ class HomePage extends Component {
 
 const roles = {};
 const mapStateToProps = (state) => {
-    state.roles.forEach(({name}) => roles[name] = name);
+    state.roles.forEach(({ name }) => roles[name] = name);
 
     return {
         profile: state.profile,

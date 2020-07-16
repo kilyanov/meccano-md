@@ -69,39 +69,44 @@ export default class UsersPage extends Component {
         const {users, openUserModal, selectedUser, inProgress} = this.state;
 
         return (
-            <Page title='Пользователи' {...classes()} withBar>
-                <section {...classes('filter-panel')}>
-                    <Access permissions={[PERMISSION.editUsers]}>
-                        <InlineButton
-                            onClick={this.handleAddUser}
-                        >+ Добавить</InlineButton>
-                    </Access>
-                </section>
+            <Access
+                permissions={[ PERMISSION.viewUsers, PERMISSION.editUsers ]}
+                redirect='/'
+            >
+                <Page title='Пользователи' {...classes()} withBar>
+                    <section {...classes('filter-panel')}>
+                        <Access permissions={[PERMISSION.editUsers]}>
+                            <InlineButton
+                                onClick={this.handleAddUser}
+                            >+ Добавить</InlineButton>
+                        </Access>
+                    </section>
 
-                <section {...classes('list')}>
-                    {users.map(user => (
-                        <User
-                            key={user.id}
-                            user={user}
-                            onChange={this.handleChangeUser}
-                            onDelete={this.handleDeleteUser}
+                    <section {...classes('list')}>
+                        {users.map(user => (
+                            <User
+                                key={user.id}
+                                user={user}
+                                onChange={this.handleChangeUser}
+                                onDelete={this.handleDeleteUser}
+                            />
+                        ))}
+                    </section>
+
+                    {openUserModal && (
+                        <UserModal
+                            userId={selectedUser ? selectedUser.id : ''}
+                            onClose={this.handleCloseUserModal}
+                            onUpdateParent={() => this.getUsers()}
+                            selectedUser={selectedUser}
                         />
-                    ))}
-                </section>
+                    )}
 
-                {openUserModal && (
-                    <UserModal
-                        userId={selectedUser ? selectedUser.id : ''}
-                        onClose={this.handleCloseUserModal}
-                        onUpdateParent={() => this.getUsers()}
-                        selectedUser={selectedUser}
-                    />
-                )}
+                    <PromiseDialogModal ref={ref => this.promiseModal = ref}/>
 
-                <PromiseDialogModal ref={ref => this.promiseModal = ref}/>
-
-                {inProgress && <Loader fixed/>}
-            </Page>
+                    {inProgress && <Loader fixed/>}
+                </Page>
+            </Access>
         );
     }
 }
