@@ -15,8 +15,6 @@ module.exports = (env, argv) => {
     const productionMode = argv.mode === 'production';
     const HOST = argv.api_host || config.apiURL;
 
-    console.log(5555, HOST);
-
     return {
         entry: './src/index.js',
         module: {

@@ -14,7 +14,6 @@ import './article-create-page.scss';
 import Form from '../../Form/Form/Form';
 import Loader from '../../Shared/Loader/Loader';
 import ArrowIcon from '../../Shared/SvgIcons/ArrowIcon';
-// import Button from '../../Shared/Button/Button';
 import ArticleViewSettings from './ArticleViewSettings/ArticleViewSettings';
 import ProjectCreateField from '../../Project/ProjectCreatePage/ProjectCreatePageField/ProjectCreatePageField';
 import Sortable from 'react-sortablejs';
@@ -25,11 +24,9 @@ import { EVENTS } from "../../../constants";
 import store from "../../../redux/store";
 import { setCurrentProject } from "../../../redux/actions/currentProject";
 import { PROJECT_PERMISSION } from "../../../constants/ProjectPermissions";
-// import Access from "../../Shared/Access/Access";
 import { KEY_CODE } from "../../../constants";
 import TinyMCE from "../../Form/TinyMCE/TinyMCE";
 import CreateLocationModal from "./CreateLocationModal";
-// import LocationIcon from "../../Shared/SvgIcons/LocationIcon";
 
 const cls = new Bem('article-create-page');
 const defaultTimeZone = 'Europe/Moscow';
@@ -186,10 +183,6 @@ class ArchiveArticlePage extends Component {
         this.setState(newState);
     };
 
-    // handleShowViewSettings = () => {
-    //     this.setState({ showViewSettings: true });
-    // };
-
     handleChangeViewType = (key) => {
         this.setState({ viewType: key });
     };
@@ -201,9 +194,7 @@ class ArchiveArticlePage extends Component {
 
         if (!articlesNavs.prev) return;
 
-        this.checkFormChanges().then(() => {
-            history.push(`/archive/${archiveId}/article/${articlesNavs.prev}?page=${sp.get('page')}`);
-        });
+        history.push(`/archive/${archiveId}/article/${articlesNavs.prev}?page=${sp.get('page')}`);
     };
 
     handleNextArticle = () => {
@@ -213,9 +204,7 @@ class ArchiveArticlePage extends Component {
 
         if (!articlesNavs.next) return;
 
-        this.checkFormChanges().then(() => {
-            history.push(`/archive/${archiveId}/article/${articlesNavs.next}?page=${sp.get('page')}`);
-        });
+        history.push(`/archive/${archiveId}/article/${articlesNavs.next}?page=${sp.get('page')}`);
     };
 
     handleClickBackButton = () => {
@@ -223,9 +212,7 @@ class ArchiveArticlePage extends Component {
         const { projectId, archiveId } = this.state;
         const sp = new URLSearchParams(location.search);
 
-        this.checkFormChanges().then(() => {
-            EventEmitter.emit(EVENTS.REDIRECT, `/archive/${projectId}/${archiveId}/?page=${sp.get('page')}`);
-        });
+        EventEmitter.emit(EVENTS.REDIRECT, `/archive/${projectId}/${archiveId}/?page=${sp.get('page')}`);
     };
 
     handleEndSort = (sortedKeys) => {
@@ -245,17 +232,6 @@ class ArchiveArticlePage extends Component {
         );
 
         this.setState({ projectFields: sortedList.filter(item => !!item) }, this.saveFieldsSort);
-    };
-
-    handleDoneArticle = () => {
-        const { userType } = this.state;
-
-        if (userType) {
-            this.setState(state => {
-                state.form[`complete_${userType.slug}`] = !state.form[`complete_${userType.slug}`];
-                return state;
-            }, this.handleSubmit);
-        }
     };
 
     handleSubmit = () => {
@@ -524,59 +500,6 @@ class ArchiveArticlePage extends Component {
                 data: projectFields,
                 user_type_id: userTypeId
             } ]
-        });
-    };
-
-    checkFormChanges = () => {
-        const { prevForm, form, textIsChanged, annotationIsChanged } = this.state;
-
-        return new Promise((resolve) => {
-            const prevFormClone = _.cloneDeep(prevForm);
-            const formClone = _.cloneDeep(form);
-
-            let isEqual = true;
-
-            if (textIsChanged || annotationIsChanged) {
-                isEqual = false;
-            }
-
-            delete prevFormClone.project;
-            delete formClone.project;
-            delete prevFormClone.text;
-            delete formClone.text;
-            delete prevFormClone.annotation;
-            delete formClone.annotation;
-
-            prevFormClone.section_main_id = _.get(prevFormClone.section_main_id, 'value');
-            formClone.section_main_id = _.get(formClone.section_main_id, 'value');
-
-            prevFormClone.source = _.get(prevFormClone.source, 'value');
-            formClone.source = _.get(formClone.source, 'value');
-
-            if (prevFormClone.date) {
-                prevFormClone.date = prevFormClone.date.toString();
-                formClone.date = formClone.date.toString();
-            }
-
-            Object.keys(prevFormClone).forEach(key => {
-                if (!_.isEqual(prevFormClone[key], formClone[key])) {
-                    isEqual = false;
-                }
-            });
-
-            if (!isEqual) {
-                return OperatedNotification.warning({
-                    title: 'Внимание',
-                    message: 'Есть несохраненные изменения.\nПродолжить без сохранения?',
-                    submitButtonText: 'Продолжить',
-                    cancelButtonText: 'Сохранять',
-                    closeOnClick: true,
-                    onSubmit: () => resolve(),
-                    onCancel: () => this.handleSubmit()
-                });
-            }
-
-            return resolve();
         });
     };
 
