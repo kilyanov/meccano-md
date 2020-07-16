@@ -1,9 +1,6 @@
 import axios from 'axios';
-// import config from '../config';
 import { AuthService } from "../services";
 import { Notify } from '../helpers';
-
-console.log(55555, process.env);
 
 const options = {
     baseURL: process.env.HOST,

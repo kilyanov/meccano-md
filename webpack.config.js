@@ -13,7 +13,7 @@ const assetsPluginInstance = new AssetsPlugin({
 
 module.exports = (env, argv) => {
     const productionMode = argv.mode === 'production';
-    const HOST = argv.api_host || config.apiURL;
+    const HOST = argv.api_host || config[argv.mode || 'development'].apiURL;
 
     return {
         entry: './src/index.js',
