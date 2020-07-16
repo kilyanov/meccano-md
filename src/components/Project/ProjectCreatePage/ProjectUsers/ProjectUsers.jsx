@@ -1,9 +1,9 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import InlineButton from "../../../Shared/InlineButton/InlineButton";
 import ProjectUserModal from "./ProjectUserModal/ProjectUserModal";
 import './project-users.scss';
-import {UserService} from "../../../../services";
+import { UserService } from "../../../../services";
 import Loader from "../../../Shared/Loader/Loader";
 import ProjectUser from "./ProjectUser/ProjectUser";
 import PromiseDialogModal from "../../../Shared/PromiseDialogModal/PromiseDialogModal";
@@ -27,11 +27,11 @@ export default class ProjectUsers extends Component {
     }
 
     handleChangeUsers = (users) => {
-        this.setState({users});
+        this.setState({ users });
     };
 
     handleDelete = (user) => {
-        const {projectId} = this.props;
+        const { projectId } = this.props;
 
         this.promiseModal.open({
             title: 'Удаление документа',
@@ -43,7 +43,7 @@ export default class ProjectUsers extends Component {
     };
 
     getUserList = () => {
-        const {projectId} = this.props;
+        const { projectId } = this.props;
 
         UserService.project.getList(projectId).then(response => {
             this.setState({
@@ -54,8 +54,8 @@ export default class ProjectUsers extends Component {
     };
 
     render() {
-        const {projectId} = this.props;
-        const {users, showCreateModal, selectedUser, inProgress} = this.state;
+        const { projectId } = this.props;
+        const { users, showCreateModal, selectedUser, inProgress } = this.state;
 
         return (
             <div {...cls('', '', 'container')}>
@@ -63,7 +63,7 @@ export default class ProjectUsers extends Component {
                     <h3>Доступ пользователей</h3>
                     <InlineButton
                         {...cls('add-user')}
-                        onClick={() => this.setState({showCreateModal: true})}
+                        onClick={() => this.setState({ showCreateModal: true })}
                     >+ Добавить пользователя</InlineButton>
                 </section>
 
@@ -72,7 +72,7 @@ export default class ProjectUsers extends Component {
                         <ProjectUser
                             key={userIndex}
                             projectUser={user}
-                            onChange={() => this.setState({showCreateModal: true, selectedUser: user})}
+                            onChange={() => this.setState({ showCreateModal: true, selectedUser: user })}
                             onDelete={this.handleDelete}
                         />
                     ))}
@@ -83,11 +83,11 @@ export default class ProjectUsers extends Component {
                         projectUser={selectedUser}
                         projectId={projectId}
                         onChange={this.handleChangeUsers}
-                        onClose={() => this.setState({selectedUser: null, showCreateModal: false})}
+                        onClose={() => this.setState({ selectedUser: null, showCreateModal: false })}
                     />
                 )}
 
-                <PromiseDialogModal ref={ref => this.promiseModal = ref} />
+                <PromiseDialogModal ref={ref => this.promiseModal = ref}/>
 
                 {inProgress && <Loader/>}
             </div>

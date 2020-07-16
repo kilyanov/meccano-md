@@ -29,6 +29,8 @@ import ArticleTransferModal from "../../Article/ArticleTransferModal/ArticleTran
 import ProjectPagination from "./ProjectTable/ProjectPagination/ProjectPagintaion";
 import ReactSelect from "../../Form/Select/ReactSelect/ReactSelect";
 import ArchiveCreateModal from "../../Archive/ArchiveCreateModal";
+import Access from "../../Shared/Access/Access";
+import { PROJECT_PERMISSION } from "../../../constants/ProjectPermissions";
 
 const cls = new Bem('project-page');
 const defaultPagination = { page: 1, pageCount: 1, perPage: 50 };
@@ -556,12 +558,14 @@ export default class ProjectPage extends Component {
                     )}
 
                     {hasSelectedItems && (
-                        <Button
-                            {...cls('upload-btn')}
-                            text='В архив'
-                            style='error'
-                            onClick={this.handleReplaceToArchive}
-                        />
+                        <Access permissions={ PROJECT_PERMISSION.ACCESS_ARCHIVE }>
+                            <Button
+                                {...cls('upload-btn')}
+                                text='В архив'
+                                style='error'
+                                onClick={this.handleReplaceToArchive}
+                            />
+                        </Access>
                     )}
                 </section>
 

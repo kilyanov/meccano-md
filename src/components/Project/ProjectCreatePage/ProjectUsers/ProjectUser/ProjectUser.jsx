@@ -2,21 +2,21 @@ import React from 'react';
 import BEMHelper from "react-bem-helper";
 import ProfileIcon from "../../../../Shared/SvgIcons/ProfileIcon";
 import InlineButton from "../../../../Shared/InlineButton/InlineButton";
-import {useSelector} from "react-redux";
-import {PROJECT_USER_PERMISSIONS, PROJECT_USER_TRANSMIT} from "../consts";
+import { useSelector } from "react-redux";
+import { PROJECT_USER_PERMISSIONS, PROJECT_USER_TRANSMIT } from "../consts";
 import './project-user.scss';
 
 const cls = new BEMHelper('project-user');
-const ProjectUser = ({projectUser, onChange, onDelete}) => {
-    const {user} = projectUser;
+const ProjectUser = ({ projectUser, onChange, onDelete }) => {
+    const { user } = projectUser;
     const userTypes = useSelector(state => state.userTypes);
     let userTypesString = '';
 
     if (user.types && user.types.length) {
-        userTypesString = userTypes.filter(({id}) => {
+        userTypesString = userTypes.filter(({ id }) => {
             return user.types
                 .find(t => t.id === id)
-                .map(({name}) => name)
+                .map(({ name }) => name)
                 .join(', ');
         });
     }
@@ -37,7 +37,7 @@ const ProjectUser = ({projectUser, onChange, onDelete}) => {
                 <div {...cls('data-item', 'small')}>
                     <b>Разрешения:</b>{' '}
                     {PROJECT_USER_PERMISSIONS
-                        .filter(({id}) => projectUser[id])
+                        .filter(({ id }) => projectUser[id])
                         .map(permission => permission.name)
                         .join(', ')
                     }
@@ -45,7 +45,7 @@ const ProjectUser = ({projectUser, onChange, onDelete}) => {
                 <div {...cls('data-item', 'small')}>
                     <b>Возжность передачи статей:</b>{' '}
                     {PROJECT_USER_TRANSMIT
-                        .filter(({id}) => projectUser[id])
+                        .filter(({ id }) => projectUser[id])
                         .map(transmit => transmit.name)
                         .join(', ')
                     }

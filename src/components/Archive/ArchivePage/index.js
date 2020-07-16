@@ -27,6 +27,8 @@ import ReactSelect from "../../Form/Select/ReactSelect/ReactSelect";
 import ArchiveCreateModal from "../ArchiveCreateModal";
 import { setCurrentProject } from "../../../redux/actions/currentProject";
 import StorageIcon from "../../Shared/SvgIcons/StorageIcon";
+import Access from "../../Shared/Access/Access";
+import { PROJECT_PERMISSION } from "../../../constants/ProjectPermissions";
 
 const cls = new Bem('archive-page');
 const defaultPagination = { page: 1, pageCount: 1, perPage: 50 };
@@ -304,7 +306,7 @@ export default class ArchivePage extends Component {
         const { pagination, filters, userType, inProgress } = this.state;
         const selectedColumns = getColumnsFromStorage(this.projectId);
         const fields = this.getFields();
-        
+
         if (!inProgress) {
             this.setState({ inProgress: true });
         }
@@ -528,186 +530,191 @@ export default class ArchivePage extends Component {
         const userName = this.getUserName();
 
         return (
-            <Page {...cls()} withBar>
-                <section {...cls('title-wrapper')} title={_.get(archive, 'description')}>
-                    <StorageIcon { ...cls('title-icon') } />
-                    {archive && <h2 {...cls('title')}>Архив</h2>}
-                    {archive && project && (
-                        <div {...cls('additional-data')}>
-                            <span { ...cls('additional-data-project') }>{project.name}</span>
-                            <div>
-                                <span { ...cls('additional-data-user') }>{userName ? `${userName}, ` : ''}</span>
-                                <span>{moment(archive.date).format('D MMM YYYY[г. в] HH:mm')}</span>
+            <Access
+                permissions={[ PROJECT_PERMISSION.ACCESS_ARCHIVE ]}
+                redirect='/'
+            >
+                <Page {...cls()} withBar>
+                    <section {...cls('title-wrapper')} title={_.get(archive, 'description')}>
+                        <StorageIcon {...cls('title-icon')} />
+                        {archive && <h2 {...cls('title')}>Архив</h2>}
+                        {archive && project && (
+                            <div {...cls('additional-data')}>
+                                <span {...cls('additional-data-project')}>{project.name}</span>
+                                <div>
+                                    <span {...cls('additional-data-user')}>{userName ? `${userName}, ` : ''}</span>
+                                    <span>{moment(archive.date).format('D MMM YYYY[г. в] HH:mm')}</span>
+                                </div>
                             </div>
-                        </div>
-                    )}
+                        )}
 
-                    {!!articles.length && (
-                        <Button
-                            {...cls('upload-btn')}
-                            text={!countSelected || isAllArticlesSelected ? 'Выгрузить все' :
-                                `Выгрузить ${Plural(
-                                    countSelected,
-                                    `${countSelected} `,
-                                    [ 'статью', 'статьи', 'статей' ]
-                                )}`}
-                            style='success'
-                            onClick={() => this.setState({ showUploadArticlesModal: true })}
+                        {!!articles.length && (
+                            <Button
+                                {...cls('upload-btn')}
+                                text={!countSelected || isAllArticlesSelected ? 'Выгрузить все' :
+                                    `Выгрузить ${Plural(
+                                        countSelected,
+                                        `${countSelected} `,
+                                        [ 'статью', 'статьи', 'статей' ]
+                                    )}`}
+                                style='success'
+                                onClick={() => this.setState({ showUploadArticlesModal: true })}
+                            />
+                        )}
+                    </section>
+
+                    <section {...cls('filters')}>
+                        <IconButton
+                            {...cls('filter-item')}
+                            iconComponent={<TrashIcon/>}
+                            text='Удалить'
+                            danger
+                            disabled={!hasSelectedItems}
+                            onClick={this.handleDeleteArticles}
                         />
-                    )}
-                </section>
 
-                <section {...cls('filters')}>
-                    <IconButton
-                        {...cls('filter-item')}
-                        iconComponent={<TrashIcon/>}
-                        text='Удалить'
-                        danger
-                        disabled={!hasSelectedItems}
-                        onClick={this.handleDeleteArticles}
-                    />
+                        {!!selectedItemIds.length && (
+                            <Fragment>
+                                <span>
+                                    {Plural(countSelected, '', [ 'Выбрана', 'Выбраны', 'Выбраны' ])}
+                                    {Plural(
+                                        countSelected,
+                                        ` ${countSelected} `,
+                                        [ 'статья', 'статьи', 'статей' ]
+                                    )}
+                                </span>
 
-                    {!!selectedItemIds.length && (
-                        <Fragment>
-                            <span>
-                                {Plural(countSelected, '', [ 'Выбрана', 'Выбраны', 'Выбраны' ])}
-                                {Plural(
-                                    countSelected,
-                                    ` ${countSelected} `,
-                                    [ 'статья', 'статьи', 'статей' ]
+                                {(countSelected < pagination.totalCount && !isAllArticlesSelected) && (
+                                    <InlineButton
+                                        {...cls('filter-item')}
+                                        small
+                                        onClick={() => this.setState({ isAllArticlesSelected: true })}
+                                    >
+                                        Выбрать все статьи в архиве
+                                    </InlineButton>
                                 )}
-                            </span>
 
-                            {(countSelected < pagination.totalCount && !isAllArticlesSelected) && (
                                 <InlineButton
                                     {...cls('filter-item')}
                                     small
-                                    onClick={() => this.setState({ isAllArticlesSelected: true })}
-                                >
-                                    Выбрать все статьи в архиве
-                                </InlineButton>
-                            )}
+                                    onClick={this.handleClearSelected}
+                                >Снять выделение</InlineButton>
+                            </Fragment>
+                        )}
 
-                            <InlineButton
-                                {...cls('filter-item')}
-                                small
-                                onClick={this.handleClearSelected}
-                            >Снять выделение</InlineButton>
-                        </Fragment>
-                    )}
-
-                    <SearchFilter
-                        {...cls('filter-item')}
-                        placeholder='Найти'
-                        value={filters.search}
-                        onChange={value => this.handleChangeFilter('search', value)}
-                        onSearch={() => this.getArticles()}
-                    />
-
-                    <ReactSelect
-                        {...cls('filter-item', 'select')}
-                        isMulti
-                        options={this.getStatusOptions()}
-                        onChange={this.handleChangeStatus}
-                        selected={selectedStatus}
-                        placeholder='Статус'
-                    />
-                </section>
-
-                <div {...cls('project-table-wrapper')}>
-                    <ProjectTable
-                        onChangeSelected={this.handleChangeSelected}
-                        onChangeColumns={this.handleChangeColumns}
-                        onChangeSort={this.handleChangeSort}
-                        onDeleteArticle={this.handleDeleteArticle}
-                        onChangeFilter={this.handleChangeFilter}
-                        onUpdateParent={() => this.getArticles()}
-                        sort={filters.sort}
-                        search={filters.search}
-                        page={currentPage}
-                        selectedIds={selectedItemIds}
-                        isAllSelected={isAllArticlesSelected}
-                        projectId={this.projectId}
-                        archiveId={this.archiveId}
-                        articles={articles}
-                        pagination={pagination}
-                        fields={fields}
-                    />
-
-                    <div {...cls('footer')}>
-                        <ProjectPagination
-                            page={currentPage}
-                            pageCount={pagination.pageCount}
-                            onPageChange={this.handleChangePage}
+                        <SearchFilter
+                            {...cls('filter-item')}
+                            placeholder='Найти'
+                            value={filters.search}
+                            onChange={value => this.handleChangeFilter('search', value)}
+                            onSearch={() => this.getArticles()}
                         />
 
-                        <span {...cls('articles-count')}>
-                            Всего {Plural(pagination.totalCount || 0, `${pagination.totalCount || 0} `,
-                                [ 'статья', 'статьи', 'статей' ])}
-                        </span>
+                        <ReactSelect
+                            {...cls('filter-item', 'select')}
+                            isMulti
+                            options={this.getStatusOptions()}
+                            onChange={this.handleChangeStatus}
+                            selected={selectedStatus}
+                            placeholder='Статус'
+                        />
+                    </section>
+
+                    <div {...cls('project-table-wrapper')}>
+                        <ProjectTable
+                            onChangeSelected={this.handleChangeSelected}
+                            onChangeColumns={this.handleChangeColumns}
+                            onChangeSort={this.handleChangeSort}
+                            onDeleteArticle={this.handleDeleteArticle}
+                            onChangeFilter={this.handleChangeFilter}
+                            onUpdateParent={() => this.getArticles()}
+                            sort={filters.sort}
+                            search={filters.search}
+                            page={currentPage}
+                            selectedIds={selectedItemIds}
+                            isAllSelected={isAllArticlesSelected}
+                            projectId={this.projectId}
+                            archiveId={this.archiveId}
+                            articles={articles}
+                            pagination={pagination}
+                            fields={fields}
+                        />
+
+                        <div {...cls('footer')}>
+                            <ProjectPagination
+                                page={currentPage}
+                                pageCount={pagination.pageCount}
+                                onPageChange={this.handleChangePage}
+                            />
+
+                            <span {...cls('articles-count')}>
+                                Всего {Plural(pagination.totalCount || 0, `${pagination.totalCount || 0} `,
+                                    [ 'статья', 'статьи', 'статей' ])}
+                            </span>
+                        </div>
                     </div>
-                </div>
 
-                {showArticleModal && (
-                    <ArticleCreateModal
-                        article={activeArticle || {}}
-                        projectId={this.projectId}
-                        onClose={() => this.setState({ activeArticle: null, showArticleModal: false })}
-                        onAddArticle={this.handleCreateArticle}
-                        onUpdateArticle={this.handleUpdateArticle}
-                    />
-                )}
+                    {showArticleModal && (
+                        <ArticleCreateModal
+                            article={activeArticle || {}}
+                            projectId={this.projectId}
+                            onClose={() => this.setState({ activeArticle: null, showArticleModal: false })}
+                            onAddArticle={this.handleCreateArticle}
+                            onUpdateArticle={this.handleUpdateArticle}
+                        />
+                    )}
 
-                {showUploadArticlesModal && (
-                    <ArticlesExportModal
-                        archiveId={this.archiveId}
-                        projectId={this.projectId}
-                        selectedArticleIds={isAllArticlesSelected || selectedItemIds}
-                        onUpdateParent={this.handleClearSelected}
-                        onClose={() => this.setState({ showUploadArticlesModal: false })}
-                    />
-                )}
+                    {showUploadArticlesModal && (
+                        <ArticlesExportModal
+                            archiveId={this.archiveId}
+                            projectId={this.projectId}
+                            selectedArticleIds={isAllArticlesSelected || selectedItemIds}
+                            onUpdateParent={this.handleClearSelected}
+                            onClose={() => this.setState({ showUploadArticlesModal: false })}
+                        />
+                    )}
 
-                {showImportArticlesModal && (
-                    <ArticlesImportModal
-                        onClose={() => {
-                            if (this.isMounted) this.setState({ showImportArticlesModal: false });
-                        }}
-                        onSubmit={this.handleImportArticlesSubmit}
-                        projectId={this.projectId}
-                    />
-                )}
+                    {showImportArticlesModal && (
+                        <ArticlesImportModal
+                            onClose={() => {
+                                if (this.isMounted) this.setState({ showImportArticlesModal: false });
+                            }}
+                            onSubmit={this.handleImportArticlesSubmit}
+                            projectId={this.projectId}
+                        />
+                    )}
 
-                {showTransferModal && (
-                    <ArticleTransferModal
-                        onClose={() => this.setState({ showTransferModal: false })}
-                        onUpdateParent={() => {
-                            this.handleClearSelected();
-                            this.getArticles();
-                        }}
-                        projectId={this.projectId}
-                        articleIds={selectedItemIds}
-                    />
-                )}
+                    {showTransferModal && (
+                        <ArticleTransferModal
+                            onClose={() => this.setState({ showTransferModal: false })}
+                            onUpdateParent={() => {
+                                this.handleClearSelected();
+                                this.getArticles();
+                            }}
+                            projectId={this.projectId}
+                            articleIds={selectedItemIds}
+                        />
+                    )}
 
-                {showCreateArchiveModal && (
-                    <ArchiveCreateModal
-                        onClose={() => this.setState({ showCreateArchiveModal: false })}
-                        projectId={this.projectId}
-                        articleIds={selectedArticles.map(({ id }) => id)}
-                        onSuccessCreate={() => {
-                            this.setState({ selectedArticles: [] });
-                            this.getArticles();
-                        }}
-                    />
-                )}
+                    {showCreateArchiveModal && (
+                        <ArchiveCreateModal
+                            onClose={() => this.setState({ showCreateArchiveModal: false })}
+                            projectId={this.projectId}
+                            articleIds={selectedArticles.map(({ id }) => id)}
+                            onSuccessCreate={() => {
+                                this.setState({ selectedArticles: [] });
+                                this.getArticles();
+                            }}
+                        />
+                    )}
 
-                <PromiseDialogModal ref={node => this.promiseDialogModal = node}/>
+                    <PromiseDialogModal ref={node => this.promiseDialogModal = node}/>
 
-                {inProgress && <Loader fixed/>}
+                    {inProgress && <Loader fixed/>}
 
-                {pagination.inProgress && <RightLoader/>}
-            </Page>
+                    {pagination.inProgress && <RightLoader/>}
+                </Page>
+            </Access>
         );
     }
 }

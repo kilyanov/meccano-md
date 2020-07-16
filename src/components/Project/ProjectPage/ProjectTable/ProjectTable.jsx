@@ -29,14 +29,14 @@ class ProjectTable extends Component {
         onChangeSort: PropTypes.func,
         onChangeColumns: PropTypes.func.isRequired,
         onDeleteArticle: PropTypes.func,
-        archiveId: PropTypes.string.isRequired,
+        archiveId: PropTypes.string,
         projectId: PropTypes.string.isRequired,
         pagination: PropTypes.object.isRequired,
         fields: PropTypes.array.isRequired,
         isAllSelected: PropTypes.bool,
         articleColors: PropTypes.array,
         currentProject: PropTypes.object,
-        onChangeFilter: PropTypes.func,
+        onChangeFilter: PropTypes.func
     };
 
     static defaultProps = {

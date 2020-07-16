@@ -14,6 +14,10 @@ export const PROJECT_USER_PERMISSIONS = [
     {
         id: 'access_project_manager',
         name: 'Управление проектом'
+    },
+    {
+        id: 'access_archive',
+        name: 'Доступ к Архиву'
     }
 ];
 
