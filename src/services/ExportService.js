@@ -2,7 +2,7 @@ import API from '../api/api';
 import ApiList from '../api/apiList';
 
 export const ExportService = {
-    articles: (projectId, templateId, articleIds, filename) => {
+    articles: ({ projectId, templateId, articleIds, filename }) => {
         const sp = new URLSearchParams();
 
         sp.set('project', projectId);
@@ -17,7 +17,7 @@ export const ExportService = {
             articleIds && {articleIds}
         );
     },
-    archiveArticles: (archiveId, projectId, templateId, articleIds, filename) => {
+    archiveArticles: ({ archiveId, projectId, templateId, articleIds, filename }) => {
         const sp = new URLSearchParams();
 
         sp.set('archive', archiveId);

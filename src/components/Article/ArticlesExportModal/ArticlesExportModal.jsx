@@ -71,13 +71,13 @@ export default class ArticlesExportModal extends Component {
                     selectedArticleIds.length ? selectedArticleIds : null;
 
                 ExportService
-                    [archiveId ? 'archiveArticles' : 'articles'](
+                    [archiveId ? 'archiveArticles' : 'articles']({
                         archiveId,
                         projectId,
-                        selectedTemplateId,
+                        templateId: selectedTemplateId,
                         articleIds,
                         filename
-                    )
+                    })
                     .then(({data}) => {
                         if (data.result === 'toQueue') {
                             Notification.toPanel({

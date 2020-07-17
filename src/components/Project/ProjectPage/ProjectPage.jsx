@@ -682,10 +682,10 @@ export default class ProjectPage extends Component {
 
                         <span {...cls('articles-count')}>
                             Всего {Plural(
-                            pagination.totalCount || 0,
-                            `${pagination.totalCount || 0} `,
-                            [ 'статья', 'статьи', 'статей' ]
-                        )}
+                                pagination.totalCount || 0,
+                                `${pagination.totalCount || 0} `,
+                                [ 'статья', 'статьи', 'статей' ]
+                            )}
                         </span>
                     </div>
                 </div>
