@@ -558,7 +558,7 @@ export default class ProjectPage extends Component {
                     )}
 
                     {hasSelectedItems && (
-                        <Access permissions={ PROJECT_PERMISSION.ACCESS_ARCHIVE }>
+                        <Access projectPermissions={ PROJECT_PERMISSION.ACCESS_ARCHIVE }>
                             <Button
                                 {...cls('upload-btn')}
                                 text='В архив'

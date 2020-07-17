@@ -4,9 +4,9 @@ export const PROJECT_PERMISSION = {
     FULL: 'access_full',
     PROJECT_MANAGER: 'access_project_manager',
     ACCESS_ARCHIVE: 'access_archive'
-}
+};
 
-;export const PROJECT_PERMISSION_NAME = {
+export const PROJECT_PERMISSION_NAME = {
     READ: 'Просмотр всех статей',
     EDIT: 'Редактирование своих статей',
     FULL: 'Редактирование всех статей',

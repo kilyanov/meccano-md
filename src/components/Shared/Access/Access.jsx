@@ -6,17 +6,18 @@ import { EVENTS } from "../../../constants";
 import { useSelector } from "react-redux";
 import Loader from "../Loader/Loader";
 
-const Access = ({ permissions, roles, children, replaceComponent, redirect }) => {
+const Access = ({ permissions, projectPermissions, roles, children, replaceComponent, redirect }) => {
     const profile = useSelector(state => state.profile);
+    const currentProject = useSelector(state => state.currentProject);
 
-    if (_.isEmpty(profile)) {
+    if (_.isEmpty(profile) || projectPermissions && projectPermissions.length && _.isEmpty(currentProject)) {
         return <Loader/>;
     }
 
     const canByProfilePermissions = !permissions
         || permissions.includes(PERMISSION.all)
         || isAccess(permissions || [], profile);
-    const canByProjectPermissions = isProjectAccess(permissions);
+    const canByProjectPermissions = isProjectAccess(projectPermissions);
     const canByRoles = isRolesAccess(roles);
     const canRender = canByProfilePermissions || canByProjectPermissions || canByRoles;
 

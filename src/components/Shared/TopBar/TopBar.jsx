@@ -22,7 +22,7 @@ const TopBar = ({ isStatic, className }) => {
                 <Logo onClick={handleClickLogo}/>
 
                 <section {...cls('buttons')}>
-                    <Access permissions={ PROJECT_PERMISSION.ACCESS_ARCHIVE }>
+                    <Access projectPermissions={ PROJECT_PERMISSION.ACCESS_ARCHIVE }>
                         <ArchiveButton {...cls('button', 'archive')} />
                     </Access>
                     <ProjectsButton {...cls('button', 'notifications')} />

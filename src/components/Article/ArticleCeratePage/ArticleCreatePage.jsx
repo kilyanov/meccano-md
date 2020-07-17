@@ -818,7 +818,7 @@ class ArticleCreatePage extends Component {
                         <LocationIcon/>
                     </button>
 
-                    <Access permissions={[ PROJECT_PERMISSION.EDIT ]}>
+                    <Access projectPermissions={[ PROJECT_PERMISSION.EDIT ]}>
                         <Button
                             {...cls('done-button')}
                             text={userType && form[`complete_${userType.slug}`] ? 'Отменить завершение' : 'Завершить статью'}

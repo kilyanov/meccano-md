@@ -361,7 +361,7 @@ class ProjectCreatePage extends Component {
 
         return (
             <Access
-                permissions={[ PROJECT_PERMISSION.PROJECT_MANAGER ]}
+                projectPermissions={[ PROJECT_PERMISSION.PROJECT_MANAGER ]}
                 roles={[ roles.admin ]}
                 redirect='/'
             >

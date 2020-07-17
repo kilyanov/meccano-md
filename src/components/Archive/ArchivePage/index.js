@@ -1,4 +1,5 @@
 import React, { Fragment, Component } from 'react';
+import { connect } from "react-redux";
 import './archive-page.scss';
 import Button from '../../Shared/Button/Button';
 import IconButton from '../../Shared/IconButton/IconButton';
@@ -35,7 +36,7 @@ const defaultPagination = { page: 1, pageCount: 1, perPage: 50 };
 const defaultSort = { type: null, dir: null };
 const defaultFilters = { search: '', sort: defaultSort };
 
-export default class ArchivePage extends Component {
+class ArchivePage extends Component {
     constructor(props) {
         super(props);
 
@@ -500,6 +501,7 @@ export default class ArchivePage extends Component {
     searchParams = new URLSearchParams(this.props.location.search);
 
     render() {
+        const { profile } = this.props;
         const {
             archive,
             project,
@@ -529,9 +531,11 @@ export default class ArchivePage extends Component {
         const currentPage = this.searchParams.get('page') || pagination.page;
         const userName = this.getUserName();
 
+        if (_.isEmpty(profile)) return <Loader />;
+
         return (
             <Access
-                permissions={[ PROJECT_PERMISSION.ACCESS_ARCHIVE ]}
+                projectPermissions={[ PROJECT_PERMISSION.ACCESS_ARCHIVE ]}
                 redirect='/'
             >
                 <Page {...cls()} withBar>
@@ -718,3 +722,11 @@ export default class ArchivePage extends Component {
         );
     }
 }
+
+function mapStateToProps(state) {
+    return {
+        profile: state.profile
+    }
+}
+
+export default connect(mapStateToProps)(ArchivePage);

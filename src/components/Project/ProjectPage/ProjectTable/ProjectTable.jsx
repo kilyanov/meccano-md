@@ -336,12 +336,12 @@ class ProjectTable extends Component {
         url += sp.toString();
 
         // Подсветка ответственных (кому передана статья)еку
-        if (article.user && article.user.id !== profile.id) {
+        if (article.user && article.user.id !== profile.id && this.props.articleColors) {
             color = this.props.articleColors.find(({ type }) => type === 'responsible');
         }
 
         [ 'complete_monitor', 'complete_analytic', 'complete_client' ].some(key => {
-            if (article.hasOwnProperty(key) && article[key]) {
+            if (article.hasOwnProperty(key) && article[key] && this.props.articleColors) {
                 color = this.props.articleColors.find(({ type }) => type === key);
             }
 
