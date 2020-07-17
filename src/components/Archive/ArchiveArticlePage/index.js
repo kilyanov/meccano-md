@@ -338,10 +338,6 @@ class ArchiveArticlePage extends Component {
                     event.preventDefault();
                     this.handlePrevArticle();
                     break;
-                case KEY_CODE.chars.s:
-                    event.preventDefault();
-                    this.handleSubmit();
-                    break;
                 default:
                     break;
             }
