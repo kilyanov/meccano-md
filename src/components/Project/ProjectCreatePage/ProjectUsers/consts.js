@@ -12,12 +12,12 @@ export const PROJECT_USER_PERMISSIONS = [
         name: 'Редактирование всех статей'
     },
     {
-        id: 'access_project_manager',
-        name: 'Управление проектом'
-    },
-    {
         id: 'access_archive',
         name: 'Доступ к Архиву'
+    },
+    {
+        id: 'access_project_manager',
+        name: 'Управление проектом'
     }
 ];
 
