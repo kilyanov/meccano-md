@@ -8,9 +8,8 @@ import Loader from "../Loader/Loader";
 
 const Access = ({ permissions, projectPermissions, roles, children, replaceComponent, redirect }) => {
     const profile = useSelector(state => state.profile);
-    const currentProject = useSelector(state => state.currentProject);
 
-    if (_.isEmpty(profile) || projectPermissions && projectPermissions.length && _.isEmpty(currentProject)) {
+    if (_.isEmpty(profile)) {
         return <Loader/>;
     }
 

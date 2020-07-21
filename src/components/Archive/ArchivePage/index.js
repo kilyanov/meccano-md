@@ -56,7 +56,7 @@ class ArchivePage extends Component {
             articles: [],
             activeArticle: null,
             selectedItemIds: [],
-            selectedArticles: [],
+            selectedArticles: {},
             isAllArticlesSelected: false,
             pagination,
             userType,
@@ -107,25 +107,29 @@ class ArchivePage extends Component {
         });
     };
 
-    handleChangeSelected = (selectedItemIds) => {
-        if (!selectedItemIds.length) {
+    handleChangeSelected = ({ articleIds }) => {
+        if (!articleIds.length) {
             return this.handleClearSelected();
         }
 
         this.setState(state => {
-            state.selectedItemIds = selectedItemIds;
-            state.selectedArticles = [];
+            state.selectedArticles[state.pagination.page] = state.articles.filter(({ id }) => articleIds.includes(id));
 
-            selectedItemIds.forEach(selectedId => {
-                const found = state.articles.find(({ id }) => id === selectedId);
-
-                if (found && !state.selectedArticles.find(({ id }) => id === selectedId)) {
-                    state.selectedArticles.push(found);
-                }
-            });
             return state;
         });
     };
+
+    handleSelectAll = ({ articleIds, checked }) => {
+        if (!checked) {
+            return this.handleClearSelected();
+        }
+
+        this.setState(state => {
+            state.selectedArticles[state.pagination.page] = state.articles.filter(({ id }) => articleIds.includes(id));
+
+            return state;
+        });
+    }
 
     handleChangeColumns = () => {
         this.setState(state => {
@@ -165,8 +169,10 @@ class ArchivePage extends Component {
     };
 
     handleDeleteArticles = () => {
-        const { articles, selectedItemIds, isAllArticlesSelected, pagination } = this.state;
-        const countSelected = isAllArticlesSelected ? pagination.totalCount : selectedItemIds.length;
+        const { articles, isAllArticlesSelected, pagination, project } = this.state;
+        const countSelected = isAllArticlesSelected ? pagination.totalCount : this.getCountSelectedArticles();
+        const selectedArticles = this.getAllSelectedArticles();
+        const selectedArticlesIds = selectedArticles.map(({ id }) => id);
 
         if (countSelected) {
             this.promiseDialogModal.open({
@@ -176,13 +182,14 @@ class ArchivePage extends Component {
                     `${countSelected} `,
                     [ 'статью', 'статьи', 'статей' ])}?`,
                 submitText: 'Удалить',
-                style: 'danger',
-                danger: true
+                style: 'danger'
             }).then(() => {
                 this.setState({ inProgress: true }, () => {
-                    ArchiveService
-                        .articles
-                        .delete(this.archiveId, isAllArticlesSelected ? { all: true } : { articleIds: selectedItemIds })
+                    ArticleService
+                        .delete(isAllArticlesSelected
+                            ? { all: true }
+                            : { articleIds: selectedArticlesIds }, project.id
+                        )
                         .then(() => {
                             pagination.page = 1;
                             NotificationManager.success('Выбранные статьи успешно удалены', 'Удаление');
@@ -191,8 +198,8 @@ class ArchivePage extends Component {
                                 pagination,
                                 articles: isAllArticlesSelected
                                     ? []
-                                    : articles.filter(({ id }) => !selectedItemIds.includes(id)),
-                                selectedItemIds: [],
+                                    : articles.filter(({ id }) => !selectedArticlesIds.includes(id)),
+                                selectedArticles: {},
                                 isAllArticlesSelected: false
                             }, this.getArticles);
                         })
@@ -240,10 +247,16 @@ class ArchivePage extends Component {
         }, this.getArticles);
     };
 
-    handleClearSelected = () => {
-        this.setState({
-            selectedItemIds: [],
-            isAllArticlesSelected: false
+    handleClearSelected = (isFull = false) => {
+        this.setState(state => {
+            if (isFull) {
+                state.selectedArticles = {};
+            } else {
+                state.selectedArticles[state.pagination.page] = [];
+            }
+            state.isAllArticlesSelected = false;
+
+            return state;
         });
     };
 
@@ -256,11 +269,13 @@ class ArchivePage extends Component {
     };
 
     handleCompleteArticles = (isComplete = true) => {
-        const { selectedItemIds, userType } = this.state;
+        const { userType } = this.state;
+        const selectedArticles = this.getAllSelectedArticles();
+        const selectedArticleIds = selectedArticles.map(({ id }) => id);
 
         if (userType && userType.slug) {
             const form = {
-                articleIds: selectedItemIds,
+                articleIds: selectedArticleIds,
                 properties: {
                     [`complete_${userType.slug}`]: isComplete
                 }
@@ -270,7 +285,7 @@ class ArchivePage extends Component {
                 ProjectService
                     .updateMany(form, this.projectId)
                     .then(() => {
-                        this.setState({ selectedItemIds: [] });
+                        this.handleClearSelected(true);
                         this.getArticles();
                     })
                     .catch(() => this.setState({ inProgress: false }));
@@ -485,6 +500,22 @@ class ArchivePage extends Component {
         ];
     };
 
+    getCountSelectedArticles = () => {
+        const { selectedArticles } = this.state;
+
+        return Object
+            .keys(selectedArticles)
+            .reduce((acc, page) => acc + selectedArticles[page].length, 0);
+    };
+
+    getAllSelectedArticles = () => {
+        const { selectedArticles } = this.state;
+
+        return Object
+            .keys(selectedArticles)
+            .reduce((acc, page) => [ ...acc, ...selectedArticles[page] ], []);
+    };
+
     setSearchParams = () => {
         const { location, history } = this.props;
 
@@ -515,12 +546,15 @@ class ArchivePage extends Component {
             showImportArticlesModal,
             showTransferModal,
             showCreateArchiveModal,
-            selectedArticles,
             selectedStatus,
             inProgress
         } = this.state;
-        const countSelected = isAllArticlesSelected ? pagination.totalCount : selectedItemIds.length;
-        const hasSelectedItems = !!selectedItemIds.length;
+        const countSelected = isAllArticlesSelected
+            ? pagination.totalCount
+            : this.getCountSelectedArticles();
+        const hasSelectedItems = countSelected > 0;
+        const selectedArticles = this.getAllSelectedArticles();
+        const selectedArticleIds = selectedArticles.map(({ id }) => id);
         const articles = _.cloneDeep(this.state.articles)
             .map(article => {
                 article.date = new Date(article.date);
@@ -577,7 +611,7 @@ class ArchivePage extends Component {
                             onClick={this.handleDeleteArticles}
                         />
 
-                        {!!selectedItemIds.length && (
+                        {hasSelectedItems && (
                             <Fragment>
                                 <span>
                                     {Plural(countSelected, '', [ 'Выбрана', 'Выбраны', 'Выбраны' ])}
@@ -627,6 +661,7 @@ class ArchivePage extends Component {
                     <div {...cls('project-table-wrapper')}>
                         <ProjectTable
                             onChangeSelected={this.handleChangeSelected}
+                            onSelectedAll={this.handleSelectAll}
                             onChangeColumns={this.handleChangeColumns}
                             onChangeSort={this.handleChangeSort}
                             onDeleteArticle={this.handleDeleteArticle}
@@ -635,7 +670,7 @@ class ArchivePage extends Component {
                             sort={filters.sort}
                             search={filters.search}
                             page={currentPage}
-                            selectedIds={selectedItemIds}
+                            selectedIds={(this.state.selectedArticles[pagination.page] || []).map(({ id }) => id)}
                             isAllSelected={isAllArticlesSelected}
                             projectId={this.projectId}
                             archiveId={this.archiveId}
@@ -672,8 +707,8 @@ class ArchivePage extends Component {
                         <ArticlesExportModal
                             archiveId={this.archiveId}
                             projectId={this.projectId}
-                            selectedArticleIds={isAllArticlesSelected || selectedItemIds}
-                            onUpdateParent={this.handleClearSelected}
+                            selectedArticleIds={isAllArticlesSelected || selectedArticleIds}
+                            onUpdateParent={() => this.handleClearSelected(true)}
                             onClose={() => this.setState({ showUploadArticlesModal: false })}
                         />
                     )}
@@ -681,7 +716,9 @@ class ArchivePage extends Component {
                     {showImportArticlesModal && (
                         <ArticlesImportModal
                             onClose={() => {
-                                if (this.isMounted) this.setState({ showImportArticlesModal: false });
+                                if (this.isMounted) {
+                                    this.setState({ showImportArticlesModal: false });
+                                }
                             }}
                             onSubmit={this.handleImportArticlesSubmit}
                             projectId={this.projectId}
@@ -692,11 +729,11 @@ class ArchivePage extends Component {
                         <ArticleTransferModal
                             onClose={() => this.setState({ showTransferModal: false })}
                             onUpdateParent={() => {
-                                this.handleClearSelected();
+                                this.handleClearSelected(true);
                                 this.getArticles();
                             }}
                             projectId={this.projectId}
-                            articleIds={selectedItemIds}
+                            articleIds={selectedArticleIds}
                         />
                     )}
 
@@ -704,9 +741,9 @@ class ArchivePage extends Component {
                         <ArchiveCreateModal
                             onClose={() => this.setState({ showCreateArchiveModal: false })}
                             projectId={this.projectId}
-                            articleIds={selectedArticles.map(({ id }) => id)}
+                            articleIds={selectedArticleIds}
                             onSuccessCreate={() => {
-                                this.setState({ selectedArticles: [] });
+                                this.handleClearSelected(true);
                                 this.getArticles();
                             }}
                         />

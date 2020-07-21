@@ -61,9 +61,7 @@ class ProjectTable extends Component {
     };
 
     handleSelectAllArticles = (checked) => {
-        this.props.onChangeSelected(
-            checked ? this.props.articles.map(({ id }) => id) : []
-        );
+        this.props.onSelectedAll({ articleIds: this.props.articles.map(({ id }) => id), checked });
     };
 
     handleChangeSort = (event, sortType) => {
@@ -101,7 +99,7 @@ class ProjectTable extends Component {
             newSelected.push(articleId);
         }
 
-        this.props.onChangeSelected(newSelected);
+        this.props.onChangeSelected({ articleIds: newSelected });
     };
 
     handleClickColumnSettings = () => {
