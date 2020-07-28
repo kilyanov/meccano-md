@@ -545,8 +545,8 @@ class ArticleCreatePage extends Component {
             delete prevFormClone.annotation;
             delete formClone.annotation;
 
-            prevFormClone.section_main_id = _.get(prevFormClone.section_main_id, 'value');
-            formClone.section_main_id = _.get(formClone.section_main_id, 'value');
+            // prevFormClone.section_main_id = _.get(prevFormClone.section_main_id, 'value');
+            // formClone.section_main_id = _.get(formClone.section_main_id, 'value');
 
             prevFormClone.source = _.get(prevFormClone.source, 'value');
             formClone.source = _.get(formClone.source, 'value');
