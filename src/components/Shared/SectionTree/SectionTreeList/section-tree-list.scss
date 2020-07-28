@@ -15,6 +15,15 @@ $namespace: '.section-tree-list';
     &--level-0 {
       margin-top: -1px;
       border-top: 1px solid $gray;
+      background-color: $gray-three;
+    }
+
+    &--level-1 {
+      background-color: $gray-two;
+    }
+
+    &--level-2 {
+      background-color: $gray;
     }
 
     & #{$namespace}__item {

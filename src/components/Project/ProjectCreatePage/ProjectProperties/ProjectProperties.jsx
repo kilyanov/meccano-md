@@ -2,7 +2,6 @@ import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import Sortable from 'react-sortablejs';
 import './project-properties.scss';
-import {InitScrollbar} from '../../../../helpers/Tools';
 import SelectedProperty from './SelectedProperty/SelectedProperty';
 import UnselectedProperty from './UnselectedProperty/UnselectedProperty';
 import CreateFieldModal from "../CreateFieldModal/CreateFieldModal";
@@ -112,9 +111,9 @@ export default class ProjectProperties extends Component {
     render() {
         const {fields, allFields} = this.props;
         const {openCreateFieldModal, selectedFieldId, searchUnselectedValue} = this.state;
-        const filteredAllFields = searchUnselectedValue ?
-            allFields.filter(({name}) => name.toLowerCase().includes(searchUnselectedValue)) :
-            allFields;
+        const filteredAllFields = searchUnselectedValue
+            ? allFields.filter(({name}) => name.toLowerCase().includes(searchUnselectedValue))
+            : allFields;
 
         return (
             <div {...cls('', '', 'container')}>

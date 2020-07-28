@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import SectionTreeList from '../SectionTreeList';
 import ArrowIcon from '../../../SvgIcons/ArrowIcon';
@@ -13,7 +13,8 @@ export default class SectionTreeItem extends Component {
         item: PropTypes.object.isRequired,
         onAddChild: PropTypes.func.isRequired,
         onEdit: PropTypes.func.isRequired,
-        onDelete: PropTypes.func.isRequired
+        onDelete: PropTypes.func.isRequired,
+        onSortChildren: PropTypes.func.isRequired
     };
 
     state = {
@@ -21,12 +22,12 @@ export default class SectionTreeItem extends Component {
     };
 
     handleClick = () => {
-        this.setState({open: !this.state.open});
+        this.setState({ open: !this.state.open });
     };
 
     render() {
-        const {cls, parent, item, onAddChild, onEdit, onDelete} = this.props;
-        const {open} = this.state;
+        const { cls, parent, item, onAddChild, onEdit, onDelete, onSortChildren } = this.props;
+        const { open } = this.state;
         const children = item.sectionsTwo || item.sectionsThree;
 
         let level = 2;
@@ -35,7 +36,10 @@ export default class SectionTreeItem extends Component {
         if (item.hasOwnProperty('sectionsThree')) level = 1;
 
         return (
-            <li {...cls('item', `level-${level}`)}>
+            <li
+                {...cls('item', `level-${level}`)}
+                data-id={item.id}
+            >
                 <div {...cls('item-name')}>
                     <div {...cls('item-arrows')}>
                         <ArrowIcon {...cls('item-arrow-top')}/>
@@ -80,6 +84,7 @@ export default class SectionTreeItem extends Component {
                         onAddItemChild={onAddChild}
                         onEditItem={onEdit}
                         onDeleteItem={onDelete}
+                        onSorting={onSortChildren}
                     />
                 )}
             </li>
