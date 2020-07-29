@@ -34,6 +34,7 @@ export default class SectionTreeAddItem extends Component {
         return (
             <ConfirmModal
                 {...cls()}
+                title='Добавить рздел'
                 onClose={onClose}
                 submitText={item ? 'Обновить' : 'Добавить'}
                 onSubmit={this.handleSubmit}

@@ -268,6 +268,23 @@ class ProjectCreatePage extends Component {
 
         if (step === 2 && (!sections || !sections.length)) return;
 
+        function removeGeneratedIds(arr) {
+            arr.forEach(item => {
+                if (item.id && item.id.includes('new_')) {
+                    delete item.id;
+                }
+
+                if (item.sectionsTwo || item.sectionsThree) {
+                    console.log(item)
+                    removeGeneratedIds(item.sectionsTwo || item.sectionsThree);
+                }
+            });
+        }
+
+        removeGeneratedIds(sections);
+
+        console.log(sections);
+
         this.setState({ inProgress: true }, () => {
             ProjectService.sections.create(
                 this.projectId,

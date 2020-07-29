@@ -39,9 +39,18 @@ export default class SectionTree extends Component {
 
         if (selectedSection) {
             if (selectedSection.hasOwnProperty('sectionsTwo')) {
-                selectedSection.sectionsTwo.push({ name, sectionsThree: [], id: _.uniqueId('new_') });
+                selectedSection.sectionsTwo.push({
+                    name,
+                    sectionsThree: [],
+                    id: _.uniqueId('new_'),
+                    position:  selectedSection.sectionsTwo.length
+                });
             } else {
-                selectedSection.sectionsThree.push({ name, id: _.uniqueId('new_') });
+                selectedSection.sectionsThree.push({
+                    name,
+                    id: _.uniqueId('new_'),
+                    position: selectedSection.sectionsThree.length
+                });
             }
 
             this.setState({ selectedSection: null });
