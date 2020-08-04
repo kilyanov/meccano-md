@@ -5,7 +5,14 @@ $namespace: '.section-tree-list';
 #{$namespace} {
   margin: 0;
   padding: 0;
+  max-height: 0;
   list-style: none;
+  overflow: hidden;
+  transition: max-height .2s;
+
+  &--opened {
+    max-height: 5000px;
+  }
 
   &__item {
     display: flex;
@@ -36,6 +43,7 @@ $namespace: '.section-tree-list';
     display: inline-flex;
     align-items: center;
     height: 44px;
+    cursor: pointer;
   }
 
   &__item-name {
@@ -51,6 +59,7 @@ $namespace: '.section-tree-list';
 
       #{$namespace}__item-arrows {
         display: block;
+        cursor: grab;
       }
 
       #{$namespace}__item-buttons {
@@ -122,7 +131,17 @@ $namespace: '.section-tree-list';
       font-size: 50px;
       font-style: normal;
       font-weight: 100;
-      line-height: 18px;
+    }
+  }
+
+  &__arrow-icon {
+    margin-left: 20px;
+    width: 16px;
+    transform: rotate(90deg);
+    transition: transform .3s ease;
+
+    &--opened {
+      transform: rotate(-90deg);
     }
   }
 }

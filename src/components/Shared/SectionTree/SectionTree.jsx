@@ -138,8 +138,6 @@ export default class SectionTree extends Component {
         } else {
             this.props.onChange(sort(data));
         }
-
-        console.table(data);
     };
 
     findSectionById = (sectionId, sections) => {

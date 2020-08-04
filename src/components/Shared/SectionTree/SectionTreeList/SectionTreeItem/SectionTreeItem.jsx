@@ -18,7 +18,7 @@ export default class SectionTreeItem extends Component {
     };
 
     state = {
-        open: true
+        open: false
     };
 
     handleClick = () => {
@@ -47,7 +47,9 @@ export default class SectionTreeItem extends Component {
                     </div>
 
                     <div {...cls('item-name-wrap')} onClick={this.handleClick}>
-                        {item.name}
+                        {item.name} {children && !!children.length && (
+                            <ArrowIcon { ...cls('arrow-icon', { opened: open }) } />
+                        )}
                     </div>
 
                     <div {...cls('item-buttons')}>
@@ -77,8 +79,9 @@ export default class SectionTreeItem extends Component {
                     </div>
                 </div>
 
-                {(children && open) && (
+                {children && (
                     <SectionTreeList
+                        opened={open}
                         parent={item}
                         items={children}
                         onAddItemChild={onAddChild}
