@@ -43,7 +43,7 @@ export default function Breadcrumbs({ location }) {
         }
     }
 
-    if (splitted.includes('article') && currentArticle) {
+    if (splitted.includes('article') && currentArticle && currentProject) {
         crumbs.push({
             label: currentArticle.title,
             link: splitted[0] === 'archive'
@@ -53,8 +53,6 @@ export default function Breadcrumbs({ location }) {
             type: 'article'
         });
     }
-
-    console.log(crumbs);
 
     return (
         <section { ...cls() }>
