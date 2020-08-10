@@ -11,10 +11,15 @@ import store from "../../../redux/store";
 import ArchiveButton from "./ArchiveButton";
 import Access from "../Access/Access";
 import { PROJECT_PERMISSION } from "../../../constants/ProjectPermissions";
+import { clearCurrentArticle, clearCurrentArchive } from '../../../redux/actions';
 
 const cls = new Bem('top-bar');
 const TopBar = ({ isStatic, className }) => {
-    const handleClickLogo = () => store.dispatch(clearCurrentProject());
+    const handleClickLogo = () => {
+        store.dispatch(clearCurrentProject());
+        store.dispatch(clearCurrentArticle());
+        store.dispatch(clearCurrentArchive());
+    }
 
     return (
         <section {...cls('', { static: isStatic }, className)}>

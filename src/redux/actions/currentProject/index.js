@@ -1,4 +1,4 @@
-import {ACTION_TYPE} from "../../../constants/ActionTypes";
+import { ACTION_TYPE } from "../../../constants/ActionTypes";
 
 export const setCurrentProject = (project) => {
     return {

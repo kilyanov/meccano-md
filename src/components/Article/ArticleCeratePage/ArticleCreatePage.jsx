@@ -23,6 +23,8 @@ import { KEY_CODE } from "../../../constants";
 import TinyMCE from "../../Form/TinyMCE/TinyMCE";
 import CreateLocationModal from "./CreateLocationModal";
 import LocationIcon from "../../Shared/SvgIcons/LocationIcon";
+import Breadcrumbs from '../../Shared/Breadcrumbs';
+import { setCurrentArticle, clearCurrentArticle } from '../../../redux/actions';
 
 const cls = new Bem('article-create-page');
 const defaultTimeZone = 'Europe/Moscow';
@@ -157,6 +159,7 @@ class ArticleCreatePage extends Component {
     componentWillUnmount() {
         EventEmitter.off(EVENTS.USER.CHANGE_TYPE, this.setUserType);
         document.removeEventListener('keydown', this.handleDocumentKeyDown);
+        this.props.clearCurrentArticle();
     }
 
     handleChangeForm = (value, option) => {
@@ -432,7 +435,7 @@ class ArticleCreatePage extends Component {
                     }
 
                     if (!this.props.currentProject) {
-                        store.dispatch(setCurrentProject(form.project));
+                        this.props.setCurrentProject(form.project);
                     }
 
                     newState.articleId = form.id;
@@ -446,6 +449,7 @@ class ArticleCreatePage extends Component {
                     newState.inProgress = false;
 
                     this.setState(newState);
+                    this.props.setCurrentArticle(this.article);
                 })
                 .catch(() => this.setState({ inProgress: false }));
         });
@@ -770,6 +774,7 @@ class ArticleCreatePage extends Component {
 
         return (
             <Page withBar staticBar {...cls()}>
+                <Breadcrumbs location={this.props.location} />
                 <section {...cls('header')}>
                     <a
                         {...cls('back-button')}
@@ -917,9 +922,19 @@ function mapStateToProps(state) {
     return {
         userTypes: state.userTypes,
         currentProject: state.currentProject,
+        currentArticle: state.currentArticle,
+        currentArchive: state.currentArchive,
         profile: state.profile,
         roles
     };
 }
 
-export default connect(mapStateToProps)(ArticleCreatePage);
+function mapDispatchToProps(dispatch) {
+    return {
+        setCurrentArticle: (value) => dispatch(setCurrentArticle(value)),
+        clearCurrentArticle: () => dispatch(clearCurrentArticle()),
+        setCurrentProject: (value) => dispatch(setCurrentProject(value))
+    };
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(ArticleCreatePage);

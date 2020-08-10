@@ -20,7 +20,7 @@ import { Plural } from '../../../helpers/Tools';
 import InlineButton from '../../Shared/InlineButton/InlineButton';
 import { EventEmitter } from "../../../helpers";
 import store from "../../../redux/store";
-import { clearArticleColors, setArticleColors } from "../../../redux/actions/articleColors";
+import { clearArticleColors, setArticleColors } from "../../../redux/actions";
 import { getColumnsFromStorage } from "../../Project/ProjectPage/ProjectTable/Columns";
 import ArticleTransferModal from "../../Article/ArticleTransferModal/ArticleTransferModal";
 import ProjectPagination from "../../Project/ProjectPage/ProjectTable/ProjectPagination/ProjectPagintaion";
@@ -30,6 +30,8 @@ import { setCurrentProject } from "../../../redux/actions/currentProject";
 import StorageIcon from "../../Shared/SvgIcons/StorageIcon";
 import Access from "../../Shared/Access/Access";
 import { PROJECT_PERMISSION } from "../../../constants/ProjectPermissions";
+import { setCurrentArchive } from '../../../redux/actions';
+import Breadcrumbs from '../../Shared/Breadcrumbs';
 
 const cls = new Bem('archive-page');
 const defaultPagination = { page: 1, pageCount: 1, perPage: 50 };
@@ -97,7 +99,7 @@ class ArchivePage extends Component {
     componentWillUnmount() {
         this.isMounted = false;
         EventEmitter.off(EVENTS.USER.CHANGE_TYPE, this.handleChangeUserType);
-        store.dispatch(clearArticleColors());
+        this.props.clearArticleColors();
     }
 
     handleChangeFilter = (filter, value) => {
@@ -426,6 +428,7 @@ class ArchivePage extends Component {
             .get(this.projectId, this.archiveId, { expand: 'user' })
             .then(response => {
                 this.setState({ archive: response.data, inProgress: false });
+                this.props.setCurrentArchive(response.data);
             });
     };
 
@@ -537,7 +540,6 @@ class ArchivePage extends Component {
             archive,
             project,
             activeArticle,
-            selectedItemIds,
             isAllArticlesSelected,
             filters,
             showArticleModal,
@@ -573,6 +575,7 @@ class ArchivePage extends Component {
                 redirect='/'
             >
                 <Page {...cls()} withBar>
+                <Breadcrumbs location={this.props.location} />
                     <section {...cls('title-wrapper')} title={_.get(archive, 'description')}>
                         <StorageIcon {...cls('title-icon')} />
                         {archive && <h2 {...cls('title')}>Архив</h2>}
@@ -766,4 +769,11 @@ function mapStateToProps(state) {
     }
 }
 
-export default connect(mapStateToProps)(ArchivePage);
+function mapDispatchToProps(dispatch) {
+    return {
+        setCurrentArchive: (value) => dispatch(setCurrentArchive(value)),
+        clearArticleColors: () => dispatch(clearArticleColors())
+    }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(ArchivePage);

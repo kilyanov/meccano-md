@@ -31,6 +31,7 @@ import ReactSelect from "../../Form/Select/ReactSelect/ReactSelect";
 import ArchiveCreateModal from "../../Archive/ArchiveCreateModal";
 import Access from "../../Shared/Access/Access";
 import { PROJECT_PERMISSION } from "../../../constants/ProjectPermissions";
+import Breadcrumbs from '../../Shared/Breadcrumbs';
 
 const cls = new Bem('project-page');
 const defaultPagination = { page: 1, pageCount: 1, perPage: 50 };
@@ -552,6 +553,7 @@ export default class ProjectPage extends Component {
 
         return (
             <Page {...cls()} withBar>
+                <Breadcrumbs location={this.props.location} />
                 <section {...cls('title-wrapper')}>
                     <h2 {...cls('title')}>{_.get(project, 'name')}</h2>
                     {!!articles.length && (
@@ -776,6 +778,7 @@ export default class ProjectPage extends Component {
                     <ArchiveCreateModal
                         onClose={() => this.setState({ showCreateArchiveModal: false })}
                         projectId={this.projectId}
+                        isAll={isAllArticlesSelected}
                         articleIds={selectedArticleIds}
                         onSuccessCreate={() => {
                             this.handleClearSelected(true);

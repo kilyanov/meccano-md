@@ -9,8 +9,8 @@ export const ArchiveService = {
         return API.get(urlGenerator('archive')(project, { 'date-start': startDate, 'date-end': endDate }));
     },
     delete: (projectId, archiveId) => API.delete(`/archive/${projectId}/${archiveId}`),
-    create: (projectId, articlesIds, description = '') => {
-        return API.post(urlGenerator('archive')(projectId), { articles: articlesIds, description });
+    create: (projectId, articlesIds, description = '', all) => {
+        return API.post(urlGenerator('archive')(projectId), { articles: articlesIds, description, all });
     },
     update: (form, id, userTypeId) => API.put(urlGenerator('archive')(id, { user_type: userTypeId }), form),
     articles: {

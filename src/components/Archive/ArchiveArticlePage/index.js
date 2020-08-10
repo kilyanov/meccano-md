@@ -27,6 +27,8 @@ import { PROJECT_PERMISSION } from "../../../constants/ProjectPermissions";
 import { KEY_CODE } from "../../../constants";
 import TinyMCE from "../../Form/TinyMCE/TinyMCE";
 import CreateLocationModal from "./CreateLocationModal";
+import { setCurrentArticle, clearCurrentArticle, setCurrentArchive } from '../../../redux/actions';
+import Breadcrumbs from '../../Shared/Breadcrumbs';
 
 const cls = new Bem('article-create-page');
 const defaultTimeZone = 'Europe/Moscow';
@@ -75,6 +77,8 @@ class ArchiveArticlePage extends Component {
         };
         const storageUserType = StorageService.get(STORAGE_KEY.USER_TYPE);
         const userType = storageUserType ? JSON.parse(storageUserType) : null;
+
+        console.log(props.match.params)
 
         this.state = {
             articleId: props.match.params.articleId,
@@ -161,6 +165,7 @@ class ArchiveArticlePage extends Component {
     componentWillUnmount() {
         EventEmitter.off(EVENTS.USER.CHANGE_TYPE, this.setUserType);
         document.removeEventListener('keydown', this.handleDocumentKeyDown);
+        this.props.clearCurrentArticle();
     }
 
     handleChangeForm = (value, option) => {
@@ -350,7 +355,7 @@ class ArchiveArticlePage extends Component {
         const searchParams = location.search && new URLSearchParams(location.search);
         const requestForm = {
             expand: 'project.projectFields,project.sections,' +
-                'project.users,source,complete_monitor,complete_analytic,complete_client',
+                'project.users,source,complete_monitor,complete_analytic,complete_client,archive',
             user_type: userTypeId
         };
 
@@ -405,9 +410,9 @@ class ArchiveArticlePage extends Component {
                     }
 
                     if (!this.props.currentProject) {
-                        store.dispatch(setCurrentProject(form.project));
+                       this.props.setCurrentProject(form.project);
                     }
-
+                    
                     newState.articleId = form.id;
                     newState.projectId = form.project.id;
                     newState.articlesNavs = articlesNavs;
@@ -419,10 +424,26 @@ class ArchiveArticlePage extends Component {
                     newState.annotationIsChanged = false;
                     newState.inProgress = false;
 
-                    this.setState(newState);
+                    this.setState(newState, () => {
+                        if (!this.props.currentArchive) {
+                            this.getArchive();
+                        }
+                    });
+                    this.props.setCurrentArticle(this.article);
                 })
                 .catch(() => this.setState({ inProgress: false }));
         });
+    };
+
+    getArchive = () => {
+        const { projectId, archiveId } = this.state;
+
+        ArchiveService
+            .get(projectId, archiveId)
+            .then(response => {
+                this.setState({ archive: response.data, inProgress: false });
+                this.props.setCurrentArchive(response.data);
+            });
     };
 
     getDataSectionFields = () => {
@@ -680,6 +701,7 @@ class ArchiveArticlePage extends Component {
 
         return (
             <Page withBar staticBar {...cls()}>
+                <Breadcrumbs location={this.props.location} />
                 <section {...cls('header')}>
                     <a
                         {...cls('back-button')}
@@ -833,4 +855,13 @@ function mapStateToProps(state) {
     };
 }
 
-export default connect(mapStateToProps)(ArchiveArticlePage);
+function mapDispatchToProps(dispatch) {
+    return {
+        setCurrentArticle: (value) => dispatch(setCurrentArticle(value)),
+        clearCurrentArticle: () => dispatch(clearCurrentArticle()),
+        setCurrentProject: (value) => dispatch(setCurrentProject(value)),
+        setCurrentArchive: (value) => dispatch(setCurrentArchive(value))
+    };
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(ArchiveArticlePage);

@@ -5,7 +5,7 @@ import { ArchiveService } from "../../../services";
 import { NotificationManager } from "react-notifications";
 import Loader from "../../Shared/Loader/Loader";
 
-export default function ArchiveCreateModal({ projectId, articleIds = [], onSuccessCreate = () => {}, onClose }) {
+export default function ArchiveCreateModal({ projectId, articleIds = [], onSuccessCreate = () => {}, onClose, isAll = false }) {
     const [ description, setDescription ] = useState('');
     const [ inProgress, setInProgress ] = useState(false);
     const handleSubmit = () => {
@@ -15,7 +15,7 @@ export default function ArchiveCreateModal({ projectId, articleIds = [], onSucce
 
         setInProgress(true);
         ArchiveService
-            .create(projectId, articleIds, description)
+            .create(projectId, isAll ? [] : articleIds, description, isAll)
             .then(() => {
                 NotificationManager.success('Архив усмешно создан', 'Архив');
                 setInProgress(false);
