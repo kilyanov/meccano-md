@@ -1,3 +1,4 @@
+@import '../../../assets/styles/variables.scss';
 $namespace: '.breadcrumbs';
 
 #{$namespace} {
@@ -10,7 +11,7 @@ $namespace: '.breadcrumbs';
 
         &--disabled {
             #{$namespace}__item-label {
-                color: #000;
+                color: $blackColor;
                 font-weight: 500;
             }
             #{$namespace}__item-link {
@@ -19,7 +20,7 @@ $namespace: '.breadcrumbs';
                 pointer-events: none;
             }
             #{$namespace}__item-icon {
-                fill: #000;
+                fill: $blackColor;
             }
         }
 
@@ -32,9 +33,9 @@ $namespace: '.breadcrumbs';
             width: 16px;
         }
 
-        &:hover {
+        &:not(#{$namespace}__item--disabled):hover {
             #{$namespace}__item-icon {
-                fill: #000;
+                fill: $blackColor;
             }
         }
     }
@@ -42,18 +43,18 @@ $namespace: '.breadcrumbs';
     &__item-link {
         display: flex;
         align-items: center;
-        color: #5c7080;
+        color: $gray-br;
     }
 
     &__item-label {
         font-size: 12px;
-        color: #5c7080;
+        color: $gray-br;
     }
 
     &__item-icon {
         width: 20px;
         height: 20px;
-        fill: #5c7080;
+        fill: $gray-br;
         margin-right: 5px;
 
         &--main {
