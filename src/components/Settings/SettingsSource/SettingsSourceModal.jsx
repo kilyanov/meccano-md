@@ -238,7 +238,7 @@ export default class SettingsSourceModal extends Component {
 
                     <Select
                         label='Страна'
-                        required
+                        // required
                         options={countryItems}
                         selected={selectedCountry}
                         onChange={({value}) => this.handleChangeForm(value, 'country_id')}
