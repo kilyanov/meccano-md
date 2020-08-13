@@ -441,7 +441,7 @@ class ArticleCreatePage extends Component {
                     newState.articleId = form.id;
                     newState.articlesNavs = articlesNavs;
                     newState.projectFields = fields ? fields.data : [];
-                    newState.sections = sections;
+                    newState.sections = sections.sort((a, b) => a.position - b.position);
                     newState.form = form;
                     newState.prevForm = _.cloneDeep(form);
                     newState.textIsChanged = false;
