@@ -8,9 +8,9 @@ import BEMHelper from 'react-bem-helper';
 import './breadcrumbs.scss';
 
 const cls = new BEMHelper('breadcrumbs');
-const projectIcon = <svg data-icon="folder-close" width="16" height="16" viewBox="0 0 16 16"><desc>folder-close</desc><path d="M-.01 14c0 .55.45 1 1 1h14c.55 0 1-.45 1-1V7h-16v7zm15-10H7.41L5.7 2.3a.965.965 0 00-.71-.3h-4c-.55 0-1 .45-1 1v3h16V5c0-.55-.45-1-1-1z" fill-rule="evenodd"></path></svg>;
-const archiveIcon = <svg data-icon="database" width="16" height="16" viewBox="0 0 20 20"><desc>database</desc><path d="M2.01 5.1v5.4c0 1.38 3.58 2.5 8 2.5s8-1.12 8-2.5V5.1c-1.49 1.13-4.51 1.9-8 1.9-3.48 0-6.5-.77-8-1.9zm8 .9c4.42 0 8-1.12 8-2.5s-3.58-2.5-8-2.5-8 1.12-8 2.5S5.6 6 10.01 6zm-8 6.1v5.4c0 1.38 3.58 2.5 8 2.5s8-1.12 8-2.5v-5.4c-1.49 1.13-4.51 1.9-8 1.9-3.48 0-6.5-.77-8-1.9z" fill-rule="evenodd"></path></svg>;
-const articleIcon = <svg data-icon="document" width="16" height="16" viewBox="0 0 16 16"><desc>document</desc><path d="M9 0H3c-.55 0-1 .45-1 1v14c0 .55.45 1 1 1h10c.55 0 1-.45 1-1V5L9 0zm3 14H4V2h4v4h4v8z" fill-rule="evenodd"></path></svg>;
+const projectIcon = <svg data-icon="folder-close" width="16" height="16" viewBox="0 0 16 16"><desc>folder-close</desc><path d="M-.01 14c0 .55.45 1 1 1h14c.55 0 1-.45 1-1V7h-16v7zm15-10H7.41L5.7 2.3a.965.965 0 00-.71-.3h-4c-.55 0-1 .45-1 1v3h16V5c0-.55-.45-1-1-1z" fillRule="evenodd"></path></svg>;
+const archiveIcon = <svg data-icon="database" width="16" height="16" viewBox="0 0 20 20"><desc>database</desc><path d="M2.01 5.1v5.4c0 1.38 3.58 2.5 8 2.5s8-1.12 8-2.5V5.1c-1.49 1.13-4.51 1.9-8 1.9-3.48 0-6.5-.77-8-1.9zm8 .9c4.42 0 8-1.12 8-2.5s-3.58-2.5-8-2.5-8 1.12-8 2.5S5.6 6 10.01 6zm-8 6.1v5.4c0 1.38 3.58 2.5 8 2.5s8-1.12 8-2.5v-5.4c-1.49 1.13-4.51 1.9-8 1.9-3.48 0-6.5-.77-8-1.9z" fillRule="evenodd"></path></svg>;
+const articleIcon = <svg data-icon="document" width="16" height="16" viewBox="0 0 16 16"><desc>document</desc><path d="M9 0H3c-.55 0-1 .45-1 1v14c0 .55.45 1 1 1h10c.55 0 1-.45 1-1V5L9 0zm3 14H4V2h4v4h4v8z" fillRule="evenodd"></path></svg>;
 
 export default function Breadcrumbs({ location }) {
     if (!location || !location.pathname) return null;

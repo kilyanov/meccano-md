@@ -282,6 +282,14 @@ class ArticleCreatePage extends Component {
         this.state.projectFields
             .filter(({ required }) => required)
             .forEach(field => {
+                if (field.slug === 'section_sub_id' && (!this.state.sectionsTwo.length || !!this.state.sectionsTwo)) {
+                    return;
+                }
+
+                if (field.slug === 'section_three_id' && (!this.state.sectionsThree || !this.state.sectionsThree.length)) {
+                    return;
+                }
+
                 if (!form[field.slug] ||
                     (form[field.slug] instanceof Array && _.isEmpty(form[field.slug])) ||
                     (form[field.slug] instanceof Object && _.isEmpty(form[field.slug]))
