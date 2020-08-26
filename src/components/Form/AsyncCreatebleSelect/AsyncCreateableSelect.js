@@ -166,6 +166,7 @@ class AsyncCreatableSelect extends Component {
                         styles={ReactSelectStyles(isDarkTheme)}
                         loadingMessage={() => 'Загрузка...'}
                         components={{ SingleValue }}
+                        isValidNewOption={(inputValue, _, selectOption) => selectOption.every(({ label }) => label !== inputValue)}
                     />
                 </label>
 
