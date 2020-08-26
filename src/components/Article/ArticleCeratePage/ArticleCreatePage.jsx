@@ -304,12 +304,12 @@ class ArticleCreatePage extends Component {
                 delete form[key];
             }
 
-            if (
-                ((_.isString(form[key]) || _.isArray(form[key])) && !form[key].length) ||
-                (_.isObject(form[key]) && _.isEmpty(form[key]))
-            ) {
-                delete form[key];
-            }
+            // if (
+            //     ((_.isString(form[key]) || _.isArray(form[key])) && !form[key].length) ||
+            //     (_.isObject(form[key]) && _.isEmpty(form[key]))
+            // ) {
+            //     delete form[key];
+            // }
         });
 
         if (_.isEmpty(form)) return;
