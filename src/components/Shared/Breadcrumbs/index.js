@@ -1,9 +1,6 @@
 import React from 'react'
 import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
-import ProjectsIcon from '../SvgIcons/ProjectsIcon';
-import StorageIcon from '../SvgIcons/StorageIcon';
-import DocumentIcon from '../SvgIcons/DocumentIcon';
 import BEMHelper from 'react-bem-helper';
 import './breadcrumbs.scss';
 

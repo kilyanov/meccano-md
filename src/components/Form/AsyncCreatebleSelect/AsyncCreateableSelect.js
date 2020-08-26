@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import AsyncCreatable from "react-select/async-creatable";
+import { components } from 'react-select';
 import {ReactSelectStyles} from "../../../constants/ReactSelectStyles";
 import {connect} from "react-redux";
 import {EVENTS, THEME_TYPE} from "../../../constants";
@@ -7,6 +8,9 @@ import BEMHelper from "react-bem-helper";
 import {EventEmitter} from "../../../helpers";
 
 const cls = new BEMHelper('select');
+const SingleValue = ({ children, ...props }) => (
+    <components.SingleValue {...props}><div title={children}>{children}</div></components.SingleValue>
+  );
 
 class AsyncCreatableSelect extends Component {
     state = {
@@ -161,6 +165,7 @@ class AsyncCreatableSelect extends Component {
                         isClearable
                         styles={ReactSelectStyles(isDarkTheme)}
                         loadingMessage={() => 'Загрузка...'}
+                        components={{ SingleValue }}
                     />
                 </label>
 
