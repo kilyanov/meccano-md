@@ -25,7 +25,7 @@ export default class InputNumber extends Component {
     };
 
     render() {
-        const {className, label, value, readOnly, draggable} = this.props;
+        const {className, label, value, readOnly, draggable, required} = this.props;
         const {error} = this.state;
         const isFocused = this.inputRef === document.activeElement;
         const isError = error;
@@ -42,7 +42,7 @@ export default class InputNumber extends Component {
                     readOnly
                 }, className)}
             >
-                <label {...cls('label')}>
+                <label {...cls('label', { error: required && !value })}>
                     {label && <span {...cls('label-text', '', { 'drag-handle': draggable })}>{label}</span>}
 
                     <input

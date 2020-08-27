@@ -23,6 +23,7 @@ const ProjectCreateField = ({field, value, onChange, className}) => {
                     options={field.options || []}
                     placeholder={field.placeholder}
                     label={field.name}
+                    required={field.required}
                     value={value}
                     readOnly={field.readOnly}
                     requestService={field.requestService}
@@ -59,6 +60,7 @@ const ProjectCreateField = ({field, value, onChange, className}) => {
                         requestCancelService={field.requestCancelService}
                         depended={field.depended}
                         isDisabled={field.readOnly}
+                        required={field.required}
                         draggable
                     />
                 ) : (
@@ -69,6 +71,7 @@ const ProjectCreateField = ({field, value, onChange, className}) => {
                         selected={value}
                         readOnly={field.readOnly}
                         disabled={field.disabled}
+                        required={field.required}
                         onChange={val => onChange(val, field.slug)}
                         draggable
                     />
@@ -88,6 +91,7 @@ const ProjectCreateField = ({field, value, onChange, className}) => {
                     requestService={field.requestService}
                     requestCancelService={field.requestCancelService}
                     depended={field.depended}
+                    required={field.required}
                     draggable
                 />
             </div>;
@@ -100,6 +104,7 @@ const ProjectCreateField = ({field, value, onChange, className}) => {
                     selected={value}
                     readOnly={field.readOnly}
                     onChange={val => onChange(val, field.slug)}
+                    required={field.required}
                     draggable
                 />
             </div>;
@@ -110,6 +115,7 @@ const ProjectCreateField = ({field, value, onChange, className}) => {
                     readOnly={field.readOnly}
                     onChange={val => onChange(val, field.slug)}
                     value={value || ''}
+                    required={field.required}
                     draggable
                 />
             </div>;
@@ -121,6 +127,7 @@ const ProjectCreateField = ({field, value, onChange, className}) => {
                     readOnly={field.readOnly}
                     onChange={val => onChange(val, field.slug)}
                     value={value || ''}
+                    required={field.required}
                     draggable
                 />
             </div>;
@@ -131,6 +138,7 @@ const ProjectCreateField = ({field, value, onChange, className}) => {
                     readOnly={field.readOnly}
                     value={value || ''}
                     onChange={val => onChange(val, field.slug)}
+                    required={field.required}
                     draggable
                 />
             </div>;
@@ -141,6 +149,7 @@ const ProjectCreateField = ({field, value, onChange, className}) => {
                     readOnly={field.readOnly}
                     value={value || ''}
                     onChange={val => onChange(val, field.slug)}
+                    required={field.required}
                     draggable
                 />
             </div>;
@@ -150,6 +159,7 @@ const ProjectCreateField = ({field, value, onChange, className}) => {
                     label={field.name}
                     readOnly={field.readOnly}
                     value={value}
+                    required={field.required}
                     draggable
                 />
             </div>;
@@ -161,6 +171,7 @@ const ProjectCreateField = ({field, value, onChange, className}) => {
                     readOnly={field.readOnly}
                     value={value || ''}
                     onChange={val => onChange(val, field.slug)}
+                    required={field.required}
                     draggable
                 />
             </div>;

@@ -207,7 +207,7 @@ export default class InputText extends Component {
                     [className]: !!className
                 })}
             >
-                <label {...cls('label')}>
+                <label {...cls('label', { error: required && !value })}>
                     {label && <span {...cls('label-text', '', { 'drag-handle': draggable })} title={label}>{label}</span>}
 
                     <input

@@ -275,15 +275,12 @@ class ProjectCreatePage extends Component {
                 }
 
                 if (item.sectionsTwo || item.sectionsThree) {
-                    console.log(item)
                     removeGeneratedIds(item.sectionsTwo || item.sectionsThree);
                 }
             });
         }
 
         removeGeneratedIds(sections);
-
-        console.log(sections);
 
         this.setState({ inProgress: true }, () => {
             ProjectService.sections.create(

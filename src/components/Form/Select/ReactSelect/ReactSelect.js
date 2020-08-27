@@ -14,6 +14,7 @@ export default function ReactSelect({
     onChange,
     draggable,
     label,
+    required,
     placeholder,
     isMulti
 }) {
@@ -21,10 +22,12 @@ export default function ReactSelect({
     const isDarkTheme = theme === THEME_TYPE.DARK;
     const selectedValue = options.find(({ value }) => value === selected);
 
+    console.log(label, selectedValue)
+
     return (
         <div {...cls('', { succeed: !!selectedValue }, className)}>
             {label && (
-                <label {...cls('label', '', { 'drag-handle': draggable })}>
+                <label {...cls('label', { required: required && (!selectedValue || !selectedValue.value) }, { 'drag-handle': draggable })} title={required ? 'Обязательное поле' : ''}>
                     <span {...cls('label-text', '', { 'drag-handle': draggable })}>{label}</span>
                 </label>
             )}

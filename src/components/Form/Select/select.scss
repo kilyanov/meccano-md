@@ -76,6 +76,12 @@ $namespace: '.select';
         }
     }
 
+    &__label {
+        &--required #{$namespace}__label-text {
+            color: $errorColor
+        }
+    }
+
     &__label-text {
         display: inline-block;
         font-size: 15px;

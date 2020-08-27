@@ -86,7 +86,6 @@ export default class DocumentsPage extends Component {
     };
 
     handleEndPage = () => {
-        console.log('End page');
     };
 
     getDocuments = () => {

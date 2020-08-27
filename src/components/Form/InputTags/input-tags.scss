@@ -15,6 +15,12 @@ $namespace: '.input-tags';
     }
   }
 
+  &__label {
+    &--error {
+      color: $errorColor;
+    }
+  }
+
   &__label-text {
     display: inline-block;
     font-size: 15px;

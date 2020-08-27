@@ -13,7 +13,7 @@ const CheckBox = ({
     children
 }) => (
     <div {...cls('', {disabled, checked}, className)}>
-        <label {...cls('label')}>
+        <label {...cls('label', { required })} title={required ? 'Обязательное поле' : ''}>
             <span {...cls('box')} />
 
             <input

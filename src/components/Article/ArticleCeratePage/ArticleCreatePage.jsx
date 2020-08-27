@@ -282,7 +282,8 @@ class ArticleCreatePage extends Component {
         this.state.projectFields
             .filter(({ required }) => required)
             .forEach(field => {
-                if (field.slug === 'section_sub_id' && (!this.state.sectionsTwo.length || !!this.state.sectionsTwo)) {
+                // debugger;
+                if (field.slug === 'section_sub_id' && (!this.state.sectionsTwo || !this.state.sectionsTwo.length)) {
                     return;
                 }
 
@@ -290,9 +291,12 @@ class ArticleCreatePage extends Component {
                     return;
                 }
 
+                console.log(field.slug, _.isObject(form[field.slug]), _.isArray(form[field.slug]), _.isDate(form[field.slug]))
+
                 if (!form[field.slug] ||
-                    (form[field.slug] instanceof Array && _.isEmpty(form[field.slug])) ||
-                    (form[field.slug] instanceof Object && _.isEmpty(form[field.slug]))
+                    (_.isArray(form[field.slug]) && _.isEmpty(form[field.slug])) ||
+                    (_.isObject(form[field.slug]) && !_.isDate(form[field.slug]) && _.isEmpty(form[field.slug])) ||
+                    (_.isDate(form[field.slug]) && !form[field.slug])
                 ) {
                     invalidateFields.push(field);
                 }
@@ -726,6 +730,8 @@ class ArticleCreatePage extends Component {
         const isUpdate = !!this.state.articleId;
         const dataSectionFields = this.getDataSectionFields();
         const readOnly = !isProjectAccess([ PROJECT_PERMISSION.EDIT ]) && !isRolesAccess(roles.admin);
+        const annotationField = projectFields.find(({ slug }) => slug === 'annotation');
+        const textField = projectFields.find(({ slug }) => slug === 'text');
         const sectionData = (
             <Sortable
                 {...cls('section', 'sortable')}
@@ -740,11 +746,12 @@ class ArticleCreatePage extends Component {
             </Sortable>
         );
 
-        const sectionAnnotation = projectFields.find(({ slug }) => slug === 'annotation') ? (
+        const sectionAnnotation = annotationField ? (
             <section {...cls('section')}>
                 <TinyMCE
                     {...cls('field', 'annotation')}
                     readOnly={readOnly}
+                    required={textField.required}
                     label='Аннотация'
                     content={form.annotation || ''}
                     onEditorChange={value => this.handleChangeForm(value, 'annotation')}
@@ -760,11 +767,12 @@ class ArticleCreatePage extends Component {
             </section>
         ) : null;
 
-        const sectionText = projectFields.find(({ slug }) => slug === 'text') ? (
+        const sectionText = textField ? (
             <section {...cls('section')}>
                 <TinyMCE
                     {...cls('field', 'textarea')}
                     readOnly={readOnly}
+                    required={textField.required}
                     label='Текст статьи'
                     content={form.text || ''}
                     onEditorChange={value => this.handleChangeForm(value, 'text')}

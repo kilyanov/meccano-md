@@ -59,6 +59,10 @@ $namespace: '.input-number';
   &__label {
     display: flex;
     flex-direction: column;
+
+    &--error {
+      color: $errorColor;
+    }
   }
 
   &__label-text {

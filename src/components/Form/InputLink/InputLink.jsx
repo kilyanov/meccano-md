@@ -2,11 +2,12 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import InputText from '../InputText/InputText';
 
-const InputLink = ({label, value, onChange, className, readOnly, draggable}) => (
+const InputLink = ({label, value, onChange, className, readOnly, draggable, required}) => (
     <InputText
         className={className}
         label={label}
         readOnly={readOnly}
+        required={required}
         validateType='link'
         validateErrorMessage='Неверный адрес ссылки'
         value={value || ''}

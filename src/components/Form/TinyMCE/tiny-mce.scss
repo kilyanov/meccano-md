@@ -16,6 +16,10 @@ $namespace: '.tiny-mce';
         font-size: 15px;
         line-height: 24px;
         margin-bottom: 8px;
+
+        &--error {
+            color: $errorColor;
+        }
     }
 }
 

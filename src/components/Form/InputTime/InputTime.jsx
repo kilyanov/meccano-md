@@ -270,6 +270,7 @@ export default class InputTime extends React.Component {
             label,
             openOnFocus,
             disabled,
+            required,
             validateErrorMessage,
             draggable
         } = this.props;
@@ -290,7 +291,7 @@ export default class InputTime extends React.Component {
                 title={label}
                 onClick={() => !isOpen && this.open()}
             >
-                <label {...cls('label')}>
+                <label {...cls('label', { required })}>
                     {label && <span {...cls('label-text', '', { 'drag-handle': draggable })}>{label}</span>}
 
                     <input

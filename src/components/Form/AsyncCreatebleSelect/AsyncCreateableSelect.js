@@ -143,10 +143,10 @@ class AsyncCreatableSelect extends Component {
                     error: isError,
                     disabled,
                     validated: required,
-                    succeed: !!currentOption
+                    succeed: !!currentOption && !!currentOption.value
                 }, { [className]: !!className })}
             >
-                <label {...cls('label')}>
+                <label {...cls('label', { required: required && (!currentOption || !currentOption.value) })} title={required ? 'Обязательное поле' : ''}>
                     {label && <span {...cls('label-text', '', { 'drag-handle': draggable })}>{label}</span>}
 
                     <AsyncCreatable
@@ -166,7 +166,7 @@ class AsyncCreatableSelect extends Component {
                         styles={ReactSelectStyles(isDarkTheme)}
                         loadingMessage={() => 'Загрузка...'}
                         components={{ SingleValue }}
-                        isValidNewOption={(inputValue, _, selectOption) => selectOption.every(({ label }) => label !== inputValue)}
+                        isValidNewOption={(inputValue, _, selectOption) => selectOption.every(({ label }) => label !== inputValue && inputValue.length)}
                     />
                 </label>
 

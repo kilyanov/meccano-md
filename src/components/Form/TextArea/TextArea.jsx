@@ -88,7 +88,7 @@ export default class TextArea extends Component {
     };
 
     render() {
-        const { className, label, name, controlled, draggable, placeholder } = this.props;
+        const { className, label, name, controlled, draggable, placeholder, required } = this.props;
         const { error } = this.state;
         const isFocused = this.inputRef === document.activeElement;
         const isError = error; // && !isFocused
@@ -103,7 +103,7 @@ export default class TextArea extends Component {
                     succeed: isSucceed
                 }, className)}
             >
-                <label {...cls('label')}>
+                <label {...cls('label', { required })}>
                     {label && <span {...cls('label-text', '', { 'drag-handle': draggable })}>{label}</span>}
 
                     <textarea

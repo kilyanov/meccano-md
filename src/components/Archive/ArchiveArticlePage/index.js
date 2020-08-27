@@ -78,8 +78,6 @@ class ArchiveArticlePage extends Component {
         const storageUserType = StorageService.get(STORAGE_KEY.USER_TYPE);
         const userType = storageUserType ? JSON.parse(storageUserType) : null;
 
-        console.log(props.match.params)
-
         this.state = {
             articleId: props.match.params.articleId,
             archiveId,

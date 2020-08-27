@@ -76,8 +76,6 @@ export default class RichEditor extends Component {
                 }
 
             },
-            // afterInit: e => console.log(e),
-
             language: 'ru',
             i18n: {
                 ru: {
@@ -109,11 +107,11 @@ export default class RichEditor extends Component {
     }
 
     render() {
-        const {content, label, className, readOnly} = this.props;
+        const {content, label, className, readOnly, required} = this.props;
 
         return (
             <div {...cls('', {readOnly}, className)}>
-                {label && <span {...cls('label')}>{label}</span>}
+                {label && <span {...cls('label', { required })}>{label}</span>}
 
                 <Editor
                     ref={ref => this.jodit = ref}

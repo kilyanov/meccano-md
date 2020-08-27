@@ -60,6 +60,10 @@ $namespace: '.input-text';
   &__label {
     display: flex;
     flex-direction: column;
+
+    &--error {
+      color: $errorColor;
+    }
   }
 
   &__label-text {

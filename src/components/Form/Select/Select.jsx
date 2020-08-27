@@ -468,7 +468,7 @@ export default class Select extends Component {
                 })}
             >
                 {label && (
-                    <label {...cls('label', '', { 'drag-handle': draggable })}>
+                    <label {...cls('label', { required }, { 'drag-handle': draggable })} title={required ? 'Обязательное поле' : ''}>
                         <span {...cls('label-text', '', { 'drag-handle': draggable })}>{label}</span>
                     </label>
                 )}
