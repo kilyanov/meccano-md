@@ -41,6 +41,7 @@
     "react-router-dom": "^5.1.2",
     "react-select": "^3.0.8",
     "react-sortablejs": "^1.5.1",
+    "react-virtuoso": "^0.20.0",
     "redux": "^4.0.4",
     "sortablejs": "^1.6.1",
     "store": "^2.0.12",

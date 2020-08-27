@@ -12,6 +12,7 @@ import './project-key-words.scss';
 import ProjectKeyWordsImport from './ProjectKeyWordsImport/ProjectKeyWordsImport';
 import CheckBox from '../../../Form/CheckBox/CheckBox';
 import {Plural} from '../../../../helpers/Tools';
+import { Virtuoso } from 'react-virtuoso';
 
 const cls = new Bem('project-key-words');
 
@@ -27,6 +28,9 @@ export default class ProjectKeyWords extends Component {
         selectedWords: [],
         wordValue: '',
         keyWords: [],
+        pagintation: {
+            page: 1
+        },
         inProgress: true,
         modalInProgress: false
     };
@@ -148,17 +152,65 @@ export default class ProjectKeyWords extends Component {
         });
     };
 
-    getItems = () => {
+    handleEndReached = () => {
+        const { pagintaion } = this.state;
+
+        if (pagintaion.page < pagintaion.pageCount) {
+            this.setState(state => state.pagintation.page++, () => this.getItems(true));
+        }
+    }
+    
+    getItems = (isPagintaion) => {
         ProjectService.wordSearch
-            .get({ project: this.props.projectId, 'per-page': 100 })
+            .get({ project: this.props.projectId, page: this.state.pagintation.page, 'per-page': 50 })
             .then(response => {
+                const responsePagination = {
+                    pageCount: +_.get(response.headers, 'x-pagination-page-count'),
+                    page: +_.get(response.headers, 'x-pagination-current-page'),
+                    perPage: +_.get(response.headers, 'x-pagination-per-page'),
+                    totalCount: +_.get(response.headers, 'x-pagination-total-count')
+                };
+
                 this.setState({
-                    keyWords: response.data,
+                    keyWords: isPagintaion ? this.state.keyWords.concat(response.data) : response.data,
+                    pagintaion: responsePagination,
                     inProgress: false
                 });
             }).catch(() => this.setState({inProgress: false}));
     };
 
+    renderItem = (index) => {
+        const { selectedWords } = this.state;
+        const keyWord = this.state.keyWords[index];
+
+        return (
+            <div {...cls('list-item')} key={index}>
+                <CheckBox
+                    label={keyWord.name}
+                    checked={selectedWords.includes(keyWord.id)}
+                    onChange={() => this.handleChangeSelectedWords(keyWord)}
+                />
+
+                <div {...cls('list-item-buttons')}>
+                    <button
+                        {...cls('list-item-button', 'edit')}
+                        onClick={() => this.handleSelectWord(keyWord)}
+                        title='Редактировать'
+                    >
+                        <PencilIcon {...cls('list-item-icon', 'pencil')}/>
+                    </button>
+                    <button
+                        {...cls('list-item-button', 'remove')}
+                        onClick={() => this.handleDeleteWord(keyWord)}
+                        title='Удалить'
+                    >
+                        <TrashIcon {...cls('list-item-icon', 'trash')}/>
+                    </button>
+                </div>
+            </div>
+        );
+    }
+    
     render() {
         const {projectId} = this.props;
         const {
@@ -225,7 +277,14 @@ export default class ProjectKeyWords extends Component {
                     )}
                 </section>
 
-                <ul {...cls('list')}>
+                <Virtuoso 
+                    style={{ height: '500px' }}
+                    totalCount={keyWords.length}
+                    item={this.renderItem}
+                    endReached={this.handleEndReached}
+                />
+
+                {/* <ul {...cls('list')}>
                     {keyWords.map((keyWord, key) => (
                         <li {...cls('list-item')} key={key}>
                             <CheckBox
@@ -252,7 +311,7 @@ export default class ProjectKeyWords extends Component {
                             </div>
                         </li>
                     ))}
-                </ul>
+                </ul> */}
 
                 {showCreateModal && (
                     <ConfirmModal
