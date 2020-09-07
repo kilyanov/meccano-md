@@ -1,4 +1,4 @@
-import React, { Fragment, Component } from 'react';
+import React, { Component } from 'react';
 import { connect } from "react-redux";
 import './archive-page.scss';
 import Button from '../../Shared/Button/Button';
@@ -142,7 +142,7 @@ class ArchivePage extends Component {
     };
 
     handleDeleteArticle = (articleId) => {
-        const { articles } = this.state;
+        const { articles, project } = this.state;
         const article = articles.find(({ id }) => id === articleId);
 
         if (articleId && article) {
@@ -153,9 +153,8 @@ class ArchivePage extends Component {
                 danger: true
             }).then(() => {
                 this.setState({ inProgress: true }, () => {
-                    ArchiveService
-                        .articles
-                        .delete(this.archiveId, { articleIds: [ articleId ] })
+                    ArticleService
+                        .delete({ articleIds: [ articleId ] }, project.id)
                         .then(() => {
                             NotificationManager.success('Статья была успешно удалена', 'Удаление статьи');
                             this.setState({
@@ -184,7 +183,7 @@ class ArchivePage extends Component {
                     `${countSelected} `,
                     [ 'статью', 'статьи', 'статей' ])}?`,
                 submitText: 'Удалить',
-                style: 'danger'
+                danger: true
             }).then(() => {
                 this.setState({ inProgress: true }, () => {
                     ArticleService
@@ -470,8 +469,17 @@ class ArchivePage extends Component {
     };
 
     getTotalCountArticles = () => {
-        ArticleService
-            .getList({ project: this.projectId })
+        const { pagination, userType } = this.state;
+        const form = {
+            // project: this.projectId,
+            user_type: userType && userType.id || '',
+            page: this.searchParams.get('page'),
+            'per-page': pagination.perPage || 30
+        }
+
+        ArchiveService
+            .articles
+            .list(this.archiveId, form)
             .then(response => {
                 const newState = this.state;
 
@@ -615,7 +623,7 @@ class ArchivePage extends Component {
                         />
 
                         {hasSelectedItems && (
-                            <Fragment>
+                            <>
                                 <span>
                                     {Plural(countSelected, '', [ 'Выбрана', 'Выбраны', 'Выбраны' ])}
                                     {Plural(
@@ -640,7 +648,7 @@ class ArchivePage extends Component {
                                     small
                                     onClick={this.handleClearSelected}
                                 >Снять выделение</InlineButton>
-                            </Fragment>
+                            </>
                         )}
 
                         <SearchFilter
