@@ -756,6 +756,7 @@ class ArticleCreatePage extends Component {
                     content={form.annotation || ''}
                     onEditorChange={value => this.handleChangeForm(value, 'annotation')}
                     onChange={() => this.setState({ annotationIsChanged: true })}
+                    height={250}
                 />
                 {/* <RichEditor
                     {...cls('field', 'annotation')}

@@ -6,7 +6,7 @@ import {TINY_MCE_KEY} from "../../../constants/TinyMCEApiKey";
 
 const cls = new BEMHelper('tiny-mce');
 
-export default function TinyMCE({ className, content, label, onEditorChange, onChange, readOnly, draggable, required }) {
+export default function TinyMCE({ className, content, label, onEditorChange, onChange, readOnly, draggable, required, height = 500 }) {
     return (
         <div {...cls('', {readOnly}, className)}>
             {label && <span {...cls('label', { error: required && (!content || !content.length) }, { 'drag-handle': draggable })}>{label}</span>}
@@ -18,7 +18,7 @@ export default function TinyMCE({ className, content, label, onEditorChange, onC
                 init={{
                     // skin: 'oxide-dark',
                     // content_css: 'dark',
-                    height: 500,
+                    height,
                     menubar: false,
                     entity_encoding: 'raw',
                     plugins: [
