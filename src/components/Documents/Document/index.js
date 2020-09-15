@@ -46,12 +46,19 @@ const Document = ({
             ? <Link to={`${linkPrefix}/${document.id}`} {...props}>{children}</Link>
             : <div {...props}>{children}</div>
     );
+    const handleClick = (e) => {
+        if (e.target.closest('.document__buttons')) {
+            e.preventDefault();
+        }
+
+        onClick();
+    };
 
     return (
         <Wrapper
             {...cls('', { highlighted, disabled }, className)}
             data-id={document.id}
-            onClick={onClick}
+            onClick={handleClick}
         >
             {getIcon(document.ext)}
 

@@ -14,6 +14,7 @@ export default function ArchiveCreateModal({ projectId, articleIds = [], onSucce
         }
 
         setInProgress(true);
+
         ArchiveService
             .create(projectId, isAll ? [] : articleIds, description, isAll)
             .then(() => {
