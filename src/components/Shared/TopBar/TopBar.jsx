@@ -9,9 +9,9 @@ import ProfileButton from "./ProfileButton/ProfileButton";
 import { clearCurrentProject } from "../../../redux/actions/currentProject";
 import store from "../../../redux/store";
 import ArchiveButton from "./ArchiveButton";
-import Access from "../Access/Access";
 import { PROJECT_PERMISSION } from "../../../constants/ProjectPermissions";
 import { clearCurrentArticle, clearCurrentArchive } from '../../../redux/actions';
+import AccessProject from '../AccessProject';
 
 const cls = new Bem('top-bar');
 const TopBar = ({ isStatic, className }) => {
@@ -27,9 +27,9 @@ const TopBar = ({ isStatic, className }) => {
                 <Logo onClick={handleClickLogo}/>
 
                 <section {...cls('buttons')}>
-                    <Access projectPermissions={ PROJECT_PERMISSION.ACCESS_ARCHIVE }>
+                    <AccessProject permissions={ PROJECT_PERMISSION.ACCESS_ARCHIVE }>
                         <ArchiveButton {...cls('button', 'archive')} />
-                    </Access>
+                    </AccessProject>
                     <ProjectsButton {...cls('button', 'notifications')} />
                     <DocsButton {...cls('button', 'notifications')} />
                     {/* <NotificationsButton {...cls('button', 'notifications')} /> */}

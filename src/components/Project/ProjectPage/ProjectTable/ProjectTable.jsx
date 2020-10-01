@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
-import { KEY_CODE, SORT_DIR, STORAGE_KEY, FIELD_TYPE } from '../../../../constants';
+import { KEY_CODE, SORT_DIR, STORAGE_KEY, FIELD_TYPE, PROJECT_PERMISSION } from '../../../../constants';
 import CheckBox from '../../../Form/CheckBox/CheckBox';
 import DropDown from '../../../Shared/DropDown/DropDown';
 import './project-table.scss';
@@ -14,6 +14,7 @@ import SettingsIcon from '../../../Shared/SvgIcons/SettingsIcon';
 import SortArrow from './ProjectTableHeader/ProjectTableHeaderSortArrow';
 import ProjectTableColorModal from "./ProjectTableColorModal/ProjectTableColorModal";
 import { StorageService } from "../../../../services";
+import { isProjectAccess } from '../../../../helpers/Tools';
 
 const cls = new Bem('project-table');
 const headerClasses = new Bem('project-table-header');
@@ -29,6 +30,7 @@ class ProjectTable extends Component {
         onChangeSort: PropTypes.func,
         onChangeColumns: PropTypes.func.isRequired,
         onDeleteArticle: PropTypes.func,
+        onArchivingArticle: PropTypes.func,
         archiveId: PropTypes.string,
         projectId: PropTypes.string.isRequired,
         pagination: PropTypes.object.isRequired,
@@ -313,18 +315,28 @@ class ProjectTable extends Component {
     renderArticle = (article, articleKey) => {
         const { selectedIds, projectId, fields, search, sort, profile, page, archiveId } = this.props;
         const lastViewedArticleId = StorageService.get(STORAGE_KEY.LAST_VIEWED_ARTICLE);
-        const menuItems = [ {
-            title: 'Изменить',
-            link: `/project/${projectId}/article/${article.id}`
-        }, {
-            danger: true,
-            title: 'Удвлить',
-            onClick: () => this.props.onDeleteArticle(article.id)
-        } ];
         const sortString = sort.type && `${sort.dir === SORT_DIR.ASC ? '-' : ''}${sort.type}`;
         const sp = new URLSearchParams();
         let url = archiveId ? `/archive/${archiveId}/article/${article.id}?` : `/project/${projectId}/article/${article.id}?`;
         let color = '';
+        const menuItems = [{
+            title: 'Изменить',
+            link: `/project/${projectId}/article/${article.id}`
+        }];
+
+        if (isProjectAccess([ PROJECT_PERMISSION.ACCESS_ARCHIVE ])) {
+            menuItems.push({
+                danger: true,
+                title: 'В архив',
+                onClick: () => this.props.onArchivingArticle(article.id)
+            })
+        }
+
+        menuItems.push({
+            danger: true,
+            title: 'Удвлить',
+            onClick: () => this.props.onDeleteArticle(article.id)
+        });
 
         sp.set('search', search);
         sp.set('sort', sortString || '');

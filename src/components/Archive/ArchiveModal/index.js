@@ -5,21 +5,26 @@ import BEMHelper from "react-bem-helper";
 import InputSearch from "../../Form/InputSearch";
 import './archive-modal.scss';
 import 'react-dates/initialize';
-import { ArchiveService } from "../../../services";
+import { ArchiveService, } from "../../../services";
 import DateRange from "../../Form/DateRange";
 import StorageIcon from "../../Shared/SvgIcons/StorageIcon";
 import Loader from "../../Shared/Loader/Loader";
 import { Link } from "react-router-dom";
 import TrashIcon from "../../Shared/SvgIcons/TrashIcon";
 import PromiseDialogModal from "../../Shared/PromiseDialogModal/PromiseDialogModal";
-
+import Button from '../../Shared/Button/Button';
+import ArchiveCreateModal from '../ArchiveCreateModal';
+import { NotificationManager } from 'react-notifications';
 
 const cls = new BEMHelper('archive-modal');
 
 export default class ArchiveModal extends Component {
     static propTypes = {
+        articleIds: PropTypes.array,
         projectId: PropTypes.string.isRequired,
-        onClose: PropTypes.func.isRequired
+        updateArticels: PropTypes.node,
+        onClose: PropTypes.func.isRequired,
+        isAll: PropTypes.bool
     };
 
     state = {
@@ -27,6 +32,8 @@ export default class ArchiveModal extends Component {
         startDate: moment().subtract(1, 'week'),
         endDate: moment(),
         archives: [],
+        showCreateModal: false,
+        selectedArchiveId: null,
         inProgress: true
     }
 
@@ -63,8 +70,33 @@ export default class ArchiveModal extends Component {
         }
     };
 
+    handleSubmitAddArticles = () => {
+        const { articleIds, isAll } = this.props;
+        const { selectedArchiveId } = this.state;
+
+        if (!selectedArchiveId || !articleIds || !articleIds.length) {
+            return;
+        }
+
+        ArchiveService
+            .addArticles(selectedArchiveId, articleIds)
+            .then(() => {
+                NotificationManager.success(
+                    'Добавление в архив', 
+                    articleIds.length === 1 ? 'Статья успешно добавлена в архив' : 'Статьи успешно добавлены в архив'
+                );
+
+                if (this.props.updateArticels) {
+                    this.props.updateArticels();
+                }
+
+                this.props.onClose();
+            });
+    }
+    
+
     getArchives = () => {
-        const { projectId } = this.props;
+        const { projectId, articleIds } = this.props;
         const { startDate, endDate } = this.state;
 
         ArchiveService
@@ -76,15 +108,29 @@ export default class ArchiveModal extends Component {
     }
 
     render() {
-        const { onClose, projectId } = this.props;
-        const { archives, search, startDate, endDate, inProgress } = this.state;
+        const { onClose, projectId, isAll, articleIds } = this.props;
+        const { archives, search, startDate, endDate, inProgress, showCreateModal, selectedArchiveId } = this.state;
+        const isSelectArchiveMode = articleIds && articleIds.length;
 
         return (
             <ConfirmModal
                 {...cls()}
                 title='Архив'
                 onClose={onClose}
+                buttons={isSelectArchiveMode ? ['cancel', 'submit'] : []}
+                submitText='Перенести'
+                submitStyle='error'
+                submitDisabled={!selectedArchiveId}
+                onSubmit={this.handleSubmitAddArticles}
             >
+                {isSelectArchiveMode && (
+                    <Button
+                        {...cls('create-button')}
+                        style="success"
+                        title='Создать архив'
+                        onClick={() => this.setState({ showCreateModal: true })}
+                    >+</Button>
+                )}
                 <section {...cls('filters')}>
                     <InputSearch
                         { ...cls('filter-item') }
@@ -105,27 +151,59 @@ export default class ArchiveModal extends Component {
                     {archives.length ? (
                         <ul { ...cls('list') }>
                             {archives.map(archive => (
-                                <li { ...cls('item') } key={archive.id}>
-                                    <Link { ...cls('item-link') } to={`/archive/${projectId}/${archive.id}`} target='_blank'>
-                                        <StorageIcon { ...cls('item-icon') }/>
-                                        <div { ...cls('item-data') }>
-                                            <span { ...cls('item-name') }>
-                                                {moment(archive.date).format('DD.MM.YYYY [в] HH:mm')}
-                                            </span>
-                                            <span { ...cls('item-description') }>
-                                                { archive.description }
-                                            </span>
+                                isSelectArchiveMode ? (
+                                    <li 
+                                        { ...cls('item', { selected: selectedArchiveId === archive.id} ) } 
+                                        key={archive.id}
+                                        onClick={() => this.setState({ selectedArchiveId: archive.id })}
+                                    >
+                                        <div {...cls('item-container')}>
+                                            <StorageIcon { ...cls('item-icon') }/>
+                                            <div { ...cls('item-data') }>
+                                                <span { ...cls('item-name') }>
+                                                    {moment(archive.date).format('DD.MM.YYYY [в] HH:mm')}
+                                                </span>
+                                                <span { ...cls('item-description') }>
+                                                    { archive.description }
+                                                </span>
+                                            </div>
                                         </div>
-                                    </Link>
-                                    <button
-                                        { ...cls('item-delete') }
-                                        onClick={() => this.handleDelete(archive)}
-                                    ><TrashIcon/></button>
-                                </li>
+                                        <div {...cls('item-tag')}>{selectedArchiveId === archive.id ? 'Выбран' : 'Выбрать'}</div>
+                                    </li>
+                                ) : (
+                                    <li { ...cls('item') } key={archive.id}>
+                                        <Link { ...cls('item-link') } to={`/archive/${projectId}/${archive.id}`} target='_blank'>
+                                            <div {...cls('item-container')}>
+                                                <StorageIcon { ...cls('item-icon') }/>
+                                                <div { ...cls('item-data') }>
+                                                    <span { ...cls('item-name') }>
+                                                        {moment(archive.date).format('DD.MM.YYYY [в] HH:mm')}
+                                                    </span>
+                                                    <span { ...cls('item-description') }>
+                                                        { archive.description }
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </Link>
+                                        <button
+                                            { ...cls('item-delete') }
+                                            onClick={() => this.handleDelete(archive)}
+                                        ><TrashIcon/></button>
+                                    </li>
+                                )
                             ))}
                         </ul>
                     ) : 'Нет элементов в выбранном периоде'}
                 </section>
+
+                {showCreateModal && (
+                    <ArchiveCreateModal
+                        projectId={projectId}
+                        articleIds={articleIds}
+                        isAll={isAll}
+                        onClose={() => this.setState({ showCreateModal: false })}
+                    />
+                )}
 
                 <PromiseDialogModal ref={node => this.promiseDialogModal = node}/>
 

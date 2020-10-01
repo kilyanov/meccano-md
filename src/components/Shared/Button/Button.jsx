@@ -15,7 +15,9 @@ const Button = ({
     onClick = () => {},
     tabIndex = 0,
     text,
-    type = 'button'
+    type = 'button',
+    children,
+    title
 }) => {
     return to ? (
         <Link
@@ -36,10 +38,11 @@ const Button = ({
                 disabled
             }, className)}
             type={type}
+            title={title}
             tabIndex={tabIndex}
             onClick={onClick}
             disabled={disabled}
-        >{text}</button>
+        >{children || text}</button>
     );
 };
 
@@ -49,7 +52,7 @@ Button.propTypes = {
     to: PropTypes.string,
     style: PropTypes.oneOf(['default', 'success', 'error', 'info', 'inline']),
     viewType: PropTypes.oneOf(['inline', 'default']),
-    text: PropTypes.string.isRequired,
+    text: PropTypes.string,
     onClick: PropTypes.func,
     type: PropTypes.string
 };

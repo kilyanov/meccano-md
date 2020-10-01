@@ -28,10 +28,11 @@ import { getColumnsFromStorage } from "./ProjectTable/Columns";
 import ArticleTransferModal from "../../Article/ArticleTransferModal/ArticleTransferModal";
 import ProjectPagination from "./ProjectTable/ProjectPagination/ProjectPagintaion";
 import ReactSelect from "../../Form/Select/ReactSelect/ReactSelect";
-import ArchiveCreateModal from "../../Archive/ArchiveCreateModal";
 import Access from "../../Shared/Access/Access";
 import { PROJECT_PERMISSION } from "../../../constants/ProjectPermissions";
 import Breadcrumbs from '../../Shared/Breadcrumbs';
+import ArchiveModal from '../../Archive/ArchiveModal';
+import AccessProject from '../../Shared/AccessProject';
 
 const cls = new Bem('project-page');
 const defaultPagination = { page: 1, pageCount: 1, perPage: 50 };
@@ -65,7 +66,7 @@ export default class ProjectPage extends Component {
             showUploadArticlesModal: false,
             showImportArticlesModal: false,
             showTransferModal: false,
-            showCreateArchiveModal: false,
+            showArchiveModal: false,
             userType,
             inProgress: true
         };
@@ -311,8 +312,13 @@ export default class ProjectPage extends Component {
     };
 
     handleReplaceToArchive = () => {
-        this.setState({ showCreateArchiveModal: true });
+        this.setState({ showArchiveModal: true });
     };
+
+    handleArchivingArticle = (articleId) => {
+        this.setState({ showArchiveModal: true, selectedArticleId: articleId });
+    }
+    
 
     getArticleColors = () => {
         ArticleService.color.get(this.projectId).then(response => {
@@ -531,9 +537,10 @@ export default class ProjectPage extends Component {
             showUploadArticlesModal,
             showImportArticlesModal,
             showTransferModal,
-            showCreateArchiveModal,
+            showArchiveModal,
             userType,
             selectedStatus,
+            selectedArticleId,
             inProgress
         } = this.state;
         const countSelected = isAllArticlesSelected
@@ -598,14 +605,14 @@ export default class ProjectPage extends Component {
                     )}
 
                     {hasSelectedItems && (
-                        <Access projectPermissions={ PROJECT_PERMISSION.ACCESS_ARCHIVE }>
+                        <AccessProject permissions={ PROJECT_PERMISSION.ACCESS_ARCHIVE }>
                             <Button
                                 {...cls('upload-btn')}
                                 text='В архив'
                                 style='error'
                                 onClick={this.handleReplaceToArchive}
                             />
-                        </Access>
+                        </AccessProject>
                     )}
                 </section>
 
@@ -701,6 +708,7 @@ export default class ProjectPage extends Component {
                         onChangeColumns={this.handleChangeColumns}
                         onChangeSort={this.handleChangeSort}
                         onDeleteArticle={this.handleDeleteArticle}
+                        onArchivingArticle={this.handleArchivingArticle}
                         onChangeFilter={this.handleChangeFilter}
                         onUpdateParent={() => this.getArticles()}
                         sort={filters.sort}
@@ -774,7 +782,16 @@ export default class ProjectPage extends Component {
                     />
                 )}
 
-                {showCreateArchiveModal && (
+                {showArchiveModal && (
+                    <ArchiveModal
+                        projectId={this.projectId}
+                        onClose={() => this.setState({ showArchiveModal: false, selectedArticleId: null })}
+                        articleIds={selectedArticleId ? [selectedArticleId] : selectedArticleIds}
+                        updateArticels={this.getArticles}
+                    />
+                )}
+
+                {/* {showArchiveModal && (
                     <ArchiveCreateModal
                         onClose={() => this.setState({ showCreateArchiveModal: false })}
                         projectId={this.projectId}
@@ -785,7 +802,7 @@ export default class ProjectPage extends Component {
                             this.getArticles();
                         }}
                     />
-                )}
+                )} */}
 
                 <PromiseDialogModal ref={node => this.promiseDialogModal = node}/>
 

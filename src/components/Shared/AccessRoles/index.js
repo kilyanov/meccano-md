@@ -1,19 +1,20 @@
 import React from 'react';
-import { isAccess } from "../../../helpers/Tools";
-import { PERMISSION } from "../../../constants";
+import { isRolesAccess } from "../../../helpers/Tools";
 import { EventEmitter } from "../../../helpers";
 import { EVENTS } from "../../../constants";
 import { useSelector } from "react-redux";
 import Loader from "../Loader/Loader";
 
-export default function Access({ permissions, children, replaceComponent, redirect }) {
+export default function AccessRoles({roles, children, replaceComponent, redirect }) {
     const profile = useSelector(state => state.profile);
 
     if (_.isEmpty(profile)) {
         return <Loader/>;
     }
 
-    const canRender = !permissions || permissions.includes(PERMISSION.all) || isAccess(permissions || [], profile);
+    const canByRoles = isRolesAccess(roles);
+    const canRender = !roles || canByRoles;
+
 
     if (!canRender && redirect) {
         EventEmitter.emit(EVENTS.REDIRECT, redirect);

@@ -25,6 +25,7 @@ import CreateLocationModal from "./CreateLocationModal";
 import LocationIcon from "../../Shared/SvgIcons/LocationIcon";
 import Breadcrumbs from '../../Shared/Breadcrumbs';
 import { setCurrentArticle, clearCurrentArticle } from '../../../redux/actions';
+import AccessProject from '../../Shared/AccessProject';
 
 const cls = new Bem('article-create-page');
 const defaultTimeZone = 'Europe/Moscow';
@@ -840,7 +841,7 @@ class ArticleCreatePage extends Component {
                         <LocationIcon/>
                     </button>
 
-                    <Access projectPermissions={[ PROJECT_PERMISSION.EDIT ]}>
+                    <AccessProject permissions={[ PROJECT_PERMISSION.EDIT ]}>
                         <Button
                             {...cls('done-button')}
                             text={userType && form[`complete_${userType.slug}`] ? 'Отменить завершение' : 'Завершить статью'}
@@ -854,7 +855,7 @@ class ArticleCreatePage extends Component {
                             text={isUpdate ? 'Обновить' : 'Создать'}
                             onClick={() => this.form.submit()}
                         />
-                    </Access>
+                    </AccessProject>
                 </section>
 
                 <Form

@@ -32,6 +32,7 @@ import Access from "../../Shared/Access/Access";
 import { PROJECT_PERMISSION } from "../../../constants/ProjectPermissions";
 import { setCurrentArchive } from '../../../redux/actions';
 import Breadcrumbs from '../../Shared/Breadcrumbs';
+import AccessProject from '../../Shared/AccessProject';
 
 const cls = new Bem('archive-page');
 const defaultPagination = { page: 1, pageCount: 1, perPage: 50 };
@@ -578,8 +579,8 @@ class ArchivePage extends Component {
         if (_.isEmpty(profile)) return <Loader />;
 
         return (
-            <Access
-                projectPermissions={[ PROJECT_PERMISSION.ACCESS_ARCHIVE ]}
+            <AccessProject
+                permissions={[ PROJECT_PERMISSION.ACCESS_ARCHIVE ]}
                 redirect='/'
             >
                 <Page {...cls()} withBar>
@@ -766,7 +767,7 @@ class ArchivePage extends Component {
 
                     {pagination.inProgress && <RightLoader/>}
                 </Page>
-            </Access>
+            </AccessProject>
         );
     }
 }

@@ -11,3 +11,4 @@ export * from './ProjectViewer';
 export * from './ProjectViewer';
 export * from './SortDirection';
 export * from './ThemeType';
+export * from './ProjectPermissions';

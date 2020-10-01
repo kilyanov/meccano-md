@@ -5,7 +5,15 @@ import { ArchiveService } from "../../../services";
 import { NotificationManager } from "react-notifications";
 import Loader from "../../Shared/Loader/Loader";
 
-export default function ArchiveCreateModal({ projectId, articleIds = [], onSuccessCreate = () => {}, onClose, isAll = false }) {
+import './archive-create-modal.scss';
+
+export default function ArchiveCreateModal({
+    projectId,
+    articleIds = [], 
+    onSuccessCreate = () => {}, 
+    onClose, 
+    isAll = false 
+}) {
     const [ description, setDescription ] = useState('');
     const [ inProgress, setInProgress ] = useState(false);
     const handleSubmit = () => {
@@ -28,10 +36,11 @@ export default function ArchiveCreateModal({ projectId, articleIds = [], onSucce
 
     return (
         <ConfirmModal
+            className='archive-create-modal'
             title='Создание архива'
             onClose={onClose}
             submitDisabled={!articleIds.length}
-            submitText='В архив'
+            submitText='Создать и перенести статьи'
             submitStyle='error'
             onSubmit={handleSubmit}
             width='small'

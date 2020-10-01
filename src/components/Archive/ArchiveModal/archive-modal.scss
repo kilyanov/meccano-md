@@ -19,10 +19,17 @@
 
     &__item {
         display: flex;
+        align-items: center;
         border-bottom: 1px solid #d9d9d9;
+        cursor: pointer;
 
+        &--selected,
         &:hover {
             background-color: $gray-three;
+
+            .archive-modal__item-tag {
+                display: flex;
+            }
 
             .archive-modal__item-icon path {
                 fill: $shamrock
@@ -32,15 +39,37 @@
                 color: $shamrock;
             }
         }
+
+        &--selected {
+            .archive-modal__item-tag {
+                border-color: $shamrock;
+                color: $white;
+                background-color: $shamrock;
+            }
+        }
     }
 
     &__item-link {
         flex: 1;
+        text-decoration: none !important;
+    }
+
+    &__item-container {
         display: flex;
         align-items: center;
         padding: 10px 0;
         cursor: pointer;
-        text-decoration: none !important;
+    }
+
+    &__item-tag {
+        display: none;
+        margin-left: auto;
+        margin-right: 10px;
+        padding: 3px 12px;
+        border: 1px solid #ccc;
+        border-radius: 20px;
+        font-size: 12px;
+        color: #ccc;
     }
 
     &__item-data {
@@ -76,6 +105,15 @@
 
     &__item-delete svg {
         fill: $brown-grey
+    }
+
+    &__create-button {
+        position: absolute;
+        top: 38px;
+        left: 150px;
+        height: 40px;
+        font-size: 38px;
+        padding: 8px;
     }
 
     .confirm-modal__body {

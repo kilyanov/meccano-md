@@ -18,4 +18,5 @@ export const ArchiveService = {
         get: (archiveId, articleId, form) => API.get(`/archive/${archiveId}/article/${articleId}`, { params: form }),
         delete: (archiveId, form) => API.delete(`/archive/${archiveId}/article/`, { data: form })
     },
+    addArticles: (archiveId, articleIds) => API.post(`/archive/${archiveId}/add-article`, { articleIds })
 };

@@ -22,8 +22,6 @@ export default function ReactSelect({
     const isDarkTheme = theme === THEME_TYPE.DARK;
     const selectedValue = options.find(({ value }) => value === selected);
 
-    console.log(label, selectedValue)
-
     return (
         <div {...cls('', { succeed: !!selectedValue }, className)}>
             {label && (
