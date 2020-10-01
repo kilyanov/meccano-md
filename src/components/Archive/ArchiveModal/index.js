@@ -22,7 +22,7 @@ export default class ArchiveModal extends Component {
     static propTypes = {
         articleIds: PropTypes.array,
         projectId: PropTypes.string.isRequired,
-        updateArticels: PropTypes.node,
+        updateArticels: PropTypes.func,
         onClose: PropTypes.func.isRequired,
         isAll: PropTypes.bool
     };
