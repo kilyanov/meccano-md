@@ -119,7 +119,7 @@ export default class DocumentsPage extends Component {
 
         return (
             <Access
-                permissions={[ PERMISSION.viewSettings, PERMISSION.editSettings ]}
+                permissions={[ PERMISSION.viewDocuments, PERMISSION.editDocuments ]}
                 redirect='/'
             >
                 <Page title='Документы' {...cls()} withBar>
