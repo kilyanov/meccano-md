@@ -26,6 +26,7 @@ import LocationIcon from "../../Shared/SvgIcons/LocationIcon";
 import Breadcrumbs from '../../Shared/Breadcrumbs';
 import { setCurrentArticle, clearCurrentArticle } from '../../../redux/actions';
 import AccessProject from '../../Shared/AccessProject';
+import Drawer from '../../Shared/Drawer/Drawer';
 
 const cls = new Bem('article-create-page');
 const defaultTimeZone = 'Europe/Moscow';
@@ -87,6 +88,7 @@ class ArticleCreatePage extends Component {
             viewType: StorageService.get(STORAGE_KEY.ARTICLE_VIEW_TYPE) || 1,
             userTypeId: userType && userType.id || null,
             userType: userType || null,
+            showDrawer: false,
             showViewSettings: false,
             textIsChanged: false,
             annotationIsChanged: false,
@@ -181,6 +183,14 @@ class ArticleCreatePage extends Component {
         }
 
         this.setState(newState);
+    };
+
+    handleShowDrawer = () => {
+        this.setState({ showDrawer: true });
+    };
+
+    handleCloseDrawer = () => {
+        this.setState({ showDrawer: false });
     };
 
     handleShowViewSettings = () => {
@@ -841,6 +851,12 @@ class ArticleCreatePage extends Component {
                         <LocationIcon/>
                     </button>
 
+                    <button
+                        {...cls('drawer-button')}
+                        onClick={this.handleShowDrawer}
+                        title='Открыть Drawer'
+                    >D</button>
+
                     <AccessProject permissions={[ PROJECT_PERMISSION.EDIT ]}>
                         <Button
                             {...cls('done-button')}
@@ -912,6 +928,28 @@ class ArticleCreatePage extends Component {
                         </div>
                     )}
                 </Form>
+
+                <Drawer
+                    title="Заголовок Drawer'а"
+                    closeOnEsc
+                    closeOnOverlay
+                    closeOnButton
+                    isOpen={this.state.showDrawer}
+                    onClose={this.handleCloseDrawer}
+                >
+                    <div>
+                        Тело Drawer'а! Lorem ipsum dolor sit amet, consectetur adipiscing elit. 
+                        Duis vulputate magna orci, at euismod purus maximus sit amet. 
+                        Donec molestie leo in rhoncus aliquet. Etiam vitae varius massa, at ultrices mauris. 
+                        Mauris sit amet erat lacus. 
+                        Cras scelerisque, elit sed gravida feugiat, leo ipsum sagittis est, a efficitur nunc tortor non lacus. 
+                        Integer sodales mi ut ligula rutrum posuere. Fusce porttitor in erat ut dignissim. 
+                        Quisque sodales interdum sem, sit amet varius turpis convallis bibendum. Nam in congue tortor. 
+                        Nam eget risus eu arcu finibus lacinia. Lorem ipsum dolor sit amet, consectetur adipiscing elit. 
+                        Aenean interdum odio in convallis facilisis. Morbi in faucibus enim, sed fermentum turpis. 
+                        Vivamus in erat tortor.
+                    </div>
+                </Drawer>
 
                 {showViewSettings && (
                     <ArticleViewSettings
