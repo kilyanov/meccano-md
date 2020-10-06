@@ -6,38 +6,45 @@ import './drawer.scss';
 const cls = new Bem('drawer');
 
 function Drawer({ children, title, isOpen, onClose, closeOnEsc, closeOnOverlay, closeOnButton }) {
-    const closeDelay = 200;
     const [isClose, setIsClose] = React.useState(false);
+    const drawerRef = React.useRef();
 
-    const closeByTimer = () => {
+    const handleClose = () => {
         setIsClose(true);
-        setTimeout(() => {
-            onClose();
-            setIsClose(false);
-        }, closeDelay);
     };
 
     const handleOverlayClose = (event) => {
-        if (closeOnOverlay && event.target.classList.contains('drawer')) closeByTimer();
+        if (closeOnOverlay && event.target.classList.contains('drawer')) handleClose();
     };
 
     const handleDocumentKeyDown = (event) => {
         if (event.keyCode === KEY_CODE.esc) {
-            closeByTimer();
+            handleClose();
+        }
+    };
+
+    const handleAnimation = (event) => {
+        if (event.animationName === 'drawer-hide') {
+            drawerRef.current.removeEventListener('animationend', handleAnimation);
+            document.removeEventListener('keydown', handleDocumentKeyDown);
+            onClose();
+            setIsClose(false);
         }
     };
     
     React.useEffect(() => {
+        if (drawerRef.current) {
+            drawerRef.current.addEventListener('animationend', handleAnimation);
+        }
         if (closeOnEsc && isOpen) {
             document.addEventListener('keydown', handleDocumentKeyDown);
         }
-        return () => document.removeEventListener('keydown', handleDocumentKeyDown);
     }, [isOpen]);
 
     return (
         <>
             {isOpen &&
-                <div {...cls(null, {'closed': isClose})} onClick={handleOverlayClose}>
+                <div {...cls(null, {'closed': isClose})} onClick={handleOverlayClose} ref={drawerRef}>
                     <div {...cls('container', {'closed': isClose})}>
                         <div {...cls('header')}>
                             {title && 
@@ -46,7 +53,7 @@ function Drawer({ children, title, isOpen, onClose, closeOnEsc, closeOnOverlay, 
                             {closeOnButton && 
                                 <button
                                     {...cls('button-close')}
-                                    onClick={() => closeByTimer()}
+                                    onClick={() => handleClose()}
                                     type="button"
                                     title="Закрыть окно"
                                 >✕</button>
