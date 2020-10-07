@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState, useEffect, useRef} from 'react';
 import PropTypes from 'prop-types';
 import {KEY_CODE} from '../../../constants';
 import './drawer.scss';
@@ -6,8 +6,8 @@ import './drawer.scss';
 const cls = new Bem('drawer');
 
 function Drawer({ children, title, isOpen, onClose, closeOnEsc, closeOnOverlay, closeOnButton }) {
-    const [isClose, setIsClose] = React.useState(false);
-    const drawerRef = React.useRef();
+    const [isClose, setIsClose] = useState(false);
+    const drawerRef = useRef();
 
     const handleClose = () => {
         setIsClose(true);
@@ -32,7 +32,7 @@ function Drawer({ children, title, isOpen, onClose, closeOnEsc, closeOnOverlay, 
         }
     };
     
-    React.useEffect(() => {
+    useEffect(() => {
         if (drawerRef.current) {
             drawerRef.current.addEventListener('animationend', handleAnimation);
         }
