@@ -47,6 +47,11 @@
                 background-color: $shamrock;
             }
         }
+
+        &--disabled {
+            opacity: .2;
+            pointer-events: none;
+        }
     }
 
     &__item-link {

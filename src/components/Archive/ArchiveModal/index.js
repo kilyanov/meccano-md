@@ -74,29 +74,31 @@ export default class ArchiveModal extends Component {
         const { articleIds, isAll } = this.props;
         const { selectedArchiveId } = this.state;
 
-        if (!selectedArchiveId || !articleIds || !articleIds.length) {
+        if (!selectedArchiveId || !articleIds || (!articleIds.length && !isAll)) {
             return;
         }
 
-        ArchiveService
-            .addArticles(selectedArchiveId, articleIds)
-            .then(() => {
-                NotificationManager.success(
-                    'Добавление в архив', 
-                    articleIds.length === 1 ? 'Статья успешно добавлена в архив' : 'Статьи успешно добавлены в архив'
-                );
-
-                if (this.props.updateArticels) {
-                    this.props.updateArticels();
-                }
-
-                this.props.onClose();
-            });
+        this.setState({ inProgress: true }, () => {
+            ArchiveService
+                .addArticles(selectedArchiveId, isAll ? { all: true } : { articleIds })
+                .then(() => {
+                    NotificationManager.success(
+                        'Добавление в архив',
+                        articleIds.length === 1 ? 'Статья успешно добавлена в архив' : 'Статьи успешно добавлены в архив'
+                    );
+                })
+                .finally(() => {
+                    this.setState({ inProgress: false }, () => {
+                        this.props.onSubmit();
+                        this.props.onClose();
+                    });
+                });
+        });
     }
     
 
     getArchives = () => {
-        const { projectId, articleIds } = this.props;
+        const { projectId } = this.props;
         const { startDate, endDate } = this.state;
 
         ArchiveService
@@ -120,7 +122,7 @@ export default class ArchiveModal extends Component {
                 buttons={isSelectArchiveMode ? ['cancel', 'submit'] : []}
                 submitText='Перенести'
                 submitStyle='error'
-                submitDisabled={!selectedArchiveId}
+                submitDisabled={!selectedArchiveId || inProgress}
                 onSubmit={this.handleSubmitAddArticles}
             >
                 {isSelectArchiveMode && (
@@ -153,7 +155,10 @@ export default class ArchiveModal extends Component {
                             {archives.map(archive => (
                                 isSelectArchiveMode ? (
                                     <li 
-                                        { ...cls('item', { selected: selectedArchiveId === archive.id} ) } 
+                                        { ...cls('item', {
+                                            selected: selectedArchiveId === archive.id,
+                                            disabled: inProgress
+                                        }) }
                                         key={archive.id}
                                         onClick={() => this.setState({ selectedArchiveId: archive.id })}
                                     >
@@ -168,11 +173,16 @@ export default class ArchiveModal extends Component {
                                                 </span>
                                             </div>
                                         </div>
-                                        <div {...cls('item-tag')}>{selectedArchiveId === archive.id ? 'Выбран' : 'Выбрать'}</div>
+                                        <div {...cls('item-tag')}>
+                                            {selectedArchiveId === archive.id ? 'Выбран' : 'Выбрать'}
+                                        </div>
                                     </li>
                                 ) : (
                                     <li { ...cls('item') } key={archive.id}>
-                                        <Link { ...cls('item-link') } to={`/archive/${projectId}/${archive.id}`} target='_blank'>
+                                        <Link
+                                            { ...cls('item-link') }
+                                            to={`/archive/${projectId}/${archive.id}`} target='_blank'
+                                        >
                                             <div {...cls('item-container')}>
                                                 <StorageIcon { ...cls('item-icon') }/>
                                                 <div { ...cls('item-data') }>

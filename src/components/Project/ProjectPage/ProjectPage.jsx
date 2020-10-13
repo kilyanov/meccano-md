@@ -28,8 +28,7 @@ import { getColumnsFromStorage } from "./ProjectTable/Columns";
 import ArticleTransferModal from "../../Article/ArticleTransferModal/ArticleTransferModal";
 import ProjectPagination from "./ProjectTable/ProjectPagination/ProjectPagintaion";
 import ReactSelect from "../../Form/Select/ReactSelect/ReactSelect";
-import Access from "../../Shared/Access/Access";
-import { PROJECT_PERMISSION } from "../../../constants/ProjectPermissions";
+import { PROJECT_PERMISSION } from "../../../constants";
 import Breadcrumbs from '../../Shared/Breadcrumbs';
 import ArchiveModal from '../../Archive/ArchiveModal';
 import AccessProject from '../../Shared/AccessProject';
@@ -787,22 +786,16 @@ export default class ProjectPage extends Component {
                         projectId={this.projectId}
                         onClose={() => this.setState({ showArchiveModal: false, selectedArticleId: null })}
                         articleIds={selectedArticleId ? [selectedArticleId] : selectedArticleIds}
-                        updateArticels={this.getArticles}
-                    />
-                )}
-
-                {/* {showArchiveModal && (
-                    <ArchiveCreateModal
-                        onClose={() => this.setState({ showCreateArchiveModal: false })}
-                        projectId={this.projectId}
                         isAll={isAllArticlesSelected}
-                        articleIds={selectedArticleIds}
-                        onSuccessCreate={() => {
-                            this.handleClearSelected(true);
-                            this.getArticles();
+                        onSubmit={() => {
+                            this.setState({
+                                selectedArticles: {},
+                                selectedArticleId: null,
+                                isAllArticlesSelected: false
+                            }, this.getArticles);
                         }}
                     />
-                )} */}
+                )}
 
                 <PromiseDialogModal ref={node => this.promiseDialogModal = node}/>
 
