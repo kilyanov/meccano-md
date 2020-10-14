@@ -1,0 +1,63 @@
+@import '../../../assets/styles/variables';
+$namespace: '.reprint';
+$fieldHeight: 40px;
+$numberOfRows: 4;
+
+#{$namespace} {
+  position: relative;
+  break-inside: avoid-column;
+
+  &__grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    width: 100%;
+    overflow: hidden;
+    box-shadow: inset 0px 0 0 1px $brownGreyColor;
+    height: 40px;
+    transition: height 0.25s;
+    margin: 0 0 40px;
+
+    &--opened {
+      height: calc(#{$fieldHeight} * #{$numberOfRows})
+    }
+  }
+
+  &__field {
+    margin-bottom: -1px;
+    grid-column: 1 / -1;
+
+    &--half-size {
+      grid-column: auto
+    }
+  }
+
+  &__button-open {
+    width: 12px;
+    height: 12px;
+    padding: 0;
+    margin: 0;
+    outline: none;
+    border: none;
+    position: absolute;
+    left: 0;
+    bottom: -16px;
+    transition: transform 0.25s;
+    transition-delay: 0.5s;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10'%3E%3Cpath d='M8.7 2.2c.3-.3.8-.3 1 0 .4.4.4.9 0 1.2L5.7 7.8c-.3.3-.9.3-1.2 0L.2 3.4a.8.8 0 010-1.2c.3-.3.8-.3 1.1 0L5 6l3.7-3.8z' fill-rule='nonzero'%3E%3C/path%3E%3C/svg%3E");
+    background-size: 100%;
+    background-repeat: none;
+    background-color: transparent;
+    opacity: 0.4;
+
+    &--opened {
+      transform: rotate(-180deg);
+    }
+  }
+}
+
+/* Dark Theme */
+
+// .app--dark #{$namespace} {
+
+// }
+

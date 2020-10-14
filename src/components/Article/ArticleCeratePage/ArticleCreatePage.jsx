@@ -27,6 +27,7 @@ import Breadcrumbs from '../../Shared/Breadcrumbs';
 import { setCurrentArticle, clearCurrentArticle } from '../../../redux/actions';
 import AccessProject from '../../Shared/AccessProject';
 import Drawer from '../../Shared/Drawer/Drawer';
+import Reprints from '../Reprints/Reprints';
 
 const cls = new Bem('article-create-page');
 const defaultTimeZone = 'Europe/Moscow';
@@ -403,7 +404,7 @@ class ArticleCreatePage extends Component {
         const { userTypeId } = this.state;
         const searchParams = location.search && new URLSearchParams(location.search);
         const requestForm = {
-            expand: 'project.projectFields,project.sections,' +
+            expand: 'project.projectFields,project.sections,reprints,' +
                 'project.users,source,complete_monitor,complete_analytic,complete_client',
             user_type: userTypeId
         };
@@ -930,25 +931,15 @@ class ArticleCreatePage extends Component {
                 </Form>
 
                 <Drawer
-                    title="Заголовок Drawer'а"
+                    title="Перепечатки"
+                    position="right"
                     closeOnEsc
                     closeOnOverlay
                     closeOnButton
                     isOpen={this.state.showDrawer}
                     onClose={this.handleCloseDrawer}
                 >
-                    <div>
-                        Тело Drawer'а! Lorem ipsum dolor sit amet, consectetur adipiscing elit. 
-                        Duis vulputate magna orci, at euismod purus maximus sit amet. 
-                        Donec molestie leo in rhoncus aliquet. Etiam vitae varius massa, at ultrices mauris. 
-                        Mauris sit amet erat lacus. 
-                        Cras scelerisque, elit sed gravida feugiat, leo ipsum sagittis est, a efficitur nunc tortor non lacus. 
-                        Integer sodales mi ut ligula rutrum posuere. Fusce porttitor in erat ut dignissim. 
-                        Quisque sodales interdum sem, sit amet varius turpis convallis bibendum. Nam in congue tortor. 
-                        Nam eget risus eu arcu finibus lacinia. Lorem ipsum dolor sit amet, consectetur adipiscing elit. 
-                        Aenean interdum odio in convallis facilisis. Morbi in faucibus enim, sed fermentum turpis. 
-                        Vivamus in erat tortor.
-                    </div>
+                    <Reprints reprints={this.props.currentArticle?.reprints} />
                 </Drawer>
 
                 {showViewSettings && (

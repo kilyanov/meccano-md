@@ -19,15 +19,29 @@ $namespace: '.drawer';
     animation: drawer-hide 0.2s forwards;
   }
 
+  &--position-right {
+    align-items: flex-end;
+    justify-content: center;
+  }
+
   &__container {
     border-radius: 8px 8px 0 0;
     margin: 0 16px 0;
     background-color: #fff;
     z-index: 1;
+    max-height: 75vh;
+    display: flex;
+    flex-direction: column;
     animation: drawer-container-up 0.2s;
 
     &--closed {
       animation: drawer-container-down 0.2s forwards;
+    }
+
+    &--position-right {
+      border-radius: 8px 0 0 8px;
+      margin: 16px 0 16px;
+      max-height: calc(100vh - 32px);
     }
   }
 
@@ -35,7 +49,7 @@ $namespace: '.drawer';
     display: flex;
     justify-content: flex-end;
     align-items: center;
-    padding: 20px 20px 0;
+    padding: 20px;
   }
 
   &__title {
@@ -55,7 +69,8 @@ $namespace: '.drawer';
   }
 
   &__body {
-    padding: 20px;
+    overflow-y: auto;
+    padding: 0 20px 20px;
   }
 }
 
@@ -93,7 +108,7 @@ $namespace: '.drawer';
 
 @keyframes drawer-container-up {
   from {
-    transform: translateY(100%)
+    transform: translateY(100vh)
   }
   to {
     transform: translateY(0)
@@ -105,6 +120,6 @@ $namespace: '.drawer';
     transform: translateY(0)
   }
   to {
-    transform: translateY(100%)
+    transform: translateY(100vh)
   }
 }

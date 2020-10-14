@@ -1,0 +1,24 @@
+@import '../../../assets/styles/variables';
+$namespace: '.reprints';
+
+#{$namespace} {
+  column-count: 2;
+  gap: 40px;
+
+  &__no-reprints {
+    margin: 32px 0;
+    text-align: center;
+  }
+}
+
+/* Dark Theme */
+
+// .app--dark #{$namespace} {
+
+// }
+
+@media (max-width: 1024px) {
+  #{$namespace} {
+    column-count: 1;
+  }
+}

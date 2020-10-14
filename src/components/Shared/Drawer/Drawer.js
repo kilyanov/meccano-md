@@ -5,7 +5,7 @@ import './drawer.scss';
 
 const cls = new Bem('drawer');
 
-function Drawer({ children, title, isOpen, onClose, closeOnEsc, closeOnOverlay, closeOnButton }) {
+function Drawer({ children, title, isOpen, onClose, closeOnEsc, closeOnOverlay, closeOnButton, position }) {
     const [isClose, setIsClose] = useState(false);
     const drawerRef = useRef();
 
@@ -31,6 +31,14 @@ function Drawer({ children, title, isOpen, onClose, closeOnEsc, closeOnOverlay, 
             setIsClose(false);
         }
     };
+
+    const getModificators = () => {
+        const modificators = [];
+        if (isClose) modificators.push('closed');
+        if (position) modificators.push(`position-${position}`);
+        if (!modificators.length) return null;
+        return modificators;
+    };
     
     useEffect(() => {
         if (drawerRef.current) {
@@ -44,8 +52,12 @@ function Drawer({ children, title, isOpen, onClose, closeOnEsc, closeOnOverlay, 
     return (
         <>
             {isOpen &&
-                <div {...cls(null, {'closed': isClose})} onClick={handleOverlayClose} ref={drawerRef}>
-                    <div {...cls('container', {'closed': isClose})}>
+                <div 
+                    {...cls(null, getModificators())}
+                    onClick={handleOverlayClose}
+                    ref={drawerRef}
+                >
+                    <div {...cls('container', getModificators())}>
                         <div {...cls('header')}>
                             {title && 
                                 <h3 {...cls('title')}>{title}</h3>
@@ -72,7 +84,8 @@ Drawer.propTypes = {
     title: PropTypes.string,
     isOpen: PropTypes.bool,
     closeOnEsc: PropTypes.bool,
-    onClose: PropTypes.func
+    onClose: PropTypes.func,
+    position: PropTypes.string
 };
 
 export default Drawer;
