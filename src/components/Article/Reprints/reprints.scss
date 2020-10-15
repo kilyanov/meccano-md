@@ -2,11 +2,8 @@
 $namespace: '.reprints';
 
 #{$namespace} {
-  column-count: 2;
-  gap: 40px;
 
   &__no-reprints {
-    margin: 32px 0;
     text-align: center;
   }
 }
@@ -17,8 +14,7 @@ $namespace: '.reprints';
 
 // }
 
-@media (max-width: 1024px) {
-  #{$namespace} {
-    column-count: 1;
-  }
-}
+// @media (max-width: 1024px) {
+//   #{$namespace} {
+//   }
+// }

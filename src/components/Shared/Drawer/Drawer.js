@@ -54,7 +54,7 @@ function Drawer({ children, title, isOpen, onClose, closeOnEsc, closeOnOverlay, 
             {isOpen &&
                 <div 
                     {...cls(null, getModificators())}
-                    onClick={handleOverlayClose}
+                    onMouseDown={handleOverlayClose}
                     ref={drawerRef}
                 >
                     <div {...cls('container', getModificators())}>

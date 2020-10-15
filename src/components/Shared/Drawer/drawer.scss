@@ -41,7 +41,8 @@ $namespace: '.drawer';
     &--position-right {
       border-radius: 8px 0 0 8px;
       margin: 16px 0 16px;
-      max-height: calc(100vh - 32px);
+      min-height: calc(100vh - 32px);
+      min-width: 540px;
     }
   }
 
@@ -69,6 +70,7 @@ $namespace: '.drawer';
   }
 
   &__body {
+    height: 100%;
     overflow-y: auto;
     padding: 0 20px 20px;
   }
@@ -108,18 +110,18 @@ $namespace: '.drawer';
 
 @keyframes drawer-container-up {
   from {
-    transform: translateY(100vh)
+    transform: translateX(100%)
   }
   to {
-    transform: translateY(0)
+    transform: translateX(0)
   }
 }
 
 @keyframes drawer-container-down {
   from {
-    transform: translateY(0)
+    transform: translateX(0)
   }
   to {
-    transform: translateY(100vh)
+    transform: translateX(100%)
   }
 }
