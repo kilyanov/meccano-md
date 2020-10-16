@@ -194,6 +194,13 @@ class ArticleCreatePage extends Component {
         this.setState({ showDrawer: false });
     };
 
+    handleChangeReprints = ({ id, name, value }) => {
+        const reprints = this.state.form.reprints;
+        const reprintIndex = this.state.form.reprints.findIndex(el => el.id === id);
+        reprints[reprintIndex][name] = value;
+        this.handleChangeForm(reprints, 'reprint');
+    }
+
     handleShowViewSettings = () => {
         this.setState({ showViewSettings: true });
     };
@@ -269,6 +276,14 @@ class ArticleCreatePage extends Component {
         const form = _.cloneDeep(this.state.form);
         const isUpdate = !!this.state.articleId;
         const invalidateFields = [];
+
+        // form.reprints = [
+        //     {
+        //         "title": "Перепечатка",
+        //         "url": "https://site1.com/post",
+        //         "date": "2020-10-02T08:20:45+03:00"
+        //     },
+        // ];
 
         form.date = moment(form.date).format();
         form.project_id = this.state.projectId;
@@ -939,7 +954,10 @@ class ArticleCreatePage extends Component {
                     isOpen={this.state.showDrawer}
                     onClose={this.handleCloseDrawer}
                 >
-                    <Reprints reprints={this.props.currentArticle?.reprints} />
+                    <Reprints
+                        reprints={this.state.form.reprints}
+                        onFieldChange={this.handleChangeReprints}
+                    />
                 </Drawer>
 
                 {showViewSettings && (

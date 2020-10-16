@@ -5,11 +5,11 @@ import './reprints.scss';
 
 const cls = new Bem('reprints');
 
-function Reprints({ reprints }) {
+function Reprints({ reprints, onFieldChange }) {
     return (
         <div {...cls()}>
             {reprints.length
-                ? reprints.map((reprint) => <Reprint key={reprint.id} {...reprint}/>)
+                ? reprints.map((reprint) => <Reprint key={reprint.id} onFieldChange={onFieldChange} {...reprint}/>)
                 : <p {...cls('no-reprints')}>Нет перепечаток</p>
             }
         </div>
@@ -17,7 +17,8 @@ function Reprints({ reprints }) {
 }
 
 Reprints.propTypes = {
-    reprints: PropTypes.array
+    reprints: PropTypes.array,
+    onFieldChange: PropTypes.func
 };
 
 export default Reprints;

@@ -9,7 +9,7 @@ import './reprint.scss';
 
 const cls = new Bem('reprint');
 
-function Reprint({ id, title, url, source_id: sourceId, city_id: cityId, date }) {
+function Reprint({ id, title, url, source_id: sourceId, city_id: cityId, date, onFieldChange }) {
     const [isShownAllFields, setShownAllFields] = useState(false);
     const dropDownMenuElement = useRef();
 
@@ -33,26 +33,6 @@ function Reprint({ id, title, url, source_id: sourceId, city_id: cityId, date })
         setShownAllFields(!isShownAllFields);
     };
 
-    const handleTitle = (value) => {
-        console.log(value);
-    };
-
-    const handleLink = (value) => {
-        console.log(value);
-    };
-
-    const handleSource = (value) => {
-        console.log(value);
-    };
-
-    const handleCity = (value) => {
-        console.log(value);
-    };
-
-    const handleDate = (value) => {
-        console.log(value);
-    };
-
     const dropDown = (
         <button
             {...cls('menu-button')}
@@ -73,7 +53,7 @@ function Reprint({ id, title, url, source_id: sourceId, city_id: cityId, date })
             <div {...cls('grid')}>
                 <InputText
                     value={title || ''}
-                    onChange={value => handleTitle(value)}
+                    onChange={value => onFieldChange({ id, name: 'title', value })}
                     required
                     {...cls('field')}
                 />
@@ -82,7 +62,7 @@ function Reprint({ id, title, url, source_id: sourceId, city_id: cityId, date })
                     <>
                         <InputText
                             value={url || ''}
-                            onChange={value => handleLink(value)}
+                            onChange={value => onFieldChange({ id, name: 'url', value })}
                             validateType="link"
                             required
                             {...cls('field')}
@@ -91,19 +71,19 @@ function Reprint({ id, title, url, source_id: sourceId, city_id: cityId, date })
                             placeholder={'СМИ (Источник)'}
                             options={null || []}
                             selected={sourceId}
-                            onChange={value => handleSource(value)}
+                            onChange={value => onFieldChange({ id, name: 'source_id', value })}
                             {...cls('field')}
                         />
                         <Select
                             placeholder={'Город'}
                             options={null || []}
                             selected={cityId}
-                            onChange={value => handleCity(value)}
+                            onChange={value => onFieldChange({ id, name: 'city_id', value })}
                             {...cls('field', 'half-size')}
                         />
                         <InputDateTimePicker
                             value={new Date(date) || null}
-                            onChange={value => handleDate(value)}
+                            onChange={value => onFieldChange({ id, name: 'date', value })}
                             readOnly={false}
                             required
                             {...cls('field', 'half-size')}
@@ -127,7 +107,8 @@ Reprint.propTypes = {
     url: PropTypes.string,
     source_id: PropTypes.string,
     city_id: PropTypes.string,
-    date: PropTypes.string
+    date: PropTypes.string,
+    onFieldChange: PropTypes.func
 };
 
 export default Reprint;
