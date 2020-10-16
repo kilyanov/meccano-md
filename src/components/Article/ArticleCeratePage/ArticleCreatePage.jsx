@@ -198,7 +198,7 @@ class ArticleCreatePage extends Component {
         const reprints = this.state.form.reprints;
         const reprintIndex = this.state.form.reprints.findIndex(el => el.id === id);
         reprints[reprintIndex][name] = value;
-        this.handleChangeForm(reprints, 'reprint');
+        this.handleChangeForm(reprints, 'reprints');
     }
 
     handleShowViewSettings = () => {
