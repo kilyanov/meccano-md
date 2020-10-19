@@ -194,10 +194,27 @@ class ArticleCreatePage extends Component {
         this.setState({ showDrawer: false });
     };
 
-    handleChangeReprints = ({ id, name, value }) => {
+    handleChangeReprints = ({ index, name, value }) => {
         const reprints = this.state.form.reprints;
-        const reprintIndex = this.state.form.reprints.findIndex(el => el.id === id);
-        reprints[reprintIndex][name] = value;
+        reprints[index][name] = value;
+        this.handleChangeForm(reprints, 'reprints');
+    }
+
+    handleAddReprint = () => {
+        const newReprints = [
+            ...this.state.form.reprints,
+            {
+                title: '',
+                url: '',
+                date: new Date()
+            }
+        ];
+        this.handleChangeForm(newReprints, 'reprints');
+    }
+
+    handleDeleteReprint = (index) => {
+        const reprints = this.state.form.reprints;
+        reprints.splice(index, 1);
         this.handleChangeForm(reprints, 'reprints');
     }
 
@@ -274,16 +291,9 @@ class ArticleCreatePage extends Component {
 
     handleSubmit = () => {
         const form = _.cloneDeep(this.state.form);
+
         const isUpdate = !!this.state.articleId;
         const invalidateFields = [];
-
-        // form.reprints = [
-        //     {
-        //         "title": "Перепечатка",
-        //         "url": "https://site1.com/post",
-        //         "date": "2020-10-02T08:20:45+03:00"
-        //     },
-        // ];
 
         form.date = moment(form.date).format();
         form.project_id = this.state.projectId;
@@ -957,6 +967,8 @@ class ArticleCreatePage extends Component {
                     <Reprints
                         reprints={this.state.form.reprints}
                         onFieldChange={this.handleChangeReprints}
+                        onAddReprint={this.handleAddReprint}
+                        onDeleteReprint={this.handleDeleteReprint}
                     />
                 </Drawer>
 
