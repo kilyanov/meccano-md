@@ -2,9 +2,10 @@
 $namespace: '.reprints';
 
 #{$namespace} {
+  padding-top: 10px;
 
   &__no-reprints {
-    text-align: center;
+    margin: 14px 0 42px;
   }
 }
 

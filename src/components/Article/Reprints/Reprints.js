@@ -1,6 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import Reprint from './Reprint';
+import Reprint from './Reprint/Reprint';
+import Button from '../../Shared/Button/Button';
+
 import './reprints.scss';
 
 const cls = new Bem('reprints');
@@ -23,8 +25,11 @@ function Reprints({ reprints, onFieldChange, onAddReprint, onDeleteReprint }) {
                 })
                 : <p {...cls('no-reprints')}>Нет перепечаток</p>
             }
-            {<button type="button" onClick={onAddReprint}>Добавить перепечатку</button>}
-           
+            <Button
+                {...cls('add-button')}
+                text="Добавить перепечатку"
+                onClick={onAddReprint}
+            />
         </div>
     );
 }

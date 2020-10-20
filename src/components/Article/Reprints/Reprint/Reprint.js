@@ -1,9 +1,9 @@
 import React, { useState, useRef } from 'react';
-import InputText from '../../Form/InputText/InputText';
-import InputDateTimePicker from '../../Form/InputDateTimePicker/InputDatePicker';
-import Select from '../../Form/Select/Select';
-import DropDown from '../../Shared/DropDown/DropDown';
-import DropDownMenuIcon from '../../Shared/SvgIcons/DropDownMenuIcon';
+import InputText from '../../../Form/InputText/InputText';
+import InputDateTimePicker from '../../../Form/InputDateTimePicker/InputDatePicker';
+import Select from '../../../Form/Select/Select';
+import DropDown from '../../../Shared/DropDown/DropDown';
+import DropDownMenuIcon from '../../../Shared/SvgIcons/DropDownMenuIcon';
 import PropTypes from 'prop-types';
 import './reprint.scss';
 

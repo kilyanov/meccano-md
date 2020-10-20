@@ -23,6 +23,7 @@ import { KEY_CODE } from "../../../constants";
 import TinyMCE from "../../Form/TinyMCE/TinyMCE";
 import CreateLocationModal from "./CreateLocationModal";
 import LocationIcon from "../../Shared/SvgIcons/LocationIcon";
+import ReprintsIcon from "../../Shared/SvgIcons/ReprintsIcon";
 import Breadcrumbs from '../../Shared/Breadcrumbs';
 import { setCurrentArticle, clearCurrentArticle } from '../../../redux/actions';
 import AccessProject from '../../Shared/AccessProject';
@@ -880,8 +881,10 @@ class ArticleCreatePage extends Component {
                     <button
                         {...cls('drawer-button')}
                         onClick={this.handleShowDrawer}
-                        title='Открыть Drawer'
-                    >D</button>
+                        title='Перепечатки'
+                    >
+                        <ReprintsIcon />
+                    </button>
 
                     <AccessProject permissions={[ PROJECT_PERMISSION.EDIT ]}>
                         <Button
