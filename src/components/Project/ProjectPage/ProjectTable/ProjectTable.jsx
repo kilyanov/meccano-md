@@ -38,7 +38,8 @@ class ProjectTable extends Component {
         isAllSelected: PropTypes.bool,
         articleColors: PropTypes.array,
         currentProject: PropTypes.object,
-        onChangeFilter: PropTypes.func
+        onChangeFilter: PropTypes.func,
+        getArticleMenu: PropTypes.func.isRequired
     };
 
     static defaultProps = {
@@ -319,24 +320,7 @@ class ProjectTable extends Component {
         const sp = new URLSearchParams();
         let url = archiveId ? `/archive/${archiveId}/article/${article.id}?` : `/project/${projectId}/article/${article.id}?`;
         let color = '';
-        const menuItems = [{
-            title: 'Изменить',
-            link: `/project/${projectId}/article/${article.id}`
-        }];
-
-        if (isProjectAccess([ PROJECT_PERMISSION.ACCESS_ARCHIVE ])) {
-            menuItems.push({
-                danger: true,
-                title: 'В архив',
-                onClick: () => this.props.onArchivingArticle(article.id)
-            })
-        }
-
-        menuItems.push({
-            danger: true,
-            title: 'Удвлить',
-            onClick: () => this.props.onDeleteArticle(article.id)
-        });
+        const menuItems = this.props.getArticleMenu(article);
 
         sp.set('search', search);
         sp.set('sort', sortString || '');

@@ -14,13 +14,13 @@ import { NotificationManager } from 'react-notifications';
 import ArticlesImportModal from '../../Article/ArticlesImportModal/ArticlesImportModal';
 import Page from '../../Shared/Page/Page';
 import Loader from '../../Shared/Loader/Loader';
-import { EVENTS, SORT_DIR, STORAGE_KEY } from '../../../constants';
+import { EVENTS, SORT_DIR, STORAGE_KEY, PROJECT_PERMISSION } from '../../../constants';
 import RightLoader from '../../Shared/Loader/RightLoader/RightLoader';
 import { Plural } from '../../../helpers/Tools';
 import InlineButton from '../../Shared/InlineButton/InlineButton';
 import { EventEmitter } from "../../../helpers";
 import store from "../../../redux/store";
-import { clearArticleColors, setArticleColors } from "../../../redux/actions";
+import { clearArticleColors } from "../../../redux/actions";
 import { getColumnsFromStorage } from "../../Project/ProjectPage/ProjectTable/Columns";
 import ArticleTransferModal from "../../Article/ArticleTransferModal/ArticleTransferModal";
 import ProjectPagination from "../../Project/ProjectPage/ProjectTable/ProjectPagination/ProjectPagintaion";
@@ -28,8 +28,6 @@ import ReactSelect from "../../Form/Select/ReactSelect/ReactSelect";
 import ArchiveCreateModal from "../ArchiveCreateModal";
 import { setCurrentProject } from "../../../redux/actions/currentProject";
 import StorageIcon from "../../Shared/SvgIcons/StorageIcon";
-import Access from "../../Shared/Access/Access";
-import { PROJECT_PERMISSION } from "../../../constants/ProjectPermissions";
 import { setCurrentArchive } from '../../../redux/actions';
 import Breadcrumbs from '../../Shared/Breadcrumbs';
 import AccessProject from '../../Shared/AccessProject';
@@ -270,31 +268,6 @@ class ArchivePage extends Component {
         });
     };
 
-    handleCompleteArticles = (isComplete = true) => {
-        const { userType } = this.state;
-        const selectedArticles = this.getAllSelectedArticles();
-        const selectedArticleIds = selectedArticles.map(({ id }) => id);
-
-        if (userType && userType.slug) {
-            const form = {
-                articleIds: selectedArticleIds,
-                properties: {
-                    [`complete_${userType.slug}`]: isComplete
-                }
-            };
-
-            this.setState({ inProgress: true }, () => {
-                ProjectService
-                    .updateMany(form, this.projectId)
-                    .then(() => {
-                        this.handleClearSelected(true);
-                        this.getArticles();
-                    })
-                    .catch(() => this.setState({ inProgress: false }));
-            });
-        }
-    };
-
     handleChangePage = ({ selected }) => {
         this.searchParams.set('page', (selected + 1).toString());
         this.setState(state => {
@@ -308,17 +281,18 @@ class ArchivePage extends Component {
         this.setState({ selectedStatus }, this.getArticles);
     };
 
-    handleReplaceToArchive = () => {
-        this.setState({ showCreateArchiveModal: true });
-    };
+    handleRestoreArticles = (articleIds = []) => {
+        if (!articleIds.length) return;
 
-    getArticleColors = () => {
-        ArticleService.color.get(this.projectId).then(response => {
-            if (response.data) {
-                store.dispatch(setArticleColors(response.data));
-            }
+        const { isAllArticlesSelected } = this.state;
+
+        this.setState({ inProgress: true }, () => {
+            ArchiveService
+                .restoreArticles(this.archiveId, isAllArticlesSelected ? { all: true } : { articleIds })
+                .then(this.getArticles)
+                .finally(() => this.setState({ inProgress: false }));
         });
-    };
+    }
 
     getArticles = () => {
         const { pagination, filters, userType, inProgress } = this.state;
@@ -476,7 +450,7 @@ class ArchivePage extends Component {
             user_type: userType && userType.id || '',
             page: this.searchParams.get('page'),
             'per-page': pagination.perPage || 30
-        }
+        };
 
         ArchiveService
             .articles
@@ -535,6 +509,20 @@ class ArchivePage extends Component {
         history.replace(location);
     };
 
+    onGetArticleMenu = (article) => {
+        return [{
+            title: 'Изменить',
+            link: `/project/${this.projectId}/article/${article.id}`
+        }, {
+            title: 'Восстановить',
+            onClick: () => this.handleRestoreArticles([article.id])
+        }, {
+            danger: true,
+            title: 'Удвлить',
+            onClick: () => this.props.onDeleteArticle(article.id)
+        }];
+    };
+
     projectId = this.props.match.params.projectId;
 
     archiveId = this.props.match.params.id;
@@ -584,7 +572,7 @@ class ArchivePage extends Component {
                 redirect='/'
             >
                 <Page {...cls()} withBar>
-                <Breadcrumbs location={this.props.location} />
+                    <Breadcrumbs location={this.props.location} />
                     <section {...cls('title-wrapper')} title={_.get(archive, 'description')}>
                         <StorageIcon {...cls('title-icon')} />
                         {archive && <h2 {...cls('title')}>Архив</h2>}
@@ -609,6 +597,22 @@ class ArchivePage extends Component {
                                     )}`}
                                 style='success'
                                 onClick={() => this.setState({ showUploadArticlesModal: true })}
+                            />
+                        )}
+
+                        {!!selectedArticles.length && (
+                            <Button
+                                {...cls('upload-btn')}
+                                text={`Восстановить ${isAllArticlesSelected 
+                                    ? 'все' 
+                                    : Plural(
+                                        selectedArticles.length,
+                                        `${selectedArticles.length} `,
+                                        ['статью', 'статьи', 'статей']
+                                    )}`
+                                }
+                                style='info'
+                                onClick={() => this.handleRestoreArticles(selectedArticleIds)}
                             />
                         )}
                     </section>
@@ -679,6 +683,7 @@ class ArchivePage extends Component {
                             onDeleteArticle={this.handleDeleteArticle}
                             onChangeFilter={this.handleChangeFilter}
                             onUpdateParent={() => this.getArticles()}
+                            getArticleMenu={this.onGetArticleMenu}
                             sort={filters.sort}
                             search={filters.search}
                             page={currentPage}
@@ -775,14 +780,14 @@ class ArchivePage extends Component {
 function mapStateToProps(state) {
     return {
         profile: state.profile
-    }
+    };
 }
 
 function mapDispatchToProps(dispatch) {
     return {
         setCurrentArchive: (value) => dispatch(setCurrentArchive(value)),
         clearArticleColors: () => dispatch(clearArticleColors())
-    }
+    };
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(ArchivePage);

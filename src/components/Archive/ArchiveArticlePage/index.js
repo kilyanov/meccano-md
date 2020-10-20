@@ -10,7 +10,7 @@ import {
     SourceService,
     StorageService
 } from '../../../services';
-import './article-create-page.scss';
+import './archive-create-page.scss';
 import Form from '../../Form/Form/Form';
 import Loader from '../../Shared/Loader/Loader';
 import ArrowIcon from '../../Shared/SvgIcons/ArrowIcon';
@@ -23,14 +23,14 @@ import { EventEmitter } from "../../../helpers";
 import { EVENTS } from "../../../constants";
 import store from "../../../redux/store";
 import { setCurrentProject } from "../../../redux/actions/currentProject";
-import { PROJECT_PERMISSION } from "../../../constants/ProjectPermissions";
+import { PROJECT_PERMISSION } from "../../../constants";
 import { KEY_CODE } from "../../../constants";
 import TinyMCE from "../../Form/TinyMCE/TinyMCE";
 import CreateLocationModal from "./CreateLocationModal";
 import { setCurrentArticle, clearCurrentArticle, setCurrentArchive } from '../../../redux/actions';
 import Breadcrumbs from '../../Shared/Breadcrumbs';
 
-const cls = new Bem('article-create-page');
+const cls = new Bem('archive-create-page');
 const defaultTimeZone = 'Europe/Moscow';
 const toDateWithoutTimeZone = (date) => {
     if (!date) return new Date();
@@ -408,7 +408,7 @@ class ArchiveArticlePage extends Component {
                     }
 
                     if (!this.props.currentProject) {
-                       this.props.setCurrentProject(form.project);
+                        this.props.setCurrentProject(form.project);
                     }
                     
                     newState.articleId = form.id;
