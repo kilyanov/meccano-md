@@ -22,7 +22,7 @@ export default class ArchiveModal extends Component {
     static propTypes = {
         articleIds: PropTypes.array,
         projectId: PropTypes.string.isRequired,
-        updateArticels: PropTypes.func,
+        onSubmit: PropTypes.func,
         onClose: PropTypes.func.isRequired,
         isAll: PropTypes.bool
     };
@@ -211,6 +211,10 @@ export default class ArchiveModal extends Component {
                         projectId={projectId}
                         articleIds={articleIds}
                         isAll={isAll}
+                        onSuccessCreate={() => {
+                            this.props.onSubmit();
+                            this.props.onClose();
+                        }}
                         onClose={() => this.setState({ showCreateModal: false })}
                     />
                 )}

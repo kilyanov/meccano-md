@@ -32,7 +32,7 @@ export default function Breadcrumbs({ location }) {
 
         if (splitted[0] === 'archive' && currentArchive) {
             crumbs.push({
-                label: currentArchive.name || 'Безымянный архив',
+                label: currentArchive.description || 'Безымянный архив',
                 link: `/archive/${currentProject.id}/${currentArchive.id}`,
                 disabled: splitted.length === 3,
                 type: 'archive'
