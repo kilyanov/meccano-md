@@ -61,7 +61,7 @@ class ArchivePage extends Component {
             isAllArticlesSelected: false,
             pagination,
             userType,
-            filters: defaultFilters,
+            filters: { ...defaultFilters },
             inProgress: true
         };
     }
@@ -71,28 +71,25 @@ class ArchivePage extends Component {
         this.getProject().then(this.getArticles);
     }
 
-    componentDidUpdate(/* prevProps */) {
-        // if (prevProps.match.params.id !== this.props.match.params.id) {
-        //     this.projectId = this.props.match.params.id;
-        //     this.setState({
-        //         articles: [],
-        //         activeArticle: null,
-        //         selectedItemIds: [],
-        //         selectedStatus: [],
-        //         isAllArticlesSelected: false,
-        //         pagination: defaultPagination,
-        //         project: null,
-        //         filters: defaultFilters,
-        //         showArticleModal: false,
-        //         showUploadArticlesModal: false,
-        //         showImportArticlesModal: false,
-        //         showTransferModal: false,
-        //         inProgress: true
-        //     }, () => {
-        //         this.getProject(this.projectId).then(this.getArticles);
-        //         this.getArticleColors();
-        //     });
-        // }
+    componentDidUpdate(prevProps) {
+        if (prevProps.match.params.id !== this.props.match.params.id) {
+            this.archiveId = this.props.match.params.id;
+            this.setState({
+                articles: [],
+                activeArticle: null,
+                selectedItemIds: [],
+                selectedStatus: [],
+                isAllArticlesSelected: false,
+                pagination: { ...defaultPagination },
+                archive: null,
+                filters: { ...defaultFilters },
+                showArticleModal: false,
+                showUploadArticlesModal: false,
+                showImportArticlesModal: false,
+                showTransferModal: false,
+                inProgress: true
+            }, () => this.getArchive(this.archiveId).then(this.getArticles));
+        }
     }
 
     componentWillUnmount() {
@@ -398,7 +395,7 @@ class ArchivePage extends Component {
     };
 
     getArchive = () => {
-        ArchiveService
+        return ArchiveService
             .get(this.projectId, this.archiveId, { expand: 'user' })
             .then(response => {
                 this.setState({ archive: response.data, inProgress: false });

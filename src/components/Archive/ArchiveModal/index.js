@@ -181,7 +181,8 @@ export default class ArchiveModal extends Component {
                                     <li { ...cls('item') } key={archive.id}>
                                         <Link
                                             { ...cls('item-link') }
-                                            to={`/archive/${projectId}/${archive.id}`} target='_blank'
+                                            to={`/archive/${projectId}/${archive.id}`}
+                                            onClick={() => this.props.onClose()}
                                         >
                                             <div {...cls('item-container')}>
                                                 <StorageIcon { ...cls('item-icon') }/>
