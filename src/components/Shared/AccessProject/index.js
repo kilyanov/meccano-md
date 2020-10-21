@@ -5,8 +5,9 @@ import { EVENTS } from "../../../constants";
 import { useSelector } from "react-redux";
 import Loader from "../Loader/Loader";
 
-export default function AccessProject({ permissions, children, replaceComponent, redirect }) {
+export default function AccessProject({ permissions, children, replaceComponent = <Loader/>, redirect }) {
     const profile = useSelector(state => state.profile);
+    const currentProject = useSelector(state => state.currentProject);
 
     if (_.isEmpty(profile)) {
         return <Loader/>;
@@ -16,7 +17,7 @@ export default function AccessProject({ permissions, children, replaceComponent,
     const canRender = !permissions || canByProjectPermissions;
 
 
-    if (!canRender && redirect) {
+    if (!canRender && redirect && currentProject) {
         EventEmitter.emit(EVENTS.REDIRECT, redirect);
     }
 

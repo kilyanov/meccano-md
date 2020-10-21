@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import TextArea from "../../Form/TextArea/TextArea";
 import ConfirmModal from "../../Shared/ConfirmModal/ConfirmModal";
 import { ArchiveService } from "../../../services";
 import { NotificationManager } from "react-notifications";
 import Loader from "../../Shared/Loader/Loader";
+import InputText from "../../Form/InputText/InputText";
 
 import './archive-create-modal.scss';
 
@@ -45,8 +45,9 @@ export default function ArchiveCreateModal({
             onSubmit={handleSubmit}
             width='small'
         >
-            <TextArea
-                placeholder='Описание'
+            <InputText
+                autoFocus
+                placeholder='Наименование'
                 value={description}
                 onChange={value => setDescription(value)}
             />

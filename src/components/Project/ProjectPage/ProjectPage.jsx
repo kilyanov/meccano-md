@@ -18,7 +18,7 @@ import Page from '../../Shared/Page/Page';
 import Loader from '../../Shared/Loader/Loader';
 import { EVENTS, SORT_DIR, STORAGE_KEY } from '../../../constants';
 import RightLoader from '../../Shared/Loader/RightLoader/RightLoader';
-import { Plural, QueueManager } from '../../../helpers/Tools';
+import { isProjectAccess, Plural, QueueManager } from '../../../helpers/Tools';
 import InlineButton from '../../Shared/InlineButton/InlineButton';
 import { EventEmitter } from "../../../helpers";
 import store from "../../../redux/store";
@@ -317,7 +317,6 @@ export default class ProjectPage extends Component {
     handleArchivingArticle = (articleId) => {
         this.setState({ showArchiveModal: true, selectedArticleId: articleId });
     }
-    
 
     getArticleColors = () => {
         ArticleService.color.get(this.projectId).then(response => {
@@ -506,6 +505,29 @@ export default class ProjectPage extends Component {
 
         location.search = this.searchParams.toString();
         history.replace(location);
+    };
+
+    onGetArticleMenu = (article) => {
+        const menuItems = [{
+            title: 'Изменить',
+            link: `/project/${this.projectId}/article/${article.id}`
+        }];
+
+        if (isProjectAccess([ PROJECT_PERMISSION.ACCESS_ARCHIVE ])) {
+            menuItems.push({
+                danger: true,
+                title: 'В архив',
+                onClick: () => this.props.onArchivingArticle(article.id)
+            });
+        }
+
+        menuItems.push({
+            danger: true,
+            title: 'Удвлить',
+            onClick: () => this.props.onDeleteArticle(article.id)
+        });
+
+        return menuItems;
     };
 
     queueMessage = { id: 'articles', text: 'Загрузка статей...' };
@@ -710,6 +732,7 @@ export default class ProjectPage extends Component {
                         onArchivingArticle={this.handleArchivingArticle}
                         onChangeFilter={this.handleChangeFilter}
                         onUpdateParent={() => this.getArticles()}
+                        getArticleMenu={this.onGetArticleMenu}
                         sort={filters.sort}
                         search={filters.search}
                         page={currentPage}

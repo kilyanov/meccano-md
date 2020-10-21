@@ -22,7 +22,7 @@ export default class ArchiveModal extends Component {
     static propTypes = {
         articleIds: PropTypes.array,
         projectId: PropTypes.string.isRequired,
-        updateArticels: PropTypes.func,
+        onSubmit: PropTypes.func,
         onClose: PropTypes.func.isRequired,
         isAll: PropTypes.bool
     };
@@ -181,7 +181,8 @@ export default class ArchiveModal extends Component {
                                     <li { ...cls('item') } key={archive.id}>
                                         <Link
                                             { ...cls('item-link') }
-                                            to={`/archive/${projectId}/${archive.id}`} target='_blank'
+                                            to={`/archive/${projectId}/${archive.id}`}
+                                            onClick={() => this.props.onClose()}
                                         >
                                             <div {...cls('item-container')}>
                                                 <StorageIcon { ...cls('item-icon') }/>
@@ -211,6 +212,10 @@ export default class ArchiveModal extends Component {
                         projectId={projectId}
                         articleIds={articleIds}
                         isAll={isAll}
+                        onSuccessCreate={() => {
+                            this.props.onSubmit();
+                            this.props.onClose();
+                        }}
                         onClose={() => this.setState({ showCreateModal: false })}
                     />
                 )}
