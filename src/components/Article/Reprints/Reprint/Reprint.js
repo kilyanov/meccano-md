@@ -1,7 +1,7 @@
 import React, { useState, useRef } from 'react';
 import InputText from '../../../Form/InputText/InputText';
 import InputDateTimePicker from '../../../Form/InputDateTimePicker/InputDatePicker';
-import Select from '../../../Form/Select/Select';
+import AsyncCreateableSelect from '../../../Form/AsyncCreatebleSelect/AsyncCreateableSelect';
 import DropDown from '../../../Shared/DropDown/DropDown';
 import DropDownMenuIcon from '../../../Shared/SvgIcons/DropDownMenuIcon';
 import PropTypes from 'prop-types';
@@ -9,7 +9,21 @@ import './reprint.scss';
 
 const cls = new Bem('reprint');
 
-function Reprint({ index, id, title, url, source_id: sourceId, city_id: cityId, date, onFieldChange, onDeleteReprint }) {
+function Reprint({ 
+    index,
+    id,
+    title,
+    url,
+    source_id: sourceId,
+    city_id: cityId,
+    date,
+    onFieldChange,
+    onDeleteReprint,
+    loadedSources,
+    loadedCities,
+    SourceService,
+    LocationService
+}) {
     const [isShownAllFields, setShownAllFields] = useState(false);
     const dropDownMenuElement = useRef();
 
@@ -48,6 +62,14 @@ function Reprint({ index, id, title, url, source_id: sourceId, city_id: cityId, 
         </button>
     );
 
+    const handleFieldChangeOnSelect = ({ index: reprintIndex, name, select }) => {
+        onFieldChange({ 
+            index: reprintIndex,
+            name, 
+            value: select?.value || null 
+        });
+    };
+
     return (
         <div {...cls()}>
             <div {...cls('grid')}>
@@ -55,6 +77,7 @@ function Reprint({ index, id, title, url, source_id: sourceId, city_id: cityId, 
                     value={title || ''}
                     onChange={value => onFieldChange({ index, name: 'title', value })}
                     required
+                    validateType="notEmpty"
                     {...cls('field')}
                 />
                 {dropDown}
@@ -64,22 +87,23 @@ function Reprint({ index, id, title, url, source_id: sourceId, city_id: cityId, 
                             value={url || ''}
                             onChange={value => onFieldChange({ index, name: 'url', value })}
                             validateType="link"
-                            required
                             {...cls('field')}
                         />
-                        <Select
+                        <AsyncCreateableSelect
                             placeholder={'СМИ (Источник)'}
-                            options={null || []}
                             selected={sourceId}
-                            onChange={value => onFieldChange({ index, name: 'source_id', value })}
+                            onChange={(select) => handleFieldChangeOnSelect({ index, name: 'source_id', select })}
                             {...cls('field')}
+                            requestService={SourceService.get}
+                            loadedOptions={loadedSources || []}
                         />
-                        <Select
+                        <AsyncCreateableSelect
                             placeholder={'Город'}
-                            options={null || []}
                             selected={cityId}
-                            onChange={value => onFieldChange({ index, name: 'city_id', value })}
+                            onChange={(select) => handleFieldChangeOnSelect({ index, name: 'city_id', select })}
                             {...cls('field', 'half-size')}
+                            requestService={LocationService.city.get}
+                            loadedOptions={loadedCities || []}
                         />
                         <InputDateTimePicker
                             value={date || null}
@@ -106,11 +130,15 @@ Reprint.propTypes = {
     id: PropTypes.string,
     title: PropTypes.string,
     url: PropTypes.string,
-    source_id: PropTypes.string,
-    city_id: PropTypes.string,
+    source_id: PropTypes.any,
+    city_id: PropTypes.any,
     date: PropTypes.instanceOf(Date),
     onFieldChange: PropTypes.func,
-    onDeleteReprint : PropTypes.func
+    onDeleteReprint : PropTypes.func,
+    loadedSources: PropTypes.array,
+    loadedCities: PropTypes.array,
+    SourceService: PropTypes.object,
+    LocationService: PropTypes.object
 };
 
 export default Reprint;

@@ -95,7 +95,9 @@ class ArticleCreatePage extends Component {
             textIsChanged: false,
             annotationIsChanged: false,
             timeZone: defaultTimeZone,
-            inProgress: true
+            inProgress: true,
+            loadedSources: [],
+            loadedCities: []
         };
     }
 
@@ -141,6 +143,26 @@ class ArticleCreatePage extends Component {
         if (this.props.profile) {
             this.setState({ timeZone: this.props.profile.timeZone });
         }
+
+        SourceService.get().then(({ data }) => {
+            const sources = data.map(el => {
+                return { 
+                    label: el.name, 
+                    value: el.id
+                };
+            });
+            this.setState({ loadedSources: sources});
+        });
+
+        LocationService.city.get().then(({ data }) => {
+            const cities = data.map(el => {
+                return { 
+                    label: el.name, 
+                    value: el.id
+                };
+            });
+            this.setState({ loadedCities: cities});
+        });
     }
 
     componentDidUpdate(prevProps, prevState) {
@@ -969,6 +991,10 @@ class ArticleCreatePage extends Component {
                 >
                     <Reprints
                         reprints={this.state.form.reprints}
+                        loadedSources={this.state.loadedSources || []}
+                        loadedCities={this.state.loadedCities || []}
+                        SourceService={SourceService}
+                        LocationService={LocationService}
                         onFieldChange={this.handleChangeReprints}
                         onAddReprint={this.handleAddReprint}
                         onDeleteReprint={this.handleDeleteReprint}

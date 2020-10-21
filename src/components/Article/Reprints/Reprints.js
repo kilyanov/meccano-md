@@ -7,7 +7,16 @@ import './reprints.scss';
 
 const cls = new Bem('reprints');
 
-function Reprints({ reprints, onFieldChange, onAddReprint, onDeleteReprint }) {
+function Reprints({ 
+    reprints,
+    onFieldChange,
+    onAddReprint,
+    onDeleteReprint,
+    loadedSources,
+    loadedCities,
+    SourceService,
+    LocationService
+}) {
     return (
         <div {...cls()}>
             {reprints.length
@@ -20,6 +29,10 @@ function Reprints({ reprints, onFieldChange, onAddReprint, onDeleteReprint }) {
                             onDeleteReprint={onDeleteReprint}
                             {...reprint}
                             date={new Date(reprint.date)}
+                            loadedSources={loadedSources}
+                            loadedCities={loadedCities}
+                            SourceService={SourceService}
+                            LocationService={LocationService}
                         />
                     );
                 })
@@ -38,7 +51,11 @@ Reprints.propTypes = {
     reprints: PropTypes.array,
     onFieldChange: PropTypes.func,
     onAddReprint: PropTypes.func,
-    onDeleteReprint: PropTypes.func
+    onDeleteReprint: PropTypes.func,
+    loadedSources: PropTypes.array,
+    loadedCities: PropTypes.array,
+    SourceService: PropTypes.object,
+    LocationService: PropTypes.object
 };
 
 export default Reprints;

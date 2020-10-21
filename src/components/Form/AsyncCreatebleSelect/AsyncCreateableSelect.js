@@ -10,11 +10,11 @@ import {EventEmitter} from "../../../helpers";
 const cls = new BEMHelper('select');
 const SingleValue = ({ children, ...props }) => (
     <components.SingleValue {...props}><div title={children}>{children}</div></components.SingleValue>
-  );
+);
 
 class AsyncCreatableSelect extends Component {
     state = {
-        loadedOptions: [],
+        loadedOptions: this.props.loadedOptions || [],
         currentOption: {},
         isError: false,
         inProgress: true
@@ -28,7 +28,9 @@ class AsyncCreatableSelect extends Component {
         }
 
         if (requestService) {
-            this.getOptions('', () => {}, false);
+            if (!this.props.loadedOptions) {
+                this.getOptions('', () => {}, false);
+            }
 
             if (selected) {
                 requestService({ 'query[id]': selected }).then(response => {
