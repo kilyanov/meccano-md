@@ -25,7 +25,14 @@ export default function ReactSelect({
     return (
         <div {...cls('', { succeed: !!selectedValue }, className)}>
             {label && (
-                <label {...cls('label', { required: required && (!selectedValue || !selectedValue.value) }, { 'drag-handle': draggable })} title={required ? 'Обязательное поле' : ''}>
+                <label
+                    title={required ? 'Обязательное поле' : ''}
+                    {...cls(
+                        'label',
+                        { required: required && (!selectedValue || !selectedValue.value) },
+                        { 'drag-handle': draggable }
+                    )}
+                >
                     <span {...cls('label-text', '', { 'drag-handle': draggable })}>{label}</span>
                 </label>
             )}
