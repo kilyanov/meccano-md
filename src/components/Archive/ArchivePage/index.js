@@ -567,6 +567,7 @@ class ArchivePage extends Component {
             <AccessProject
                 permissions={[ PROJECT_PERMISSION.ACCESS_ARCHIVE ]}
                 redirect='/'
+                replaceComponent={<Loader/>}
             >
                 <Page {...cls()} withBar>
                     <Breadcrumbs location={this.props.location} />
