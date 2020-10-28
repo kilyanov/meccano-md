@@ -260,6 +260,7 @@ class ArticleCreatePage extends Component {
         }, null, this.state.userTypeId)
             .then(({data}) => {
                 this.handleDeleteReprint(index);
+                this.handleSaveReprintsOnly();
                 OperatedNotification.success({
                     title: 'Создание статьи',
                     message: 'Статья из перепечатки успешно создана',
@@ -268,8 +269,6 @@ class ArticleCreatePage extends Component {
                     onSubmit: () => window.open(`/project/${this.state.projectId}/article/${data.id}`, '_blank')
                 });
             });
-
-        this.handleSaveReprintsOnly();
     }
 
     handleSaveReprintsOnly = () => {
