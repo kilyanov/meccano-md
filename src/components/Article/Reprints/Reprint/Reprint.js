@@ -19,6 +19,7 @@ function Reprint({
     date,
     onFieldChange,
     onDeleteReprint,
+    onCreateArticleFromReprint,
     loadedSources,
     loadedCities,
     SourceService,
@@ -29,8 +30,15 @@ function Reprint({
 
     const dropDownMenuItems = [
         {
-            title: 'Создать новую',
-            onClick: () => console.log(`Создать ${id}`)
+            title: 'Создать статью',
+            onClick: () => onCreateArticleFromReprint({ 
+                title,
+                url,
+                sourceId,
+                cityId,
+                date,
+                index
+            })
         },
         {
             title: 'Перенести',
@@ -135,6 +143,7 @@ Reprint.propTypes = {
     date: PropTypes.instanceOf(Date),
     onFieldChange: PropTypes.func,
     onDeleteReprint : PropTypes.func,
+    onCreateArticleFromReprint: PropTypes.func,
     loadedSources: PropTypes.array,
     loadedCities: PropTypes.array,
     SourceService: PropTypes.object,

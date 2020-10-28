@@ -241,6 +241,43 @@ class ArticleCreatePage extends Component {
         this.handleChangeForm(reprints, 'reprints');
     }
 
+    handleCreateArticleFromReprint = ({ title, url, sourceId, cityId, date, index }) => {
+        const form = {
+            projectId: this.state.projectId,
+            title,
+            url,
+            date,
+            source: {
+                id: sourceId
+            },
+            city: {
+                id: cityId
+            }
+        };
+
+        ArticleService.create({ 
+            ...form, projectId: this.state.projectId 
+        }, null, this.state.userTypeId)
+            .then(({data}) => {
+                this.handleDeleteReprint(index);
+                OperatedNotification.success({
+                    title: 'Создание статьи',
+                    message: 'Статья из перепечатки успешно создана',
+                    submitButtonText: '↗ Перейти к статье',
+                    timeOut: 10000,
+                    onSubmit: () => window.open(`/project/${this.state.projectId}/article/${data.id}`, '_blank')
+                });
+            });
+
+        this.handleSaveReprintsOnly();
+    }
+
+    handleSaveReprintsOnly = () => {
+        const form = {};
+        form.reprints = this.state.form.reprints;
+        ArticleService.update(form, this.state.form.id, this.state.userTypeId);
+    }
+
     handleShowViewSettings = () => {
         this.setState({ showViewSettings: true });
     };
@@ -998,6 +1035,7 @@ class ArticleCreatePage extends Component {
                         onFieldChange={this.handleChangeReprints}
                         onAddReprint={this.handleAddReprint}
                         onDeleteReprint={this.handleDeleteReprint}
+                        onCreateArticleFromReprint={this.handleCreateArticleFromReprint}
                     />
                 </Drawer>
 

@@ -12,6 +12,7 @@ function Reprints({
     onFieldChange,
     onAddReprint,
     onDeleteReprint,
+    onCreateArticleFromReprint,
     loadedSources,
     loadedCities,
     SourceService,
@@ -27,6 +28,7 @@ function Reprints({
                             index={index}
                             onFieldChange={onFieldChange}
                             onDeleteReprint={onDeleteReprint}
+                            onCreateArticleFromReprint={onCreateArticleFromReprint}
                             {...reprint}
                             date={new Date(reprint.date)}
                             loadedSources={loadedSources}
@@ -52,6 +54,7 @@ Reprints.propTypes = {
     onFieldChange: PropTypes.func,
     onAddReprint: PropTypes.func,
     onDeleteReprint: PropTypes.func,
+    onCreateArticleFromReprint: PropTypes.func,
     loadedSources: PropTypes.array,
     loadedCities: PropTypes.array,
     SourceService: PropTypes.object,
