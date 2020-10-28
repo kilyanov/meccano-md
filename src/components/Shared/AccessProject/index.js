@@ -5,7 +5,7 @@ import { EVENTS } from "../../../constants";
 import { useSelector } from "react-redux";
 import Loader from "../Loader/Loader";
 
-export default function AccessProject({ permissions, children, replaceComponent = <Loader/>, redirect }) {
+export default function AccessProject({ permissions, children, replaceComponent = null, redirect }) {
     const profile = useSelector(state => state.profile);
     const currentProject = useSelector(state => state.currentProject);
 

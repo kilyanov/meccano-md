@@ -49,6 +49,10 @@ export function ReactSelectStyles(isDarkTheme, readOnly) {
         multiValueRemove: (provided) => ({
             ...provided,
             color: isDarkTheme ? '#313131' : null
+        }),
+        singleValue: (provided) => ({
+            ...provided,
+            color: isDarkTheme ? '#f2f2f2' : null
         })
     };
 }
