@@ -2,6 +2,7 @@ import React, { useState, useRef } from 'react';
 import InputText from '../../../Form/InputText/InputText';
 import InputDateTimePicker from '../../../Form/InputDateTimePicker/InputDatePicker';
 import AsyncCreateableSelect from '../../../Form/AsyncCreatebleSelect/AsyncCreateableSelect';
+import CheckBox from '../../../Form/CheckBox/CheckBox';
 import DropDown from '../../../Shared/DropDown/DropDown';
 import DropDownMenuIcon from '../../../Shared/SvgIcons/DropDownMenuIcon';
 import PropTypes from 'prop-types';
@@ -19,6 +20,7 @@ function Reprint({
     date,
     onFieldChange,
     onDeleteReprint,
+    onSelectReprint,
     onCreateArticleFromReprint,
     loadedSources,
     loadedCities,
@@ -26,6 +28,7 @@ function Reprint({
     LocationService
 }) {
     const [isShownAllFields, setShownAllFields] = useState(false);
+    const [isSelectedReprint, setIsSelectedReprint] = useState(false);
     const dropDownMenuElement = useRef();
 
     const dropDownMenuItems = [
@@ -41,10 +44,6 @@ function Reprint({
             })
         },
         {
-            title: 'Перенести',
-            onClick: () => console.log(`Перенести ${id}`)
-        },
-        {
             danger: true,
             title: 'Удалить',
             onClick: () => onDeleteReprint(index)
@@ -53,6 +52,11 @@ function Reprint({
 
     const handleShowAllFields = () => {
         setShownAllFields(!isShownAllFields);
+    };
+
+    const handleSelectReprint = (e) => {
+        setIsSelectedReprint(!isSelectedReprint);
+        onSelectReprint({ id, e });
     };
 
     const dropDown = (
@@ -80,6 +84,11 @@ function Reprint({
 
     return (
         <div {...cls()}>
+            <CheckBox
+                {...cls('select-reprint')}
+                checked={isSelectedReprint}
+                onChange={handleSelectReprint}
+            />
             <div {...cls('grid')}>
                 <InputText
                     value={title || ''}
@@ -142,7 +151,8 @@ Reprint.propTypes = {
     city_id: PropTypes.any,
     date: PropTypes.instanceOf(Date),
     onFieldChange: PropTypes.func,
-    onDeleteReprint : PropTypes.func,
+    onDeleteReprint: PropTypes.func,
+    onSelectReprint: PropTypes.func,
     onCreateArticleFromReprint: PropTypes.func,
     loadedSources: PropTypes.array,
     loadedCities: PropTypes.array,
