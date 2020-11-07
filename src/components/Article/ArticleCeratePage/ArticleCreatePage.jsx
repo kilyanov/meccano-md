@@ -281,7 +281,6 @@ class ArticleCreatePage extends Component {
     }
 
     handleSaveReprintsOnly = () => {
-        console.log('Запрос');
         const form = {};
         form.reprints = this.state.form.reprints;
         ArticleService.update(form, this.state.form.id, this.state.userTypeId)

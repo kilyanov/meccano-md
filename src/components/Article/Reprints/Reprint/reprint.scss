@@ -12,7 +12,12 @@ $namespace: '.reprint';
     flex-wrap: wrap;
     width: 100%;
     // box-shadow: inset 0 0 0 1px $brownGreyColor;
-    padding: 0 0 1px 30px;
+    padding: 0 0 1px 0;
+    transition: padding 0.25s;
+
+    &--is-selectable {
+      padding: 0 0 1px 30px;
+    }
   }
 
   &__field {

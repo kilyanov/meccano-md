@@ -25,7 +25,8 @@ function Reprint({
     loadedSources,
     loadedCities,
     SourceService,
-    LocationService
+    LocationService,
+    isSelectable
 }) {
     const [isShownAllFields, setShownAllFields] = useState(false);
     const [isSelectedReprint, setIsSelectedReprint] = useState(false);
@@ -84,12 +85,14 @@ function Reprint({
 
     return (
         <div {...cls()}>
-            <CheckBox
-                {...cls('select-reprint')}
-                checked={isSelectedReprint}
-                onChange={handleSelectReprint}
-            />
-            <div {...cls('grid')}>
+            {isSelectable &&
+                <CheckBox
+                    {...cls('select-reprint')}
+                    checked={isSelectedReprint}
+                    onChange={handleSelectReprint}
+                />
+            }
+            <div {...cls('grid', {'is-selectable': isSelectable})}>
                 <InputText
                     value={title || ''}
                     onChange={value => onFieldChange({ index, name: 'title', value })}
@@ -157,7 +160,8 @@ Reprint.propTypes = {
     loadedSources: PropTypes.array,
     loadedCities: PropTypes.array,
     SourceService: PropTypes.object,
-    LocationService: PropTypes.object
+    LocationService: PropTypes.object,
+    isSelectable: PropTypes.bool
 };
 
 export default Reprint;
