@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { getColumnsFromStorage } from "../../../Project/ProjectPage/ProjectTable/Columns";
 import CheckBox from '../../../Form/CheckBox/CheckBox';
+import ProjectPagination from "../../../Project/ProjectPage/ProjectTable/ProjectPagination/ProjectPagintaion";
 import './list-of-articles.scss';
 
 const cls = new Bem('list-of-articles');
@@ -10,31 +11,42 @@ function ListOfArticles({ project, userTypeId, onSelectArticle, ArticleService }
     const { id: projectId, name } = project;
     const [ articles, setArticles ] = useState([]);
     const [ selectedArticle, setSelectedArticle ] = useState(null);
-
-    useEffect(() => {
-        ArticleService.getList({ 
-            project: projectId,
-            archive: '',
-            user_type: userTypeId,
-            expand
-        })
-            .then(({data}) => {
-                setArticles(data);
-            });
-    }, []);
-
-    const isChecked = (article) => {
-        return selectedArticle === article;
-    };
+    const [ paginationPage, setPaginationPage ] = useState(1);
+    const [ paginationPageCount, setPaginationPageCount ] = useState(1);
 
     const expand = getColumnsFromStorage().map(({ key }) => {
         if (key === 'source_id') return 'source';
         return key;
     }).toString();
 
+    useEffect(() => {
+        console.log(paginationPage);
+        ArticleService.getList({ 
+            project: projectId,
+            archive: '',
+            user_type: userTypeId,
+            expand,
+            page: paginationPage,
+            'per-page': 30
+        })
+            .then(({data, headers}) => {
+                console.log(paginationPage, paginationPageCount);
+                setPaginationPageCount(+headers['x-pagination-page-count']);
+                setArticles(data);
+            });
+    }, [paginationPage]);
+
+    const isChecked = (article) => {
+        return selectedArticle === article;
+    };
+
     const handleSelectArticle = ({ article }) => {
         setSelectedArticle(article);
         onSelectArticle(article.id);
+    };
+
+    const handlePageChenge = ({ selected }) => {
+        setPaginationPage(selected + 1);
     };
 
     return (
@@ -81,6 +93,11 @@ function ListOfArticles({ project, userTypeId, onSelectArticle, ArticleService }
                     </div>
                 ))}
             </div>
+            <ProjectPagination 
+                page={1}
+                pageCount={paginationPageCount} 
+                onPageChange={handlePageChenge}
+            />
         </div>
     );
 }
