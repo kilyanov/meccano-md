@@ -961,13 +961,15 @@ class ArticleCreatePage extends Component {
                         <LocationIcon/>
                     </button>
 
-                    <button
-                        {...cls('drawer-button')}
-                        onClick={this.handleShowDrawer}
-                        title='Перепечатки'
-                    >
-                        <ReprintsIcon />
-                    </button>
+                    {this.state.articleId && 
+                        <button
+                            {...cls('drawer-button')}
+                            onClick={this.handleShowDrawer}
+                            title='Перепечатки'
+                        >
+                            <ReprintsIcon />
+                        </button>
+                    }
 
                     <AccessProject permissions={[ PROJECT_PERMISSION.EDIT ]}>
                         <Button
