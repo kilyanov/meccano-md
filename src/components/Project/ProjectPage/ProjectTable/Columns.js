@@ -1,8 +1,8 @@
-import {StorageService} from '../../../../services';
-import {STORAGE_KEY} from '../../../../constants/LocalStorageKeys';
+import { StorageService } from '../../../../services';
+import { STORAGE_KEY } from '../../../../constants';
 
 export const getColumnsFromFields = (fields) => {
-    return fields.map(({slug}) => slug);
+    return fields.map(({ slug }) => slug);
 };
 
 export const getColumnsFromStorage = (projectId, projectColumns = []) => {
@@ -67,12 +67,12 @@ export const updateColumnWidth = (projectId, columnKey, newWidth) => {
 export const DEFAULT_COLUMN_WIDTH = 0;
 
 export const DEFAULT_COLUMNS = [
-    {key: 'date', width: DEFAULT_COLUMN_WIDTH},
-    {key: 'source_id', width: DEFAULT_COLUMN_WIDTH},
-    {key: 'title', width: DEFAULT_COLUMN_WIDTH},
-    {key: 'annotation', width: DEFAULT_COLUMN_WIDTH}
+    { key: 'date', width: DEFAULT_COLUMN_WIDTH },
+    { key: 'source_id', width: DEFAULT_COLUMN_WIDTH },
+    { key: 'title', width: DEFAULT_COLUMN_WIDTH },
+    { key: 'annotation', width: DEFAULT_COLUMN_WIDTH }
 ];
 
 const getVerifyColumns = (selectedColumns, projectColumns) => {
-    return selectedColumns.filter(({key}) => projectColumns.includes(key));
+    return selectedColumns.filter(({ key }) => projectColumns.includes(key));
 };
