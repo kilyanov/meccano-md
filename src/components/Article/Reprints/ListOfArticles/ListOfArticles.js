@@ -82,7 +82,7 @@ function ListOfArticles({ project, userTypeId, onSelectArticle, ArticleService }
                             />
                         </div>
                         <div {...cls('cell')} style={{ width: 170 }}>
-                            <span {...cls('cell-text')}>{article.date}</span>
+                            <span {...cls('cell-text')}>{moment(article.date).format('DD.MM.YYYY HH:mm')}</span>
                         </div>
                         <div {...cls('cell')} style={{ width: 170 }}>
                             <span {...cls('cell-text')}>{article.source?.name}</span>
