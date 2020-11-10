@@ -241,6 +241,15 @@ class ArticleCreatePage extends Component {
         this.handleChangeForm(reprints, 'reprints');
     }
 
+    handleDeleteReprints = (deletableReprints) => {
+        const reprints = this.state.form.reprints;
+        deletableReprints.forEach(delRep => {
+            const index = reprints.findIndex(rep => rep.id === delRep);
+            reprints.splice(index, 1);
+        });
+        this.handleChangeForm(reprints, 'reprints');
+    }
+
     handleCreateArticleFromReprint = ({ title, url, sourceId, cityId, date, index }) => {
         const form = {
             projectId: this.state.projectId,
@@ -274,8 +283,24 @@ class ArticleCreatePage extends Component {
     handleSaveReprintsOnly = () => {
         const form = {};
         form.reprints = this.state.form.reprints;
-        ArticleService.update(form, this.state.form.id, this.state.userTypeId);
-    }
+        ArticleService.update(form, this.state.form.id, this.state.userTypeId)
+            .then(() => {
+                ArticleService.get(this.state.articleId, { 
+                    project: this.state.projectId,
+                    archive: '',
+                    user_type: this.state.userTypeId,
+                    expand: 'reprints'
+                })
+                    .then(({data}) => {
+                        this.setState({
+                            form: {
+                                ...this.state.form,
+                                reprints: data.reprints
+                            }
+                        });
+                    });
+            });
+    };
 
     handleShowViewSettings = () => {
         this.setState({ showViewSettings: true });
@@ -936,13 +961,15 @@ class ArticleCreatePage extends Component {
                         <LocationIcon/>
                     </button>
 
-                    <button
-                        {...cls('drawer-button')}
-                        onClick={this.handleShowDrawer}
-                        title='Перепечатки'
-                    >
-                        <ReprintsIcon />
-                    </button>
+                    {this.state.articleId && 
+                        <button
+                            {...cls('drawer-button')}
+                            onClick={this.handleShowDrawer}
+                            title='Перепечатки'
+                        >
+                            <ReprintsIcon />
+                        </button>
+                    }
 
                     <AccessProject permissions={[ PROJECT_PERMISSION.EDIT ]}>
                         <Button
@@ -1031,10 +1058,16 @@ class ArticleCreatePage extends Component {
                         loadedCities={this.state.loadedCities || []}
                         SourceService={SourceService}
                         LocationService={LocationService}
+                        ArticleService={ArticleService}
                         onFieldChange={this.handleChangeReprints}
                         onAddReprint={this.handleAddReprint}
                         onDeleteReprint={this.handleDeleteReprint}
+                        onDeleteReprints={this.handleDeleteReprints}
                         onCreateArticleFromReprint={this.handleCreateArticleFromReprint}
+                        onSaveReprintsOnly={this.handleSaveReprintsOnly}
+                        currentProject={this.props.currentProject}
+                        currentArticle={this.props.currentArticle}
+                        userTypeId={this.state.userTypeId}
                     />
                 </Drawer>
 
