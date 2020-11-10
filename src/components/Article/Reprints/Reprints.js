@@ -102,7 +102,7 @@ function Reprints({
         <>
             <Button
                 {...cls('add-button')}
-                text="&larr; Отмена"
+                text="Отмена"
                 onClick={handleСancelTransfer}
                 style="error"
             />
@@ -112,7 +112,7 @@ function Reprints({
                 disabled={!selectedReprints.length}
             >
                 Перенести выделенные {!!selectedReprints.length && 
-                    <span {...cls('qty-selected')}>{selectedReprints.length}</span>
+                    <span>{selectedReprints.length}</span>
                 }
             </Button>
         </>
@@ -122,7 +122,7 @@ function Reprints({
         <>
             <Button
                 {...cls('add-button')}
-                text="&larr; Отмена"
+                text="Отмена"
                 onClick={handleСancelTransfer}
                 style="error"
             />
@@ -132,7 +132,7 @@ function Reprints({
                 disabled={!selectedArticle}
             >
                 Перенести {!!selectedReprints.length && 
-                    <span {...cls('qty-selected')}>{selectedReprints.length}</span>
+                    <span>{selectedReprints.length}</span>
                 }
             </Button>
         </>
