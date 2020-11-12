@@ -58,6 +58,16 @@ $namespace: '.list-of-articles';
     text-overflow: ellipsis;
   }
 
-
 }
 
+
+/* Dark Theme */
+
+.app--dark #{$namespace} {
+  &__row {
+    background-color: $background-dark;
+    &:hover {
+      background-color: #414141;
+    }
+  }
+}

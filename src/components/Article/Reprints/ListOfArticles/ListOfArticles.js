@@ -7,7 +7,7 @@ import './list-of-articles.scss';
 
 const cls = new Bem('list-of-articles');
 
-function ListOfArticles({ project, userTypeId, onSelectArticle, ArticleService }) {
+function ListOfArticles({ project, currentArticleId, userTypeId, onSelectArticle, ArticleService }) {
     const { id: projectId, name } = project;
     const [ articles, setArticles ] = useState([]);
     const [ selectedArticle, setSelectedArticle ] = useState(null);
@@ -32,7 +32,8 @@ function ListOfArticles({ project, userTypeId, onSelectArticle, ArticleService }
             .then(({data, headers}) => {
                 console.log(paginationPage, paginationPageCount);
                 setPaginationPageCount(+headers['x-pagination-page-count']);
-                setArticles(data);
+                const articlesWithoutCurrent = data.filter(el => el.id !== currentArticleId);
+                setArticles(articlesWithoutCurrent);
             });
     }, [paginationPage]);
 
@@ -103,6 +104,7 @@ function ListOfArticles({ project, userTypeId, onSelectArticle, ArticleService }
 }
 
 ListOfArticles.propTypes = {
+    currentArticleId: PropTypes.string,
     onSelectArticle: PropTypes.func,
     ArticleService: PropTypes.object
 };

@@ -83,6 +83,10 @@ function Reprint({
         });
     };
 
+    const handleEnter = () => {
+        setShownAllFields(!isShownAllFields);
+    };
+
     return (
         <div {...cls()}>
             {isSelectable &&
@@ -96,6 +100,7 @@ function Reprint({
                 <InputText
                     value={title || ''}
                     onChange={value => onFieldChange({ index, name: 'title', value })}
+                    onEnter={handleEnter}
                     required
                     validateType="notEmpty"
                     {...cls('field')}
@@ -134,13 +139,13 @@ function Reprint({
                         />   
                     </>
                 }
+                <button
+                    {...cls('button-open', {'opened': isShownAllFields})}
+                    onClick={handleShowAllFields}
+                    type="button"
+                    title="Показать все поля"
+                />
             </div>
-            <button
-                {...cls('button-open', {'opened': isShownAllFields})}
-                onClick={handleShowAllFields}
-                type="button"
-                title="Показать все поля"
-            />
         </div>
     );
 }

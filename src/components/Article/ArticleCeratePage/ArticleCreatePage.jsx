@@ -967,6 +967,9 @@ class ArticleCreatePage extends Component {
                             title='Перепечатки'
                         >
                             <ReprintsIcon />
+                            {!!this.state.form.reprints?.length &&
+                                <span {...cls('reprint-counter')}>{ this.state.form.reprints.length }</span>
+                            }
                         </button>
                     }
 

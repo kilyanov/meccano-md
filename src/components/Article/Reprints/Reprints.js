@@ -31,6 +31,11 @@ function Reprints({
     const [isReadyToMove, setIsReadyToTransfer] = useState(false);
     const [selectedReprints, setSelectedReprints] = useState([]);
     const [selectedArticle, setSelectedArticle] = useState(null);
+    const [isEmptyTitles, setIsEmptyTitles] = useState(false);
+
+    useEffect(() => {
+        setIsEmptyTitles(!!reprints.find(el => el.title === ''));
+    });
 
     useEffect(() => {
         if (isMoveMode) onSaveReprintsOnly();
@@ -87,13 +92,15 @@ function Reprints({
         <>
             <Button
                 {...cls('add-button')}
-                text="Добавить перепечатку"
+                text="Создать"
                 onClick={onAddReprint}
+                disabled={isEmptyTitles}
             />
             <Button
                 {...cls('transfer-button')}
                 text="Перенести"
                 onClick={() => setIsTransferMode(true)}
+                disabled={!reprints.length || isEmptyTitles}
             />
         </>
     );
@@ -183,6 +190,7 @@ function Reprints({
                 onSelectArticle={handleSelectArticle}
                 ArticleService={ArticleService}
                 userTypeId={userTypeId}
+                currentArticleId={currentArticle.id}
             />
         </div>
     );
@@ -209,7 +217,8 @@ Reprints.propTypes = {
     ArticleService: PropTypes.object,
     currentProject: PropTypes.object,
     currentArticle: PropTypes.object,
-    userTypeId: PropTypes.string
+    userTypeId: PropTypes.string,
+    currentArticleId: PropTypes.string
 };
 
 export default Reprints;
