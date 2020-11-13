@@ -26,6 +26,10 @@ $namespace: '.reprint';
     margin-bottom: -1px;
     grid-column: 1 / -1;
 
+    &--type-title input {
+      padding-right: 40px;
+    }
+
     &--half-size {
       margin-right: 0;
       grid-column: auto;

@@ -103,7 +103,7 @@ function Reprint({
                     onEnter={handleEnter}
                     required
                     validateType="notEmpty"
-                    {...cls('field')}
+                    {...cls('field', 'type-title')}
                 />
                 {dropDown}
                 {isShownAllFields &&

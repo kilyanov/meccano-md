@@ -7,6 +7,15 @@ $namespace: '.list-of-articles';
     margin: 0;
   }
 
+  &__list-header {
+    display: flex;
+    align-items: center;
+  }
+
+  &__filter-item {
+    margin: 0 0 0 24px;
+  }
+
   &__table {
     margin: 20px 0 20px;
   }

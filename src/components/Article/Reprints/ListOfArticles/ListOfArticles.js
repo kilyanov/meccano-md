@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { getColumnsFromStorage } from "../../../Project/ProjectPage/ProjectTable/Columns";
 import CheckBox from '../../../Form/CheckBox/CheckBox';
+import SearchFilter from '../../../Shared/SearchFilter/SearchFilter';
 import ProjectPagination from "../../../Project/ProjectPage/ProjectTable/ProjectPagination/ProjectPagintaion";
 import './list-of-articles.scss';
 
@@ -13,6 +14,8 @@ function ListOfArticles({ project, currentArticleId, userTypeId, onSelectArticle
     const [ selectedArticle, setSelectedArticle ] = useState(null);
     const [ paginationPage, setPaginationPage ] = useState(1);
     const [ paginationPageCount, setPaginationPageCount ] = useState(1);
+    const [ search, setSearch ] = useState('');
+    const [ searchQuery, setSearchQuery ] = useState('');
 
     const expand = getColumnsFromStorage().map(({ key }) => {
         if (key === 'source_id') return 'source';
@@ -20,22 +23,21 @@ function ListOfArticles({ project, currentArticleId, userTypeId, onSelectArticle
     }).toString();
 
     useEffect(() => {
-        console.log(paginationPage);
         ArticleService.getList({ 
             project: projectId,
             archive: '',
             user_type: userTypeId,
             expand,
             page: paginationPage,
-            'per-page': 30
+            'per-page': 30,
+            'query[title]': searchQuery
         })
             .then(({data, headers}) => {
-                console.log(paginationPage, paginationPageCount);
                 setPaginationPageCount(+headers['x-pagination-page-count']);
                 const articlesWithoutCurrent = data.filter(el => el.id !== currentArticleId);
                 setArticles(articlesWithoutCurrent);
             });
-    }, [paginationPage]);
+    }, [paginationPage, searchQuery]);
 
     const isChecked = (article) => {
         return selectedArticle === article;
@@ -52,7 +54,16 @@ function ListOfArticles({ project, currentArticleId, userTypeId, onSelectArticle
 
     return (
         <div {...cls()}>
-            <p {...cls('question-text')}>В какую статью проекта {name} перенести?</p>
+            <div {...cls('list-header')}>
+                <p {...cls('question-text')}>В какую статью проекта {name} перенести?</p>
+                <SearchFilter
+                    {...cls('filter-item')}
+                    placeholder='Найти'
+                    value={search}
+                    onChange={e => setSearch(e)}
+                    onSearch={() => setSearchQuery(search)}
+                />
+            </div>
             <div {...cls('table')}>
                 <div
                     {...cls('row')}
