@@ -4,7 +4,7 @@ $namespace: '.reprint';
 #{$namespace} {
   width: 100%;
   position: relative;
-  margin: 0 0 40px;
+  margin: 0 0 18px;
 
   &__grid {
     display: grid;
@@ -25,6 +25,10 @@ $namespace: '.reprint';
     background: #fff;
     margin-bottom: -1px;
     grid-column: 1 / -1;
+
+    &--type-title input {
+      padding-right: 40px;
+    }
 
     &--half-size {
       margin-right: 0;
@@ -60,19 +64,17 @@ $namespace: '.reprint';
   }
 
   &__button-open {
-    width: 24px;
+    grid-column: 1 / -1;
+    width: 100%;
     height: 24px;
     padding: 0;
-    margin: 0;
+    margin: 1px 0 0;
     outline: none;
     border: none;
-    position: absolute;
-    left: 47.5%;
-    bottom: -24px;
-    transition: transform 0.25s;
+    transition: background-color 0.25s;
     // transition-delay: 0.5s;
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10'%3E%3Cpath d='M8.7 2.2c.3-.3.8-.3 1 0 .4.4.4.9 0 1.2L5.7 7.8c-.3.3-.9.3-1.2 0L.2 3.4a.8.8 0 010-1.2c.3-.3.8-.3 1.1 0L5 6l3.7-3.8z' fill-rule='nonzero'%3E%3C/path%3E%3C/svg%3E");
-    background-size: 50%;
+    background-size: 12px 12px;
     background-position: center;
     background-repeat: no-repeat;
     background-color: transparent;
@@ -80,6 +82,10 @@ $namespace: '.reprint';
 
     &--opened {
       transform: rotate(-180deg);
+    }
+
+    &:hover {
+      background-color: $gray;
     }
   }
   

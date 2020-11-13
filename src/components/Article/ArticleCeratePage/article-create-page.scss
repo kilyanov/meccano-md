@@ -180,9 +180,27 @@ $namespace: '.article-create-page';
   }
 
   &__drawer-button {
+    position: relative;
     margin: 0 24px 0 0;
     border: none;
     background: none;
+  }
+
+  &__reprint-counter {
+    font-size: 10px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    height: 20px;
+    width: 20px;
+    background-color: #FFF;
+    border-radius: 50%;
+    border: 2px solid #000;
+    overflow: hidden;
   }
 }
 
