@@ -62,6 +62,7 @@ const ProjectCreateField = ({field, value, onChange, className}) => {
                         isDisabled={field.readOnly}
                         required={field.required}
                         draggable
+                        canCreate={false}
                     />
                 ) : (
                     <Select
@@ -86,13 +87,14 @@ const ProjectCreateField = ({field, value, onChange, className}) => {
                     selected={value}
                     fieldKey={field.slug}
                     readOnly={field.readOnly}
-                    isDisabled={field.readOnly}
                     onChange={val => onChange(val, field.slug)}
                     requestService={field.requestService}
                     requestCancelService={field.requestCancelService}
                     depended={field.depended}
+                    isDisabled={field.readOnly}
                     required={field.required}
                     draggable
+                    canCreate
                 />
             </div>;
         case FIELD_TYPE.SELECT:
