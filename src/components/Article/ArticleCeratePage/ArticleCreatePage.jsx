@@ -251,6 +251,7 @@ class ArticleCreatePage extends Component {
     }
 
     handleCreateArticleFromReprint = ({ title, url, sourceId, cityId, date, index }) => {
+        console.log(cityId);
         const form = {
             projectId: this.state.projectId,
             title,
@@ -259,9 +260,7 @@ class ArticleCreatePage extends Component {
             source: {
                 id: sourceId
             },
-            city: {
-                id: cityId
-            }
+            city_id: cityId
         };
 
         ArticleService.create({ 
@@ -968,6 +967,9 @@ class ArticleCreatePage extends Component {
                             title='Перепечатки'
                         >
                             <ReprintsIcon />
+                            {!!this.state.form.reprints?.length &&
+                                <span {...cls('reprint-counter')}>{ this.state.form.reprints.length }</span>
+                            }
                         </button>
                     }
 

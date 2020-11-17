@@ -7,6 +7,15 @@ $namespace: '.list-of-articles';
     margin: 0;
   }
 
+  &__list-header {
+    display: flex;
+    align-items: center;
+  }
+
+  &__filter-item {
+    margin: 0 0 0 24px;
+  }
+
   &__table {
     margin: 20px 0 20px;
   }
@@ -58,6 +67,16 @@ $namespace: '.list-of-articles';
     text-overflow: ellipsis;
   }
 
-
 }
 
+
+/* Dark Theme */
+
+.app--dark #{$namespace} {
+  &__row {
+    background-color: $background-dark;
+    &:hover {
+      background-color: #414141;
+    }
+  }
+}
