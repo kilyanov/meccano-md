@@ -746,6 +746,10 @@ class ArticleCreatePage extends Component {
                 field.requestService = SourceService.type.get;
                 field.requestCancelService = SourceService.cancelLast;
                 break;
+            case 'source_category_id':
+                field.requestService = SourceService.category.get;
+                field.requestCancelService = SourceService.cancelLast;
+                break;
             case 'section_main_id':
                 field.options = sections.map(section => ({
                     label: section.name,

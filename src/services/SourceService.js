@@ -19,15 +19,28 @@ export const SourceService = {
     update: (form, id) => API.put(url(id), form),
     type: {
         get: (form, id) => {
-            const typeUrl = urlGenerator('type');
+            const categoryUrl = urlGenerator('type');
 
             source = CancelToken.source();
-            return API.get(typeUrl(form, id), {
+            return API.get(categoryUrl(form, id), {
                 cancelToken: source.token
             });
         },
         create: (form) => API.post(ApiList.source.type, form),
         update: (form, id) => API.put(`${ApiList.source.type}/${id}`, form),
         delete: (id) => API.delete(`${ApiList.source.type}/${id}`)
+    },
+    category: {
+        get: (form, id) => {
+            const categoryUrl = urlGenerator('category');
+
+            source = CancelToken.source();
+            return API.get(categoryUrl(form, id), {
+                cancelToken: source.token
+            });
+        },
+        create: (form) => API.post(ApiList.source.category, form),
+        update: (form, id) => API.put(`${ApiList.source.category}/${id}`, form),
+        delete: (id) => API.delete(`${ApiList.source.category}/${id}`)
     }
 };
