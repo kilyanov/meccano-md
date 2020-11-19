@@ -1,8 +1,4 @@
 import API from '../api/api';
-// import {createURLGenerator} from '../api/apiList';
-
-// const urlGenerator = createURLGenerator('article');
-// console.log(urlGenerator);
 
 export const ReprintService = {
     move: ({ params, body }) => {

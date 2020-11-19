@@ -251,15 +251,12 @@ class ArticleCreatePage extends Component {
     }
 
     handleCreateArticleFromReprint = ({ title, url, sourceId, cityId, date, index }) => {
-        console.log(cityId);
         const form = {
             projectId: this.state.projectId,
             title,
             url,
             date,
-            source: {
-                id: sourceId
-            },
+            source_id: sourceId,
             city_id: cityId
         };
 
@@ -744,6 +741,10 @@ class ArticleCreatePage extends Component {
                 break;
             case 'source_type_id':
                 field.requestService = SourceService.type.get;
+                field.requestCancelService = SourceService.cancelLast;
+                break;
+            case 'source_category_id':
+                field.requestService = SourceService.category.get;
                 field.requestCancelService = SourceService.cancelLast;
                 break;
             case 'section_main_id':

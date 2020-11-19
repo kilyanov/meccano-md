@@ -1,12 +1,16 @@
 import React, {Component} from 'react';
-import {LocationService, SourceService} from '../../../services';
+import {SourceService} from '../../../services';
 import PromiseDialogModal from '../../Shared/PromiseDialogModal/PromiseDialogModal';
+import ConfirmModal from '../../Shared/ConfirmModal/ConfirmModal';
 import PropertiesTable from '../../Shared/PropertiesTable/PropertiesTable';
 import SettingsPage from '../SettingsPage/SettingsPage';
+import InputText from '../../Form/InputText/InputText';
 import {NotificationManager} from 'react-notifications';
+import Loader from '../../Shared/Loader/Loader';
 import ListEndedStub from '../../Shared/ListEndedStub/ListEndedStub';
-import SettingsSourceModal from './SettingsSourceModal';
+import Form from '../../Form/Form/Form';
 import {PERMISSION} from "../../../constants/Permissions";
+import { isAccess } from "../../../helpers/Tools";
 
 const columnSettings = {
     name: {
@@ -21,96 +25,37 @@ const columnSettings = {
     }
 };
 
-const defaultForm = {
-    name: '',
-    source_type_id: '',
-    country_id: '',
-    region_id: '',
-    city_id: '',
-    category: ''
-};
+const defaultForm = {name: ''};
 
-export default class SettingsSourceList extends Component {
+export default class SettingsSourceType extends Component {
     state = {
         form: defaultForm,
         items: [],
-
         pagination: {
             page: 1,
             pageCount: 1
         },
-
-        typeItems: [],
-        categoryItems: [],
-        countryItems: [],
-        regionItems: [],
-        cityItems: [],
-
-        selectedItem: null,
-        showItemModal: false,
         searchQuery: '',
-
+        showItemModal: false,
         inProgress: true,
         modalInProgress: false
     };
 
     componentDidMount() {
-        Promise.all([
-            SourceService.get(),
-            SourceService.type.get(),
-            SourceService.category.get(),
-            LocationService.country.get()
-        ]).then(([
-            sourceResponse,
-            typeResponse,
-            categoryResponse,
-            countryResponse
-        ]) => {
+        SourceService.category.get().then(response => {
             this.setState({
-                items: sourceResponse.data,
+                items: response.data,
                 pagination: {
-                    pageCount: +_.get(sourceResponse.headers, 'x-pagination-page-count'),
-                    page: +_.get(sourceResponse.headers, 'x-pagination-current-page')
+                    pageCount: +_.get(response.headers, 'x-pagination-page-count'),
+                    page: +_.get(response.headers, 'x-pagination-current-page')
                 },
-                typeItems: typeResponse.data.map(({id, name}) => ({name, value: id})),
-                categoryItems: categoryResponse.data.map(({id, name}) => ({name, value: id})),
-                countryItems: countryResponse.data.map(({id, name}) => ({name, value: id})),
                 inProgress: false
             });
         }).catch(() => this.setState({inProgress: false}));
     }
 
     handleChangeForm = (value, prop) => {
-        const newState = _.clone(this.state);
-        const isCountryChange = prop === 'country_id';
-        const isRegionChange = prop === 'region_id';
-
-        if (prop && value) {
-            newState.form[prop] = value;
-            newState.modalInProgress = isCountryChange || isRegionChange;
-
-            if (isCountryChange) {
-                newState.form.region_id = '';
-                newState.form.city_id = '';
-                newState.regionItems = [];
-                newState.cityItems = [];
-            }
-
-            if (isRegionChange) {
-                newState.form.city_id = '';
-                newState.cityItems = [];
-            }
-
-            this.setState(newState, () => {
-                if (isCountryChange && value) {
-                    this.getRegions(value);
-                }
-
-                if (isRegionChange && value) {
-                    this.getCities(value);
-                }
-            });
-        }
+        this.setState(prev => prev.form[prop] = value);
     };
 
     handleCloseModal = () => {
@@ -119,7 +64,7 @@ export default class SettingsSourceList extends Component {
 
     handleEditItem = (item) => {
         this.setState({
-            selectedItem: item,
+            form: item,
             showItemModal: true
         });
     };
@@ -132,7 +77,7 @@ export default class SettingsSourceList extends Component {
             style: 'danger'
         }).then(() => {
             this.setState({inProgress: true}, () => {
-                SourceService.delete(item.id).then(() => {
+                SourceService.category.delete(item.id).then(() => {
                     const items = this.state.items.filter(({id}) => id !== item.id);
 
                     NotificationManager.success('Успешно удалено', 'Удаление');
@@ -150,7 +95,7 @@ export default class SettingsSourceList extends Component {
 
             newState.pagination.page = newState.pagination.page + 1;
             newState.inProgress = true;
-            this.setState(newState, this.getSources);
+            this.setState(newState, this.getCategories);
         }
     };
 
@@ -162,38 +107,57 @@ export default class SettingsSourceList extends Component {
         });
     };
 
-    handleSubmit = (newItem) => {
-        const {selectedItem} = this.state;
-        let items = [...this.state.items];
+    handleSubmit = () => {
+        const {form} = this.state;
+        const method = form.id ? 'update' : 'create';
+        const requestForm = _.pick(form, 'name');
 
-        if (selectedItem) {
-            items = items.map(item => item.id === selectedItem.id ? newItem : item);
-        } else {
-            items.push(newItem);
+        if (!requestForm.name.length) {
+            NotificationManager.error('Название не может быть пустым', 'Ошибка');
         }
 
-        this.setState({items, showItemModal: false});
+        this.setState({modalInProgress: true}, () => {
+            SourceService.category[method](requestForm, form.id).then(response => {
+                let items = [...this.state.items];
+
+                if (form.id) {
+                    items = items.map(item => item.id === form.id ? response.data : item);
+                } else {
+                    items.push(response.data);
+                }
+
+                NotificationManager.success('Успешно сохранено', 'Сохранено');
+                this.setState({
+                    items,
+                    form: {name: ''},
+                    showItemModal: false,
+                    modalInProgress: false
+                });
+            }).catch(() => this.setState({modalInProgress: false}));
+        });
     };
 
-    getSources = () => {
+    getCategories = () => {
         const {pagination: {page}, searchQuery} = this.state;
 
-        SourceService.get({page, 'query[name]': searchQuery}).then(response => {
-            this.setState({
-                items: this.state.items.concat(response.data),
-                pagination: {
-                    pageCount: +_.get(response.headers, 'x-pagination-page-count'),
-                    page: +_.get(response.headers, 'x-pagination-current-page')
-                },
-                inProgress: false
-            });
-        });
+        SourceService.category
+            .get({page, 'query[name]': searchQuery}).then(response => {
+                this.setState({
+                    items: this.state.items.concat(response.data),
+                    pagination: {
+                        pageCount: +_.get(response.headers, 'x-pagination-page-count'),
+                        page: +_.get(response.headers, 'x-pagination-current-page')
+                    },
+                    inProgress: false
+                });
+            })
+            .catch(() => this.setState({inProgress: false}));
     };
 
     debouncedSearch = _.debounce((value) => {
         this.setState({inProgress: true}, () => {
             SourceService.cancelLast();
-            SourceService
+            SourceService.category
                 .get({'query[name]': value})
                 .then(response => {
                     this.setState({
@@ -209,25 +173,23 @@ export default class SettingsSourceList extends Component {
         });
     }, 1000);
 
+    canEdit = isAccess(PERMISSION.editSettings);
+
     render() {
         const {
+            form,
             items,
-            selectedItem,
-            pagination,
-            typeItems,
-            categoryItems,
-            countryItems,
-            regionItems,
-            cityItems,
             showItemModal,
+            inProgress,
+            pagination,
             searchQuery,
-            inProgress
+            modalInProgress
         } = this.state;
 
         return (
             <SettingsPage
                 title='Источники'
-                subtitle='Список'
+                subtitle='Вид'
                 withAddButton
                 onAdd={() => this.setState({showItemModal: true})}
                 onEndPage={this.handleEndPage}
@@ -249,16 +211,30 @@ export default class SettingsSourceList extends Component {
                 )}
 
                 {showItemModal && (
-                    <SettingsSourceModal
-                        item={selectedItem}
+                    <ConfirmModal
+                        title={form.id ? 'Изменить' : 'Добавить'}
+                        width='small'
                         onClose={this.handleCloseModal}
-                        onSubmit={this.handleSubmit}
-                        typeItems={typeItems}
-                        categoryItems={categoryItems}
-                        countryItems={countryItems}
-                        regionItems={regionItems}
-                        cityItems={cityItems}
-                    />
+                        onSubmit={() => this.form.submit()}
+                        submitDisabled={!this.canEdit}
+                    >
+                        <Form
+                            validate
+                            onSubmit={this.handleSubmit}
+                            ref={ref => this.form = ref}
+                        >
+                            <InputText
+                                autoFocus
+                                required
+                                label='Название'
+                                value={form.name}
+                                onChange={value => this.handleChangeForm(value, 'name')}
+                                disabled={!this.canEdit}
+                            />
+                        </Form>
+
+                        {modalInProgress && <Loader/>}
+                    </ConfirmModal>
                 )}
 
                 <PromiseDialogModal ref={node => this.dialogModal = node}/>
