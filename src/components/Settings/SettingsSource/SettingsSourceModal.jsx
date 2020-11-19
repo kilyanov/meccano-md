@@ -42,12 +42,12 @@ export default class SettingsSourceModal extends Component {
         if (this.props.item) {
             SourceService
                 .get(
-                    {expand: 'country,type,category,region,city,federalDistrict'},
+                    {expand: 'country,type,sourceCategory,region,city,federalDistrict'},
                     this.props.item.id
                 ).then(response => {
                     const newForm = {
                         source_type_id: _.get(response.data, 'type.id'),
-                        source_category_id: _.get(response.data, 'category.id'),
+                        source_category_id: _.get(response.data, 'sourceCategory.id'),
                         country_id: _.get(response.data, 'country.id'),
                         federal_district_id: _.get(response.data, 'federalDistrict.id'),
                         region_id: _.get(response.data, 'region.id'),

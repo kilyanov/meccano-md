@@ -258,9 +258,7 @@ class ArticleCreatePage extends Component {
             title,
             url,
             date,
-            source: {
-                id: sourceId
-            },
+            source_id: sourceId,
             city_id: cityId
         };
 
