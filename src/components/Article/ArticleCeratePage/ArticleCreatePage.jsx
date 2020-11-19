@@ -30,8 +30,6 @@ import AccessProject from '../../Shared/AccessProject';
 import Drawer from '../../Shared/Drawer/Drawer';
 import Reprints from '../Reprints/Reprints';
 
-// TODO: Сделать чтобы поле Вид СМИ сохранялось в статье
-
 const cls = new Bem('article-create-page');
 const defaultTimeZone = 'Europe/Moscow';
 const toDateWithoutTimeZone = (date) => {
