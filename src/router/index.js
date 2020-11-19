@@ -20,6 +20,7 @@ import SettingsRegion from '../components/Settings/SettingsLocation/LocationRegi
 import SettingsCity from '../components/Settings/SettingsLocation/LocationCity/SettingsCity';
 import SettingsSourceList from '../components/Settings/SettingsSource/SettingsSourceList';
 import SettingsSourceType from '../components/Settings/SettingsSource/SettingsSourceType';
+import SettingsSourceCategory from '../components/Settings/SettingsSource/SettingsSourceCategory';
 import SettingsAuthors from '../components/Settings/SettingsAuthors/SettingsAuthors';
 import SettingsSystem from "../components/Settings/SettingsSystem/SettingsSystem";
 import UsersPage from "../components/Users/UsersPage";
@@ -110,6 +111,12 @@ export default (
                     permissions={[PERMISSION.viewSettings, PERMISSION.editSettings]}
                     component={SettingsSourceType}
                     path="/settings/source/type"
+                />
+                <AuthRoute
+                    exact
+                    permissions={[PERMISSION.viewSettings, PERMISSION.editSettings]}
+                    component={SettingsSourceCategory}
+                    path="/settings/source/category"
                 />
                 <AuthRoute
                     exact

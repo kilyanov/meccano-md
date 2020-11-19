@@ -13,6 +13,7 @@ import { PERMISSION } from "../../../constants";
 const defaultForm = {
     name: '',
     source_type_id: '',
+    source_category_id: '',
     country_id: '',
     region_id: '',
     city_id: '',
@@ -25,6 +26,7 @@ export default class SettingsSourceModal extends Component {
         onClose: PropTypes.func.isRequired,
         onSubmit: PropTypes.func.isRequired,
         typeItems: PropTypes.array,
+        categoryItems: PropTypes.array,
         countryItems: PropTypes.array
     };
 
@@ -40,11 +42,12 @@ export default class SettingsSourceModal extends Component {
         if (this.props.item) {
             SourceService
                 .get(
-                    {expand: 'country,type,region,city,federalDistrict'},
+                    {expand: 'country,type,category,region,city,federalDistrict'},
                     this.props.item.id
                 ).then(response => {
                     const newForm = {
                         source_type_id: _.get(response.data, 'type.id'),
+                        source_category_id: _.get(response.data, 'category.id'),
                         country_id: _.get(response.data, 'country.id'),
                         federal_district_id: _.get(response.data, 'federalDistrict.id'),
                         region_id: _.get(response.data, 'region.id'),
@@ -53,6 +56,7 @@ export default class SettingsSourceModal extends Component {
                     };
 
                     delete newForm.type;
+                    delete newForm.category;
                     delete newForm.country;
                     delete newForm.federalDistrict;
                     delete newForm.region;
@@ -129,6 +133,7 @@ export default class SettingsSourceModal extends Component {
             'federal_district_id',
             'region_id',
             'source_type_id',
+            'source_category_id',
             'category'
         ]);
 
@@ -196,9 +201,10 @@ export default class SettingsSourceModal extends Component {
     canEdit = isAccess(PERMISSION.editSettings);
 
     render() {
-        const {typeItems, countryItems} = this.props;
+        const {typeItems, categoryItems, countryItems} = this.props;
         const {form, federalItems, regionItems, cityItems, inProgress} = this.state;
         const selectedType = typeItems.find(({value}) => value === form.source_type_id);
+        const selectedCategory = categoryItems.find(({value}) => value === form.source_category_id);
         const selectedCountry = countryItems.find(({value}) => value === form.country_id);
         const selectedFederal = federalItems.find(({value}) => value === form.federal_district_id);
         const selectedRegion = regionItems.find(({value}) => value === form.region_id);
@@ -232,6 +238,16 @@ export default class SettingsSourceModal extends Component {
                         options={typeItems}
                         selected={selectedType}
                         onChange={({value}) => this.handleChangeForm(value, 'source_type_id')}
+                        fixedPosList
+                        disabled={!this.canEdit}
+                    />
+
+                    <Select
+                        label='Вид источника'
+                        required
+                        options={categoryItems}
+                        selected={selectedCategory}
+                        onChange={({value}) => this.handleChangeForm(value, 'source_category_id')}
                         fixedPosList
                         disabled={!this.canEdit}
                     />
