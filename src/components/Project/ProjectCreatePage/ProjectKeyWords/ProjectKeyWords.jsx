@@ -278,7 +278,6 @@ export default class ProjectKeyWords extends Component {
                 </section>
 
                 <Virtuoso 
-                    style={{ height: '500px' }}
                     totalCount={keyWords.length}
                     item={this.renderItem}
                     endReached={this.handleEndReached}
