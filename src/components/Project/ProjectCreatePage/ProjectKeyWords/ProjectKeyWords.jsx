@@ -5,6 +5,7 @@ import InputText from '../../../Form/InputText/InputText';
 import ConfirmModal from '../../../Shared/ConfirmModal/ConfirmModal';
 import PencilIcon from '../../../Shared/SvgIcons/PencilIcon';
 import TrashIcon from '../../../Shared/SvgIcons/TrashIcon';
+// import ArrowIcon from '../../../Shared/SvgIcons/ArrowIcon';
 import {ProjectService} from '../../../../services';
 import PromiseDialogModal from '../../../Shared/PromiseDialogModal/PromiseDialogModal';
 import Loader from '../../../Shared/Loader/Loader';
@@ -12,7 +13,9 @@ import './project-key-words.scss';
 import ProjectKeyWordsImport from './ProjectKeyWordsImport/ProjectKeyWordsImport';
 import CheckBox from '../../../Form/CheckBox/CheckBox';
 import {Plural} from '../../../../helpers/Tools';
-import { Virtuoso } from 'react-virtuoso';
+import Sortable from 'react-sortablejs';
+import SearchFilter from '../../../Shared/SearchFilter/SearchFilter';
+
 
 const cls = new Bem('project-key-words');
 
@@ -32,7 +35,9 @@ export default class ProjectKeyWords extends Component {
             page: 1
         },
         inProgress: true,
-        modalInProgress: false
+        modalInProgress: false,
+        isEndScroll: false,
+        search: ''
     };
 
     componentDidMount() {
@@ -152,6 +157,34 @@ export default class ProjectKeyWords extends Component {
         });
     };
 
+    handleEndSort = (sortedKeys, it, e) => {
+        const sortedKeyWords = sortedKeys.map(key => {
+            return this.state.keyWords.find((wordId) => wordId.id === key);
+        });
+
+        this.setState({
+            keyWords: sortedKeyWords
+        }, () => {
+            const movedWordId = e.item.dataset.id;
+            const movedWordIndex = this.state.keyWords.findIndex(el => el.id === movedWordId);
+            const nextWord = this.state.keyWords[movedWordIndex + 1] || null;
+            
+            if (nextWord) {
+                ProjectService.wordSearch
+                    .get(
+                        null,
+                        nextWord.id
+                    )
+                    .then(({data}) => {
+                        console.log(`Перемещено на место слова ${data.name} с позицией ${data.position}`);
+                        this.updateWordPosition(movedWordId, data.position);
+                    });
+            } else {
+                this.updateWordPosition(movedWordId, -1);
+            }
+        });
+    };
+
     handleEndReached = () => {
         const { pagintaion } = this.state;
 
@@ -159,10 +192,34 @@ export default class ProjectKeyWords extends Component {
             this.setState(state => state.pagintation.page++, () => this.getItems(true));
         }
     }
-    
+
+    handleEndScroll = () => {
+        const { scrollHeight, scrollTop, clientHeight } = this.listRef.node;
+        const endScrollState = scrollHeight - scrollTop - 64 * 3 <= clientHeight;
+        if (this.state.isEndScroll !== endScrollState) {
+            this.setState(
+                {isEndScroll: endScrollState},
+                () => {
+                    if (endScrollState) this.handleEndReached();
+                }
+            );
+        }
+    };
+
+    handleSearch = () => {
+        this.getItems();
+    }
+
     getItems = (isPagintaion) => {
         ProjectService.wordSearch
-            .get({ project: this.props.projectId, page: this.state.pagintation.page, 'per-page': 50 })
+            .get({ 
+                project: this.props.projectId,
+                page: this.state.pagintation.page,
+                'per-page': 50,
+                sort: 'position',
+                'query[name]': this.state.search,
+                'query[project_id]': this.props.projectId
+            })
             .then(response => {
                 const responsePagination = {
                     pageCount: +_.get(response.headers, 'x-pagination-page-count'),
@@ -179,12 +236,24 @@ export default class ProjectKeyWords extends Component {
             }).catch(() => this.setState({inProgress: false}));
     };
 
+    updateWordPosition = (wordId, position) => {
+        ProjectService.wordSearch
+            .update(
+                { position },
+                wordId
+            )
+            .then(({data}) => {
+                console.log(`Записал слову ${data.name} позицию ${data.position}`);
+            })
+            .catch((error) => console.log(error));
+    };
+
     renderItem = (index) => {
         const { selectedWords } = this.state;
         const keyWord = this.state.keyWords[index];
 
         return (
-            <div {...cls('list-item')} key={index}>
+            <div {...cls('list-item')}>
                 <CheckBox
                     label={keyWord.name}
                     checked={selectedWords.includes(keyWord.id)}
@@ -192,6 +261,20 @@ export default class ProjectKeyWords extends Component {
                 />
 
                 <div {...cls('list-item-buttons')}>
+                    {/* <button
+                        {...cls('list-item-button', 'move-start')}
+                        onClick={() => this.updateWordPosition(keyWord.id, 1)}
+                        title='В начало списка'
+                    >
+                        <ArrowIcon {...cls('list-item-icon', 'arrow-to-start')}/>
+                    </button>
+                    <button
+                        {...cls('list-item-button', 'move-end')}
+                        onClick={() => this.updateWordPosition(keyWord.id, -1)}
+                        title='В конец списка'
+                    >
+                        <ArrowIcon {...cls('list-item-icon', 'arrow-to-end')}/>
+                    </button> */}
                     <button
                         {...cls('list-item-button', 'edit')}
                         onClick={() => this.handleSelectWord(keyWord)}
@@ -275,13 +358,33 @@ export default class ProjectKeyWords extends Component {
                             >Удалить</InlineButton>
                         </div>
                     )}
+
+                    <SearchFilter
+                        {...cls('filter-item')}
+                        placeholder='Найти'
+                        value={this.state.search}
+                        onChange={e => this.setState({ search: e })}
+                        onSearch={this.handleSearch}
+                    />
+
                 </section>
 
-                <Virtuoso 
-                    totalCount={keyWords.length}
-                    item={this.renderItem}
-                    endReached={this.handleEndReached}
-                />
+                <Sortable
+                    {...cls('list')}
+                    options={{ animation: 150 }}
+                    ref={ref => this.listRef = ref}
+                    onChange={this.handleEndSort}
+                    onScroll={this.handleEndScroll}
+                >
+                    {this.state.keyWords.map((keyWord, index) => (
+                        <div 
+                            data-id={keyWord.id}
+                            key={keyWord.id}
+                        >
+                            {this.renderItem(index)}
+                        </div>
+                    ))}
+                </Sortable>
 
                 {/* <ul {...cls('list')}>
                     {keyWords.map((keyWord, key) => (
