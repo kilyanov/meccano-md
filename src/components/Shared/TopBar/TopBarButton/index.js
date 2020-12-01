@@ -36,7 +36,8 @@ export default function TopBarButton({
                 if (
                     withList && (
                         event.target.classList.contains(namespace) ||
-                        event.target.classList.contains(`${namespace}__icon`)
+                        event.target.classList.contains(`${namespace}__icon`) ||
+                        event.target.viewportElement?.tagName === 'svg'
                     )
                 ) {
                     setIsOpen(!isOpen);
