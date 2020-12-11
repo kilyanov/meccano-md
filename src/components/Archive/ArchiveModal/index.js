@@ -5,7 +5,7 @@ import BEMHelper from "react-bem-helper";
 import InputSearch from "../../Form/InputSearch";
 import './archive-modal.scss';
 import 'react-dates/initialize';
-import { ArchiveService, } from "../../../services";
+import { ArchiveService } from "../../../services";
 import DateRange from "../../Form/DateRange";
 import StorageIcon from "../../Shared/SvgIcons/StorageIcon";
 import Loader from "../../Shared/Loader/Loader";
@@ -13,6 +13,7 @@ import { Link } from "react-router-dom";
 import TrashIcon from "../../Shared/SvgIcons/TrashIcon";
 import PromiseDialogModal from "../../Shared/PromiseDialogModal/PromiseDialogModal";
 import Button from '../../Shared/Button/Button';
+import CheckBox from '../../Form/CheckBox/CheckBox';
 import ArchiveCreateModal from '../ArchiveCreateModal';
 import { NotificationManager } from 'react-notifications';
 
@@ -34,7 +35,8 @@ export default class ArchiveModal extends Component {
         archives: [],
         showCreateModal: false,
         selectedArchiveId: null,
-        inProgress: true
+        inProgress: true,
+        selectedArchives: []
     }
 
     componentDidMount() {
@@ -95,7 +97,33 @@ export default class ArchiveModal extends Component {
                 });
         });
     }
-    
+
+    handleExport = () => {
+        const reqBody = {
+            archiveIds: this.state.selectedArchives
+        };
+        console.log('Экспортирую', reqBody);
+    }
+
+    handleSelectArchive = (id) => {
+        const selectedArchives = [... this.state.selectedArchives];
+        const isFound = selectedArchives.includes(id);
+        if (isFound) {
+            const indexArchive = selectedArchives.indexOf(id);
+            selectedArchives.splice(indexArchive, 1);
+            return this.setState({ selectedArchives });
+        }
+        this.setState({
+            selectedArchives: [
+                ...selectedArchives,
+                id
+            ]
+        });
+    }
+
+    handleResetSelectedArchives = () => {
+        this.setState({ selectedArchives: [] });
+    }
 
     getArchives = () => {
         const { projectId } = this.props;
@@ -107,6 +135,12 @@ export default class ArchiveModal extends Component {
                 this.setState({ archives: response.data, inProgress: false });
             })
             .catch(() => this.setState({ inProgress: false }));
+    
+        this.handleResetSelectedArchives();
+    }
+
+    checkIsSelected = (id) => {
+        return this.state.selectedArchives.includes(id);
     }
 
     render() {
@@ -152,7 +186,7 @@ export default class ArchiveModal extends Component {
                 <section {...cls('body')}>
                     {archives.length ? (
                         <ul { ...cls('list') }>
-                            {archives.map(archive => (
+                            {archives.map((archive) => (
                                 isSelectArchiveMode ? (
                                     <li 
                                         { ...cls('item', {
@@ -179,6 +213,11 @@ export default class ArchiveModal extends Component {
                                     </li>
                                 ) : (
                                     <li { ...cls('item') } key={archive.id}>
+                                        <CheckBox
+                                            {...cls('select-archive')}
+                                            checked={this.checkIsSelected(archive.id)}
+                                            onChange={() => this.handleSelectArchive(archive.id)}
+                                        />
                                         <Link
                                             { ...cls('item-link') }
                                             to={`/archive/${projectId}/${archive.id}`}
@@ -206,6 +245,30 @@ export default class ArchiveModal extends Component {
                         </ul>
                     ) : 'Нет элементов в выбранном периоде'}
                 </section>
+
+                {!showCreateModal && (
+                    <div {...cls('footer')}>
+                        {!!this.state.selectedArchives.length && (
+                            <Button
+                                {...cls('unselect-button')}
+                                onClick={this.handleResetSelectedArchives}
+                            >
+                                Отмена
+                            </Button>
+
+                        )}
+                        <Button
+                            {...cls('export-button')}
+                            onClick={this.handleExport}
+                            disabled={!this.state.selectedArchives?.length}
+                            style="success"
+                        >
+                            Выгрузить выделенные {!!this.state.selectedArchives.length && 
+                                <span>{this.state.selectedArchives.length}</span>
+                            }
+                        </Button>
+                    </div>
+                )}
 
                 {showCreateModal && (
                     <ArchiveCreateModal
