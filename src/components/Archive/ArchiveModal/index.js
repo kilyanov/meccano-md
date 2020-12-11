@@ -16,6 +16,7 @@ import Button from '../../Shared/Button/Button';
 import CheckBox from '../../Form/CheckBox/CheckBox';
 import ArchiveCreateModal from '../ArchiveCreateModal';
 import { NotificationManager } from 'react-notifications';
+import ArchivesExportModal from '../ArchivesExportModal/ArchivesExportModal';
 
 const cls = new BEMHelper('archive-modal');
 
@@ -25,7 +26,8 @@ export default class ArchiveModal extends Component {
         projectId: PropTypes.string.isRequired,
         onSubmit: PropTypes.func,
         onClose: PropTypes.func.isRequired,
-        isAll: PropTypes.bool
+        isAll: PropTypes.bool,
+        isOpenArchivesExportModal: PropTypes.bool
     };
 
     state = {
@@ -36,7 +38,8 @@ export default class ArchiveModal extends Component {
         showCreateModal: false,
         selectedArchiveId: null,
         inProgress: true,
-        selectedArchives: []
+        selectedArchives: [],
+        isOpenArchivesExportModal: false
     }
 
     componentDidMount() {
@@ -99,10 +102,7 @@ export default class ArchiveModal extends Component {
     }
 
     handleExport = () => {
-        const reqBody = {
-            archiveIds: this.state.selectedArchives
-        };
-        console.log('Экспортирую', reqBody);
+        this.setState({ isOpenArchivesExportModal: true });
     }
 
     handleSelectArchive = (id) => {
@@ -246,29 +246,28 @@ export default class ArchiveModal extends Component {
                     ) : 'Нет элементов в выбранном периоде'}
                 </section>
 
-                {!showCreateModal && (
-                    <div {...cls('footer')}>
-                        {!!this.state.selectedArchives.length && (
-                            <Button
-                                {...cls('unselect-button')}
-                                onClick={this.handleResetSelectedArchives}
-                            >
-                                Отмена
-                            </Button>
-
-                        )}
+                <div {...cls('footer')}>
+                    {!!this.state.selectedArchives.length && (
                         <Button
-                            {...cls('export-button')}
-                            onClick={this.handleExport}
-                            disabled={!this.state.selectedArchives?.length}
-                            style="success"
+                            {...cls('unselect-button')}
+                            onClick={this.handleResetSelectedArchives}
+                            style='inline'
                         >
-                            Выгрузить выделенные {!!this.state.selectedArchives.length && 
-                                <span>{this.state.selectedArchives.length}</span>
-                            }
+                            Отмена
                         </Button>
-                    </div>
-                )}
+
+                    )}
+                    <Button
+                        {...cls('export-button')}
+                        onClick={this.handleExport}
+                        disabled={!this.state.selectedArchives?.length}
+                        style="success"
+                    >
+                        Выгрузить выделенные {!!this.state.selectedArchives.length && 
+                            <span>{this.state.selectedArchives.length}</span>
+                        }
+                    </Button>
+                </div>
 
                 {showCreateModal && (
                     <ArchiveCreateModal
@@ -280,6 +279,15 @@ export default class ArchiveModal extends Component {
                             this.props.onClose();
                         }}
                         onClose={() => this.setState({ showCreateModal: false })}
+                    />
+                )}
+                 
+                {this.state.isOpenArchivesExportModal && (
+                    <ArchivesExportModal
+                        projectId={this.props.projectId}
+                        archiveIds={this.state.selectedArchives}
+                        onClose={() => this.setState({ isOpenArchivesExportModal: false })}
+                        onUpdate={this.handleResetSelectedArchives}
                     />
                 )}
 
