@@ -742,6 +742,7 @@ export default class ProjectPage extends Component {
                         articles={articles}
                         pagination={pagination}
                         fields={fields}
+                        userType={userType}
                     />
 
                     <div {...cls('footer')}>

@@ -30,4 +30,16 @@ export const ExportService = {
 
         return API.post(`${ApiList.export}?${sp.toString()}`, articleIds && {articleIds});
     },
+    archives: ({ projectId, archiveIds, templateId, filename}) => {
+        const sp = new URLSearchParams();
+
+        sp.set('project', projectId);
+        sp.set('export', templateId);
+
+        if (filename) {
+            sp.set('filename', filename);
+        }
+
+        return API.post(`${ApiList.export}?${sp.toString()}`, archiveIds && {archiveIds});
+    }
 };

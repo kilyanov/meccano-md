@@ -19,7 +19,8 @@ export const List = {
     region: '/region',
     source: {
         source: '/source',
-        type: '/source/type'
+        type: '/source/type',
+        category: '/source/category'
     },
     auth: {
         login: '/auth/login'

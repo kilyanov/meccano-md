@@ -1,24 +1,27 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import AsyncCreatable from "react-select/async-creatable";
+import AsyncSelect from "react-select/async";
 import { components } from 'react-select';
-import {ReactSelectStyles} from "../../../constants/ReactSelectStyles";
-import {connect} from "react-redux";
-import {EVENTS, THEME_TYPE} from "../../../constants";
+import { ReactSelectStyles } from "../../../constants/ReactSelectStyles";
+import { connect } from "react-redux";
+import { EVENTS, THEME_TYPE } from "../../../constants";
 import BEMHelper from "react-bem-helper";
-import {EventEmitter} from "../../../helpers";
+import { EventEmitter } from "../../../helpers";
 
 const cls = new BEMHelper('select');
 const SingleValue = ({ children, ...props }) => (
-    <components.SingleValue {...props}><div title={children}>{children}</div></components.SingleValue>
-  );
+    <components.SingleValue {...props}>
+        <div title={children}>{children}</div>
+    </components.SingleValue>
+);
 
 class AsyncCreatableSelect extends Component {
     state = {
-        loadedOptions: [],
+        loadedOptions: this.props.loadedOptions || [],
         currentOption: {},
         isError: false,
         inProgress: true
-    }
+    };
 
     componentDidMount() {
         const { required, requestService, selected } = this.props;
@@ -28,7 +31,9 @@ class AsyncCreatableSelect extends Component {
         }
 
         if (requestService) {
-            this.getOptions('', () => {}, false);
+            if (!this.props.loadedOptions) {
+                this.getOptions('', () => {}, false);
+            }
 
             if (selected) {
                 requestService({ 'query[id]': selected }).then(response => {
@@ -133,9 +138,31 @@ class AsyncCreatableSelect extends Component {
             validateErrorMessage = 'Поле обязательно для заполнения',
             label,
             draggable,
-            theme
+            theme,
+            canCreate = true
         } = this.props;
         const isDarkTheme = theme === THEME_TYPE.DARK;
+        const selectProps = {
+            cacheOptions: true,
+            defaultOptions: loadedOptions,
+            loadOptions: _.debounce(this.getOptions, 1000),
+            onChange: this.handleSelect,
+            onBlur: this.handleBlur,
+            value: currentOption,
+            formatCreateLabel: (inputValue) => `Создать "${inputValue}"`,
+            menuPosition,
+            classNamePrefix: 'select',
+            isDisabled: readOnly || disabled,
+            placeholder: 'Выберите...',
+            isClearable: true,
+            styles: ReactSelectStyles(isDarkTheme),
+            loadingMessage: () => 'Загрузка...',
+            noOptionsMessage: () => 'Нет результатов',
+            components: { SingleValue },
+            isValidNewOption: (inputValue, _, selectOption) => {
+                return selectOption.every((item) => item.label !== inputValue && inputValue.length);
+            }
+        };
 
         return (
             <div
@@ -146,28 +173,16 @@ class AsyncCreatableSelect extends Component {
                     succeed: !!currentOption && !!currentOption.value
                 }, { [className]: !!className })}
             >
-                <label {...cls('label', { required: required && (!currentOption || !currentOption.value) })} title={required ? 'Обязательное поле' : ''}>
+                <label
+                    {...cls('label', { required: required && (!currentOption || !currentOption.value) })}
+                    title={required ? 'Обязательное поле' : ''}
+                >
                     {label && <span {...cls('label-text', '', { 'drag-handle': draggable })}>{label}</span>}
 
-                    <AsyncCreatable
-                        cacheOptions
-                        defaultOptions={loadedOptions}
-                        loadOptions={_.debounce(this.getOptions, 1000)}
-                        onChange={this.handleSelect}
-                        onBlur={this.handleBlur}
-                        value={currentOption}
-                        formatCreateLabel={(inputValue) => `Создать "${inputValue}"`}
-                        menuPosition={menuPosition}
-
-                        classNamePrefix='select'
-                        isDisabled={readOnly || disabled}
-                        placeholder='Выберите...'
-                        isClearable
-                        styles={ReactSelectStyles(isDarkTheme)}
-                        loadingMessage={() => 'Загрузка...'}
-                        components={{ SingleValue }}
-                        isValidNewOption={(inputValue, _, selectOption) => selectOption.every(({ label }) => label !== inputValue && inputValue.length)}
-                    />
+                    {canCreate
+                        ? <AsyncCreatable {...selectProps} className='CREATE' />
+                        : <AsyncSelect {...selectProps} className='NONCREATE'/>
+                    }
                 </label>
 
                 {isError && <span {...cls('message')}>{validateErrorMessage}</span>}
@@ -176,4 +191,4 @@ class AsyncCreatableSelect extends Component {
     }
 }
 
-export default connect(({theme}) => ({theme}))(AsyncCreatableSelect);
+export default connect(({ theme }) => ({ theme }))(AsyncCreatableSelect);

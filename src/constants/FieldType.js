@@ -7,7 +7,7 @@ export const FIELD_TYPE = {
     DATETIME: 'datetime',
     DATE: 'date',
     TIME: 'time',
-    UUID: 'uuid',
-    UUID_EXT: 'uuidExt',
+    UUID: 'uuid', // Выбор ID без возможности создания
+    UUID_EXT: 'uuidExt', // Выбор ID с возможностю создания
     SELECT: 'select'
 };

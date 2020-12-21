@@ -23,9 +23,12 @@ import { KEY_CODE } from "../../../constants";
 import TinyMCE from "../../Form/TinyMCE/TinyMCE";
 import CreateLocationModal from "./CreateLocationModal";
 import LocationIcon from "../../Shared/SvgIcons/LocationIcon";
+import ReprintsIcon from "../../Shared/SvgIcons/ReprintsIcon";
 import Breadcrumbs from '../../Shared/Breadcrumbs';
 import { setCurrentArticle, clearCurrentArticle } from '../../../redux/actions';
 import AccessProject from '../../Shared/AccessProject';
+import Drawer from '../../Shared/Drawer/Drawer';
+import Reprints from '../Reprints/Reprints';
 
 const cls = new Bem('article-create-page');
 const defaultTimeZone = 'Europe/Moscow';
@@ -87,11 +90,14 @@ class ArticleCreatePage extends Component {
             viewType: StorageService.get(STORAGE_KEY.ARTICLE_VIEW_TYPE) || 1,
             userTypeId: userType && userType.id || null,
             userType: userType || null,
+            showDrawer: false,
             showViewSettings: false,
             textIsChanged: false,
             annotationIsChanged: false,
             timeZone: defaultTimeZone,
-            inProgress: true
+            inProgress: true,
+            loadedSources: [],
+            loadedCities: []
         };
     }
 
@@ -137,6 +143,26 @@ class ArticleCreatePage extends Component {
         if (this.props.profile) {
             this.setState({ timeZone: this.props.profile.timeZone });
         }
+
+        SourceService.get().then(({ data }) => {
+            const sources = data.map(el => {
+                return { 
+                    label: el.name, 
+                    value: el.id
+                };
+            });
+            this.setState({ loadedSources: sources});
+        });
+
+        LocationService.city.get().then(({ data }) => {
+            const cities = data.map(el => {
+                return { 
+                    label: el.name, 
+                    value: el.id
+                };
+            });
+            this.setState({ loadedCities: cities});
+        });
     }
 
     componentDidUpdate(prevProps, prevState) {
@@ -181,6 +207,95 @@ class ArticleCreatePage extends Component {
         }
 
         this.setState(newState);
+    };
+
+    handleShowDrawer = () => {
+        this.setState({ showDrawer: true });
+    };
+
+    handleCloseDrawer = () => {
+        this.setState({ showDrawer: false });
+    };
+
+    handleChangeReprints = ({ index, name, value }) => {
+        const reprints = this.state.form.reprints;
+        reprints[index][name] = value;
+        this.handleChangeForm(reprints, 'reprints');
+    }
+
+    handleAddReprint = () => {
+        const newReprints = [
+            ...this.state.form.reprints,
+            {
+                title: '',
+                url: '',
+                date: new Date()
+            }
+        ];
+        this.handleChangeForm(newReprints, 'reprints');
+    }
+
+    handleDeleteReprint = (index) => {
+        const reprints = this.state.form.reprints;
+        reprints.splice(index, 1);
+        this.handleChangeForm(reprints, 'reprints');
+    }
+
+    handleDeleteReprints = (deletableReprints) => {
+        const reprints = this.state.form.reprints;
+        deletableReprints.forEach(delRep => {
+            const index = reprints.findIndex(rep => rep.id === delRep);
+            reprints.splice(index, 1);
+        });
+        this.handleChangeForm(reprints, 'reprints');
+    }
+
+    handleCreateArticleFromReprint = ({ title, url, sourceId, cityId, date, index }) => {
+        const form = {
+            projectId: this.state.projectId,
+            title,
+            url,
+            date,
+            source_id: sourceId,
+            city_id: cityId
+        };
+
+        ArticleService.create({ 
+            ...form, projectId: this.state.projectId 
+        }, null, this.state.userTypeId)
+            .then(({data}) => {
+                this.handleDeleteReprint(index);
+                this.handleSaveReprintsOnly();
+                OperatedNotification.success({
+                    title: 'Создание статьи',
+                    message: 'Статья из перепечатки успешно создана',
+                    submitButtonText: '↗ Перейти к статье',
+                    timeOut: 10000,
+                    onSubmit: () => window.open(`/project/${this.state.projectId}/article/${data.id}`, '_blank')
+                });
+            });
+    }
+
+    handleSaveReprintsOnly = () => {
+        const form = {};
+        form.reprints = this.state.form.reprints;
+        ArticleService.update(form, this.state.form.id, this.state.userTypeId)
+            .then(() => {
+                ArticleService.get(this.state.articleId, { 
+                    project: this.state.projectId,
+                    archive: '',
+                    user_type: this.state.userTypeId,
+                    expand: 'reprints'
+                })
+                    .then(({data}) => {
+                        this.setState({
+                            form: {
+                                ...this.state.form,
+                                reprints: data.reprints
+                            }
+                        });
+                    });
+            });
     };
 
     handleShowViewSettings = () => {
@@ -256,6 +371,7 @@ class ArticleCreatePage extends Component {
 
     handleSubmit = () => {
         const form = _.cloneDeep(this.state.form);
+
         const isUpdate = !!this.state.articleId;
         const invalidateFields = [];
 
@@ -393,7 +509,7 @@ class ArticleCreatePage extends Component {
         const { userTypeId } = this.state;
         const searchParams = location.search && new URLSearchParams(location.search);
         const requestForm = {
-            expand: 'project.projectFields,project.sections,' +
+            expand: 'project.projectFields,project.sections,reprints,' +
                 'project.users,source,complete_monitor,complete_analytic,complete_client',
             user_type: userTypeId
         };
@@ -627,6 +743,10 @@ class ArticleCreatePage extends Component {
                 field.requestService = SourceService.type.get;
                 field.requestCancelService = SourceService.cancelLast;
                 break;
+            case 'source_category_id':
+                field.requestService = SourceService.category.get;
+                field.requestCancelService = SourceService.cancelLast;
+                break;
             case 'section_main_id':
                 field.options = sections.map(section => ({
                     label: section.name,
@@ -841,6 +961,19 @@ class ArticleCreatePage extends Component {
                         <LocationIcon/>
                     </button>
 
+                    {this.state.articleId && 
+                        <button
+                            {...cls('drawer-button')}
+                            onClick={this.handleShowDrawer}
+                            title='Перепечатки'
+                        >
+                            <ReprintsIcon />
+                            {!!this.state.form.reprints?.length &&
+                                <span {...cls('reprint-counter')}>{ this.state.form.reprints.length }</span>
+                            }
+                        </button>
+                    }
+
                     <AccessProject permissions={[ PROJECT_PERMISSION.EDIT ]}>
                         <Button
                             {...cls('done-button')}
@@ -912,6 +1045,34 @@ class ArticleCreatePage extends Component {
                         </div>
                     )}
                 </Form>
+
+                <Drawer
+                    title="Перепечатки"
+                    position="right"
+                    closeOnEsc
+                    closeOnOverlay
+                    closeOnButton
+                    isOpen={this.state.showDrawer}
+                    onClose={this.handleCloseDrawer}
+                >
+                    <Reprints
+                        reprints={this.state.form.reprints}
+                        loadedSources={this.state.loadedSources || []}
+                        loadedCities={this.state.loadedCities || []}
+                        SourceService={SourceService}
+                        LocationService={LocationService}
+                        ArticleService={ArticleService}
+                        onFieldChange={this.handleChangeReprints}
+                        onAddReprint={this.handleAddReprint}
+                        onDeleteReprint={this.handleDeleteReprint}
+                        onDeleteReprints={this.handleDeleteReprints}
+                        onCreateArticleFromReprint={this.handleCreateArticleFromReprint}
+                        onSaveReprintsOnly={this.handleSaveReprintsOnly}
+                        currentProject={this.props.currentProject}
+                        currentArticle={this.props.currentArticle}
+                        userTypeId={this.state.userTypeId}
+                    />
+                </Drawer>
 
                 {showViewSettings && (
                     <ArticleViewSettings

@@ -1,0 +1,15 @@
+.archives-export-modal {
+    background: transparent;
+
+    &__field {
+        margin-bottom: 16px
+    }
+
+    &__download-link {
+        display: none;
+    }
+
+    .confirm-modal__container {
+        max-width: 793px;
+    }
+}

@@ -1,0 +1,31 @@
+@import '../../../assets/styles/variables';
+$namespace: '.reprints';
+
+#{$namespace} {
+  &__toolbar {
+    padding: 10px 0 40px;
+  }
+
+  &__no-reprints {
+    margin: 14px 0 42px;
+  }
+
+  &__transfer-button {
+    margin: 0 0 0 20px;
+  }
+
+  &__qty-selected {
+    color: #00B956;
+  }
+}
+
+/* Dark Theme */
+
+// .app--dark #{$namespace} {
+
+// }
+
+// @media (max-width: 1024px) {
+//   #{$namespace} {
+//   }
+// }

@@ -1,0 +1,82 @@
+@import '../../../../assets/styles/variables';
+$namespace: '.list-of-articles';
+
+#{$namespace} {
+
+  &__question-text {
+    margin: 0;
+  }
+
+  &__list-header {
+    display: flex;
+    align-items: center;
+  }
+
+  &__filter-item {
+    margin: 0 0 0 24px;
+  }
+
+  &__table {
+    margin: 20px 0 20px;
+  }
+
+  &__row {
+    display: flex;
+    align-items: center;
+    &:hover {
+      background-color: #f2f2f2;
+      cursor: pointer;
+    }
+  }
+
+  &__cell {
+    display: flex;
+    align-items: center;
+    padding: 0 0 0 16px;
+    border-bottom: 1px solid $gray;
+    min-height: 40px;
+    flex-shrink: 0;
+    box-sizing: border-box;
+
+    &--place-header {
+      font-weight: bold;
+      border: 1px solid $gray;
+      border-left: none;
+      cursor: default;
+
+      &:last-of-type {
+        border-right: none;
+      }
+    }
+
+    .checkbox__box {
+      margin-right: 0;
+    }
+
+    &:first-of-type {
+      padding: 0;
+      width: 30px;
+      justify-content: center;
+      border: none;
+    }
+  }
+
+  &__cell-text {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+}
+
+
+/* Dark Theme */
+
+.app--dark #{$namespace} {
+  &__row {
+    background-color: $background-dark;
+    &:hover {
+      background-color: #414141;
+    }
+  }
+}

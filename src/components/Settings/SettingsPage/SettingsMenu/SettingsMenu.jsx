@@ -54,6 +54,10 @@ const menu = [
             name: 'Тип источников',
             link: '/settings/source/type'
         }, {
+            id: 'category',
+            name: 'Вид источников',
+            link: '/settings/source/category'
+        }, {
             id: 'list',
             name: 'Список',
             link: '/settings/source/list'
