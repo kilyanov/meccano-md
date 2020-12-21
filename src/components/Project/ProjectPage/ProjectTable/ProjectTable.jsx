@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
-import { KEY_CODE, SORT_DIR, STORAGE_KEY, FIELD_TYPE, PROJECT_PERMISSION } from '../../../../constants';
+import { KEY_CODE, SORT_DIR, STORAGE_KEY, FIELD_TYPE } from '../../../../constants';
 import CheckBox from '../../../Form/CheckBox/CheckBox';
 import DropDown from '../../../Shared/DropDown/DropDown';
 import './project-table.scss';
@@ -14,7 +14,7 @@ import SettingsIcon from '../../../Shared/SvgIcons/SettingsIcon';
 import SortArrow from './ProjectTableHeader/ProjectTableHeaderSortArrow';
 import ProjectTableColorModal from "./ProjectTableColorModal/ProjectTableColorModal";
 import { StorageService } from "../../../../services";
-import { isProjectAccess } from '../../../../helpers/Tools';
+import ArticleMovementHistory from "../../../Article/ArticleMovementHistory/ArticleMovementHistory";
 
 const cls = new Bem('project-table');
 const headerClasses = new Bem('project-table-header');
@@ -314,7 +314,7 @@ class ProjectTable extends Component {
     };
 
     renderArticle = (article, articleKey) => {
-        const { selectedIds, projectId, fields, search, sort, profile, page, archiveId } = this.props;
+        const { selectedIds, projectId, fields, search, sort, profile, page, archiveId, userType } = this.props;
         const lastViewedArticleId = StorageService.get(STORAGE_KEY.LAST_VIEWED_ARTICLE);
         const sortString = sort.type && `${sort.dir === SORT_DIR.ASC ? '-' : ''}${sort.type}`;
         const sp = new URLSearchParams();
@@ -362,6 +362,7 @@ class ProjectTable extends Component {
                 {this.selectedColumns.map(({ key }) => {
                     const currentField = fields.find(({ slug }) => slug === key);
                     const relation = currentField && currentField.relation;
+                    const isUserId = currentField && currentField.slug === 'user_id';
 
                     let columnValue = _.get(article, relation, article[key]);
 
@@ -393,7 +394,14 @@ class ProjectTable extends Component {
                             key={key}
                             {...cls('cell', key)}
                         >
-                            <span {...cls('cell-text')}>{columnValue}</span>
+                            { isUserId ? (
+                                <ArticleMovementHistory
+                                    articleId={ article.id }
+                                    userType={userType}
+                                >{ columnValue }</ArticleMovementHistory>
+                            ) : (
+                                <span {...cls('cell-text')}>{ columnValue }</span>
+                            )}
                         </Link>
                     );
                 })}
