@@ -80,9 +80,14 @@ $namespace: '.top-bar-button';
 
     &--link {
       text-align: center;
-      padding: 5px 0;
+      padding: 0px 0;
       font-size: 12px;
     }
+  }
+
+  &__list-link {
+    display: block;
+    padding: 5px 0;
   }
 
   &__document {
