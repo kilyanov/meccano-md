@@ -16,7 +16,6 @@ import {Plural} from '../../../../helpers/Tools';
 import Sortable from 'react-sortablejs';
 import SearchFilter from '../../../Shared/SearchFilter/SearchFilter';
 
-
 const cls = new Bem('project-key-words');
 
 export default class ProjectKeyWords extends Component {
@@ -32,7 +31,7 @@ export default class ProjectKeyWords extends Component {
         wordValue: '',
         wordPosition: '',
         keyWords: [],
-        pagintation: {
+        pagination: {
             page: 1
         },
         inProgress: true,
@@ -73,7 +72,7 @@ export default class ProjectKeyWords extends Component {
     };
 
     handleDeleteSelected = () => {
-        const {selectedWords} = this.state;
+        const {keyWords, selectedWords} = this.state;
 
         this.dialogModal.open({
             title: 'Удаление слов',
@@ -84,7 +83,6 @@ export default class ProjectKeyWords extends Component {
             submitText: 'Удалить',
             danger: true
         }).then(() => {
-            const {keyWords, selectedWords} = this.state;
             const isAllSelected = keyWords.length === selectedWords.length;
 
             ProjectService.wordSearch
@@ -92,7 +90,7 @@ export default class ProjectKeyWords extends Component {
                 .then(() => {
                     this.setState({
                         selectedWords: [],
-                        pagintation: { page: 1 }
+                        pagination: { page: 1 }
                     }, () => this.getItems());
                 })
                 .catch(() => this.setState({inProgress: false}));
@@ -153,7 +151,7 @@ export default class ProjectKeyWords extends Component {
         }
 
         this.setState({modalInProgress: true}, () => {
-            ProjectService.wordSearch[method](form, _.get(selectedWord, 'id'))
+            ProjectService.wordSearch[method](form, this.props.projectId, _.get(selectedWord, 'id'))
                 .then(response => {
                     let {keyWords} = this.state;
 
@@ -168,7 +166,7 @@ export default class ProjectKeyWords extends Component {
                         modalInProgress: false,
                         wordValue: '',
                         wordPosition: '',
-                        pagintation: { page: 1 }
+                        pagination: { page: 1 }
                     }, () => {
                         this.addButtonRef.focus();
                         this.getItems();
@@ -189,13 +187,10 @@ export default class ProjectKeyWords extends Component {
             const movedWordId = e.item.dataset.id;
             const movedWordIndex = this.state.keyWords.findIndex(el => el.id === movedWordId);
             const nextWord = this.state.keyWords[movedWordIndex + 1] || null;
-            
+
             if (nextWord) {
                 ProjectService.wordSearch
-                    .get(
-                        null,
-                        nextWord.id
-                    )
+                    .get(null, this.props.projectId, nextWord.id)
                     .then(({data}) => {
                         console.log(`Перемещено на место слова ${data.name} с позицией ${data.position}`);
                         this.updateWordPosition(movedWordId, data.position);
@@ -207,10 +202,10 @@ export default class ProjectKeyWords extends Component {
     };
 
     handleEndReached = () => {
-        const { pagintaion } = this.state;
+        const { pagination } = this.state;
 
-        if (pagintaion.page < pagintaion.pageCount) {
-            this.setState(state => state.pagintation.page++, () => this.getItems(true));
+        if (pagination.page < pagination.pageCount) {
+            this.setState(state => state.pagination.page++, () => this.getItems(true));
         }
     }
 
@@ -232,15 +227,16 @@ export default class ProjectKeyWords extends Component {
     }
 
     getItems = (isPagintaion) => {
+        const {pagination, search, keyWords} = this.state;
+
         ProjectService.wordSearch
-            .get({ 
-                project: this.props.projectId,
-                page: this.state.pagintation.page,
+            .get({
+                'page': pagination.page,
                 'per-page': 50,
-                sort: 'position',
-                'query[name]': this.state.search,
+                'sort': 'position',
+                'query[name]': search,
                 'query[project_id]': this.props.projectId
-            })
+            }, this.props.projectId)
             .then(response => {
                 const responsePagination = {
                     pageCount: +_.get(response.headers, 'x-pagination-page-count'),
@@ -250,8 +246,8 @@ export default class ProjectKeyWords extends Component {
                 };
 
                 this.setState({
-                    keyWords: isPagintaion ? this.state.keyWords.concat(response.data) : response.data,
-                    pagintaion: responsePagination,
+                    keyWords: isPagintaion ? keyWords.concat(response.data) : response.data,
+                    pagination: responsePagination,
                     inProgress: false
                 });
             }).catch(() => this.setState({inProgress: false}));
@@ -259,12 +255,12 @@ export default class ProjectKeyWords extends Component {
 
     updateWordPosition = (wordId, position, isGetItems) => {
         ProjectService.wordSearch
-            .update(
-                { position },
-                wordId
-            )
-            .then(({data}) => {
-                if (isGetItems) this.getItems();
+            .update({ position }, this.props.projectId, wordId)
+            .then(({ data }) => {
+                if (isGetItems) {
+                    this.getItems();
+                }
+
                 console.log(`Записал слову ${data.name} позицию ${data.position}`);
             })
             .catch((error) => console.log(error));
@@ -291,7 +287,7 @@ export default class ProjectKeyWords extends Component {
             this.updateWordPosition(keyWord.id, -1, false);
         }
     }
-    
+
     renderItem = (index) => {
         const { selectedWords } = this.state;
         const keyWord = this.state.keyWords[index];
@@ -337,7 +333,7 @@ export default class ProjectKeyWords extends Component {
             </div>
         );
     }
-    
+
     render() {
         const {projectId} = this.props;
         const {
@@ -422,7 +418,7 @@ export default class ProjectKeyWords extends Component {
                     onScroll={this.handleEndScroll}
                 >
                     {this.state.keyWords.map((keyWord, index) => (
-                        <div 
+                        <div
                             data-id={keyWord.id}
                             key={keyWord.id}
                         >
