@@ -15,11 +15,21 @@ export default class SearchFilter extends Component {
         className: PropTypes.string
     };
 
+    componentDidMount() {
+        if (this.inputRef) {
+            this.inputRef.onsearch = this.handleSearch;
+        }
+    }
+
+    handleSearch = e => {
+        this.props.onSearch(this.props.value);
+    }
+
     handleKeyDown = (event) => {
         switch (event.keyCode) {
-            case KEY_CODE.enter:
-                this.props.onSearch(this.props.value);
-                break;
+            // case KEY_CODE.enter:
+            //     this.props.onSearch(this.props.value);
+            //     break;
             case KEY_CODE.esc:
                 this.inputRef.blur();
                 break;

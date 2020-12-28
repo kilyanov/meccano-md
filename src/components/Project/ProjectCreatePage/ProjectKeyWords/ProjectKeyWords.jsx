@@ -223,10 +223,10 @@ export default class ProjectKeyWords extends Component {
     };
 
     handleSearch = () => {
-        this.getItems();
+        this.setState({ inProgress: true }, this.getItems);
     }
 
-    getItems = (isPagintaion) => {
+    getItems = (isPagination) => {
         const {pagination, search, keyWords} = this.state;
 
         ProjectService.wordSearch
@@ -246,7 +246,7 @@ export default class ProjectKeyWords extends Component {
                 };
 
                 this.setState({
-                    keyWords: isPagintaion ? keyWords.concat(response.data) : response.data,
+                    keyWords: isPagination ? keyWords.concat(response.data) : response.data,
                     pagination: responsePagination,
                     inProgress: false
                 });
