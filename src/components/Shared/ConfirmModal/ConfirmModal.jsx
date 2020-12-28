@@ -1,8 +1,9 @@
 import React, {PureComponent} from 'react';
+import ReactDOM from 'react-dom';
 import PropTypes from 'prop-types';
 import Button from "../Button/Button";
-import './confirm-modal.scss';
 import {KEY_CODE} from '../../../constants';
+import './confirm-modal.scss';
 
 const cls = new Bem('confirm-modal');
 const BUTTONS = {
@@ -67,7 +68,7 @@ export default class ConfirmModal extends PureComponent {
             width
         } = this.props;
 
-        return (
+        return ReactDOM.createPortal((
             <div {...cls('', {[width]: true}, className)}>
                 <div {...cls('container')}>
                     <section {...cls('header')}>
@@ -115,6 +116,6 @@ export default class ConfirmModal extends PureComponent {
                     )}
                 </div>
             </div>
-        );
+        ), document.getElementById('root'));
     }
 }
