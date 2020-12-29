@@ -31,7 +31,9 @@ export default class SettingsImportModal extends Component {
             type: '',
             itemsContainer: '',
             rules: [],
-            joins: []
+            joins: [],
+            reprintsContainer: '',
+            reprintItem: ''
         };
         this.defaultRule = {
             field_name: '',
@@ -270,6 +272,22 @@ export default class SettingsImportModal extends Component {
                                 label='Селектор для статьи'
                                 value={form.item}
                                 onChange={val => this.handleChangeForm(val, 'item')}
+                                disabled={!this.canEdit}
+                            />
+                        </div>
+                        <div {...cls('item', '', 'col-md-6')}>
+                            <InputText
+                                label='Селектор для контейнера перепечаток'
+                                value={form.reprintsContainer || ''}
+                                onChange={val => this.handleChangeForm(val, 'reprintsContainer')}
+                                disabled={!this.canEdit}
+                            />
+                        </div>
+                        <div {...cls('item', '', 'col-md-6')}>
+                            <InputText
+                                label='Селектор для перепечатки'
+                                value={form.reprintItem || ''}
+                                onChange={val => this.handleChangeForm(val, 'reprintItem')}
                                 disabled={!this.canEdit}
                             />
                         </div>
