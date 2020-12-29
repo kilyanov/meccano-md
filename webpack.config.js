@@ -59,10 +59,11 @@ module.exports = (env, argv) => {
         resolve: {
             extensions: [ '.js', '.jsx' ],
             alias: {
-                'const': path.join(__dirname, './src/constants'),
-                'helpers': path.join(__dirname, './src/helpers'),
-                'services': path.join(__dirname, './src/services'),
-                '@styles': path.join(__dirname, './src/assets/styles')
+                '@const': path.join(__dirname, './src/constants'),
+                '@helpers': path.join(__dirname, './src/helpers'),
+                '@services': path.join(__dirname, './src/services'),
+                '@styles': path.join(__dirname, './src/assets/styles'),
+                '@redux': path.join(__dirname, './src/redux')
             }
         },
         output: {
