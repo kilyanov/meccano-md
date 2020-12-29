@@ -1,5 +1,5 @@
 import React from 'react';
-import { SORT_DIR } from 'const/index';
+import { SORT_DIR } from '@const';
 
 const SortArrow = ({ classes, dir }) => (
     dir ? <div {...classes('sort-arrow')}>

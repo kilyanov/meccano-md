@@ -1,8 +1,8 @@
 import React from 'react';
 import Select from 'react-select';
 import { useSelector } from "react-redux";
-import { THEME_TYPE } from "../../../../constants";
-import { ReactSelectStyles } from "../../../../constants/ReactSelectStyles";
+import { THEME_TYPE } from "@const";
+import { ReactSelectStyles } from "@const/ReactSelectStyles";
 
 const cls = new Bem('select');
 
@@ -20,7 +20,9 @@ export default function ReactSelect({
 }) {
     const theme = useSelector(state => state.theme);
     const isDarkTheme = theme === THEME_TYPE.DARK;
-    const selectedValue = options.find(({ value }) => value === selected);
+    const selectedValue = isMulti
+        ? options.filter(({ value }) => selected?.find(item => item.value === value))
+        : options.find(({ value }) => value === selected);
 
     return (
         <div {...cls('', { succeed: !!selectedValue }, className)}>
