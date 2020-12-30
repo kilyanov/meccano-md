@@ -73,6 +73,10 @@ $namespace: '.project-key-words';
   &__buttons-panel-item:not(:last-child) {
     margin-right: 10px;
   }
+
+  .search-filter {
+    margin-bottom: 20px;
+  }
 }
 
 /* Dark Theme */

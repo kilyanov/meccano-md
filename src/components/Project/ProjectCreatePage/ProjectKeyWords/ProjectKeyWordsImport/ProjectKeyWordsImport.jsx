@@ -28,10 +28,9 @@ export default class ProjectKeyWordsImport extends Component {
         if (!file) return;
 
         form.append('file', file);
-        form.append('project', this.props.projectId);
 
         this.setState({inProgress: true}, () => {
-            ProjectService.wordSearch.import(form)
+            ProjectService.wordSearch.import(form, this.props.projectId)
                 .then(() => {
                     this.setState({inProgress: false});
                     this.props.updateParent();
