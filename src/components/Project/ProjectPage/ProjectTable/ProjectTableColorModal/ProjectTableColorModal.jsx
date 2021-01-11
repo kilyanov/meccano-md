@@ -1,14 +1,14 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
-import ConfirmModal from "../../../../Shared/ConfirmModal/ConfirmModal";
+import ConfirmModal from "@components/Shared/ConfirmModal/ConfirmModal";
 import BEMHelper from "react-bem-helper";
-import {ArticleService} from "../../../../../services";
+import {ArticleService} from "@services";
 import ColorPicker from 'rc-color-picker';
-import Loader from "../../../../Shared/Loader/Loader";
+import Loader from "@components/Shared/Loader/Loader";
 import 'rc-color-picker/assets/index.css';
 import './project-table-color-modal.scss';
-import {setArticleColors} from "../../../../../redux/actions/articleColors";
+import {setArticleColors} from "@redux/actions";
 
 const cls = new BEMHelper('project-table-color-modal');
 const TYPES = {
@@ -49,6 +49,7 @@ class ProjectTableColorModal extends Component {
 
             state.colors[key].color = color + hexAlpha;
             state.colors[key].alpha = alpha;
+
             return state;
         });
     };
