@@ -63,7 +63,8 @@ module.exports = (env, argv) => {
                 '@helpers': path.join(__dirname, './src/helpers'),
                 '@services': path.join(__dirname, './src/services'),
                 '@styles': path.join(__dirname, './src/assets/styles'),
-                '@redux': path.join(__dirname, './src/redux')
+                '@redux': path.join(__dirname, './src/redux'),
+                '@components': path.join(__dirname, './src/components')
             }
         },
         output: {

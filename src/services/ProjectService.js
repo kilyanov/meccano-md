@@ -37,6 +37,11 @@ export const ProjectService = {
         delete: (form, projectId) => API.delete(`/project/${projectId}/word-search`, {data: form}),
         import: (form, projectId) => API.post(`/project/${projectId}/word-search/import`, form)
     },
+    wordSetting: {
+        get: (projectId, form) => API.get(`/project/${projectId}/word-setting`, { params: form }),
+        create: (projectId, form) => API.post(`/project/${projectId}/word-setting`, form),
+        update: (projectId, form) => API.put(`/project/${projectId}/word-setting`, form)
+    },
     field: {
         get: (id) => API.get(urlGenerator('field')(id)),
         create: (form) => API.post(urlGenerator('field')(), form),

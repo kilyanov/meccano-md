@@ -1,20 +1,22 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
-import InlineButton from '../../../Shared/InlineButton/InlineButton';
-import InputText from '../../../Form/InputText/InputText';
-import ConfirmModal from '../../../Shared/ConfirmModal/ConfirmModal';
-import PencilIcon from '../../../Shared/SvgIcons/PencilIcon';
-import TrashIcon from '../../../Shared/SvgIcons/TrashIcon';
-import ArrowIcon from '../../../Shared/SvgIcons/ArrowIcon';
-import {ProjectService} from '../../../../services';
-import PromiseDialogModal from '../../../Shared/PromiseDialogModal/PromiseDialogModal';
-import Loader from '../../../Shared/Loader/Loader';
-import './project-key-words.scss';
+import InlineButton from '@components/Shared/InlineButton/InlineButton';
+import InputText from '@components/Form/InputText/InputText';
+import ConfirmModal from '@components//Shared/ConfirmModal/ConfirmModal';
+import PencilIcon from '@components/Shared/SvgIcons/PencilIcon';
+import TrashIcon from '@components/Shared/SvgIcons/TrashIcon';
+import ArrowIcon from '@components/Shared/SvgIcons/ArrowIcon';
+import {ProjectService} from '@services';
+import PromiseDialogModal from '@components/Shared/PromiseDialogModal/PromiseDialogModal';
+import Loader from '@components/Shared/Loader/Loader';
 import ProjectKeyWordsImport from './ProjectKeyWordsImport/ProjectKeyWordsImport';
-import CheckBox from '../../../Form/CheckBox/CheckBox';
-import {Plural} from '../../../../helpers/Tools';
+import CheckBox from '@components//Form/CheckBox/CheckBox';
+import {Plural} from '@helpers/Tools';
 import Sortable from 'react-sortablejs';
-import SearchFilter from '../../../Shared/SearchFilter/SearchFilter';
+import SearchFilter from '@components/Shared/SearchFilter/SearchFilter';
+import './project-key-words.scss';
+import ProjectKeyWordColors
+    from "@components/Project/ProjectCreatePage/ProjectKeyWords/ProjectKeyWordColors/ProjectKeyWordColors";
 
 const cls = new Bem('project-key-words');
 
@@ -25,6 +27,7 @@ export default class ProjectKeyWords extends Component {
 
     state = {
         showCreateModal: false,
+        showColorsModal: false,
         showImportModal: false,
         selectedWord: null,
         selectedWords: [],
@@ -340,6 +343,7 @@ export default class ProjectKeyWords extends Component {
             keyWords,
             showCreateModal,
             showImportModal,
+            showColorsModal,
             selectedWord,
             selectedWords,
             wordValue,
@@ -361,8 +365,14 @@ export default class ProjectKeyWords extends Component {
                         >+ Добавить слово</InlineButton>
 
                         <InlineButton
+                            {...cls('buttons-panel-item')}
                             onClick={() => this.setState({showImportModal: true})}
                         >Импорт слов</InlineButton>
+
+                        <InlineButton
+                            {...cls('buttons-panel-item')}
+                            onClick={() => this.setState({ showColorsModal: true })}
+                        >Настройка выделения</InlineButton>
                     </div>
 
                     {!!selectedWords.length && (
@@ -417,7 +427,7 @@ export default class ProjectKeyWords extends Component {
                     onChange={this.handleEndSort}
                     onScroll={this.handleEndScroll}
                 >
-                    {this.state.keyWords.map((keyWord, index) => (
+                    {keyWords.map((keyWord, index) => (
                         <div
                             data-id={keyWord.id}
                             key={keyWord.id}
@@ -491,6 +501,13 @@ export default class ProjectKeyWords extends Component {
                         projectId={projectId}
                         updateParent={this.getItems}
                         onClose={() => this.setState({showImportModal: false})}
+                    />
+                )}
+
+                {(keyWords.length && showColorsModal) && (
+                    <ProjectKeyWordColors
+                        projectId={projectId}
+                        onClose={() => this.setState({ showColorsModal: false })}
                     />
                 )}
 

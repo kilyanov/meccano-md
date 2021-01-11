@@ -4,10 +4,10 @@ import './project-table-settings-modal.scss';
 import ConfirmModal from '../../../../Shared/ConfirmModal/ConfirmModal';
 import {getColumnsFromStorage, getColumnsFromFields, setColumnsToStorage, DEFAULT_COLUMN_WIDTH} from '../Columns';
 import CheckBox from '../../../../Form/CheckBox/CheckBox';
-import {StorageService} from "../../../../../services";
-import {STORAGE_KEY, THEME_TYPE} from "../../../../../constants";
+import {StorageService} from "@services";
+import {STORAGE_KEY, THEME_TYPE} from "@const";
 import Select from "react-select";
-import {ReactSelectStyles} from "../../../../../constants/ReactSelectStyles";
+import {ReactSelectStyles} from "@const/ReactSelectStyles";
 import {connect} from "react-redux";
 
 const cls = new Bem('project-table-settings-modal');
@@ -72,7 +72,7 @@ class ProjectTableSettingsModal extends Component {
                 title='Параметры таблицы'
                 onClose={this.props.onClose}
                 onSubmit={this.handleSubmit}
-                width='small'
+                width='wide'
             >
                 <h3 {...cls('subtitle')}>Столбцы</h3>
                 <div {...cls('items')}>
