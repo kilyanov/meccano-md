@@ -18,7 +18,6 @@ import store from "../../../redux/store";
 import { setCurrentProject } from "@redux/actions/currentProject";
 import { PROJECT_PERMISSION } from "@const/ProjectPermissions";
 import { KEY_CODE } from "@const";
-import TinyMCE from "../../Form/TinyMCE/TinyMCE";
 import CreateLocationModal from "./CreateLocationModal";
 import LocationIcon from "../../Shared/SvgIcons/LocationIcon";
 import ReprintsIcon from "../../Shared/SvgIcons/ReprintsIcon";
@@ -28,6 +27,7 @@ import AccessProject from '../../Shared/AccessProject';
 import Drawer from '../../Shared/Drawer/Drawer';
 import Reprints from '../Reprints/Reprints';
 import './article-create-page.scss';
+import TinyMceLocal from "@components/Form/TinyMceLocal/TinyMceLocal";
 
 const cls = new Bem('article-create-page');
 const defaultTimeZone = 'Europe/Moscow';
@@ -145,8 +145,8 @@ class ArticleCreatePage extends Component {
 
         SourceService.get().then(({ data }) => {
             const sources = data.map(el => {
-                return { 
-                    label: el.name, 
+                return {
+                    label: el.name,
                     value: el.id
                 };
             });
@@ -155,8 +155,8 @@ class ArticleCreatePage extends Component {
 
         LocationService.city.get().then(({ data }) => {
             const cities = data.map(el => {
-                return { 
-                    label: el.name, 
+                return {
+                    label: el.name,
                     value: el.id
                 };
             });
@@ -259,8 +259,8 @@ class ArticleCreatePage extends Component {
             city_id: cityId
         };
 
-        ArticleService.create({ 
-            ...form, projectId: this.state.projectId 
+        ArticleService.create({
+            ...form, projectId: this.state.projectId
         }, null, this.state.userTypeId)
             .then(({data}) => {
                 this.handleDeleteReprint(index);
@@ -280,7 +280,7 @@ class ArticleCreatePage extends Component {
         form.reprints = this.state.form.reprints;
         ArticleService.update(form, this.state.form.id, this.state.userTypeId)
             .then(() => {
-                ArticleService.get(this.state.articleId, { 
+                ArticleService.get(this.state.articleId, {
                     project: this.state.projectId,
                     archive: '',
                     user_type: this.state.userTypeId,
@@ -868,7 +868,8 @@ class ArticleCreatePage extends Component {
 
         const sectionAnnotation = annotationField ? (
             <section {...cls('section')}>
-                <TinyMCE
+                <TinyMceLocal
+                    id='annotation'
                     {...cls('field', 'annotation')}
                     readOnly={readOnly}
                     required={textField.required}
@@ -878,19 +879,13 @@ class ArticleCreatePage extends Component {
                     onChange={() => this.setState({ annotationIsChanged: true })}
                     height={250}
                 />
-                {/* <RichEditor
-                    {...cls('field', 'annotation')}
-                    label='Аннотация'
-                    readOnly={readOnly}
-                    content={form.annotation || ''}
-                    onChange={value => this.handleChangeForm(value, 'annotation')}
-                /> */}
             </section>
         ) : null;
 
         const sectionText = textField ? (
             <section {...cls('section')}>
-                <TinyMCE
+                <TinyMceLocal
+                    id='article-text'
                     {...cls('field', 'textarea')}
                     readOnly={readOnly}
                     required={textField.required}
@@ -899,13 +894,6 @@ class ArticleCreatePage extends Component {
                     onEditorChange={value => this.handleChangeForm(value, 'text')}
                     onChange={() => this.setState({ textIsChanged: true })}
                 />
-                {/* <RichEditor
-                    {...cls('field', 'textarea')}
-                    readOnly={readOnly}
-                    label='Текст статьи'
-                    content={form.text || ''}
-                    onChange={value => this.handleChangeForm(value, 'text')}
-                /> */}
             </section>
         ) : null;
 
@@ -960,7 +948,7 @@ class ArticleCreatePage extends Component {
                         <LocationIcon/>
                     </button>
 
-                    {this.state.articleId && 
+                    {this.state.articleId &&
                         <button
                             {...cls('drawer-button')}
                             onClick={this.handleShowDrawer}
