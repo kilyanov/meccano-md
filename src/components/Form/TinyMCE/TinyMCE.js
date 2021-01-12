@@ -1,15 +1,33 @@
 import React from 'react';
 import { Editor } from '@tinymce/tinymce-react';
 import BEMHelper from "react-bem-helper";
+import { TINY_MCE_KEY } from "@const/TinyMCEApiKey";
 import './tiny-mce.scss';
-import {TINY_MCE_KEY} from "../../../constants/TinyMCEApiKey";
 
 const cls = new BEMHelper('tiny-mce');
 
-export default function TinyMCE({ className, content, label, onEditorChange, onChange, readOnly, draggable, required, height = 500 }) {
+export default function TinyMCE({
+    className,
+    content,
+    label,
+    onEditorChange,
+    onChange,
+    readOnly,
+    draggable,
+    required,
+    height = 500
+}) {
     return (
         <div {...cls('', {readOnly}, className)}>
-            {label && <span {...cls('label', { error: required && (!content || !content.length) }, { 'drag-handle': draggable })}>{label}</span>}
+            {label && (
+                <span
+                    {...cls(
+                        'label',
+                        { error: required && (!content || !content.length) },
+                        { 'drag-handle': draggable }
+                    )}
+                >{label}</span>
+            )}
 
             <Editor
                 apiKey={TINY_MCE_KEY}

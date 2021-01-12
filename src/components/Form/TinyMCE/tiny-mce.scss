@@ -21,6 +21,10 @@ $namespace: '.tiny-mce';
             color: $errorColor;
         }
     }
+
+    .tox.tox-tinymce {
+        min-height: 200px;
+    }
 }
 
 /* Dark Theme */
