@@ -68,6 +68,7 @@ export default class TinyMceLocal extends Component {
                     const cnt = editor.getContent();
 
                     this.setState({ editor });
+                    this.props.onChange(cnt);
                     this.props.onEditorChange(cnt);
                 });
             },
@@ -76,7 +77,9 @@ export default class TinyMceLocal extends Component {
                 'bullist numlist outdent indent | removeformat | code help',
             paste_as_text: true,
             code_dialog_height: 200,
-            code_dialog_width: 300
+            code_dialog_width: 300,
+            powerpaste_word_import: 'clean',
+            powerpaste_html_import: 'clean'
         });
     }
 

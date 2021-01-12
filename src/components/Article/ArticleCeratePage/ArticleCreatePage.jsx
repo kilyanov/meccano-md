@@ -36,7 +36,7 @@ const toDateWithoutTimeZone = (date) => {
     const removeTimeZone = moment(date).format('YYYY-MM-DD HH:mm:ss');
 
     return new Date(removeTimeZone);
-}
+};
 const sectionsSet = {
     'section_main_id': 'sectionsTwo',
     'section_sub_id': 'sectionsThree'
@@ -866,7 +866,7 @@ class ArticleCreatePage extends Component {
             </Sortable>
         );
 
-        const sectionAnnotation = annotationField ? (
+        const sectionAnnotation = annotationField && !inProgress ? (
             <section {...cls('section')}>
                 <TinyMceLocal
                     id='annotation'
@@ -882,7 +882,7 @@ class ArticleCreatePage extends Component {
             </section>
         ) : null;
 
-        const sectionText = textField ? (
+        const sectionText = textField && !inProgress ? (
             <section {...cls('section')}>
                 <TinyMceLocal
                     id='article-text'
