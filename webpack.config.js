@@ -91,7 +91,9 @@ module.exports = (env, argv) => {
                 filename: 'index.html'
             }),
             new CopyWebpackPlugin([
-                { from: './src/assets/img/favicons/', to: `${__dirname}/web/favicons/` }
+                { from: './src/assets/img/favicons/', to: `${__dirname}/web/favicons/` },
+                { from: './node_modules/tinymce/skins', to: `${__dirname}/web/skins/` },
+                { from: './node_modules/tinymce/icons', to: `${__dirname}/web/icons/` }
             ]),
             new webpack.ProvidePlugin({
                 'window._': 'lodash',
