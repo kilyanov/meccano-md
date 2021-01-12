@@ -68,7 +68,6 @@ export default class TinyMceLocal extends Component {
                     const cnt = editor.getContent();
 
                     this.setState({ editor });
-                    this.props.onChange(cnt);
                     this.props.onEditorChange(cnt);
                 });
             },
