@@ -4,6 +4,31 @@ import BEMHelper from "react-bem-helper";
 import { TINY_MCE_KEY } from "@const/TinyMCEApiKey";
 import './tiny-mce.scss';
 
+import 'tinymce/tinymce';
+import 'tinymce/themes/silver';
+import 'tinymce/plugins/table';
+import 'tinymce/plugins/advlist';
+import 'tinymce/plugins/autolink';
+import 'tinymce/plugins/lists';
+import 'tinymce/plugins/link';
+import 'tinymce/plugins/image';
+import 'tinymce/plugins/charmap';
+import 'tinymce/plugins/print';
+import 'tinymce/plugins/preview';
+import 'tinymce/plugins/anchor';
+import 'tinymce/plugins/searchreplace';
+import 'tinymce/plugins/visualblocks';
+import 'tinymce/plugins/code';
+import 'tinymce/plugins/fullscreen';
+import 'tinymce/plugins/insertdatetime';
+import 'tinymce/plugins/media';
+import 'tinymce/plugins/table';
+import 'tinymce/plugins/paste';
+import 'tinymce/plugins/code';
+import 'tinymce/plugins/help';
+import 'tinymce/plugins/wordcount';
+import 'tinymce/plugins/paste';
+
 const cls = new BEMHelper('tiny-mce');
 
 export default function TinyMCE({
@@ -52,7 +77,9 @@ export default function TinyMCE({
                     code_dialog_width: 300
                 }}
                 onEditorChange={onEditorChange}
-                onChange={onChange}
+                onChange={a => {
+                    console.log('a', a);
+                }}
             />
         </div>
     );

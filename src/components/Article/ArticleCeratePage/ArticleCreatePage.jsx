@@ -26,8 +26,8 @@ import { setCurrentArticle, clearCurrentArticle } from '../../../redux/actions';
 import AccessProject from '../../Shared/AccessProject';
 import Drawer from '../../Shared/Drawer/Drawer';
 import Reprints from '../Reprints/Reprints';
+import TinyMCE from "@components/Form/TinyMCE/TinyMCE";
 import './article-create-page.scss';
-import TinyMceLocal from "@components/Form/TinyMceLocal/TinyMceLocal";
 
 const cls = new Bem('article-create-page');
 const defaultTimeZone = 'Europe/Moscow';
@@ -406,8 +406,6 @@ class ArticleCreatePage extends Component {
                 if (field.slug === 'section_three_id' && (!this.state.sectionsThree || !this.state.sectionsThree.length)) {
                     return;
                 }
-
-                console.log(field.slug, _.isObject(form[field.slug]), _.isArray(form[field.slug]), _.isDate(form[field.slug]))
 
                 if (!form[field.slug] ||
                     (_.isArray(form[field.slug]) && _.isEmpty(form[field.slug])) ||
@@ -866,10 +864,10 @@ class ArticleCreatePage extends Component {
             </Sortable>
         );
 
-        const sectionAnnotation = annotationField && !inProgress ? (
+        const sectionAnnotation = annotationField ? (
             <section {...cls('section')}>
-                <TinyMceLocal
-                    id='annotation'
+                <TinyMCE
+                    key={form.id}
                     {...cls('field', 'annotation')}
                     readOnly={readOnly}
                     required={textField.required}
@@ -882,10 +880,10 @@ class ArticleCreatePage extends Component {
             </section>
         ) : null;
 
-        const sectionText = textField && !inProgress ? (
+        const sectionText = textField ? (
             <section {...cls('section')}>
-                <TinyMceLocal
-                    id='article-text'
+                <TinyMCE
+                    key={form.id + 1}
                     {...cls('field', 'textarea')}
                     readOnly={readOnly}
                     required={textField.required}
