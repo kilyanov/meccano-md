@@ -109,8 +109,6 @@ export default function ProjectKeyWordColors({ projectId, onClose }) {
                     };
                 });
 
-                console.log(result);
-
                 if (result) {
                     setColors(result);
                 }
