@@ -14,15 +14,12 @@ export default function ProjectKeyWordColors({ projectId, onClose }) {
     const [ colors, setColors ] = useState({});
     const [ inProgress, setInProgress ] = useState(true);
 
-    const handleSetColor = (key, prop, { color, alpha }) => {
-        const hexAlpha = Math.round(alpha * 255 / 100).toString(16);
-
+    const handleSetColor = (key, prop, { color }) => {
         setColors(prev => ({
             ...prev,
             [key]: {
                 ...prev[key],
-                [`${prop}Color`]: color + hexAlpha,
-                [`${prop}Alpha`]: alpha
+                [`${prop}Color`]: color
             }
         }));
     };
@@ -34,8 +31,8 @@ export default function ProjectKeyWordColors({ projectId, onClose }) {
         Object.keys(colors).forEach(key => {
             const colorItem = {
                 template: key,
-                color_font: colors[key].textColor,
-                color_fill: colors[key].fillColor
+                color_font: colors[key].textColor.replace('#', ''),
+                color_fill: colors[key].fillColor.replace('#', '')
             };
 
             if (colors[key].id) {
@@ -64,16 +61,6 @@ export default function ProjectKeyWordColors({ projectId, onClose }) {
                 .finally(() => setInProgress(false));
         }
     };
-    const parseColor = (color, type) => {
-        const parsed = {
-            [`${type}Color`]: color.substr(0, 7),
-            [`${type}Alpha`]: color.substr(7) || 'ff'
-        };
-
-        parsed[`${type}Alpha`] = Math.round(parseInt(parsed.alpha, 16) / 255 * 100);
-
-        return parsed;
-    };
     const renderItem = (key) => (
         <section { ...cls('item') } key={key}>
             <p { ...cls('item-title') }>{ key.toUpperCase() }</p>
@@ -83,6 +70,7 @@ export default function ProjectKeyWordColors({ projectId, onClose }) {
                     <ColorPicker
                         {...cls('item-field')}
                         color={colors[key]?.textColor || ''}
+                        enableAlpha={false}
                         defaultColor='#ffffff'
                         alpha={colors[key]?.textAlpha || 100}
                         mode='RGB'
@@ -96,6 +84,7 @@ export default function ProjectKeyWordColors({ projectId, onClose }) {
                     <ColorPicker
                         {...cls('item-field')}
                         color={colors[key]?.fillColor || ''}
+                        enableAlpha={false}
                         defaultColor='#ffffff'
                         alpha={colors[key]?.fillAlpha || 100}
                         mode='RGB'
@@ -115,8 +104,8 @@ export default function ProjectKeyWordColors({ projectId, onClose }) {
                 response.data.forEach(item => {
                     result[item.template] = {
                         id: item.id,
-                        ...parseColor(`#${item.color_font}`, 'text'),
-                        ...parseColor(`#${item.color_fill}`, 'fill')
+                        textColor: `#${item.color_font}`,
+                        fillColor: `#${item.color_fill}`
                     };
                 });
 
