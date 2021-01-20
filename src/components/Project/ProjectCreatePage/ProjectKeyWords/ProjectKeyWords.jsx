@@ -359,17 +359,19 @@ export default class ProjectKeyWords extends Component {
                             {...cls('buttons-panel-item')}
                             ref={ref => this.addButtonRef = ref}
                             onClick={() => this.setState({showCreateModal: true})}
-                        >+ Добавить слово</InlineButton>
+                        >+ Добавить</InlineButton>
 
                         <InlineButton
                             {...cls('buttons-panel-item')}
                             onClick={() => this.setState({showImportModal: true})}
                         >Импорт слов</InlineButton>
 
-                        <InlineButton
-                            {...cls('buttons-panel-item')}
-                            onClick={() => this.setState({ showColorsModal: true })}
-                        >Настройка выделения</InlineButton>
+                        {!!keyWords.length && (
+                            <InlineButton
+                                {...cls('buttons-panel-item')}
+                                onClick={() => this.setState({ showColorsModal: true })}
+                            >Настройка выделения</InlineButton>
+                        )}
                     </div>
 
                     {!!selectedWords.length && (
@@ -433,6 +435,8 @@ export default class ProjectKeyWords extends Component {
                         </div>
                     ))}
                 </Sortable>
+
+                {!keyWords.length && <p { ...cls('empty-message') }>Ключевых слов пока нет</p>}
 
                 {/* <ul {...cls('list')}>
                     {keyWords.map((keyWord, key) => (
@@ -501,7 +505,7 @@ export default class ProjectKeyWords extends Component {
                     />
                 )}
 
-                {(keyWords.length && showColorsModal) && (
+                {(!!keyWords.length && showColorsModal) && (
                     <ProjectKeyWordColors
                         projectId={projectId}
                         onClose={() => this.setState({ showColorsModal: false })}

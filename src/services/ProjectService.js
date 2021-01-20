@@ -40,7 +40,8 @@ export const ProjectService = {
     wordSetting: {
         get: (projectId, form) => API.get(`/project/${projectId}/word-setting`, { params: form }),
         create: (projectId, form) => API.post(`/project/${projectId}/word-setting`, form),
-        update: (projectId, form) => API.put(`/project/${projectId}/word-setting`, form)
+        update: (projectId, form) => API.put(`/project/${projectId}/word-setting`, form),
+        delete: (projectId, id) => API.delete(`/project/${projectId}/word-setting/${id}`)
     },
     field: {
         get: (id) => API.get(urlGenerator('field')(id)),

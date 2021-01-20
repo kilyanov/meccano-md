@@ -9,6 +9,7 @@ import Loader from "@components/Shared/Loader/Loader";
 import './key-word-colors.scss';
 
 const cls = new BEMHelper('key-word-colors');
+const defaultColor = '#fff';
 
 export default function ProjectKeyWordColors({ projectId, onClose }) {
     const [ colors, setColors ] = useState({});
@@ -19,20 +20,18 @@ export default function ProjectKeyWordColors({ projectId, onClose }) {
             ...prev,
             [key]: {
                 ...prev[key],
-                [`${prop}Color`]: color
+                [`color_${prop}`]: color
             }
         }));
     };
     const handleSubmit = () => {
-        setInProgress(true);
-
         const items = [];
 
         Object.keys(colors).forEach(key => {
             const colorItem = {
                 template: key,
-                color_font: colors[key].textColor.replace('#', ''),
-                color_fill: colors[key].fillColor.replace('#', '')
+                color_font: colors[key].color_font.replace('#', ''),
+                color_fill: colors[key].color_fill.replace('#', '')
             };
 
             if (colors[key].id) {
@@ -45,10 +44,19 @@ export default function ProjectKeyWordColors({ projectId, onClose }) {
         const createItems = items.filter(({ id }) => !id);
         const updateItems = items.filter(({ id }) => !!id);
 
+        if (createItems.length || updateItems.length) {
+            setInProgress(true);
+        }
+
         if (createItems.length) {
             ProjectService.wordSetting
                 .create(projectId, createItems)
-                .then(() => NotificationManager.success('Успешно создано', 'Создание выделения цветом'))
+                .then((response) => {
+                    const result = prepareData(response.data);
+
+                    setColors(c => ({ ...c, ...result }));
+                    NotificationManager.success('Успешно создано', 'Создание выделения цветом');
+                })
                 .catch(e => console.log(e))
                 .finally(() => setInProgress(false));
         }
@@ -61,20 +69,46 @@ export default function ProjectKeyWordColors({ projectId, onClose }) {
                 .finally(() => setInProgress(false));
         }
     };
+    const handleReset = (key) => {
+        const id = colors[key]?.id;
+
+        if (!key || !colors[key] || !id) {
+            return;
+        }
+
+        setInProgress(true);
+
+        ProjectService.wordSetting
+            .delete(projectId, id)
+            .then(() => {
+                const newColors = { ...colors };
+
+                delete newColors[key];
+
+                setColors(newColors);
+            })
+            .finally(() => setInProgress(false));
+    };
     const renderItem = (key) => (
         <section { ...cls('item') } key={key}>
-            <p { ...cls('item-title') }>{ key.toUpperCase() }</p>
+            <div { ...cls('item-head') }>
+                <p { ...cls('item-title') }>{ key.toUpperCase() }</p>
+                <button
+                    { ...cls('item-button') }
+                    disabled={!colors[key]?.id}
+                    onClick={() => handleReset(key)}
+                >Сброс</button>
+            </div>
             <div { ...cls('item-data') }>
                 <div { ...cls('label') }>Цвет текста</div>
                 <div { ...cls('value') }>
                     <ColorPicker
                         {...cls('item-field')}
-                        color={colors[key]?.textColor || ''}
+                        color={colors[key]?.color_font || defaultColor}
                         enableAlpha={false}
-                        defaultColor='#ffffff'
-                        alpha={colors[key]?.textAlpha || 100}
+                        defaultColor={defaultColor}
                         mode='RGB'
-                        onChange={value => handleSetColor(key, 'text', value)}
+                        onChange={value => handleSetColor(key, 'font', value)}
                     />
                 </div>
             </div>
@@ -83,10 +117,9 @@ export default function ProjectKeyWordColors({ projectId, onClose }) {
                 <div { ...cls('value') }>
                     <ColorPicker
                         {...cls('item-field')}
-                        color={colors[key]?.fillColor || ''}
+                        color={colors[key]?.color_fill || defaultColor}
                         enableAlpha={false}
-                        defaultColor='#ffffff'
-                        alpha={colors[key]?.fillAlpha || 100}
+                        defaultColor={defaultColor}
                         mode='RGB'
                         onChange={value => handleSetColor(key, 'fill', value)}
                     />
@@ -94,20 +127,25 @@ export default function ProjectKeyWordColors({ projectId, onClose }) {
             </div>
         </section>
     );
+    const prepareData = (data) => {
+        const result = {};
+
+        data.forEach(item => {
+            result[item.template] = {
+                id: item.id,
+                color_font: `#${item.color_font}`,
+                color_fill: `#${item.color_fill}`
+            };
+        });
+
+        return result;
+    };
 
     useEffect(() => {
         ProjectService.wordSetting
             .get(projectId)
             .then(response => {
-                const result = {};
-
-                response.data.forEach(item => {
-                    result[item.template] = {
-                        id: item.id,
-                        textColor: `#${item.color_font}`,
-                        fillColor: `#${item.color_fill}`
-                    };
-                });
+                const result = prepareData(response.data);
 
                 if (result) {
                     setColors(result);
