@@ -195,7 +195,6 @@ export default class ProjectKeyWords extends Component {
                 ProjectService.wordSearch
                     .get(null, this.props.projectId, nextWord.id)
                     .then(({data}) => {
-                        console.log(`Перемещено на место слова ${data.name} с позицией ${data.position}`);
                         this.updateWordPosition(movedWordId, data.position);
                     });
             } else {
@@ -259,12 +258,10 @@ export default class ProjectKeyWords extends Component {
     updateWordPosition = (wordId, position, isGetItems) => {
         ProjectService.wordSearch
             .update({ position }, this.props.projectId, wordId)
-            .then(({ data }) => {
+            .then(() => {
                 if (isGetItems) {
                     this.getItems();
                 }
-
-                console.log(`Записал слову ${data.name} позицию ${data.position}`);
             })
             .catch((error) => console.log(error));
     };
@@ -278,7 +275,7 @@ export default class ProjectKeyWords extends Component {
     }
 
     updateWordPositionToEnd = (keyWord, index) => {
-        const { page, pageCount } = this.state.pagintaion;
+        const { page, pageCount } = this.state.pagination;
 
         if (page < pageCount) {
             this.updateWordPosition(keyWord.id, -1, true);
