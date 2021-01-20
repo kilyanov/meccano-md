@@ -31,7 +31,7 @@ export const ProjectService = {
     getFields: (project) => API.get(`${ApiList.project.fieldValue}?id=${project}`),
     cancelLast: () => source && source.cancel('Operation canceled by the user.'),
     wordSearch: {
-        get: (form, projectId, id = '') => API.get(`/project/${projectId}/word-search${id}`, { params: form }),
+        get: (form, projectId, id = '') => API.get(`/project/${projectId}/word-search${id ? `/${id}` : ''}`, { params: form }),
         create: (form, projectId) => API.post(`/project/${projectId}/word-search`, form),
         update: (form, projectId, id) =>  API.put(`/project/${projectId}/word-search/${id}`, form),
         delete: (form, projectId) => API.delete(`/project/${projectId}/word-search`, {data: form}),
