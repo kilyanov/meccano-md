@@ -28,6 +28,7 @@ import 'tinymce/plugins/code';
 import 'tinymce/plugins/help';
 import 'tinymce/plugins/wordcount';
 import 'tinymce/plugins/paste';
+import { useSelector } from "react-redux";
 
 const cls = new BEMHelper('tiny-mce');
 
@@ -36,12 +37,15 @@ export default function TinyMCE({
     content,
     label,
     onEditorChange,
-    onChange,
+    // onChange,
     readOnly,
     draggable,
     required,
     height = 500
 }) {
+    const theme = useSelector(state => state.theme);
+    const isDarkTheme = theme === 'dark';
+
     return (
         <div {...cls('', {readOnly}, className)}>
             {label && (
@@ -59,8 +63,8 @@ export default function TinyMCE({
                 value={content}
                 disabled={readOnly}
                 init={{
-                    // skin: 'oxide-dark',
-                    // content_css: 'dark',
+                    skin: isDarkTheme ? 'oxide-dark' : '',
+                    content_css: isDarkTheme ? 'dark' : '',
                     height,
                     menubar: false,
                     entity_encoding: 'raw',
