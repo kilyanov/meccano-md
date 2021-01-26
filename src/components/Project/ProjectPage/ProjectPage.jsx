@@ -32,6 +32,7 @@ import { PROJECT_PERMISSION } from "@const";
 import Breadcrumbs from '../../Shared/Breadcrumbs';
 import ArchiveModal from '../../Archive/ArchiveModal';
 import AccessProject from '../../Shared/AccessProject';
+import { connect } from 'react-redux';
 
 const cls = new Bem('project-page');
 const defaultPagination = { page: 1, pageCount: 1, perPage: 50 };
@@ -52,7 +53,7 @@ const statusOptions = [
     }
 ];
 
-export default class ProjectPage extends Component {
+class ProjectPage extends Component {
     constructor(props) {
         super(props);
 
@@ -363,6 +364,9 @@ export default class ProjectPage extends Component {
 
         // Необходимые поля для корректной работы цветовыделения
         form.expand = [ ...form.expand, 'complete_monitor', 'complete_analytic', 'complete_client', 'user' ];
+
+        // История передвижения статей
+        form.expand = [ ...form.expand, 'usersManagers.user' ];
 
         // Фильтрация по столбцам
         Object.keys(filters).forEach(filterKey => {
@@ -757,6 +761,7 @@ export default class ProjectPage extends Component {
                         pagination={pagination}
                         fields={fields}
                         userType={userType}
+                        currentUserId={this.props.profile.id}
                     />
 
                     <div {...cls('footer')}>
@@ -844,3 +849,11 @@ export default class ProjectPage extends Component {
         );
     }
 }
+
+function mapStateToProps(state) {
+    return {
+        profile: state.profile
+    };
+}
+
+export default connect(mapStateToProps)(ProjectPage);

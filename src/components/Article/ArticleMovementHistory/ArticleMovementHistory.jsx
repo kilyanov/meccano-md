@@ -1,16 +1,16 @@
 import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { ArticleService } from "../../../services";
+import { ArticleService } from "@services";
 import Loader from "../../Shared/Loader/Loader";
 import BEMHelper from "react-bem-helper";
 import './article-movement-history.scss';
 
 const cls = new BEMHelper('article-movement-history');
 
-export default function ArticleMovementHistory({ articleId, userType, children }) {
-    const [ inProgress, setInProgress ] = useState(true);
+export default function ArticleMovementHistory({ articleId, userType, usersManagers, children }) {
+    const [ inProgress, setInProgress ] = useState(!usersManagers);
     const [ error, setError ] = useState(null);
-    const [ data, setData ] = useState(null);
+    const [ data, setData ] = useState(usersManagers || null);
     const [ isOpen, setIsOpen ] = useState(false);
     const [ coords, setCoords ] = useState(null);
     const cellRef = useRef(null);
@@ -48,18 +48,36 @@ export default function ArticleMovementHistory({ articleId, userType, children }
 
             { data && (
                 <ul { ...cls('list') }>
-                    { data.map(({ createdAt, user }) => (
-                        <li { ...cls('list-item') } key={ user.id }>
-                            <div { ...cls('user') }>
-                                <p { ...cls('user-name') }>от { user.surname } { user.name }</p>
-                                <p { ...cls('user-email') }>{ user.email }</p>
-                            </div>
+                    { data.map(({ user }, index) => {
+                        const nextOwner = data[index + 1]?.user;
+                        const userDataString = (ud) => `${ud.surname} ${ud.name} ${ud.department ? `(${ud.department})` : ''}`;
 
-                            <p { ...cls('date') }>{ moment(createdAt).format('DD.MM.YY [в] HH:mm') }</p>
-                        </li>
-                    )) }
+                        return index < data.length - 1 ? (
+                            <li { ...cls('list-item') } key={ user.id }>
+                                <div { ...cls('user') }>
+                                    <p { ...cls('user-name') }>
+                                        от: { userDataString(user) }
+                                    </p>
+                                    <p { ...cls('user-email') }>{ user.email }</p>
+
+                                    {nextOwner && (
+                                        <>
+                                            <p { ...cls('user-name') }>кому: { userDataString(nextOwner) }</p>
+                                            <p { ...cls('user-email') }>{ nextOwner.email }</p>
+                                        </>
+                                    )}
+                                </div>
+
+                                <p { ...cls('date') }>
+                                    { moment(data[index + 1]?.createdAt).format('DD.MM.YY [в] HH:mm') }
+                                </p>
+                            </li>
+                        ) : null;
+                    }) }
                 </ul>
             ) }
+
+            { data?.length < 2 && <span { ...cls('empty-msg') }>Нет истории передвижений статьи</span> }
         </div>,
         document.body
     );
@@ -72,14 +90,13 @@ export default function ArticleMovementHistory({ articleId, userType, children }
         }
     }, [ cellRef, isOpen ]);
 
-    console.log(coords?.top, coords?.left);
-
     return (
         <div
             { ...cls() }
             ref={ cellRef }
             onMouseEnter={ handleMouseEnter }
             onMouseLeave={ handleMouseLeave }
+            onClick={e => e.preventDefault()}
         >
             { children }
 

@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
-import { KEY_CODE, SORT_DIR, STORAGE_KEY, FIELD_TYPE } from '../../../../constants';
+import { KEY_CODE, SORT_DIR, STORAGE_KEY, FIELD_TYPE } from '@const';
 import CheckBox from '../../../Form/CheckBox/CheckBox';
 import DropDown from '../../../Shared/DropDown/DropDown';
 import './project-table.scss';
@@ -13,7 +13,7 @@ import { getColumnsFromStorage, getColumnsFromFields, updateColumnWidth } from '
 import SettingsIcon from '../../../Shared/SvgIcons/SettingsIcon';
 import SortArrow from './ProjectTableHeader/ProjectTableHeaderSortArrow';
 import ProjectTableColorModal from "./ProjectTableColorModal/ProjectTableColorModal";
-import { StorageService } from "../../../../services";
+import { StorageService } from "@services";
 import ArticleMovementHistory from "../../../Article/ArticleMovementHistory/ArticleMovementHistory";
 
 const cls = new Bem('project-table');
@@ -39,7 +39,8 @@ class ProjectTable extends Component {
         articleColors: PropTypes.array,
         currentProject: PropTypes.object,
         onChangeFilter: PropTypes.func,
-        getArticleMenu: PropTypes.func.isRequired
+        getArticleMenu: PropTypes.func.isRequired,
+        currentUserId: PropTypes.string.isRequired,
     };
 
     static defaultProps = {
@@ -388,6 +389,9 @@ class ProjectTable extends Component {
                         }
                     }
 
+                    const lastOwner = article.usersManagers?.[article.usersManagers.length - 1]?.user;
+                    const penultimateOwner = article.usersManagers?.[article.usersManagers.length - 2]?.user;
+
                     return (
                         <Link
                             to={url}
@@ -397,10 +401,19 @@ class ProjectTable extends Component {
                             { isUserId ? (
                                 <ArticleMovementHistory
                                     articleId={ article.id }
+                                    usersManagers={article.usersManagers}
                                     userType={userType}
-                                >{ columnValue }</ArticleMovementHistory>
+                                >
+                                    {
+                                        lastOwner && lastOwner.id === this.props.currentUserId
+                                            ?  penultimateOwner
+                                                ? `от ${penultimateOwner.surname} ${penultimateOwner.name}`
+                                                : `кому ${lastOwner.surname} ${lastOwner.name}`
+                                            : columnValue && `кому ${columnValue}`
+                                    }
+                                </ArticleMovementHistory>
                             ) : (
-                                <span {...cls('cell-text')}>{ columnValue }</span>
+                                <span {...cls('cell-text')}>{  columnValue }</span>
                             )}
                         </Link>
                     );
