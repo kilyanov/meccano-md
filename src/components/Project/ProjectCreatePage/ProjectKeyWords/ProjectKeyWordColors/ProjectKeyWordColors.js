@@ -14,6 +14,7 @@ const defaultColor = '#fff';
 export default function ProjectKeyWordColors({ projectId, onClose }) {
     const [ colors, setColors ] = useState({});
     const [ inProgress, setInProgress ] = useState(true);
+    const [ hasChanges, setHasChanges ] = useState(false)
 
     const handleSetColor = (key, prop, { color }) => {
         setColors(prev => ({
@@ -23,6 +24,7 @@ export default function ProjectKeyWordColors({ projectId, onClose }) {
                 [`color_${prop}`]: color
             }
         }));
+        setHasChanges(true);
     };
     const handleSubmit = () => {
         const items = [];
@@ -30,8 +32,8 @@ export default function ProjectKeyWordColors({ projectId, onClose }) {
         Object.keys(colors).forEach(key => {
             const colorItem = {
                 template: key,
-                color_font: colors[key].color_font.replace('#', ''),
-                color_fill: colors[key].color_fill.replace('#', '')
+                color_font: colors[key]?.color_font?.replace('#', ''),
+                color_fill: colors[key]?.color_fill?.replace('#', '')
             };
 
             if (colors[key].id) {
@@ -85,6 +87,10 @@ export default function ProjectKeyWordColors({ projectId, onClose }) {
 
                 delete newColors[key];
 
+                if (!Object.keys(newColors).length) {
+                    setHasChanges(false);
+                }
+
                 setColors(newColors);
             })
             .finally(() => setInProgress(false));
@@ -133,8 +139,8 @@ export default function ProjectKeyWordColors({ projectId, onClose }) {
         data.forEach(item => {
             result[item.template] = {
                 id: item.id,
-                color_font: `#${item.color_font}`,
-                color_fill: `#${item.color_fill}`
+                color_font: `#${item.color_font || 'fff'}`,
+                color_fill: `#${item.color_fill || 'fff'}`
             };
         });
 
@@ -160,6 +166,7 @@ export default function ProjectKeyWordColors({ projectId, onClose }) {
             onClose={onClose}
             submitText='Сохранить'
             onSubmit={handleSubmit}
+            submitDisabled={!hasChanges}
         >
             <section { ...cls('section') }>
                 {Object.keys(TEMPLATE_TYPE).map(key => renderItem(key))}
