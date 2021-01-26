@@ -46,19 +46,28 @@ $namespace: '.article-movement-history';
         margin-top: 0;
         margin-bottom: 3px;
         font-size: 12px;
+        font-weight: 500;
         line-height: 14px;
     }
 
     &__user-email {
-        margin: 0;
+        margin-top: 0;
+        margin-bottom: 3px;
         font-size: 10px;
         line-height: 14px;
-        color: #828282;
+        color: #b1b1b1;
     }
 
     &__date {
         margin: 0;
         font-size: 12px;
-        color: #828282;
+        color: #b1b1b1;
+    }
+
+    &__empty-msg {
+        display: block;
+        margin-top: 15px;
+        font-size: 12px;
+        color: #333;
     }
 }
