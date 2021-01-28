@@ -40,7 +40,7 @@ class ProjectTable extends Component {
         currentProject: PropTypes.object,
         onChangeFilter: PropTypes.func,
         getArticleMenu: PropTypes.func.isRequired,
-        currentUserId: PropTypes.string.isRequired,
+        currentUserId: PropTypes.string.isRequired
     };
 
     static defaultProps = {
@@ -407,9 +407,9 @@ class ProjectTable extends Component {
                                     {
                                         lastOwner && lastOwner.id === this.props.currentUserId
                                             ?  penultimateOwner
-                                                ? `от ${penultimateOwner.surname} ${penultimateOwner.name}`
-                                                : `кому ${lastOwner.surname} ${lastOwner.name}`
-                                            : columnValue && `кому ${columnValue}`
+                                                ? <span>от <b>{penultimateOwner.surname} {penultimateOwner.name}</b></span>
+                                                : <span>кому <b>{lastOwner.surname} {lastOwner.name}</b></span>
+                                            : columnValue && <span>кому <b>{columnValue}</b></span>
                                     }
                                 </ArticleMovementHistory>
                             ) : (
@@ -417,7 +417,7 @@ class ProjectTable extends Component {
                             )}
                         </Link>
                     );
-                })}
+                })})
 
                 <button
                     {...cls('menu-button')}
