@@ -36,7 +36,7 @@ export default function ArticleMovementHistory({ articleId, userType, usersManag
             .catch(() => setError('Произошла ошибка, обратитесь к администратору или технической поддержке.'))
             .finally(() => setInProgress(false));
     }, [ articleId, setData, userType ]);
-    const popoverNode = createPortal(
+    const popoverNode = isOpen && createPortal(
         <div
             { ...cls('popover', { opened: isOpen }) }
             style={{ top: `${coords?.top + coords?.height}px`, left: `${coords?.left + coords?.width}px` }}
@@ -48,36 +48,31 @@ export default function ArticleMovementHistory({ articleId, userType, usersManag
 
             { data && (
                 <ul { ...cls('list') }>
-                    { data.map(({ user }, index) => {
-                        const nextOwner = data[index + 1]?.user;
-                        const userDataString = (ud) => `${ud.surname} ${ud.name} ${ud.department ? `(${ud.department})` : ''}`;
+                    { data.map(({ fromUser, user }, index) => {
+                        const prevUser = fromUser ? fromUser : data[index - 1]?.user;
 
-                        return index < data.length - 1 ? (
+                        return  (
                             <li { ...cls('list-item') } key={ user.id }>
                                 <div { ...cls('user') }>
                                     <p { ...cls('user-name') }>
-                                        от: { userDataString(user) }
+                                        от: <b>{ userDataString(prevUser) }</b>
                                     </p>
-                                    <p { ...cls('user-email') }>{ user.email }</p>
+                                    <p { ...cls('user-email') }>{ prevUser?.email }</p>
 
-                                    {nextOwner && (
-                                        <>
-                                            <p { ...cls('user-name') }>кому: { userDataString(nextOwner) }</p>
-                                            <p { ...cls('user-email') }>{ nextOwner.email }</p>
-                                        </>
-                                    )}
+                                    <p { ...cls('user-name') }>кому: <b>{ userDataString(user) }</b></p>
+                                    <p { ...cls('user-email') }>{ user.email }</p>
                                 </div>
 
                                 <p { ...cls('date') }>
                                     { moment(data[index + 1]?.createdAt).format('DD.MM.YY [в] HH:mm') }
                                 </p>
                             </li>
-                        ) : null;
+                        );
                     }) }
                 </ul>
             ) }
 
-            { data?.length < 2 && <span { ...cls('empty-msg') }>Нет истории передвижений статьи</span> }
+            { !data?.length && <span { ...cls('empty-msg') }>Нет истории передвижений статьи</span> }
         </div>,
         document.body
     );
@@ -104,3 +99,12 @@ export default function ArticleMovementHistory({ articleId, userType, usersManag
         </div>
     );
 }
+
+const userDataString = (user) => {
+    const userName = (user?.surname || user?.name)
+        ? `${user.surname} ${user.name}`
+        : user?.email || '-';
+
+    return `${userName} ${user?.department ? `(${user.department})` : ''}`;
+};
+

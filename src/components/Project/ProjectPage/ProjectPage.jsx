@@ -366,7 +366,7 @@ class ProjectPage extends Component {
         form.expand = [ ...form.expand, 'complete_monitor', 'complete_analytic', 'complete_client', 'user' ];
 
         // История передвижения статей
-        form.expand = [ ...form.expand, 'usersManagers.user' ];
+        form.expand = [ ...form.expand, 'usersManagers.user', 'usersManagers.fromUser' ];
 
         // Фильтрация по столбцам
         Object.keys(filters).forEach(filterKey => {

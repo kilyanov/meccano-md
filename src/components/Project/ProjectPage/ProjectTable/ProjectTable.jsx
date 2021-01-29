@@ -389,8 +389,7 @@ class ProjectTable extends Component {
                         }
                     }
 
-                    const lastOwner = article.usersManagers?.[article.usersManagers.length - 1]?.user;
-                    const penultimateOwner = article.usersManagers?.[article.usersManagers.length - 2]?.user;
+                    const lastMoving = article.usersManagers?.[article.usersManagers.length - 1];
 
                     return (
                         <Link
@@ -405,16 +404,16 @@ class ProjectTable extends Component {
                                     userType={userType}
                                 >
                                     {
-                                        lastOwner && lastOwner.id === this.props.currentUserId
-                                            ?  penultimateOwner
-                                                ? <span>от <b>{penultimateOwner.surname} {penultimateOwner.name}</b></span>
-                                                : <span>кому <b>{lastOwner.surname} {lastOwner.name}</b></span>
+                                        lastMoving && lastMoving?.user?.id === this.props.currentUserId
+                                            ?  lastMoving.fromUser
+                                                ? <span>от <b>{ getUserName(lastMoving.fromUser) }</b></span>
+                                                : <span>кому <b>{ getUserName(lastMoving.user) }</b></span>
                                             : columnValue && <span>кому <b>{columnValue}</b></span>
                                     }
                                 </ArticleMovementHistory>
                             ) : (
-                                <span {...cls('cell-text')}>{  columnValue }</span>
-                            )}
+                                <span {...cls('cell-text')}>{ columnValue }</span>
+                            ) }
                         </Link>
                     );
                 })})
@@ -485,6 +484,12 @@ class ProjectTable extends Component {
             </div>
         );
     }
+}
+
+function getUserName(user) {
+    return (user.surname || user.name)
+        ? `${user.surname} ${user.name}`
+        : user.email;
 }
 
 function mapStateToProps(store) {
