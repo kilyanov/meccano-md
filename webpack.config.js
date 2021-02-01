@@ -59,10 +59,12 @@ module.exports = (env, argv) => {
         resolve: {
             extensions: [ '.js', '.jsx' ],
             alias: {
-                'const': path.join(__dirname, './src/constants'),
-                'helpers': path.join(__dirname, './src/helpers'),
-                'services': path.join(__dirname, './src/services'),
-                '@styles': path.join(__dirname, './src/assets/styles')
+                '@const': path.join(__dirname, './src/constants'),
+                '@helpers': path.join(__dirname, './src/helpers'),
+                '@services': path.join(__dirname, './src/services'),
+                '@styles': path.join(__dirname, './src/assets/styles'),
+                '@redux': path.join(__dirname, './src/redux'),
+                '@components': path.join(__dirname, './src/components')
             }
         },
         output: {
@@ -89,7 +91,9 @@ module.exports = (env, argv) => {
                 filename: 'index.html'
             }),
             new CopyWebpackPlugin([
-                { from: './src/assets/img/favicons/', to: `${__dirname}/web/favicons/` }
+                { from: './src/assets/img/favicons/', to: `${__dirname}/web/favicons/` },
+                { from: './node_modules/tinymce/skins', to: `${__dirname}/web/skins/` },
+                { from: './node_modules/tinymce/icons', to: `${__dirname}/web/icons/` }
             ]),
             new webpack.ProvidePlugin({
                 'window._': 'lodash',
