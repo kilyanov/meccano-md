@@ -294,6 +294,19 @@ $namespace: '.select';
         font-size: 11px;
         color: #999;
     }
+
+    &__edit-btn {
+        position: absolute;
+        top: 0;
+        right: 0;
+        background: none;
+        border: none;
+
+        svg {
+            width: 20px;
+            height: 20px;
+        }
+    }
 }
 
 /* Dark Theme */

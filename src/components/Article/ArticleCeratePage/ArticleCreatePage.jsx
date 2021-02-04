@@ -735,6 +735,7 @@ class ArticleCreatePage extends Component {
             case 'source_id':
                 field.requestService = SourceService.get;
                 field.requestCancelService = SourceService.cancelLast;
+                field.editable = true;
                 break;
             case 'source_type_id':
                 field.requestService = SourceService.type.get;
