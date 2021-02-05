@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import ReactDOM from 'react-dom';
 import AsyncCreatable from "react-select/async-creatable";
 import AsyncSelect from "react-select/async";
 import { components } from 'react-select';
@@ -20,6 +21,7 @@ class AsyncCreatableSelect extends Component {
     state = {
         loadedOptions: this.props.loadedOptions || [],
         currentOption: {},
+        inputValue: '',
         editMode: false,
         isError: false,
         inProgress: true
@@ -82,7 +84,8 @@ class AsyncCreatableSelect extends Component {
         this.props.onChange(option);
         this.setState({
             currentOption: option,
-            isError: false
+            isError: false,
+            inputValue: ''
         });
     };
 
@@ -151,11 +154,18 @@ class AsyncCreatableSelect extends Component {
             defaultOptions: loadedOptions,
             loadOptions: _.debounce(this.getOptions, 1000),
             onChange: this.handleSelect,
+            onInputChange: (val, payload) => {
+                if (payload?.action === 'input-change') {
+                    this.setState({ inputValue: val });
+                }
+            },
+            inputValue: this.state.inputValue,
             onBlur: this.handleBlur,
             value: currentOption,
             formatCreateLabel: (inputValue) => `Создать "${inputValue}"`,
             menuPosition,
             classNamePrefix: 'select',
+            createOptionPosition: 'first',
             isDisabled: readOnly || disabled,
             placeholder: 'Выберите...',
             isClearable: true,
@@ -167,12 +177,6 @@ class AsyncCreatableSelect extends Component {
                 return selectOption.every((item) => item.label !== inputValue && inputValue.length);
             }
         };
-
-        if (this.props.editable && this.editMode) {
-            selectProps.inputValue = currentOption.label;
-            this.selectRef.focus();
-            this.editMode = false;
-        }
 
         return (
             <div
@@ -188,8 +192,23 @@ class AsyncCreatableSelect extends Component {
                         { ...cls('edit-btn') }
                         type='button'
                         onClick={() => {
-                            this.editMode = true;
-                            this.forceUpdate();
+                            this.setState({ inputValue: currentOption.label }, () => {
+                                this.selectRef.focus();
+                                const $domNode = ReactDOM.findDOMNode(this.selectRef);
+
+                                if ($domNode) {
+                                    const $input = $domNode.querySelector('input');
+
+                                    if ($input) {
+                                        $input.focus();
+                                        $input.style.maxWidth = '100%';
+                                        $input.style.opacity = '1';
+                                        // Scroll text to end
+                                        // $input.scrollLeft = $input.scrollWidth;
+                                        // $input.setSelectionRange(currentOption.label.length, currentOption.label.length);
+                                    }
+                                }
+                            });
                         }}
                     ><PencilIcon /></button>
                 )}
