@@ -755,6 +755,7 @@ class ArticleCreatePage extends Component {
                 break;
             case 'section_three_id':
                 field.options = sectionsThree.map(({ name, id }) => ({ label: name, value: id }));
+                field.isHidden = !sectionsThree.length || false;
                 break;
             case 'genre_id':
                 field.requestService = ArticleService.genre;
