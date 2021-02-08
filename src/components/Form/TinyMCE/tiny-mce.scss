@@ -11,6 +11,15 @@ $namespace: '.tiny-mce';
         }
     }
 
+    &__label-container {
+        display: flex;
+        justify-content: space-between;
+    }
+
+    &__label-right > * + * {
+        margin-left: 5px;
+    }
+
     &__label {
         display: inline-block;
         font-size: 15px;

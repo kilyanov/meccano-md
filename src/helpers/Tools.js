@@ -99,3 +99,69 @@ export const isRolesAccess = (roles = []) => {
 
     return profile.roles && profile.roles.some(({ name }) => roles.includes(name));
 };
+
+export const stripHtml = (html) => {
+    const tmp = document.createElement("DIV");
+    tmp.innerHTML = html;
+    document.body.appendChild(tmp);
+    return tmp.textContent || tmp.innerText || "";
+};
+
+export const copyToClipboard = (text) => {
+    if (navigator?.clipboard) {
+        return navigator.clipboard.writeText(text);
+    }
+
+    return new Promise((resolve, reject) => {
+        const textArea = document.createElement("textarea");
+        textArea.value = text;
+
+        // Avoid scrolling to bottom
+        textArea.style.top = "0";
+        textArea.style.left = "0";
+        textArea.style.position = "fixed";
+
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+
+        try {
+            const successful = document.execCommand('copy');
+
+            textArea.remove();
+            return successful ? resolve() : reject();
+        } catch (err) {
+            reject();
+        }
+
+        document.body.removeChild(textArea);
+    });
+};
+
+export const getFromClipboard = () => {
+    if (navigator?.clipboard) {
+        return navigator.clipboard.readText();
+    }
+
+    return new Promise((resolve, reject) => {
+        const textArea = document.createElement("textarea");
+
+        // Avoid scrolling to bottom
+        textArea.style.top = "0";
+        textArea.style.left = "0";
+        textArea.style.position = "fixed";
+
+        document.body.appendChild(textArea);
+        textArea.focus();
+
+        try {
+            document.execCommand('paste');
+
+            resolve(textArea.textContent);
+        } catch (err) {
+            reject();
+        }
+
+        document.body.removeChild(textArea);
+    });
+};
