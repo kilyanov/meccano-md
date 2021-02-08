@@ -96,7 +96,9 @@ class ArticleCreatePage extends Component {
             timeZone: defaultTimeZone,
             inProgress: true,
             loadedSources: [],
-            loadedCities: []
+            loadedCities: [],
+            sectionsTwo: [],
+            sectionsThree: []
         };
     }
 
@@ -582,20 +584,12 @@ class ArticleCreatePage extends Component {
     };
 
     getDataSectionFields = () => {
-        const { form, sectionsTwo, sectionsThree, projectFields } = this.state;
+        const { projectFields } = this.state;
         const clonedFields = projectFields && projectFields.length ? _.cloneDeep(projectFields) : [];
 
-        let dataSectionFields = clonedFields.filter(({ slug }) => {
+        const dataSectionFields = clonedFields.filter(({ slug }) => {
             return !this.unSortableFields.includes(slug);
         });
-
-        if (!form.section_main_id || !sectionsTwo || !sectionsTwo.length) {
-            dataSectionFields = dataSectionFields.filter(({ slug }) => slug !== 'section_sub_id');
-        }
-
-        if (!form.section_sub_id || !sectionsThree || !sectionsThree.length) {
-            dataSectionFields = dataSectionFields.filter(({ slug }) => slug !== 'section_three_id');
-        }
 
         return dataSectionFields
             .filter(({ slug }) => slug !== 'user_id')
@@ -642,7 +636,7 @@ class ArticleCreatePage extends Component {
 
     saveFieldsSort = () => {
         const { projectFields, userTypeId, roles } = this.state;
-        const readOnly = !isProjectAccess([ PROJECT_PERMISSION.EDIT ]) && !isRolesAccess(roles.admin);
+        const readOnly = !isProjectAccess([ PROJECT_PERMISSION.EDIT ]) && !isRolesAccess(roles?.admin);
 
         if (readOnly) return;
 
@@ -729,7 +723,7 @@ class ArticleCreatePage extends Component {
         const { form, sections, sectionsTwo, sectionsThree } = this.state;
         const getValue = (prop) => _.isObject(prop) ? prop.value : prop;
 
-        field.readOnly = !isProjectAccess([ PROJECT_PERMISSION.EDIT ]) && !isRolesAccess(roles.admin);
+        field.readOnly = !isProjectAccess([ PROJECT_PERMISSION.EDIT ]) && !isRolesAccess(roles?.admin);
 
         switch (field.slug) {
             case 'source_id':
@@ -758,9 +752,11 @@ class ArticleCreatePage extends Component {
                     value: section.id,
                     sectionsThree: section.sectionsThree
                 }));
+                field.isHidden = !sectionsTwo.length || false;
                 break;
             case 'section_three_id':
                 field.options = sectionsThree.map(({ name, id }) => ({ label: name, value: id }));
+                field.isHidden = !sectionsThree.length || false;
                 break;
             case 'genre_id':
                 field.requestService = ArticleService.genre;
@@ -830,6 +826,7 @@ class ArticleCreatePage extends Component {
                 placeholder={field.name}
                 value={form[field.slug] || ''}
                 onChange={this.handleChangeForm}
+                isHidden={field?.isHidden}
             />
         );
     };
@@ -848,7 +845,7 @@ class ArticleCreatePage extends Component {
         } = this.state;
         const isUpdate = !!this.state.articleId;
         const dataSectionFields = this.getDataSectionFields();
-        const readOnly = !isProjectAccess([ PROJECT_PERMISSION.EDIT ]) && !isRolesAccess(roles.admin);
+        const readOnly = !isProjectAccess([ PROJECT_PERMISSION.EDIT ]) && !isRolesAccess(roles?.admin);
         const annotationField = projectFields.find(({ slug }) => slug === 'annotation');
         const textField = projectFields.find(({ slug }) => slug === 'text');
         const sectionData = (
@@ -1081,7 +1078,7 @@ class ArticleCreatePage extends Component {
 
 function mapStateToProps(state) {
     const roles = {};
-
+    
     state.roles.forEach(({ name }) => roles[name] = name);
 
     return {

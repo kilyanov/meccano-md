@@ -12,8 +12,10 @@ import AsyncCreatableSelect from "../../../Form/AsyncCreatebleSelect/AsyncCreate
 import Select from '../../../Form/Select/ReactSelect/ReactSelect';
 
 const cls = new Bem('article-create-page');
-const ProjectCreateField = ({field, value, onChange, className}) => {
+const ProjectCreateField = ({field, value, onChange, className, isHidden}) => {
     const filedType = field.type.key;
+
+    if (isHidden) return <div {...cls('hidden-field')} data-id={field.slug} />;
 
     switch (filedType) {
         case FIELD_TYPE.ARRAY:
