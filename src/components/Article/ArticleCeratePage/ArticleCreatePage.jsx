@@ -874,6 +874,7 @@ class ArticleCreatePage extends Component {
                     onEditorChange={value => this.handleChangeForm(value, 'annotation')}
                     onChange={() => this.setState({ annotationIsChanged: true })}
                     height={250}
+                    canCopyPaste
                 />
             </section>
         ) : null;
@@ -889,6 +890,7 @@ class ArticleCreatePage extends Component {
                     content={form.text || ''}
                     onEditorChange={value => this.handleChangeForm(value, 'text')}
                     onChange={() => this.setState({ textIsChanged: true })}
+                    canCopyPaste
                 />
             </section>
         ) : null;
@@ -1078,7 +1080,7 @@ class ArticleCreatePage extends Component {
 
 function mapStateToProps(state) {
     const roles = {};
-    
+
     state.roles.forEach(({ name }) => roles[name] = name);
 
     return {
