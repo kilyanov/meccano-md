@@ -416,7 +416,7 @@ class ProjectTable extends Component {
                             ) }
                         </Link>
                     );
-                })})
+                })}
 
                 <button
                     {...cls('menu-button')}
