@@ -162,7 +162,7 @@ class AsyncCreatableSelect extends Component {
             inputValue: this.state.inputValue,
             onBlur: this.handleBlur,
             value: currentOption,
-            formatCreateLabel: (inputValue) => `Создать "${inputValue}"`,
+            formatCreateLabel: (inputValue) => `Создать "${inputValue.trim()}"`,
             menuPosition,
             classNamePrefix: 'select',
             createOptionPosition: 'first',
@@ -175,6 +175,13 @@ class AsyncCreatableSelect extends Component {
             components: { SingleValue },
             isValidNewOption: (inputValue, _, selectOption) => {
                 return selectOption.every((item) => item.label !== inputValue && inputValue.length);
+            },
+            onCreateOption: (value) => {
+                this.handleSelect({
+                    label: value.trim(),
+                    value: value.trim(),
+                    __isNew__: true
+                });
             }
         };
 
