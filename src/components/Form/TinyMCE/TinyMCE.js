@@ -40,7 +40,7 @@ export default function TinyMCE({
     content,
     label,
     onEditorChange,
-    // onChange,
+    onChange,
     readOnly,
     draggable,
     required,
@@ -63,6 +63,7 @@ export default function TinyMCE({
 
         return copyToClipboard(stripHtml(node))
             .then(() => {
+                onChange();
                 NotificationManager.success(
                     `${!selection?.isCollapsed ? 'Выделенный текст' : 'Текст'} успешно скопирован`, 'Скопировано!'
                 );
@@ -79,10 +80,17 @@ export default function TinyMCE({
                 const editorInstance = editorRef?.current?.editor;
 
                 editorInstance.setContent(text);
+                onChange();
             })
             .catch(() => {
                 NotificationManager.error('Произошла ошибка при попытке чтения буфера обмена', 'Ошибка');
             });
+    };
+
+    const handleChange = (e) => {
+        if (e?.type === 'change') {
+            onChange();
+        }
     };
 
     return (
@@ -136,9 +144,7 @@ export default function TinyMCE({
                     code_dialog_width: 300
                 }}
                 onEditorChange={onEditorChange}
-                onChange={a => {
-                    console.log('a', a);
-                }}
+                onChange={handleChange}
             />
         </div>
     );
