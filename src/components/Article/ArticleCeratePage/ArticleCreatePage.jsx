@@ -33,7 +33,7 @@ const cls = new Bem('article-create-page');
 const defaultTimeZone = 'Europe/Moscow';
 const toDateWithoutTimeZone = (date) => {
     if (!date) return new Date();
-    const removeTimeZone = moment(date).format('YYYY-MM-DD HH:mm:ss');
+    const removeTimeZone = moment(date).format('YYYY-MM-DDTHH:mm:ss');
 
     return new Date(removeTimeZone);
 };
@@ -493,14 +493,6 @@ class ArticleCreatePage extends Component {
                     break;
             }
         }
-    };
-
-    getDateWithTimeZone = (date) => {
-        const { timeZone } = this.state;
-        const localeString = new Date(date).toLocaleString('ru-RU', { timeZone });
-        const formatted = moment(localeString, 'DD.MM.YYYY, HH:mm:ss').format('DD.MM.YYYY HH:mm:ss');
-
-        return new Date(formatted);
     };
 
     getArticle = () => {
