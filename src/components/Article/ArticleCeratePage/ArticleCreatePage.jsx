@@ -33,7 +33,7 @@ const cls = new Bem('article-create-page');
 const defaultTimeZone = 'Europe/Moscow';
 const toDateWithoutTimeZone = (date) => {
     if (!date) return new Date();
-    const removeTimeZone = moment(date).format('YYYY-MM-DD HH:mm:ss');
+    const removeTimeZone = moment(date).format('YYYY-MM-DDTHH:mm:ss');
 
     return new Date(removeTimeZone);
 };
@@ -96,7 +96,9 @@ class ArticleCreatePage extends Component {
             timeZone: defaultTimeZone,
             inProgress: true,
             loadedSources: [],
-            loadedCities: []
+            loadedCities: [],
+            sectionsTwo: [],
+            sectionsThree: []
         };
     }
 
@@ -493,14 +495,6 @@ class ArticleCreatePage extends Component {
         }
     };
 
-    getDateWithTimeZone = (date) => {
-        const { timeZone } = this.state;
-        const localeString = new Date(date).toLocaleString('ru-RU', { timeZone });
-        const formatted = moment(localeString, 'DD.MM.YYYY, HH:mm:ss').format('DD.MM.YYYY HH:mm:ss');
-
-        return new Date(formatted);
-    };
-
     getArticle = () => {
         const { location } = this.props;
         const { userTypeId } = this.state;
@@ -582,20 +576,12 @@ class ArticleCreatePage extends Component {
     };
 
     getDataSectionFields = () => {
-        const { form, sectionsTwo, sectionsThree, projectFields } = this.state;
+        const { projectFields } = this.state;
         const clonedFields = projectFields && projectFields.length ? _.cloneDeep(projectFields) : [];
 
-        let dataSectionFields = clonedFields.filter(({ slug }) => {
+        const dataSectionFields = clonedFields.filter(({ slug }) => {
             return !this.unSortableFields.includes(slug);
         });
-
-        if (!form.section_main_id || !sectionsTwo || !sectionsTwo.length) {
-            dataSectionFields = dataSectionFields.filter(({ slug }) => slug !== 'section_sub_id');
-        }
-
-        if (!form.section_sub_id || !sectionsThree || !sectionsThree.length) {
-            dataSectionFields = dataSectionFields.filter(({ slug }) => slug !== 'section_three_id');
-        }
 
         return dataSectionFields
             .filter(({ slug }) => slug !== 'user_id')
@@ -642,7 +628,7 @@ class ArticleCreatePage extends Component {
 
     saveFieldsSort = () => {
         const { projectFields, userTypeId, roles } = this.state;
-        const readOnly = !isProjectAccess([ PROJECT_PERMISSION.EDIT ]) && !isRolesAccess(roles.admin);
+        const readOnly = !isProjectAccess([ PROJECT_PERMISSION.EDIT ]) && !isRolesAccess(roles?.admin);
 
         if (readOnly) return;
 
@@ -729,12 +715,13 @@ class ArticleCreatePage extends Component {
         const { form, sections, sectionsTwo, sectionsThree } = this.state;
         const getValue = (prop) => _.isObject(prop) ? prop.value : prop;
 
-        field.readOnly = !isProjectAccess([ PROJECT_PERMISSION.EDIT ]) && !isRolesAccess(roles.admin);
+        field.readOnly = !isProjectAccess([ PROJECT_PERMISSION.EDIT ]) && !isRolesAccess(roles?.admin);
 
         switch (field.slug) {
             case 'source_id':
                 field.requestService = SourceService.get;
                 field.requestCancelService = SourceService.cancelLast;
+                field.editable = true;
                 break;
             case 'source_type_id':
                 field.requestService = SourceService.type.get;
@@ -757,9 +744,11 @@ class ArticleCreatePage extends Component {
                     value: section.id,
                     sectionsThree: section.sectionsThree
                 }));
+                field.isHidden = !sectionsTwo.length || false;
                 break;
             case 'section_three_id':
                 field.options = sectionsThree.map(({ name, id }) => ({ label: name, value: id }));
+                field.isHidden = !sectionsThree.length || false;
                 break;
             case 'genre_id':
                 field.requestService = ArticleService.genre;
@@ -829,6 +818,7 @@ class ArticleCreatePage extends Component {
                 placeholder={field.name}
                 value={form[field.slug] || ''}
                 onChange={this.handleChangeForm}
+                isHidden={field?.isHidden}
             />
         );
     };
@@ -847,7 +837,7 @@ class ArticleCreatePage extends Component {
         } = this.state;
         const isUpdate = !!this.state.articleId;
         const dataSectionFields = this.getDataSectionFields();
-        const readOnly = !isProjectAccess([ PROJECT_PERMISSION.EDIT ]) && !isRolesAccess(roles.admin);
+        const readOnly = !isProjectAccess([ PROJECT_PERMISSION.EDIT ]) && !isRolesAccess(roles?.admin);
         const annotationField = projectFields.find(({ slug }) => slug === 'annotation');
         const textField = projectFields.find(({ slug }) => slug === 'text');
         const sectionData = (
@@ -876,6 +866,7 @@ class ArticleCreatePage extends Component {
                     onEditorChange={value => this.handleChangeForm(value, 'annotation')}
                     onChange={() => this.setState({ annotationIsChanged: true })}
                     height={250}
+                    canCopyPaste
                 />
             </section>
         ) : null;
@@ -891,6 +882,7 @@ class ArticleCreatePage extends Component {
                     content={form.text || ''}
                     onEditorChange={value => this.handleChangeForm(value, 'text')}
                     onChange={() => this.setState({ textIsChanged: true })}
+                    canCopyPaste
                 />
             </section>
         ) : null;

@@ -34,12 +34,31 @@ export function ReactSelectStyles(isDarkTheme, readOnly) {
             backgroundColor: isDarkTheme ? darkColor : lightColor,
             zIndex: 2
         }),
-        option: (provided, {isDisabled, isFocused, isSelected}) => {
+        menuList: (provided) => ({
+            ...provided,
+            position: 'relative'
+        }),
+        option: (provided, state) => {
+            const isCreateItem = state?.label?.includes('Создать');
+
             return {
                 ...provided,
-                backgroundColor: isDisabled ? null :
-                    isSelected ? isDarkTheme ? '#525252' : '#ccc' :
-                        isFocused ? isDarkTheme ? '#525252' : '#ccc' : null
+                backgroundColor: state.isDisabled
+                    ? null
+                    : isCreateItem
+                        ? '#00B956'
+                        : state.isSelected
+                            ? isDarkTheme
+                                ? '#525252'
+                                : '#ccc'
+                            : state.isFocused
+                                ? isDarkTheme
+                                    ? '#525252'
+                                    : '#ccc'
+                                :  null,
+                color: isCreateItem ? '#fff' : 'inherit',
+                position: isCreateItem ? 'sticky' : 'unset',
+                top: '-4px'
             };
         },
         multiValue: (provided) => ({
@@ -53,6 +72,10 @@ export function ReactSelectStyles(isDarkTheme, readOnly) {
         singleValue: (provided) => ({
             ...provided,
             color: isDarkTheme ? '#f2f2f2' : null
+        }),
+        input: (provided) => ({
+            ...provided,
+            width: '100%'
         })
     };
 }

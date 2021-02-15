@@ -6,14 +6,16 @@ import InputTags from '../../../Form/InputTags/InputTags';
 import InputLink from '../../../Form/InputLink/InputLink';
 import InputNumber from '../../../Form/InputNumber/InputNumber';
 import InputTime from '../../../Form/InputTime/InputTime';
-import {FIELD_TYPE} from '../../../../constants';
+import {FIELD_TYPE} from '@const';
 import InputDateTimePicker from "../../../Form/InputDateTimePicker/InputDatePicker";
 import AsyncCreatableSelect from "../../../Form/AsyncCreatebleSelect/AsyncCreateableSelect";
 import Select from '../../../Form/Select/ReactSelect/ReactSelect';
 
 const cls = new Bem('article-create-page');
-const ProjectCreateField = ({field, value, onChange, className}) => {
+const ProjectCreateField = ({field, value, onChange, className, isHidden}) => {
     const filedType = field.type.key;
+
+    if (isHidden) return <div {...cls('hidden-field')} data-id={field.slug} />;
 
     switch (filedType) {
         case FIELD_TYPE.ARRAY:
@@ -93,6 +95,7 @@ const ProjectCreateField = ({field, value, onChange, className}) => {
                     depended={field.depended}
                     isDisabled={field.readOnly}
                     required={field.required}
+                    editable={field.editable}
                     draggable
                     canCreate
                 />

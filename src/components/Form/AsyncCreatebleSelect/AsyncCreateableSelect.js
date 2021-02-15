@@ -1,12 +1,14 @@
 import React, { Component } from 'react';
+import ReactDOM from 'react-dom';
 import AsyncCreatable from "react-select/async-creatable";
 import AsyncSelect from "react-select/async";
 import { components } from 'react-select';
-import { ReactSelectStyles } from "../../../constants/ReactSelectStyles";
+import { ReactSelectStyles } from "@const/ReactSelectStyles";
 import { connect } from "react-redux";
-import { EVENTS, THEME_TYPE } from "../../../constants";
+import { EVENTS, THEME_TYPE } from "@const";
 import BEMHelper from "react-bem-helper";
 import { EventEmitter } from "../../../helpers";
+import PencilIcon from "@components/Shared/SvgIcons/PencilIcon";
 
 const cls = new BEMHelper('select');
 const SingleValue = ({ children, ...props }) => (
@@ -19,6 +21,8 @@ class AsyncCreatableSelect extends Component {
     state = {
         loadedOptions: this.props.loadedOptions || [],
         currentOption: {},
+        inputValue: '',
+        editMode: false,
         isError: false,
         inProgress: true
     };
@@ -80,7 +84,8 @@ class AsyncCreatableSelect extends Component {
         this.props.onChange(option);
         this.setState({
             currentOption: option,
-            isError: false
+            isError: false,
+            inputValue: ''
         });
     };
 
@@ -127,6 +132,8 @@ class AsyncCreatableSelect extends Component {
         return EventEmitter.emit(invalid ? EVENTS.FORM.ON_VALIDATE_FAILURE : EVENTS.FORM.ON_VALIDATE_SUCCESS);
     };
 
+    editMode = false
+
     render() {
         const { loadedOptions, currentOption, isError } = this.state;
         const {
@@ -147,11 +154,18 @@ class AsyncCreatableSelect extends Component {
             defaultOptions: loadedOptions,
             loadOptions: _.debounce(this.getOptions, 1000),
             onChange: this.handleSelect,
+            onInputChange: (val, payload) => {
+                if (payload?.action === 'input-change') {
+                    this.setState({ inputValue: val });
+                }
+            },
+            inputValue: this.state.inputValue,
             onBlur: this.handleBlur,
             value: currentOption,
-            formatCreateLabel: (inputValue) => `Создать "${inputValue}"`,
+            formatCreateLabel: (inputValue) => `Создать "${inputValue.trim()}"`,
             menuPosition,
             classNamePrefix: 'select',
+            createOptionPosition: 'first',
             isDisabled: readOnly || disabled,
             placeholder: 'Выберите...',
             isClearable: true,
@@ -161,6 +175,13 @@ class AsyncCreatableSelect extends Component {
             components: { SingleValue },
             isValidNewOption: (inputValue, _, selectOption) => {
                 return selectOption.every((item) => item.label !== inputValue && inputValue.length);
+            },
+            onCreateOption: (value) => {
+                this.handleSelect({
+                    label: value.trim(),
+                    value: value.trim(),
+                    __isNew__: true
+                });
             }
         };
 
@@ -173,6 +194,31 @@ class AsyncCreatableSelect extends Component {
                     succeed: !!currentOption && !!currentOption.value
                 }, { [className]: !!className })}
             >
+                {(this.props.editable && !!currentOption?.label) && (
+                    <button
+                        { ...cls('edit-btn') }
+                        type='button'
+                        onClick={() => {
+                            this.setState({ inputValue: currentOption.label }, () => {
+                                this.selectRef.focus();
+                                const $domNode = ReactDOM.findDOMNode(this.selectRef);
+
+                                if ($domNode) {
+                                    const $input = $domNode.querySelector('input');
+
+                                    if ($input) {
+                                        $input.focus();
+                                        $input.style.maxWidth = '100%';
+                                        $input.style.opacity = '1';
+                                        // Scroll text to end
+                                        // $input.scrollLeft = $input.scrollWidth;
+                                        // $input.setSelectionRange(currentOption.label.length, currentOption.label.length);
+                                    }
+                                }
+                            });
+                        }}
+                    ><PencilIcon /></button>
+                )}
                 <label
                     {...cls('label', { required: required && (!currentOption || !currentOption.value) })}
                     title={required ? 'Обязательное поле' : ''}
@@ -180,7 +226,7 @@ class AsyncCreatableSelect extends Component {
                     {label && <span {...cls('label-text', '', { 'drag-handle': draggable })}>{label}</span>}
 
                     {canCreate
-                        ? <AsyncCreatable {...selectProps} className='CREATE' />
+                        ? <AsyncCreatable ref={ref => this.selectRef = ref} {...selectProps} className='CREATE' />
                         : <AsyncSelect {...selectProps} className='NONCREATE'/>
                     }
                 </label>
