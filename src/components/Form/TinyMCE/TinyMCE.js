@@ -88,9 +88,13 @@ export default function TinyMCE({
     };
 
     const handleChange = (e) => {
-        if (e?.type === 'change') {
+        if (e?.type === 'change' && e?.originalEvent) {
             onChange();
         }
+    };
+
+    const handleEditorChange = (value) => {
+        onEditorChange(value);
     };
 
     return (
@@ -143,7 +147,7 @@ export default function TinyMCE({
                     code_dialog_height: 200,
                     code_dialog_width: 300
                 }}
-                onEditorChange={onEditorChange}
+                onEditorChange={handleEditorChange}
                 onChange={handleChange}
             />
         </div>
