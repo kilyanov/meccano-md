@@ -968,60 +968,64 @@ class ArticleCreatePage extends Component {
                     </AccessProject>
                 </section>
 
-                <Form
-                    {...cls('form', '', 'container')}
-                    onSubmit={this.handleSubmit}
-                    ref={node => this.form = node}
-                >
-                    {viewType === 1 && (
-                        <div {...cls('row', '', 'row')}>
-                            <div {...cls('col', '', 'col-lg-6')}>
-                                {sectionData}
-                            </div>
+                {inProgress ? (
+                    <Loader />
+                ) : (
+                    <Form
+                        {...cls('form', '', 'container')}
+                        onSubmit={this.handleSubmit}
+                        ref={node => this.form = node}
+                    >
+                        {viewType === 1 && (
+                            <div {...cls('row', '', 'row')}>
+                                <div {...cls('col', '', 'col-lg-6')}>
+                                    {sectionData}
+                                </div>
 
-                            <div {...cls('col', '', 'col-lg-6')}>
-                                {sectionAnnotation}
-                                {sectionText}
+                                <div {...cls('col', '', 'col-lg-6')}>
+                                    {sectionAnnotation}
+                                    {sectionText}
+                                </div>
                             </div>
-                        </div>
-                    )}
+                        )}
 
-                    {viewType === 2 && (
-                        <div {...cls('row', '', 'row')}>
-                            <div {...cls('col', '', 'col-lg-6')}>
-                                {sectionAnnotation}
-                                {sectionText}
-                            </div>
+                        {viewType === 2 && (
+                            <div {...cls('row', '', 'row')}>
+                                <div {...cls('col', '', 'col-lg-6')}>
+                                    {sectionAnnotation}
+                                    {sectionText}
+                                </div>
 
-                            <div {...cls('col', '', 'col-lg-6')}>
-                                {sectionData}
+                                <div {...cls('col', '', 'col-lg-6')}>
+                                    {sectionData}
+                                </div>
                             </div>
-                        </div>
-                    )}
+                        )}
 
-                    {viewType === 3 && (
-                        <div {...cls('row', '', 'row')}>
-                            <div {...cls('col', '', 'col-lg-6')}>
-                                {sectionText}
-                            </div>
+                        {viewType === 3 && (
+                            <div {...cls('row', '', 'row')}>
+                                <div {...cls('col', '', 'col-lg-6')}>
+                                    {sectionText}
+                                </div>
 
-                            <div {...cls('col', '', 'col-lg-6')}>
-                                {sectionData}
-                                {sectionAnnotation}
+                                <div {...cls('col', '', 'col-lg-6')}>
+                                    {sectionData}
+                                    {sectionAnnotation}
+                                </div>
                             </div>
-                        </div>
-                    )}
+                        )}
 
-                    {viewType === 4 && (
-                        <div {...cls('row', '', 'row')}>
-                            <div {...cls('col', '', 'col-xs-12')}>
-                                {sectionData}
-                                {sectionAnnotation}
-                                {sectionText}
+                        {viewType === 4 && (
+                            <div {...cls('row', '', 'row')}>
+                                <div {...cls('col', '', 'col-xs-12')}>
+                                    {sectionData}
+                                    {sectionAnnotation}
+                                    {sectionText}
+                                </div>
                             </div>
-                        </div>
-                    )}
-                </Form>
+                        )}
+                    </Form>
+                )}
 
                 <Drawer
                     title="Перепечатки"
@@ -1063,8 +1067,6 @@ class ArticleCreatePage extends Component {
                         onClose={() => this.setState({ showLocationModal: false })}
                     />
                 )}
-
-                {inProgress && <Loader/>}
             </Page>
         );
     }
