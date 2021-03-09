@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useRef, useCallback } from 'react';
 import { Editor } from '@tinymce/tinymce-react';
 import BEMHelper from "react-bem-helper";
 import { TINY_MCE_KEY } from "@const/TinyMCEApiKey";
@@ -28,10 +28,11 @@ import 'tinymce/plugins/code';
 import 'tinymce/plugins/help';
 import 'tinymce/plugins/wordcount';
 import 'tinymce/plugins/paste';
-import { useSelector } from "react-redux";
 import Button from "@components/Shared/Button/Button";
-import { copyToClipboard, getFromClipboard, stripHtml } from "@helpers/Tools";
+import { useSelector } from "react-redux";
 import { NotificationManager } from "react-notifications";
+import { StorageService } from "@services";
+import { copyToClipboard, getFromClipboard, stripHtml } from "@helpers/Tools";
 
 const cls = new BEMHelper('tiny-mce');
 
@@ -50,9 +51,40 @@ export default function TinyMCE({
     const theme = useSelector(state => state.theme);
     const isDarkTheme = theme === 'dark';
     const editorRef = useRef(null);
+    const editorInstance = editorRef?.current?.editor;
 
-    const handleCopy = () => {
-        const editorInstance = editorRef?.current?.editor;
+    const handleCopyToLocalBuffer = useCallback(() => {
+        const selection = editorInstance?.selection?.getSel();
+        let node = editorInstance?.getContent(); // get all content
+
+        // or selected content
+        if (selection && !selection?.isCollapsed) {
+            node = editorInstance?.selection?.getContent();
+        }
+
+        StorageService.set('clipboard', JSON.stringify(node));
+
+        onChange();
+        NotificationManager
+            .success(`${!selection?.isCollapsed ? 'Выделенный текст' : 'Текст'} успешно скопирован`, 'Скопировано!');
+    }, [ editorInstance ]);
+
+    const handlePasteFromLocalBuffer = () => {
+        const data = StorageService.get('clipboard');
+
+        try {
+            const text = JSON.parse(data);
+
+            if (!text?.length) return;
+
+            editorInstance.setContent(text);
+            onChange();
+        } catch (e) {
+            NotificationManager.error('Произошла ошибка при попытке чтения буфера обмена', 'Ошибка');
+        }
+    };
+
+    const copyToGeneralBuffer = useCallback(() => {
         const selection = editorInstance?.selection?.getSel();
         let node = editorInstance?.getContent(); // get all content
 
@@ -71,21 +103,20 @@ export default function TinyMCE({
             .catch(() => {
                 NotificationManager.error('При копировании конетна произошла ошибка', 'Ошибка');
             });
-    };
+    }, [ editorInstance ]);
 
-    const handlePaste = () => {
+    const pasteFromGeneralBuffer = useCallback(() => {
         getFromClipboard()
             .then((text) => {
                 if (!text?.length) return;
-                const editorInstance = editorRef?.current?.editor;
 
-                editorInstance.setContent(text);
+                editorInstance.insertContent(text);
                 onChange();
             })
             .catch(() => {
                 NotificationManager.error('Произошла ошибка при попытке чтения буфера обмена', 'Ошибка');
             });
-    };
+    }, [ editorInstance ]);
 
     const handleChange = (e) => {
         if (e?.type === 'change' && e?.originalEvent) {
@@ -96,6 +127,23 @@ export default function TinyMCE({
     const handleEditorChange = (value) => {
         onEditorChange(value);
     };
+
+    if (editorInstance) {
+        editorInstance.ui.registry.addMenuItem('TCopyPlugin', {
+            type: 'item',
+            text: 'Копировать',
+            context: 'div',
+            icon: 'copy',
+            onAction: copyToGeneralBuffer
+        });
+        editorInstance.ui.registry.addMenuItem('TPastePlugin', {
+            type: 'item',
+            text: 'Вствить',
+            context: 'div',
+            icon: 'paste',
+            onAction: pasteFromGeneralBuffer
+        });
+    }
 
     return (
         <div {...cls('', {readOnly}, className)}>
@@ -113,11 +161,11 @@ export default function TinyMCE({
                 {canCopyPaste && (
                     <div { ...cls('label-right') }>
                         <Button
-                            onClick={handleCopy}
+                            onClick={handleCopyToLocalBuffer}
                             title='Копировать текст'
                         >Копировать</Button>
                         <Button
-                            onClick={handlePaste}
+                            onClick={handlePasteFromLocalBuffer}
                             title='Вставить текст с заменой'
                         >Вставить</Button>
                     </div>
@@ -145,7 +193,8 @@ export default function TinyMCE({
                         'alignleft aligncenter alignright alignjustify | \ ' +
                         'bullist numlist outdent indent | removeformat | code help',
                     code_dialog_height: 200,
-                    code_dialog_width: 300
+                    code_dialog_width: 300,
+                    contextmenu: 'TCopyPlugin TPastePlugin'
                 }}
                 onEditorChange={handleEditorChange}
                 onChange={handleChange}
