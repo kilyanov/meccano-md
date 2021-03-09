@@ -28,10 +28,10 @@ import 'tinymce/plugins/code';
 import 'tinymce/plugins/help';
 import 'tinymce/plugins/wordcount';
 import 'tinymce/plugins/paste';
-import { useSelector } from "react-redux";
 import Button from "@components/Shared/Button/Button";
-import { copyToClipboard, getFromClipboard, stripHtml } from "@helpers/Tools";
+import { useSelector } from "react-redux";
 import { NotificationManager } from "react-notifications";
+import {StorageService} from "@services";
 
 const cls = new BEMHelper('tiny-mce');
 
@@ -61,30 +61,27 @@ export default function TinyMCE({
             node = editorInstance?.selection?.getContent();
         }
 
-        return copyToClipboard(stripHtml(node))
-            .then(() => {
-                onChange();
-                NotificationManager.success(
-                    `${!selection?.isCollapsed ? 'Выделенный текст' : 'Текст'} успешно скопирован`, 'Скопировано!'
-                );
-            })
-            .catch(() => {
-                NotificationManager.error('При копировании конетна произошла ошибка', 'Ошибка');
-            });
+        StorageService.set('clipboard', JSON.stringify(node));
+
+        onChange();
+        NotificationManager
+            .success(`${!selection?.isCollapsed ? 'Выделенный текст' : 'Текст'} успешно скопирован`, 'Скопировано!');
     };
 
     const handlePaste = () => {
-        getFromClipboard()
-            .then((text) => {
-                if (!text?.length) return;
-                const editorInstance = editorRef?.current?.editor;
+        const data = StorageService.get('clipboard');
 
-                editorInstance.setContent(text);
-                onChange();
-            })
-            .catch(() => {
-                NotificationManager.error('Произошла ошибка при попытке чтения буфера обмена', 'Ошибка');
-            });
+        try {
+            const text = JSON.parse(data);
+
+            if (!text?.length) return;
+            const editorInstance = editorRef?.current?.editor;
+
+            editorInstance.setContent(text);
+            onChange();
+        } catch (e) {
+            NotificationManager.error('Произошла ошибка при попытке чтения буфера обмена', 'Ошибка');
+        }
     };
 
     const handleChange = (e) => {
