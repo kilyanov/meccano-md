@@ -138,7 +138,7 @@ export default function TinyMCE({
         });
         editorInstance.ui.registry.addMenuItem('TPastePlugin', {
             type: 'item',
-            text: 'Вствить',
+            text: 'Вставить',
             context: 'div',
             icon: 'paste',
             onAction: pasteFromGeneralBuffer
