@@ -22,7 +22,7 @@ module.exports = (env, argv) => {
                 {
                     test: /\.(js|jsx)$/,
                     exclude: /node_modules/,
-                    use: 'babel-loader' // ['babel-loader', 'eslint-loader']
+                    use: 'babel-loader' // ['babel-loader', 'eslint-loader'],
                 },
                 {
                     test: /\.(css|scss)$/,
@@ -104,12 +104,15 @@ module.exports = (env, argv) => {
             }),
             assetsPluginInstance
         ],
+        devtool: productionMode ? 'source-map' : 'eval',
         devServer: {
             headers: { 'Access-Control-Allow-Origin': '*' },
             contentBase: path.join(__dirname, 'web'),
             hot: true,
             port: 5001,
-            historyApiFallback: true
+            historyApiFallback: true,
+            quiet: true,
+            clientLogLevel: 'error'
         }
     };
 };
