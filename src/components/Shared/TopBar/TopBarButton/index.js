@@ -74,7 +74,13 @@ export default function TopBarButton({
 
                         {linkToPage && showLinkForGoToSection && (
                             <li {...cls('list-item', 'link')}>
-                                <Link to={linkToPage} target='_blank'>Перейти в { title }</Link>
+                                <Link
+                                    {...cls('list-link')}
+                                    to={linkToPage}
+                                    target='_blank'
+                                >
+                                    Перейти в { title }
+                                </Link>
                             </li>
                         )}
                     </ul>

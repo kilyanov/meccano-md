@@ -1,11 +1,11 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
-import {ProjectService, UserService} from "../../../services";
+import {ProjectService, UserService} from "@services";
 import ConfirmModal from "../../Shared/ConfirmModal/ConfirmModal";
 import Select from 'react-select';
-import {ReactSelectStyles} from "../../../constants/ReactSelectStyles";
+import {ReactSelectStyles} from "@const/ReactSelectStyles";
 import Loader from "../../Shared/Loader/Loader";
-import {THEME_TYPE} from "../../../constants";
+import {THEME_TYPE} from "@const";
 import {connect} from "react-redux";
 import {NotificationManager} from "react-notifications";
 

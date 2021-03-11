@@ -2,8 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import Page from '../../Shared/Page/Page';
-import { ArticleService, LocationService, ProjectService, SourceService, StorageService } from '../../../services';
-import './article-create-page.scss';
+import { ArticleService, LocationService, ProjectService, SourceService, StorageService } from '@services';
 import Form from '../../Form/Form/Form';
 import Loader from '../../Shared/Loader/Loader';
 import ArrowIcon from '../../Shared/SvgIcons/ArrowIcon';
@@ -11,16 +10,14 @@ import Button from '../../Shared/Button/Button';
 import ArticleViewSettings from './ArticleViewSettings/ArticleViewSettings';
 import ProjectCreateField from '../../Project/ProjectCreatePage/ProjectCreatePageField/ProjectCreatePageField';
 import Sortable from 'react-sortablejs';
-import { isMobileScreen, isProjectAccess, isRolesAccess, OperatedNotification } from '../../../helpers/Tools';
-import { STORAGE_KEY } from '../../../constants';
+import { isMobileScreen, isProjectAccess, isRolesAccess, OperatedNotification } from '@helpers/Tools';
+import { STORAGE_KEY } from '@const';
 import { EventEmitter } from "../../../helpers";
-import { EVENTS } from "../../../constants";
+import { EVENTS } from "@const";
 import store from "../../../redux/store";
-import { setCurrentProject } from "../../../redux/actions/currentProject";
-import { PROJECT_PERMISSION } from "../../../constants/ProjectPermissions";
-import Access from "../../Shared/Access/Access";
-import { KEY_CODE } from "../../../constants";
-import TinyMCE from "../../Form/TinyMCE/TinyMCE";
+import { setCurrentProject } from "@redux/actions/currentProject";
+import { PROJECT_PERMISSION } from "@const/ProjectPermissions";
+import { KEY_CODE } from "@const";
 import CreateLocationModal from "./CreateLocationModal";
 import LocationIcon from "../../Shared/SvgIcons/LocationIcon";
 import ReprintsIcon from "../../Shared/SvgIcons/ReprintsIcon";
@@ -29,15 +26,17 @@ import { setCurrentArticle, clearCurrentArticle } from '../../../redux/actions';
 import AccessProject from '../../Shared/AccessProject';
 import Drawer from '../../Shared/Drawer/Drawer';
 import Reprints from '../Reprints/Reprints';
+import TinyMCE from "@components/Form/TinyMCE/TinyMCE";
+import './article-create-page.scss';
 
 const cls = new Bem('article-create-page');
 const defaultTimeZone = 'Europe/Moscow';
 const toDateWithoutTimeZone = (date) => {
     if (!date) return new Date();
-    const removeTimeZone = moment(date).format('YYYY-MM-DD HH:mm:ss');
+    const removeTimeZone = moment(date).format('YYYY-MM-DDTHH:mm:ss');
 
     return new Date(removeTimeZone);
-}
+};
 const sectionsSet = {
     'section_main_id': 'sectionsTwo',
     'section_sub_id': 'sectionsThree'
@@ -97,7 +96,9 @@ class ArticleCreatePage extends Component {
             timeZone: defaultTimeZone,
             inProgress: true,
             loadedSources: [],
-            loadedCities: []
+            loadedCities: [],
+            sectionsTwo: [],
+            sectionsThree: []
         };
     }
 
@@ -146,8 +147,8 @@ class ArticleCreatePage extends Component {
 
         SourceService.get().then(({ data }) => {
             const sources = data.map(el => {
-                return { 
-                    label: el.name, 
+                return {
+                    label: el.name,
                     value: el.id
                 };
             });
@@ -156,8 +157,8 @@ class ArticleCreatePage extends Component {
 
         LocationService.city.get().then(({ data }) => {
             const cities = data.map(el => {
-                return { 
-                    label: el.name, 
+                return {
+                    label: el.name,
                     value: el.id
                 };
             });
@@ -260,8 +261,8 @@ class ArticleCreatePage extends Component {
             city_id: cityId
         };
 
-        ArticleService.create({ 
-            ...form, projectId: this.state.projectId 
+        ArticleService.create({
+            ...form, projectId: this.state.projectId
         }, null, this.state.userTypeId)
             .then(({data}) => {
                 this.handleDeleteReprint(index);
@@ -281,7 +282,7 @@ class ArticleCreatePage extends Component {
         form.reprints = this.state.form.reprints;
         ArticleService.update(form, this.state.form.id, this.state.userTypeId)
             .then(() => {
-                ArticleService.get(this.state.articleId, { 
+                ArticleService.get(this.state.articleId, {
                     project: this.state.projectId,
                     archive: '',
                     user_type: this.state.userTypeId,
@@ -408,8 +409,6 @@ class ArticleCreatePage extends Component {
                     return;
                 }
 
-                console.log(field.slug, _.isObject(form[field.slug]), _.isArray(form[field.slug]), _.isDate(form[field.slug]))
-
                 if (!form[field.slug] ||
                     (_.isArray(form[field.slug]) && _.isEmpty(form[field.slug])) ||
                     (_.isObject(form[field.slug]) && !_.isDate(form[field.slug]) && _.isEmpty(form[field.slug])) ||
@@ -496,14 +495,6 @@ class ArticleCreatePage extends Component {
         }
     };
 
-    getDateWithTimeZone = (date) => {
-        const { timeZone } = this.state;
-        const localeString = new Date(date).toLocaleString('ru-RU', { timeZone });
-        const formatted = moment(localeString, 'DD.MM.YYYY, HH:mm:ss').format('DD.MM.YYYY HH:mm:ss');
-
-        return new Date(formatted);
-    };
-
     getArticle = () => {
         const { location } = this.props;
         const { userTypeId } = this.state;
@@ -585,20 +576,12 @@ class ArticleCreatePage extends Component {
     };
 
     getDataSectionFields = () => {
-        const { form, sectionsTwo, sectionsThree, projectFields } = this.state;
+        const { projectFields } = this.state;
         const clonedFields = projectFields && projectFields.length ? _.cloneDeep(projectFields) : [];
 
-        let dataSectionFields = clonedFields.filter(({ slug }) => {
+        const dataSectionFields = clonedFields.filter(({ slug }) => {
             return !this.unSortableFields.includes(slug);
         });
-
-        if (!form.section_main_id || !sectionsTwo || !sectionsTwo.length) {
-            dataSectionFields = dataSectionFields.filter(({ slug }) => slug !== 'section_sub_id');
-        }
-
-        if (!form.section_sub_id || !sectionsThree || !sectionsThree.length) {
-            dataSectionFields = dataSectionFields.filter(({ slug }) => slug !== 'section_three_id');
-        }
 
         return dataSectionFields
             .filter(({ slug }) => slug !== 'user_id')
@@ -645,7 +628,7 @@ class ArticleCreatePage extends Component {
 
     saveFieldsSort = () => {
         const { projectFields, userTypeId, roles } = this.state;
-        const readOnly = !isProjectAccess([ PROJECT_PERMISSION.EDIT ]) && !isRolesAccess(roles.admin);
+        const readOnly = !isProjectAccess([ PROJECT_PERMISSION.EDIT ]) && !isRolesAccess(roles?.admin);
 
         if (readOnly) return;
 
@@ -732,12 +715,13 @@ class ArticleCreatePage extends Component {
         const { form, sections, sectionsTwo, sectionsThree } = this.state;
         const getValue = (prop) => _.isObject(prop) ? prop.value : prop;
 
-        field.readOnly = !isProjectAccess([ PROJECT_PERMISSION.EDIT ]) && !isRolesAccess(roles.admin);
+        field.readOnly = !isProjectAccess([ PROJECT_PERMISSION.EDIT ]) && !isRolesAccess(roles?.admin);
 
         switch (field.slug) {
             case 'source_id':
                 field.requestService = SourceService.get;
                 field.requestCancelService = SourceService.cancelLast;
+                field.editable = true;
                 break;
             case 'source_type_id':
                 field.requestService = SourceService.type.get;
@@ -760,9 +744,11 @@ class ArticleCreatePage extends Component {
                     value: section.id,
                     sectionsThree: section.sectionsThree
                 }));
+                field.isHidden = !sectionsTwo.length || false;
                 break;
             case 'section_three_id':
                 field.options = sectionsThree.map(({ name, id }) => ({ label: name, value: id }));
+                field.isHidden = !sectionsThree.length || false;
                 break;
             case 'genre_id':
                 field.requestService = ArticleService.genre;
@@ -832,6 +818,7 @@ class ArticleCreatePage extends Component {
                 placeholder={field.name}
                 value={form[field.slug] || ''}
                 onChange={this.handleChangeForm}
+                isHidden={field?.isHidden}
             />
         );
     };
@@ -850,7 +837,7 @@ class ArticleCreatePage extends Component {
         } = this.state;
         const isUpdate = !!this.state.articleId;
         const dataSectionFields = this.getDataSectionFields();
-        const readOnly = !isProjectAccess([ PROJECT_PERMISSION.EDIT ]) && !isRolesAccess(roles.admin);
+        const readOnly = !isProjectAccess([ PROJECT_PERMISSION.EDIT ]) && !isRolesAccess(roles?.admin);
         const annotationField = projectFields.find(({ slug }) => slug === 'annotation');
         const textField = projectFields.find(({ slug }) => slug === 'text');
         const sectionData = (
@@ -870,6 +857,7 @@ class ArticleCreatePage extends Component {
         const sectionAnnotation = annotationField ? (
             <section {...cls('section')}>
                 <TinyMCE
+                    key={form.id}
                     {...cls('field', 'annotation')}
                     readOnly={readOnly}
                     required={textField.required}
@@ -878,20 +866,15 @@ class ArticleCreatePage extends Component {
                     onEditorChange={value => this.handleChangeForm(value, 'annotation')}
                     onChange={() => this.setState({ annotationIsChanged: true })}
                     height={250}
+                    canCopyPaste
                 />
-                {/* <RichEditor
-                    {...cls('field', 'annotation')}
-                    label='Аннотация'
-                    readOnly={readOnly}
-                    content={form.annotation || ''}
-                    onChange={value => this.handleChangeForm(value, 'annotation')}
-                /> */}
             </section>
         ) : null;
 
         const sectionText = textField ? (
             <section {...cls('section')}>
                 <TinyMCE
+                    key={form.id + 1}
                     {...cls('field', 'textarea')}
                     readOnly={readOnly}
                     required={textField.required}
@@ -899,14 +882,8 @@ class ArticleCreatePage extends Component {
                     content={form.text || ''}
                     onEditorChange={value => this.handleChangeForm(value, 'text')}
                     onChange={() => this.setState({ textIsChanged: true })}
+                    canCopyPaste
                 />
-                {/* <RichEditor
-                    {...cls('field', 'textarea')}
-                    readOnly={readOnly}
-                    label='Текст статьи'
-                    content={form.text || ''}
-                    onChange={value => this.handleChangeForm(value, 'text')}
-                /> */}
             </section>
         ) : null;
 
@@ -961,7 +938,7 @@ class ArticleCreatePage extends Component {
                         <LocationIcon/>
                     </button>
 
-                    {this.state.articleId && 
+                    {this.state.articleId &&
                         <button
                             {...cls('drawer-button')}
                             onClick={this.handleShowDrawer}
@@ -991,60 +968,64 @@ class ArticleCreatePage extends Component {
                     </AccessProject>
                 </section>
 
-                <Form
-                    {...cls('form', '', 'container')}
-                    onSubmit={this.handleSubmit}
-                    ref={node => this.form = node}
-                >
-                    {viewType === 1 && (
-                        <div {...cls('row', '', 'row')}>
-                            <div {...cls('col', '', 'col-lg-6')}>
-                                {sectionData}
-                            </div>
+                {inProgress ? (
+                    <Loader />
+                ) : (
+                    <Form
+                        {...cls('form', '', 'container')}
+                        onSubmit={this.handleSubmit}
+                        ref={node => this.form = node}
+                    >
+                        {viewType === 1 && (
+                            <div {...cls('row', '', 'row')}>
+                                <div {...cls('col', '', 'col-lg-6')}>
+                                    {sectionData}
+                                </div>
 
-                            <div {...cls('col', '', 'col-lg-6')}>
-                                {sectionAnnotation}
-                                {sectionText}
+                                <div {...cls('col', '', 'col-lg-6')}>
+                                    {sectionAnnotation}
+                                    {sectionText}
+                                </div>
                             </div>
-                        </div>
-                    )}
+                        )}
 
-                    {viewType === 2 && (
-                        <div {...cls('row', '', 'row')}>
-                            <div {...cls('col', '', 'col-lg-6')}>
-                                {sectionAnnotation}
-                                {sectionText}
-                            </div>
+                        {viewType === 2 && (
+                            <div {...cls('row', '', 'row')}>
+                                <div {...cls('col', '', 'col-lg-6')}>
+                                    {sectionAnnotation}
+                                    {sectionText}
+                                </div>
 
-                            <div {...cls('col', '', 'col-lg-6')}>
-                                {sectionData}
+                                <div {...cls('col', '', 'col-lg-6')}>
+                                    {sectionData}
+                                </div>
                             </div>
-                        </div>
-                    )}
+                        )}
 
-                    {viewType === 3 && (
-                        <div {...cls('row', '', 'row')}>
-                            <div {...cls('col', '', 'col-lg-6')}>
-                                {sectionText}
-                            </div>
+                        {viewType === 3 && (
+                            <div {...cls('row', '', 'row')}>
+                                <div {...cls('col', '', 'col-lg-6')}>
+                                    {sectionText}
+                                </div>
 
-                            <div {...cls('col', '', 'col-lg-6')}>
-                                {sectionData}
-                                {sectionAnnotation}
+                                <div {...cls('col', '', 'col-lg-6')}>
+                                    {sectionData}
+                                    {sectionAnnotation}
+                                </div>
                             </div>
-                        </div>
-                    )}
+                        )}
 
-                    {viewType === 4 && (
-                        <div {...cls('row', '', 'row')}>
-                            <div {...cls('col', '', 'col-xs-12')}>
-                                {sectionData}
-                                {sectionAnnotation}
-                                {sectionText}
+                        {viewType === 4 && (
+                            <div {...cls('row', '', 'row')}>
+                                <div {...cls('col', '', 'col-xs-12')}>
+                                    {sectionData}
+                                    {sectionAnnotation}
+                                    {sectionText}
+                                </div>
                             </div>
-                        </div>
-                    )}
-                </Form>
+                        )}
+                    </Form>
+                )}
 
                 <Drawer
                     title="Перепечатки"
@@ -1086,8 +1067,6 @@ class ArticleCreatePage extends Component {
                         onClose={() => this.setState({ showLocationModal: false })}
                     />
                 )}
-
-                {inProgress && <Loader/>}
             </Page>
         );
     }

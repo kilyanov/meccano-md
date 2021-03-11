@@ -10,35 +10,50 @@ import ProjectTable from './ProjectTable/ProjectTable';
 import PromiseDialogModal from '../../Shared/PromiseDialogModal/PromiseDialogModal';
 import ArticleCreateModal from '../../Article/ArticleCreateModal/ArticleCreateModal';
 import ArticlesExportModal from '../../Article/ArticlesExportModal/ArticlesExportModal';
-import { ArticleService, ProjectService, StorageService } from '../../../services';
+import { ArticleService, ProjectService, StorageService } from '@services';
 import { NotificationManager } from 'react-notifications';
 import DropDownButton from '../../Shared/DropDownButton/DropDownButton';
 import ArticlesImportModal from '../../Article/ArticlesImportModal/ArticlesImportModal';
 import Page from '../../Shared/Page/Page';
 import Loader from '../../Shared/Loader/Loader';
-import { EVENTS, SORT_DIR, STORAGE_KEY } from '../../../constants';
+import { EVENTS, SORT_DIR, STORAGE_KEY } from '@const';
 import RightLoader from '../../Shared/Loader/RightLoader/RightLoader';
-import { isProjectAccess, Plural, QueueManager } from '../../../helpers/Tools';
+import { isProjectAccess, Plural, QueueManager } from '@helpers/Tools';
 import InlineButton from '../../Shared/InlineButton/InlineButton';
 import { EventEmitter } from "../../../helpers";
 import store from "../../../redux/store";
-import { setCurrentProject } from "../../../redux/actions/currentProject";
-import { clearArticleColors, setArticleColors } from "../../../redux/actions/articleColors";
+import { setCurrentProject } from "@redux/actions/currentProject";
+import { clearArticleColors, setArticleColors } from "@redux/actions/articleColors";
 import { getColumnsFromStorage } from "./ProjectTable/Columns";
 import ArticleTransferModal from "../../Article/ArticleTransferModal/ArticleTransferModal";
 import ProjectPagination from "./ProjectTable/ProjectPagination/ProjectPagintaion";
 import ReactSelect from "../../Form/Select/ReactSelect/ReactSelect";
-import { PROJECT_PERMISSION } from "../../../constants";
+import { PROJECT_PERMISSION } from "@const";
 import Breadcrumbs from '../../Shared/Breadcrumbs';
 import ArchiveModal from '../../Archive/ArchiveModal';
 import AccessProject from '../../Shared/AccessProject';
+import { connect } from 'react-redux';
 
 const cls = new Bem('project-page');
 const defaultPagination = { page: 1, pageCount: 1, perPage: 50 };
 const defaultSort = { type: null, dir: null };
 const defaultFilters = { search: '', sort: defaultSort };
+const statusOptions = [
+    {
+        label: 'Открыта',
+        value: 'open'
+    },
+    {
+        label: 'Завершена',
+        value: 'complete'
+    },
+    {
+        label: 'Передана',
+        value: 'user'
+    }
+];
 
-export default class ProjectPage extends Component {
+class ProjectPage extends Component {
     constructor(props) {
         super(props);
 
@@ -349,6 +364,9 @@ export default class ProjectPage extends Component {
 
         // Необходимые поля для корректной работы цветовыделения
         form.expand = [ ...form.expand, 'complete_monitor', 'complete_analytic', 'complete_client', 'user' ];
+
+        // История передвижения статей
+        form.expand = [ ...form.expand, 'usersManagers.user', 'usersManagers.fromUser' ];
 
         // Фильтрация по столбцам
         Object.keys(filters).forEach(filterKey => {
@@ -708,7 +726,7 @@ export default class ProjectPage extends Component {
                     <ReactSelect
                         {...cls('filter-item', 'select')}
                         isMulti
-                        options={this.getStatusOptions()}
+                        options={statusOptions}
                         onChange={this.handleChangeStatus}
                         selected={selectedStatus}
                         placeholder='Статус'
@@ -743,6 +761,7 @@ export default class ProjectPage extends Component {
                         pagination={pagination}
                         fields={fields}
                         userType={userType}
+                        currentUserId={this.props.profile.id}
                     />
 
                     <div {...cls('footer')}>
@@ -830,3 +849,11 @@ export default class ProjectPage extends Component {
         );
     }
 }
+
+function mapStateToProps(state) {
+    return {
+        profile: state.profile
+    };
+}
+
+export default connect(mapStateToProps)(ProjectPage);

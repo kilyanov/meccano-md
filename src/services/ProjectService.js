@@ -31,11 +31,17 @@ export const ProjectService = {
     getFields: (project) => API.get(`${ApiList.project.fieldValue}?id=${project}`),
     cancelLast: () => source && source.cancel('Operation canceled by the user.'),
     wordSearch: {
-        get: (form, id) => API.get(urlGenerator('wordSearch')(form, id)),
-        create: form => API.post(urlGenerator('wordSearch')(), form),
-        update: (form, id) =>  API.put(urlGenerator('wordSearch')(id), form),
-        delete: (form, projectId) => API.delete(urlGenerator('wordSearch')(projectId), {data: form}),
-        import: form => API.post(urlGenerator('importWordSearch')(), form)
+        get: (form, projectId, id = '') => API.get(`/project/${projectId}/word-search${id ? `/${id}` : ''}`, { params: form }),
+        create: (form, projectId) => API.post(`/project/${projectId}/word-search`, form),
+        update: (form, projectId, id) =>  API.put(`/project/${projectId}/word-search/${id}`, form),
+        delete: (form, projectId) => API.delete(`/project/${projectId}/word-search`, {data: form}),
+        import: (form, projectId) => API.post(`/project/${projectId}/word-search/import`, form)
+    },
+    wordSetting: {
+        get: (projectId, form) => API.get(`/project/${projectId}/word-setting`, { params: form }),
+        create: (projectId, form) => API.post(`/project/${projectId}/word-setting`, form),
+        update: (projectId, form) => API.put(`/project/${projectId}/word-setting`, form),
+        delete: (projectId, id) => API.delete(`/project/${projectId}/word-setting/${id}`)
     },
     field: {
         get: (id) => API.get(urlGenerator('field')(id)),

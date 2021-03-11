@@ -1,5 +1,3 @@
-import React from 'react';
-
 export const FILE_TYPE_ICON = {
     csv: () => require('../assets/img/icons/fileType/csv.svg'),
     doc: () => require('../assets/img/icons/fileType/doc.svg'),

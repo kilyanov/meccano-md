@@ -24,11 +24,31 @@ export default class InputDatePicker extends Component {
         format: 'dd.MM.y'
     };
 
+    state = {
+        isDisabledTabbing: true
+    }
+
+    handleEnableTabbing = (e) => {
+        if (this.state.isDisabledTabbing) {
+            this.setState({ isDisabledTabbing: false });
+        }
+    }
+
+    handleDisableTabbing = () => {
+        if (!this.state.isDisabledTabbing) {
+            setTimeout(() => this.setState({ isDisabledTabbing: true }), 0);
+        }
+    }
+
     render() {
         const { className, clearable, label, format, readOnly, disabled, draggable, value } = this.props;
+        const { isDisabledTabbing } = this.state;
 
         return (
-            <div {...cls('', { readOnly: readOnly || disabled }, className)}>
+            <div
+                {...cls('', { readOnly: readOnly || disabled }, className)}
+                onClick={this.handleEnableTabbing}
+            >
                 <label {...cls('label')}>
                     {label && <span {...cls('label-text', '', { 'drag-handle': draggable })}>{label}</span>}
 
@@ -40,6 +60,8 @@ export default class InputDatePicker extends Component {
                         onChange={this.props.onChange}
                         locale='ru-RU'
                         format={format}
+                        disableCalendar={isDisabledTabbing}
+                        onCalendarClose={this.handleDisableTabbing}
                     />
                 </label>
             </div>

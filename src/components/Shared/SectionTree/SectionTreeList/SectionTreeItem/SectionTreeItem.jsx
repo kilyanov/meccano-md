@@ -4,6 +4,7 @@ import SectionTreeList from '../SectionTreeList';
 import ArrowIcon from '../../../SvgIcons/ArrowIcon';
 import TrashIcon from '../../../SvgIcons/TrashIcon';
 import PencilIcon from '../../../SvgIcons/PencilIcon';
+import CopuIcon from "@components/Shared/SvgIcons/CopyIcon";
 
 export default class SectionTreeItem extends Component {
     static propTypes = {
@@ -14,6 +15,7 @@ export default class SectionTreeItem extends Component {
         onAddChild: PropTypes.func.isRequired,
         onEdit: PropTypes.func.isRequired,
         onDelete: PropTypes.func.isRequired,
+        onCopy: PropTypes.func.isRequired,
         onSortChildren: PropTypes.func.isRequired
     };
 
@@ -26,7 +28,7 @@ export default class SectionTreeItem extends Component {
     };
 
     render() {
-        const { cls, parent, item, onAddChild, onEdit, onDelete, onSortChildren } = this.props;
+        const { cls, parent, item, onAddChild, onEdit, onDelete, onSortChildren, onCopy } = this.props;
         const { open } = this.state;
         const children = item.sectionsTwo || item.sectionsThree;
 
@@ -64,6 +66,13 @@ export default class SectionTreeItem extends Component {
                         )}
                         <button
                             {...cls('item-button', 'edit')}
+                            onClick={() => onCopy(item, parent)}
+                            title='Копировать'
+                        >
+                            <CopuIcon {...cls('item-icon', 'copy')}/>
+                        </button>
+                        <button
+                            {...cls('item-button', 'edit')}
                             onClick={() => onEdit(item)}
                             title='Редактировать'
                         >
@@ -88,6 +97,7 @@ export default class SectionTreeItem extends Component {
                         onEditItem={onEdit}
                         onDeleteItem={onDelete}
                         onSorting={onSortChildren}
+                        onCopyItem={onCopy}
                     />
                 )}
             </li>

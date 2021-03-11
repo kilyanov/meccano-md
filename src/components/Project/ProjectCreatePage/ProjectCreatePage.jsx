@@ -6,14 +6,14 @@ import Button from '../../Shared/Button/Button';
 import './project-create-page.scss';
 import ProjectSections from './ProjectSections/ProjectSections';
 import Loader from '../../Shared/Loader/Loader';
-import { ProjectService } from '../../../services';
+import { ProjectService } from '@services';
 import PromiseDialogModal from '../../Shared/PromiseDialogModal/PromiseDialogModal';
 import { NotificationManager } from 'react-notifications';
 import ProjectProperties from './ProjectProperties/ProjectProperties';
 import PencilIcon from "../../Shared/SvgIcons/PencilIcon";
 import InlineButton from "../../Shared/InlineButton/InlineButton";
-import { KEY_CODE, EVENTS } from "../../../constants";
-import { OperatedNotification } from '../../../helpers/Tools';
+import { KEY_CODE, EVENTS } from "@const";
+import { OperatedNotification } from '@helpers/Tools';
 import ProjectKeyWords from './ProjectKeyWords/ProjectKeyWords';
 import { EventEmitter } from "../../../helpers";
 import { deleteProject, updateProject } from "../../../redux/actions/project";
@@ -21,7 +21,7 @@ import store from "../../../redux/store";
 import Select from "react-select";
 import ProjectUsers from "./ProjectUsers/ProjectUsers";
 import Access from "../../Shared/Access/Access";
-import { PROJECT_PERMISSION } from "../../../constants/ProjectPermissions";
+import { PROJECT_PERMISSION } from "@const";
 
 const cls = new Bem('project-create-page');
 const STEP_DESCRIPTION = {

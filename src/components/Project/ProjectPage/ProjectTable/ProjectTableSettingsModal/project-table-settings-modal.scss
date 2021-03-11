@@ -1,7 +1,8 @@
 .project-table-settings-modal {
     &__items {
-        display: flex;
-        flex-wrap: wrap;
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        grid-column-gap: 20px;
         margin-bottom: 20px;
     }
 

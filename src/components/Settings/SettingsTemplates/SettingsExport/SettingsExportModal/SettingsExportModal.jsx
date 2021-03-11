@@ -11,11 +11,12 @@ import objectToFormData from 'object-to-formdata';
 import Select from '../../../../Form/Select/Select';
 import InlineButton from '../../../../Shared/InlineButton/InlineButton';
 import InputTags from '../../../../Form/InputTags/InputTags';
-import { ProjectService } from '../../../../../services';
+import { ProjectService } from '@services';
 import './settings-export-modal.scss';
 import Sortable from "react-sortablejs";
-import { isAccess } from "../../../../../helpers/Tools";
-import { PERMISSION } from "../../../../../constants";
+import { isAccess } from "@helpers/Tools";
+import { PERMISSION } from "@const";
+import { TEMPLATE_TYPE } from "@const/TemplateType";
 
 const cls = new Bem('settings-export-modal');
 
@@ -40,7 +41,7 @@ export default class SettingsExportModal extends Component {
             rules: [],
             replaces: [],
             projects: [],
-            type: 'html'
+            type: TEMPLATE_TYPE.html
         };
         this.defaultRule = {
             selector: '',
@@ -155,12 +156,7 @@ export default class SettingsExportModal extends Component {
         });
     };
 
-    types = [
-        // {name: 'xml', value: 'xml'},
-        { name: 'xlsx', value: 'xlsx' },
-        { name: 'html', value: 'html' },
-        { name: 'docx', value: 'docx' }
-    ];
+    types = Object.entries(TEMPLATE_TYPE).map(([key, value]) => ({ name: value, value: key }));
 
     canEdit = isAccess(PERMISSION.editSettings);
 
