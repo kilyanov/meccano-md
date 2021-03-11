@@ -5,7 +5,7 @@ import './section-tree-list.scss';
 
 const cls = new Bem('section-tree-list');
 
-export default function SectionTreeList({ 
+export default function SectionTreeList({
     opened = true,
     parent,
     items,
@@ -13,6 +13,7 @@ export default function SectionTreeList({
     onAddItemChild,
     onEditItem,
     onDeleteItem,
+    onCopyItem,
     onSorting
 }) {
     const sortedItems = items.sort((a, b) => a.position - b.position);
@@ -41,6 +42,7 @@ export default function SectionTreeList({
                     onAddChild={onAddItemChild}
                     onEdit={onEditItem}
                     onDelete={onDeleteItem}
+                    onCopy={onCopyItem}
                     onSortChildren={onSorting}
                 />
             ))}
