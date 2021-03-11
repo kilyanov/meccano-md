@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
-import {ProjectService} from '../../../../services';
+import {ProjectService} from '@services';
 import SectionTree from '../../../Shared/SectionTree/SectionTree';
 import Loader from '../../../Shared/Loader/Loader';
 
@@ -17,11 +17,13 @@ export default class ProjectSections extends Component {
     };
 
     componentDidMount() {
-        ProjectService.getSections(this.props.projectId).then(response => {
-            this.setState({
-                inProgress: false
-            }, () => this.props.onChange(response.data));
-        });
+        ProjectService
+            .getSections(this.props.projectId)
+            .then(response => {
+                this.setState({
+                    inProgress: false
+                }, () => this.props.onChange(response.data));
+            });
     }
 
     handleChangeSections = (sections) => {

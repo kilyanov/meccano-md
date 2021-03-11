@@ -9,7 +9,7 @@ import {
     ProjectService,
     SourceService,
     StorageService
-} from '../../../services';
+} from '@services';
 import './archive-create-page.scss';
 import Form from '../../Form/Form/Form';
 import Loader from '../../Shared/Loader/Loader';
@@ -17,17 +17,13 @@ import ArrowIcon from '../../Shared/SvgIcons/ArrowIcon';
 import ArticleViewSettings from './ArticleViewSettings/ArticleViewSettings';
 import ProjectCreateField from '../../Project/ProjectCreatePage/ProjectCreatePageField/ProjectCreatePageField';
 import Sortable from 'react-sortablejs';
-import { isMobileScreen, isProjectAccess, isRolesAccess, OperatedNotification } from '../../../helpers/Tools';
-import { STORAGE_KEY } from '../../../constants';
+import { isMobileScreen, isProjectAccess, isRolesAccess, OperatedNotification } from '@helpers/Tools';
 import { EventEmitter } from "../../../helpers";
-import { EVENTS } from "../../../constants";
 import store from "../../../redux/store";
-import { setCurrentProject } from "../../../redux/actions/currentProject";
-import { PROJECT_PERMISSION } from "../../../constants";
-import { KEY_CODE } from "../../../constants";
+import { setCurrentProject, setCurrentArticle, clearCurrentArticle, setCurrentArchive } from "@redux/actions";
+import { PROJECT_PERMISSION, KEY_CODE, EVENTS, STORAGE_KEY } from "@const";
 import TinyMCE from "../../Form/TinyMCE/TinyMCE";
 import CreateLocationModal from "./CreateLocationModal";
-import { setCurrentArticle, clearCurrentArticle, setCurrentArchive } from '../../../redux/actions';
 import Breadcrumbs from '../../Shared/Breadcrumbs';
 
 const cls = new Bem('archive-create-page');
@@ -410,7 +406,7 @@ class ArchiveArticlePage extends Component {
                     if (!this.props.currentProject) {
                         this.props.setCurrentProject(form.project);
                     }
-                    
+
                     newState.articleId = form.id;
                     newState.projectId = form.project.id;
                     newState.articlesNavs = articlesNavs;

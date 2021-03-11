@@ -96,6 +96,57 @@ export default class SectionTree extends Component {
         this.updateParent();
     };
 
+    handleCopySection = (section, parent) => {
+        function copy(item, target) {
+            const RegExp = /(?<name>.*?)(\s\((?<number>\d)\))?$/
+            const fileNameRg = RegExp.exec(item.name)
+            let fileName
+            let number
+
+            fileName = fileNameRg?.groups?.name || item.name
+            number = +fileNameRg?.groups?.number || 0
+
+            target.forEach(i => {
+                const fileNameRg = RegExp.exec(i.name)
+
+                if (
+                    fileNameRg?.groups?.name === fileName
+                    && +fileNameRg?.groups?.number > number
+                ) {
+                    number = +fileNameRg.groups.number
+                }
+            })
+
+            item.name = `${fileName} (${number + 1})`
+
+            target.splice(item.position + 1, 0, item)
+            target.forEach((it, itIndex) => {
+                it.position = itIndex
+
+            });
+
+            return target
+        }
+
+        const item = { ...section }
+
+        item.id = _.uniqueId('new_')
+
+        if (!parent) {
+            const res = copy(item, [ ...this.state.data ]);
+            return this.props.onChange(res);
+        }
+
+        if (parent.hasOwnProperty('sectionsTwo')) {
+            parent.sectionsTwo = copy(item, parent.sectionsTwo);
+        } else {
+            parent.sectionsThree = copy(item, parent.sectionsThree);
+        }
+
+        this.forceUpdate();
+        this.updateParent();
+    };
+
     handleSorting = (sorted, parent) => {
         const { data, copyData } = this.state;
         const sort = (items) => {
@@ -187,6 +238,7 @@ export default class SectionTree extends Component {
                     onAddItemChild={section => this.handleOpenAddModal(section)}
                     onEditItem={section => this.handleOpenAddModal(section, true)}
                     onDeleteItem={this.handleDeleteSection}
+                    onCopyItem={this.handleCopySection}
                     onSorting={this.handleSorting}
                 />
 
