@@ -8,6 +8,7 @@ import MenuHamburger from '../../Shared/MenuHamburger/MenuHamburger';
 import SettingsLeftSidebar from './SettingsLeftSidebar/SettingsLeftSidebar';
 import Access from "../../Shared/Access/Access";
 import { PERMISSION } from "../../../constants";
+import DropDownButton from "../../Shared/DropDownButton/DropDownButton";
 
 const cls = new Bem('settings-page');
 
@@ -15,6 +16,7 @@ const SettingsPage = ({
     title,
     subtitle,
     children,
+    dropDownButton,
     withAddButton,
     inProgress,
     addButtonTitle = 'Добавить',
@@ -56,13 +58,20 @@ const SettingsPage = ({
                                         {subtitle && <h5 {...cls('body-subtitle')}>{subtitle}</h5>}
                                     </div>
 
-                                    {withAddButton && (
+                                    {(withAddButton || dropDownButton) && (
                                         <Access permissions={[ PERMISSION.editSettings ]}>
-                                            <Button
-                                                {...cls('button', 'add')}
-                                                text={addButtonTitle}
-                                                onClick={onAdd}
-                                            />
+                                            {dropDownButton ? (
+                                                <DropDownButton
+                                                    {...cls('button', 'add')}
+                                                    {...dropDownButton}
+                                                />
+                                            ) : (
+                                                <Button
+                                                    {...cls('button', 'add')}
+                                                    text={addButtonTitle}
+                                                    onClick={onAdd}
+                                                />
+                                            )}
                                         </Access>
                                     )}
                                 </div>

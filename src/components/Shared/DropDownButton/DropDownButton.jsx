@@ -9,13 +9,14 @@ const cls = new Bem('drop-down-button');
 let dropDownRef = null;
 
 const DropDownButton = ({
+    className,
     dropDownItems,
     dropDownRight,
     onClickButton = () => {},
     buttonText,
     buttonStyle = 'default'
 }) => (
-    <div {...cls()}>
+    <div {...cls('', '', className)}>
         <Button
             text={buttonText}
             style={buttonStyle}

@@ -1,6 +1,4 @@
 import React, { Component } from 'react';
-import './settings-import.scss';
-import PropertiesTable from '../../../Shared/PropertiesTable/PropertiesTable';
 import SettingsPage from '../../SettingsPage/SettingsPage';
 import PromiseDialogModal from '../../../Shared/PromiseDialogModal/PromiseDialogModal';
 import SettingsImportModal from './SettingsImportModal/SettingsImportModal';
@@ -8,6 +6,11 @@ import TransferService from '../../../../services/TransferService';
 import Loader from '../../../Shared/Loader/Loader';
 import { NotificationManager } from 'react-notifications';
 import { PERMISSION } from "../../../../constants";
+import SettingsCategoryModal from "../SettingsCategoryModal/SettingsCategoryModal";
+import SettingsTemplatesTree from "../SettingsTemplatesTree/SettingsTemplatesTree";
+import Text from "../../../Shared/Text";
+import './settings-import.scss';
+import mockup from "./mockup";
 
 const columnSettings = {
     name: {
@@ -23,6 +26,7 @@ const columnSettings = {
 export default class SettingsImport extends Component {
     state = {
         showItemModal: false,
+        showCategoryModal: false,
         selectedItem: null,
         items: [],
         inProgress: false
@@ -30,15 +34,31 @@ export default class SettingsImport extends Component {
 
     componentDidMount() {
         this.setState({ inProgress: true }, () => {
-            TransferService.import.get().then(response => {
-                this.setState({
-                    items: response.data
-                        .map(item => ({ ...item, value: item.id }))
-                        .sort((a, b) => a.position - b.position),
-                    inProgress: false
-                });
-            }).catch(() => this.setState({ inProgress: false }));
+            TransferService.section
+                .get('import')
+                .then(response => {
+                    if (response?.data) {
+                        this.setState({
+                            items: response.data,
+                            inProgress: false
+                        });
+                    }
+                })
+                .catch(e => {
+                    if (e?.data?.message) {
+                        this.setState({ error: e.data.message });
+                    }
+                })
+                .finally(() => this.setState({ inProgress: false }));
         });
+    }
+
+    handleAddTemplate = () => {
+        this.setState({ showItemModal: true, selectedItem: null });
+    }
+
+    handleAddCategory = () => {
+        this.setState({ showCategoryModal: true, selectedItem: null });
     }
 
     handleClickItem = (item) => {
@@ -74,23 +94,55 @@ export default class SettingsImport extends Component {
         this.setState({ items, selectedItem: null });
     };
 
+    handleSubmitCategory = () => {
+        //
+    }
+
+    dropDownItems = {
+        buttonText: 'Добавить',
+        dropDownRight: true,
+        dropDownItems: [
+            {
+                title: 'Добавить шаблон',
+                closeOnClick: true,
+                onClick: this.handleAddTemplate
+            },
+            {
+                title: 'Добавить категорию',
+                closeOnClick: true,
+                onClick: this.handleAddCategory
+            }
+        ]
+    }
+
     render() {
-        const { showItemModal, selectedItem, inProgress } = this.state;
+        const {
+            showItemModal,
+            showCategoryModal,
+            selectedItem,
+            inProgress,
+            items,
+            error
+        } = this.state;
 
         return (
             <SettingsPage
                 title='Шаблоны'
                 subtitle='Импорт'
+                dropDownButton={this.dropDownItems}
                 withAddButton
                 onAdd={() => this.setState({ showItemModal: true, selectedItem: null })}
             >
-                <PropertiesTable
+                {error && <Text color='red'>{error}</Text>}
+
+                <SettingsTemplatesTree
                     editPermissions={[ PERMISSION.editSettings ]}
                     columnSettings={columnSettings}
-                    items={this.state.items}
+                    data={mockup}
                     onEditItem={this.handleClickItem}
                     onClickItem={this.handleClickItem}
                     onDeleteItem={this.handleDeleteItem}
+                    onAddItemChild={this.handleAdd}
                 />
 
                 {showItemModal && (
@@ -98,6 +150,13 @@ export default class SettingsImport extends Component {
                         item={selectedItem}
                         onClose={() => this.setState({ selectedItem: null, showItemModal: false })}
                         onSubmit={this.handleSubmitItem}
+                    />
+                )}
+
+                {showCategoryModal && (
+                    <SettingsCategoryModal
+                        onClose={() => this.setState({ showCategoryModal: false, selectedItem: null })}
+                        onSubmit={this.handleSubmitCategory}
                     />
                 )}
 

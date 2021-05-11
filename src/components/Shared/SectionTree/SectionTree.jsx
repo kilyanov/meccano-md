@@ -227,6 +227,8 @@ export default class SectionTree extends Component {
     render() {
         const { showAddModal, selectedSection, isEdit } = this.state;
 
+        console.log('data', this.props.data)
+
         return (
             <section {...cls()}>
                 <InlineButton
