@@ -26,7 +26,8 @@ function Reprint({
     loadedCities,
     SourceService,
     LocationService,
-    isSelectable
+    isSelectable,
+    onCreateSource
 }) {
     const [isShownAllFields, setShownAllFields] = useState(false);
     const [isSelectedReprint, setIsSelectedReprint] = useState(false);
@@ -116,11 +117,14 @@ function Reprint({
                         />
                         <AsyncCreateableSelect
                             placeholder={'СМИ (Источник)'}
+                            editable
+                            label
                             selected={sourceId}
                             onChange={(select) => handleFieldChangeOnSelect({ index, name: 'source_id', select })}
-                            {...cls('field')}
+                            {...cls('field', 'editable')}
                             requestService={SourceService.get}
                             loadedOptions={loadedSources || []}
+                            onCreateOption={(value) => onCreateSource({ index, value })}
                         />
                         <AsyncCreateableSelect
                             placeholder={'Город'}
