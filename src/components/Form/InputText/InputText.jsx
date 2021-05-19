@@ -33,7 +33,8 @@ export default class InputText extends Component {
         onValidate: PropTypes.func,
         required: PropTypes.bool,
         readOnly: PropTypes.bool,
-        children: PropTypes.node
+        children: PropTypes.node,
+        error: PropTypes.bool,
     };
 
     static defaultProps = {
@@ -61,7 +62,11 @@ export default class InputText extends Component {
 
     static getDerivedStateFromProps(nextProps, prevState) {
         if (nextProps.value !== prevState.value) {
-            return {value: nextProps.value, error: false};
+            return { value: nextProps.value, error: false };
+        }
+
+        if (nextProps.error !== prevState.error) {
+            return  { error: nextProps.error };
         }
 
         return null;
@@ -184,7 +189,7 @@ export default class InputText extends Component {
         } = this.props;
         const {error} = this.state;
         const isFocused = this.inputRef === document.activeElement;
-        const isError = error; // && !isFocused
+        const isError = error || this.props.error; // && !isFocused
         const isLink = validateType === 'link';
         const value = controlled ? this.props.value : this.state.value;
         const isSucceed = !!value && !isError;

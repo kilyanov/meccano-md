@@ -15,6 +15,10 @@ $namespace: '.settings-template-tree';
     color: $brown-grey;
   }
 
+  &__header-cell:not(:last-child) {
+    padding-left: 40px;
+  }
+
   &__list {
     margin: 0;
     padding: 0;

@@ -20,6 +20,7 @@ const SettingsPage = ({
     withAddButton,
     inProgress,
     addButtonTitle = 'Добавить',
+    additionalButtons,
     onAdd = () => {},
     onEndPage = () => {},
     onSearch,
@@ -58,22 +59,38 @@ const SettingsPage = ({
                                         {subtitle && <h5 {...cls('body-subtitle')}>{subtitle}</h5>}
                                     </div>
 
-                                    {(withAddButton || dropDownButton) && (
-                                        <Access permissions={[ PERMISSION.editSettings ]}>
-                                            {dropDownButton ? (
-                                                <DropDownButton
-                                                    {...cls('button', 'add')}
-                                                    {...dropDownButton}
-                                                />
-                                            ) : (
-                                                <Button
-                                                    {...cls('button', 'add')}
-                                                    text={addButtonTitle}
-                                                    onClick={onAdd}
-                                                />
-                                            )}
-                                        </Access>
-                                    )}
+                                    <section { ...cls('buttons') }>
+                                        {!!additionalButtons?.length && (
+                                            <Access permissions={[ PERMISSION.editSettings ]}>
+                                                {additionalButtons.map((button, buttonIndex) => (
+                                                    <Button
+                                                        { ...cls('button') }
+                                                        key={buttonIndex}
+                                                        text={button.title}
+                                                        onClick={() => button.onClick()}
+                                                        style={button.style}
+                                                    />
+                                                ))}
+                                            </Access>
+                                        )}
+
+                                        {(withAddButton || dropDownButton) && (
+                                            <Access permissions={[ PERMISSION.editSettings ]}>
+                                                {dropDownButton ? (
+                                                    <DropDownButton
+                                                        {...cls('button', 'add')}
+                                                        {...dropDownButton}
+                                                    />
+                                                ) : (
+                                                    <Button
+                                                        {...cls('button', 'add')}
+                                                        text={addButtonTitle}
+                                                        onClick={onAdd}
+                                                    />
+                                                )}
+                                            </Access>
+                                        )}
+                                    </section>
                                 </div>
 
                                 {!!onSearch && (

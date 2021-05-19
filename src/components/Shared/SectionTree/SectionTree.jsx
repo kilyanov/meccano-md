@@ -98,39 +98,35 @@ export default class SectionTree extends Component {
 
     handleCopySection = (section, parent) => {
         function copy(item, target) {
-            const RegExp = /(?<name>.*?)(\s\((?<number>\d)\))?$/
-            const fileNameRg = RegExp.exec(item.name)
-            let fileName
-            let number
-
-            fileName = fileNameRg?.groups?.name || item.name
-            number = +fileNameRg?.groups?.number || 0
+            const RegExp = /(?<name>.*?)(\s\((?<number>\d)\))?$/;
+            let fileNameRg = RegExp.exec(item.name);
+            const fileName = fileNameRg?.groups?.name || item.name;
+            let number = +fileNameRg?.groups?.number || 0;
 
             target.forEach(i => {
-                const fileNameRg = RegExp.exec(i.name)
+                fileNameRg = RegExp.exec(i.name);
 
                 if (
                     fileNameRg?.groups?.name === fileName
                     && +fileNameRg?.groups?.number > number
                 ) {
-                    number = +fileNameRg.groups.number
+                    number = +fileNameRg.groups.number;
                 }
-            })
-
-            item.name = `${fileName} (${number + 1})`
-
-            target.splice(item.position + 1, 0, item)
-            target.forEach((it, itIndex) => {
-                it.position = itIndex
-
             });
 
-            return target
+            item.name = `${fileName} (${number + 1})`;
+
+            target.splice(item.position + 1, 0, item);
+            target.forEach((it, itIndex) => {
+                it.position = itIndex;
+            });
+
+            return target;
         }
 
-        const item = { ...section }
+        const item = { ...section };
 
-        item.id = _.uniqueId('new_')
+        item.id = _.uniqueId('new_');
 
         if (!parent) {
             const res = copy(item, [ ...this.state.data ]);
@@ -148,6 +144,7 @@ export default class SectionTree extends Component {
     };
 
     handleSorting = (sorted, parent) => {
+        console.log('sorted', sorted, parent);
         const { data, copyData } = this.state;
         const sort = (items) => {
             return sorted.map((id, index) => {
@@ -198,7 +195,7 @@ export default class SectionTree extends Component {
             for (const item of items) {
                 if (item.id === sectionId) {
                     found = item;
-                    break; // for stop loop
+                    break;
                 }
 
                 if (item.sectionsTwo && item.sectionsTwo.length) {
@@ -226,8 +223,6 @@ export default class SectionTree extends Component {
 
     render() {
         const { showAddModal, selectedSection, isEdit } = this.state;
-
-        console.log('data', this.props.data)
 
         return (
             <section {...cls()}>

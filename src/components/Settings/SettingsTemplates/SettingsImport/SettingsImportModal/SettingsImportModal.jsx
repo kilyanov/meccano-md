@@ -128,6 +128,8 @@ export default class SettingsImportModal extends Component {
         delete form.value;
         delete form.slug;
 
+        form.rules = form.rules || [];
+        form.joins = form.joins || [];
         form.rules = form.rules.map((item, index) => ({ ...item, position: index }));
 
         if (!form.rules.length) return NotificationManager.error('Не заполнены "Правила"', 'Ошибка');

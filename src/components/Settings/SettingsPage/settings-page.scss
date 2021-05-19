@@ -38,9 +38,16 @@ $namespace: '.settings-page';
     }
   }
 
+  &__buttons {
+    margin-left: auto;
+  }
+
   &__button {
     height: 100%;
-    margin-left: auto;
+
+    & + & {
+      margin-left: 8px;
+    }
   }
 
   &__body-title-wrapper {}
