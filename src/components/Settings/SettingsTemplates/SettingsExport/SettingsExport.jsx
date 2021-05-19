@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import { Prompt } from 'react-router-dom';
 import PromiseDialogModal from '../../../Shared/PromiseDialogModal/PromiseDialogModal';
-import SettingsImportModal from './SettingsExportModal/SettingsExportModal';
 import TransferService from '../../../../services/TransferService';
+import SettingsExportModal from './SettingsExportModal/SettingsExportModal';
 import { NotificationManager } from 'react-notifications';
 import { PERMISSION } from "../../../../constants";
 import SettingsPage from '../../SettingsPage/SettingsPage';
@@ -26,7 +26,7 @@ const columnSettings = {
 
 const TYPE = 'export';
 
-export default class SettingsImport extends Component {
+export default class SettingsExport extends Component {
     state = {
         showItemModal: false,
         showCategoryModal: false,
@@ -314,7 +314,7 @@ export default class SettingsImport extends Component {
                     />
 
                     {showItemModal && (
-                        <SettingsImportModal
+                        <SettingsExportModal
                             item={selectedTemplate}
                             onClose={() => this.setState({ selectedTemplate: null, showItemModal: false })}
                             onSubmit={this.handleSubmitItem}

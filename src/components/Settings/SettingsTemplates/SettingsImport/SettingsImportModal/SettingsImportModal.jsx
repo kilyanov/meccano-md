@@ -44,19 +44,28 @@ export default class SettingsImportModal extends Component {
             value: ''
         };
         this.state = {
-            form: props.item || { ...this.defaultForm },
+            form: { ...this.defaultForm },
             types: [],
             inProgress: true
         };
     }
 
     componentDidMount() {
-        TransferService.type.get().then(response => {
-            this.setState({
-                types: response.data.map(({ name }) => ({ name, value: name })),
-                inProgress: false
-            });
-        }).catch(() => this.setState({ inProgress: false }));
+        const { item } = this.props;
+
+        Promise
+            .all([
+                TransferService.type.get(),
+                item?.id && TransferService.import.get(item.id)
+            ])
+            .then(([typesResponse, importResponse]) => {
+                this.setState({
+                    types: typesResponse.data.map(({ name }) => ({ name, value: name })),
+                    form: importResponse.data,
+                    inProgress: false
+                });
+            })
+            .finally(() => this.setState({ inProgress: false }));
     }
 
     handleChangeForm = (value, prop) => {
