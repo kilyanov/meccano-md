@@ -18,7 +18,7 @@ export default class PromiseDialogModal extends PureComponent {
 
     componentWillUnmount() {
         document.removeEventListener('keydown', this.handleDocumentKeyDown);
-        this.isUnmonted = true;
+        this.isUnmounted = true;
     }
 
     handleDocumentKeyDown = (event) => {
@@ -30,13 +30,13 @@ export default class PromiseDialogModal extends PureComponent {
     handleClick = () => {
         this.setState({pulse: true});
         setTimeout(() => {
-            if (!this.isUnmonted) {
+            if (!this.isUnmounted) {
                 this.setState({pulse: false});
             }
         }, 1000);
     };
 
-    isUnmonted = false;
+    isUnmounted = false;
 
     open = (props) => {
         const {

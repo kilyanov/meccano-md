@@ -57,6 +57,7 @@ $namespace: '.dialog-modal';
   }
 
   &__title {
+    font-size: 22px;
     font-weight: 500;
   }
 
@@ -67,8 +68,17 @@ $namespace: '.dialog-modal';
 
   &__body {
     margin-bottom: 32px;
-    font-size: 15px;
-    line-height: 1.6;
+
+    p {
+      margin: 0;
+      font-size: 15px;
+      font-weight: 300;
+      line-height: 1.6;
+
+      & + & {
+        margin-top: 8px;
+      }
+    }
   }
 
   &__footer {

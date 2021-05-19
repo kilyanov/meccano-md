@@ -23,6 +23,10 @@ export default {
             }
         })
     },
+    section: {
+        get: (type) => API.get(`${ApiList.transfer.section}/${type}`),
+        put: (type, payload) => API.put(`${ApiList.transfer.section}/${type}`, payload)
+    },
     type: {
         get: () =>  API.get(ApiList.transfer.type)
     }

@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
-import './properties-table.scss';
 import PropertiesTableRow from './PropertiesTableRow/PropertiesTableRow';
+import './properties-table.scss';
 
 const cls = new Bem('properties-table');
 

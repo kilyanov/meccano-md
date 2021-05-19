@@ -46,7 +46,8 @@ export const List = {
         import: '/transfer/import',
         export: '/transfer/export',
         type: '/transfer/type',
-        document: '/transfer/document'
+        document: '/transfer/document',
+        section: '/transfer/section'
     },
     file: {
         download: '/file/download'

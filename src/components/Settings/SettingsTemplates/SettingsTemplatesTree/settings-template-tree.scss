@@ -1,0 +1,218 @@
+@import "../../../../assets/styles/variables";
+
+$namespace: '.settings-template-tree';
+
+#{$namespace} {
+  display: flex;
+  flex-direction: column;
+
+  &__header {
+    display: flex;
+    align-items: center;
+    height: 75px;
+    padding: 0 25px;
+    font-weight: 100;
+    color: $brown-grey;
+  }
+
+  &__header-cell:not(:last-child) {
+    padding-left: 40px;
+  }
+
+  &__list {
+    margin: 0;
+    padding: 0;
+    max-height: 0;
+    list-style: none;
+    overflow: hidden;
+    transition: max-height .2s;
+
+    &--opened {
+      max-height: 5000px;
+    }
+  }
+
+  &__item {
+    display: flex;
+    flex-direction: column;
+    background-color: #fff;
+
+    &--level-0 {
+      margin-top: -1px;
+      border-top: 1px solid $gray;
+      background-color: $gray-three;
+    }
+
+    &--level-1 {
+      background-color: $gray-two;
+    }
+
+    &--level-2 {
+      background-color: $gray;
+    }
+  }
+
+  &__item-name-wrap {
+    flex: 1;
+    display: inline-flex;
+    align-items: center;
+    height: 44px;
+    cursor: pointer;
+    padding-left: 20px;
+  }
+
+  &__item-name {
+    display: flex;
+    position: relative;
+    align-items: center;
+    height: 64px;
+    border-bottom: 1px solid $gray;
+    box-sizing: border-box;
+
+    &:hover {
+      background-color: $gray-four;
+
+      #{$namespace}__item-arrows {
+        display: block;
+        cursor: grab;
+      }
+
+      #{$namespace}__item-buttons {
+        display: flex;
+      }
+    }
+  }
+
+  &__item-arrows {
+    display: none;
+    position: absolute;
+    top: 0;
+    left: 14px;
+    bottom: 0;
+    height: 100%;
+    width: 20px;
+  }
+
+  &__item-arrow-top,
+  &__item-arrow-bottom {
+    position: absolute;
+    width: 20px;
+    fill: $brownGreyColor
+  }
+
+  &__item-arrow-top {
+    top: 5px;
+    transform: rotate(-90deg);
+  }
+
+  &__item-arrow-bottom {
+    bottom: 5px;
+    transform: rotate(90deg);
+  }
+
+  &__item-buttons {
+    display: none;
+    align-items: center;
+    position: absolute;
+    right: 10px;
+  }
+
+  &__item-button {
+    padding: 5px;
+    background: none;
+    border: none;
+
+    &:hover {
+      #{$namespace}__item-icon {
+        fill: $emerald;
+        color: $emerald;
+
+        &--trash {
+          fill: $strawberry;
+          color: $strawberry;
+        }
+      }
+    }
+  }
+
+  &__item-icon {
+    width: 32px;
+    height: 32px;
+    fill: $brownGreyColor;
+    color: $brownGreyColor;
+    overflow: hidden;
+
+    &--plus {
+      font-size: 50px;
+      font-style: normal;
+      font-weight: 100;
+    }
+  }
+
+  &__arrow-icon {
+    margin-left: 20px;
+    width: 16px;
+    transform: rotate(90deg);
+    transition: transform .3s ease;
+    fill: $blackColor;
+
+    &--opened {
+      transform: rotate(-90deg);
+    }
+  }
+
+  &__item-type-icon {
+    width: 20px;
+    height: 20px;
+    margin-right: 10px;
+    fill: $blackColor;
+
+    path {
+      fill: $blackColor;
+    }
+  }
+
+  &__drag-handle {
+    padding: 20px;
+    cursor: grab;
+    box-sizing: border-box;
+
+    g {
+      fill: #ccc
+    }
+  }
+}
+
+/* Dark Theme */
+
+.app--dark #{$namespace} {
+  background-color: $background-dark;
+
+  &__list {
+    background-color: $background-dark;
+  }
+
+  &__item-name:hover {
+    background-color: $superLightBackground-dark;
+    color: $white-dark;
+  }
+
+  &__item {
+    background-color: $background-dark
+  }
+
+  &__item-type-icon {
+    width: 20px;
+    height: 20px;
+    margin-right: 8px;
+    fill: $white-dark;
+
+    path {
+      fill: $white-dark;
+    }
+  }
+
+  &__arrow-icon {
+    fill: $white-dark
+  }
+}

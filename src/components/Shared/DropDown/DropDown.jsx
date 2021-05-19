@@ -4,6 +4,7 @@ import {Link} from 'react-router-dom';
 import PropTypes from 'prop-types';
 
 import './dropdown.scss';
+import {KEY_CODE} from "../../../constants";
 const cls = new Bem('dropdown');
 
 export default class DropDown extends PureComponent {
@@ -27,10 +28,12 @@ export default class DropDown extends PureComponent {
     };
 
     componentDidMount() {
+        document.addEventListener('keydown', this.handleKeyDown, true);
         document.addEventListener('click', this.handleClickOutside, true);
     }
 
     componentWillUnmount() {
+        document.removeEventListener('keydown', this.handleKeyDown, true);
         document.removeEventListener('click', this.handleClickOutside, true);
     }
 
@@ -44,6 +47,14 @@ export default class DropDown extends PureComponent {
             this.close();
         }
     };
+
+    handleKeyDown = (event) => {
+        const { keyCode } = event;
+
+        if (keyCode === KEY_CODE.esc) {
+            this.close();
+        }
+    }
 
     isOpen = () => {
         return this.state.isOpen;
