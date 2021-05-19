@@ -177,6 +177,7 @@ class AsyncCreatableSelect extends Component {
                 return selectOption.every((item) => item.label !== inputValue && inputValue.length);
             },
             onCreateOption: (value) => {
+                this.props.onCreateOption(value);
                 this.handleSelect({
                     label: value.trim(),
                     value: value.trim(),
