@@ -27,23 +27,25 @@ httpService.interceptors.response.use(
         const response = error.response;
 
         if (response && response.status === 401) {
-            console.error('unauthorized, logging out ...');
+            console.error('Unauthorized, logging out...');
             AuthService.logOut();
         }
 
-        if (!axios.isCancel(error) && _.get(response, 'data', []).length || response && response.status >= 400) {
-            const data = response.data instanceof ArrayBuffer ? arrayBufferToArray(response.data) : response.data;
+        if (!axios.isCancel(error) && response?.data?.length || response?.status >= 400) {
+            const data = response.data instanceof ArrayBuffer
+                ? arrayBufferToArray(response.data)
+                : response.data;
 
             if (Array.isArray(data)) {
-                return data.forEach(msg => Notify.error(msg.message, 'Ошибка'));
+                data.forEach(msg => Notify.error(msg.message, 'Ошибка'));
             }
 
             if (_.isObject(data) && !Array.isArray(data)) {
-                return Notify.error(data.message, 'Ошибка');
+                Notify.error(data.message, 'Ошибка');
             }
         }
 
-        return Promise.reject(error.response);
+        return Promise.reject(response);
     }
 );
 
@@ -59,6 +61,7 @@ function arrayBufferToArray(data) {
     while (i < len) {
         c = array[i++];
 
+        /* eslint-disable */
         switch (c >> 4) {
             case 0: case 1: case 2: case 3: case 4: case 5: case 6: case 7:
                 // 0xxxxxxx
@@ -67,23 +70,20 @@ function arrayBufferToArray(data) {
             case 12: case 13:
                 // 110x xxxx   10xx xxxx
                 char2 = array[i++];
-                /* eslint-disable-next-line */
                 out += String.fromCharCode(((c & 0x1F) << 6) | (char2 & 0x3F));
                 break;
             case 14:
                 // 1110 xxxx  10xx xxxx  10xx xxxx
                 char2 = array[i++];
                 char3 = array[i++];
-                /* eslint-disable */
                 out += String.fromCharCode(((c & 0x0F) << 12) |
-                    /* eslint-disable-next-line */
                     ((char2 & 0x3F) << 6) |
                     ((char3 & 0x3F) << 0));
-                /* eslint-enable */
                 break;
             default:
                 break;
         }
+        /* eslint-enable */
     }
 
     return [JSON.parse(out)];

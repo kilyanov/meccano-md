@@ -17,6 +17,7 @@ function Reprints({
     onDeleteReprint,
     onDeleteReprints,
     onCreateArticleFromReprint,
+    onCreateSourceInReprints,
     loadedSources,
     loadedCities,
     SourceService,
@@ -164,6 +165,7 @@ function Reprints({
                                 onDeleteReprint={onDeleteReprint}
                                 onSelectReprint={handleSelectReprint}
                                 onCreateArticleFromReprint={onCreateArticleFromReprint}
+                                onCreateSource={onCreateSourceInReprints}
                                 {...reprint}
                                 date={new Date(reprint.date)}
                                 loadedSources={loadedSources}

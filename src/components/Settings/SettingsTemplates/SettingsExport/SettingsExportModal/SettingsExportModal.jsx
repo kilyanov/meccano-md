@@ -30,12 +30,6 @@ export default class SettingsExportModal extends Component {
     constructor(props) {
         super(props);
 
-        const item = _.cloneDeep(props.item);
-
-        if (item) {
-            item.projects = item.projects.map(({ id, name }) => ({ label: name, value: id }));
-        }
-
         this.defaultForm = {
             name: '',
             rules: [],
@@ -52,9 +46,33 @@ export default class SettingsExportModal extends Component {
             replace: ''
         };
         this.state = {
-            form: item || { ...this.defaultForm },
+            form: { ...this.defaultForm },
             inProgress: false
         };
+    }
+
+    componentDidMount() {
+        const { item } = this.props;
+
+        if (item?.id) {
+            this.setState({ inProgress: true }, () => {
+                TransferService
+                    .export
+                    .get(item.id)
+                    .then(response => {
+                        const form = response.data;
+
+                        form.projects = form.projects
+                            .map(({ id, name }) => ({ label: name, value: id }));
+
+                        this.setState({
+                            form,
+                            inProgress: false
+                        });
+                    })
+                    .finally(() => this.setState({ inProgress: false }));
+            });
+        }
     }
 
     handleChangeForm = (value, prop) => {

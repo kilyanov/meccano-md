@@ -44,19 +44,28 @@ export default class SettingsImportModal extends Component {
             value: ''
         };
         this.state = {
-            form: props.item || { ...this.defaultForm },
+            form: { ...this.defaultForm },
             types: [],
             inProgress: true
         };
     }
 
     componentDidMount() {
-        TransferService.type.get().then(response => {
-            this.setState({
-                types: response.data.map(({ name }) => ({ name, value: name })),
-                inProgress: false
-            });
-        }).catch(() => this.setState({ inProgress: false }));
+        const { item } = this.props;
+
+        Promise
+            .all([
+                TransferService.type.get(),
+                item?.id && TransferService.import.get(item.id)
+            ])
+            .then(([typesResponse, importResponse]) => {
+                this.setState({
+                    types: typesResponse.data.map(({ name }) => ({ name, value: name })),
+                    form: importResponse.data,
+                    inProgress: false
+                });
+            })
+            .finally(() => this.setState({ inProgress: false }));
     }
 
     handleChangeForm = (value, prop) => {
@@ -128,6 +137,8 @@ export default class SettingsImportModal extends Component {
         delete form.value;
         delete form.slug;
 
+        form.rules = form.rules || [];
+        form.joins = form.joins || [];
         form.rules = form.rules.map((item, index) => ({ ...item, position: index }));
 
         if (!form.rules.length) return NotificationManager.error('Не заполнены "Правила"', 'Ошибка');
@@ -224,7 +235,7 @@ export default class SettingsImportModal extends Component {
     render() {
         const { onClose } = this.props;
         const { form, types, inProgress } = this.state;
-        const selectedType = types.find(({ value }) => value === form.type);
+        const selectedType = types.find(t => t?.value === form.type);
 
         return (
             <ConfirmModal
@@ -233,6 +244,9 @@ export default class SettingsImportModal extends Component {
                 onSubmit={() => this.form.submit()}
                 submitDisabled={!this.canEdit}
             >
+                {!form.name && (
+                    <span>Произошла ошибка при открытии файла!</span>
+                )}
                 <Form
                     onSubmit={this.handleSubmit}
                     ref={ref => this.form = ref}
@@ -244,7 +258,7 @@ export default class SettingsImportModal extends Component {
                                 autoFocus
                                 required
                                 label='Название'
-                                value={form.name}
+                                value={form.name || ''}
                                 onChange={val => this.handleChangeForm(val, 'name')}
                                 disabled={!this.canEdit}
                             />
@@ -262,7 +276,7 @@ export default class SettingsImportModal extends Component {
                         <div {...cls('item', '', 'col-md-6')}>
                             <InputText
                                 label='Селектор для контейнера статей'
-                                value={form.itemsContainer}
+                                value={form.itemsContainer || ''}
                                 onChange={val => this.handleChangeForm(val, 'itemsContainer')}
                                 disabled={!this.canEdit}
                             />
@@ -270,7 +284,7 @@ export default class SettingsImportModal extends Component {
                         <div {...cls('item', '', 'col-md-6')}>
                             <InputText
                                 label='Селектор для статьи'
-                                value={form.item}
+                                value={form.item || ''}
                                 onChange={val => this.handleChangeForm(val, 'item')}
                                 disabled={!this.canEdit}
                             />
@@ -302,7 +316,7 @@ export default class SettingsImportModal extends Component {
                             onChange={this.handleEndSort}
                             disabled={!this.canEdit}
                         >
-                            {form.rules.map(this.renderRule)}
+                            {form.rules?.map(this.renderRule)}
                         </Sortable>
 
                         <InlineButton onClick={this.handleAddRule} disabled={!this.canEdit}>
@@ -313,7 +327,7 @@ export default class SettingsImportModal extends Component {
                     <section {...cls('joins')}>
                         <h3 {...cls('title')}>Объединение полей</h3>
 
-                        {form.joins.map(this.renderJoin)}
+                        {form.joins?.map(this.renderJoin)}
                         <InlineButton onClick={this.handleAddJoin} disabled={!this.canEdit}>
                             + Добавить
                         </InlineButton>

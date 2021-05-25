@@ -39,6 +39,20 @@ $namespace: '.reprint';
       margin-left: -1px;
       grid-column: auto;
     }
+
+    &--editable .select__control {
+      padding: 0 40px 0 0;
+    }
+
+    &--editable label span {
+      display: none;
+    }
+
+    &--editable button.select__edit-btn {
+      z-index: 1;
+      top: 10px;
+      right: 16px;
+    }
   }
 
   &__menu-button {

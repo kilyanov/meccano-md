@@ -224,6 +224,27 @@ class ArticleCreatePage extends Component {
         this.handleChangeForm(reprints, 'reprints');
     }
 
+    handleCreateSourceInReprints = ({ index, value }) => {
+        SourceService.create({ name: value })
+            .then((res) => {
+                const reprints = this.state.form.reprints;
+                reprints[index].source_id = res.data.id;
+                this.handleChangeForm(reprints, 'reprints');
+                OperatedNotification.success({
+                    title: 'Создание источника',
+                    message: 'Новый источник успешно создан',
+                    timeOut: 10000
+                });
+            })
+            .catch(() => {
+                OperatedNotification.warning({
+                    title: 'Создание источника',
+                    message: 'Не удалось создать новый источник',
+                    timeOut: 10000
+                });
+            });
+    };
+
     handleAddReprint = () => {
         const newReprints = [
             ...this.state.form.reprints,
@@ -1048,6 +1069,7 @@ class ArticleCreatePage extends Component {
                         onDeleteReprint={this.handleDeleteReprint}
                         onDeleteReprints={this.handleDeleteReprints}
                         onCreateArticleFromReprint={this.handleCreateArticleFromReprint}
+                        onCreateSourceInReprints={this.handleCreateSourceInReprints}
                         onSaveReprintsOnly={this.handleSaveReprintsOnly}
                         currentProject={this.props.currentProject}
                         currentArticle={this.props.currentArticle}
