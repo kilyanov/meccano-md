@@ -98,6 +98,7 @@ const ProjectCreateField = ({field, value, onChange, className, isHidden}) => {
                     editable={field.editable}
                     draggable
                     canCreate
+                    onCreateOption={field?.onCreateOption}
                 />
             </div>;
         case FIELD_TYPE.SELECT:
