@@ -178,6 +178,37 @@ $namespace: '.archive-create-page';
     border: none;
     background: none;
   }
+
+  &__drawer-button {
+    position: relative;
+    margin: 0 24px 0 auto;
+    border: none;
+    background: none;
+  }
+
+  &__reprint-counter {
+    font-size: 10px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    height: 20px;
+    width: 20px;
+    background-color: #FFF;
+    border-radius: 50%;
+    border: 2px solid #000;
+    overflow: hidden;
+  }
+
+  .reprint .input-text--readOnly .input-text__field,
+  .reprint .input-date-picker--readOnly .react-datetime-picker
+  {
+    color: $black;
+    background-color: $white;
+  }
 }
 
 /* Dark Theme */
@@ -202,5 +233,16 @@ $namespace: '.archive-create-page';
   &__field {
     background-color: $background-dark;
     color: $white-dark;
+  }
+
+  &__drawer-button {
+    filter: invert(1);
+  }
+
+  .reprint .input-text--readOnly .input-text__field,
+  .reprint .input-date-picker--readOnly .react-datetime-picker
+  {
+    color: $white;
+    background-color: $black;
   }
 }

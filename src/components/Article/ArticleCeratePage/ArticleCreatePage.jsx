@@ -224,27 +224,6 @@ class ArticleCreatePage extends Component {
         this.handleChangeForm(reprints, 'reprints');
     }
 
-    handleCreateSourceInReprints = ({ index, value }) => {
-        SourceService.create({ name: value })
-            .then((res) => {
-                const reprints = this.state.form.reprints;
-                reprints[index].source_id = res.data.id;
-                this.handleChangeForm(reprints, 'reprints');
-                OperatedNotification.success({
-                    title: 'Создание источника',
-                    message: 'Новый источник успешно создан',
-                    timeOut: 10000
-                });
-            })
-            .catch(() => {
-                OperatedNotification.warning({
-                    title: 'Создание источника',
-                    message: 'Не удалось создать новый источник',
-                    timeOut: 10000
-                });
-            });
-    };
-
     handleAddReprint = () => {
         const newReprints = [
             ...this.state.form.reprints,
@@ -318,6 +297,22 @@ class ArticleCreatePage extends Component {
                         });
                     });
             });
+    };
+
+    handleCreateSourceInReprints = ({ value, index  }) => {
+        this.createSource(value, (id) => {
+            const reprints = this.state.form.reprints;
+            reprints[index].source_id = id;
+            this.handleChangeForm(reprints, 'reprints');
+        });
+    };
+
+    handleCreateSourceInArticle = (value) => {
+        this.createSource(value, (id) => {
+            const article = this.state.form;
+            article.source_id = id;
+            this.handleChangeForm(id, 'source_id');
+        });
     };
 
     handleShowViewSettings = () => {
@@ -618,6 +613,27 @@ class ArticleCreatePage extends Component {
         this.setState({ userTypeId: userType.id, userType });
     };
 
+    createSource = (name, cb) => {
+        SourceService.create({ name })
+            .then((res) => {
+                OperatedNotification.success({
+                    title: 'Создание источника',
+                    message: 'Новый источник успешно создан',
+                    timeOut: 10000,
+                    onSubmit: () => {}
+                });
+                return cb(res.data.id);
+            })
+            .catch(() => {
+                OperatedNotification.warning({
+                    title: 'Создание источника',
+                    message: 'Не удалось создать новый источник',
+                    timeOut: 10000,
+                    onSubmit: () => {}
+                });
+            });
+    }
+
     findSectionById = (sectionId, sections) => {
         const r = (items) => {
             let found = null;
@@ -743,6 +759,7 @@ class ArticleCreatePage extends Component {
                 field.requestService = SourceService.get;
                 field.requestCancelService = SourceService.cancelLast;
                 field.editable = true;
+                field.onCreateOption = (value) => this.handleCreateSourceInArticle(value);
                 break;
             case 'source_type_id':
                 field.requestService = SourceService.type.get;

@@ -10,7 +10,7 @@ import './reprints.scss';
 
 const cls = new Bem('reprints');
 
-function Reprints({ 
+function Reprints({
     reprints,
     onFieldChange,
     onAddReprint,
@@ -26,7 +26,8 @@ function Reprints({
     currentProject,
     currentArticle,
     userTypeId,
-    onSaveReprintsOnly
+    onSaveReprintsOnly,
+    isReadOnly
 }) {
     const [isMoveMode, setIsTransferMode] = useState(false);
     const [isReadyToMove, setIsReadyToTransfer] = useState(false);
@@ -119,7 +120,7 @@ function Reprints({
                 onClick={() => setIsReadyToTransfer(true)}
                 disabled={!selectedReprints.length}
             >
-                Перенести выделенные {!!selectedReprints.length && 
+                Перенести выделенные {!!selectedReprints.length &&
                     <span>{selectedReprints.length}</span>
                 }
             </Button>
@@ -139,7 +140,7 @@ function Reprints({
                 onClick={moveReprints}
                 disabled={!selectedArticle}
             >
-                Перенести {!!selectedReprints.length && 
+                Перенести {!!selectedReprints.length &&
                     <span>{selectedReprints.length}</span>
                 }
             </Button>
@@ -148,12 +149,15 @@ function Reprints({
 
     const renderListReprints = (
         <div {...cls()}>
-            <div {...cls('toolbar')}>
-                {!isMoveMode
-                    ? renderButtons
-                    : renderButtonsSelectReprints
-                }
-            </div>
+            {!isReadOnly && (
+                <div {...cls('toolbar')}>
+                    {!isMoveMode
+                        ? renderButtons
+                        : renderButtonsSelectReprints
+                    }
+                </div>
+            )}
+
             <div {...cls('list')}>
                 {reprints.length
                     ? reprints.map((reprint, index) => {
@@ -173,6 +177,7 @@ function Reprints({
                                 SourceService={SourceService}
                                 LocationService={LocationService}
                                 isSelectable={isMoveMode}
+                                isReadOnly={isReadOnly}
                             />
                         );
                     })
@@ -187,7 +192,7 @@ function Reprints({
             <div {...cls('toolbar')}>
                 {renderButtonsMoveReprints}
             </div>
-            <ListOfArticles 
+            <ListOfArticles
                 project={currentProject}
                 onSelectArticle={handleSelectArticle}
                 ArticleService={ArticleService}
@@ -220,7 +225,8 @@ Reprints.propTypes = {
     currentProject: PropTypes.object,
     currentArticle: PropTypes.object,
     userTypeId: PropTypes.string,
-    currentArticleId: PropTypes.string
+    currentArticleId: PropTypes.string,
+    isReadOnly: PropTypes.bool
 };
 
 export default Reprints;

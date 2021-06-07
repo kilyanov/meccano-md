@@ -151,7 +151,8 @@ class AsyncCreatableSelect extends Component {
             theme,
             canCreate = true,
             onlyValue,
-            onKeyDown
+            onKeyDown,
+            onCreateOption = () => {}
         } = this.props;
         const isDarkTheme = theme === THEME_TYPE.DARK;
         const selectProps = {
@@ -184,7 +185,7 @@ class AsyncCreatableSelect extends Component {
                 return selectOption.every((item) => item.label !== inputValue && inputValue.length);
             },
             onCreateOption: (value) => {
-                this.props.onCreateOption(value);
+                onCreateOption(value);
                 this.handleSelect({
                     label: value.trim(),
                     value: value.trim(),

@@ -127,6 +127,7 @@ const ProjectCreateField = ({
                         autoFocus={autoFocus}
                         canCreate
                         onKeyDown={onKeyDown}
+                        onCreateOption={field?.onCreateOption}
                     />
                 </Wrapper>
             );
