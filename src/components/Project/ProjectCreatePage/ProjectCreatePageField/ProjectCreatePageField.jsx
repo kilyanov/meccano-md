@@ -12,44 +12,101 @@ import AsyncCreatableSelect from "../../../Form/AsyncCreatebleSelect/AsyncCreate
 import Select from '../../../Form/Select/ReactSelect/ReactSelect';
 
 const cls = new Bem('article-create-page');
-const ProjectCreateField = ({field, value, onChange, className, isHidden}) => {
+
+const ProjectCreateField = ({
+    field,
+    value,
+    onChange,
+    onBlur,
+    onKeyDown,
+    className,
+    isHidden,
+    onlyValue,
+    autoFocus
+}) => {
     const filedType = field.type.key;
 
     if (isHidden) return <div {...cls('hidden-field')} data-id={field.slug} />;
 
     switch (filedType) {
         case FIELD_TYPE.ARRAY:
-            return <div {...cls('field', [field.slug, filedType], className)} data-id={field.slug}>
-                <InputTags
-                    onChange={val => onChange(val, field.slug)}
-                    options={field.options || []}
-                    placeholder={field.placeholder}
-                    label={field.name}
-                    required={field.required}
-                    value={value}
-                    readOnly={field.readOnly}
-                    requestService={field.requestService}
-                    requestCancelService={field.requestCancelService}
-                    draggable
-                />
-
-                {/*
-                <InputTags
-                    label={field.name}
-                    tags={field.tags}
-                    suggestions={field.suggestions}
-                    onChange={val => onChange(val, field.slug)}
-                    eslint-disable-next-line
-                    onSearch={field.onSearch}
-                    requestService={field.requestService}
-                    requestCancelService={field.requestCancelService}
-                />
-                */}
-
-            </div>;
+            return (
+                <Wrapper
+                    field={field}
+                    onlyValue={onlyValue}
+                    className={className}
+                >
+                    <InputTags
+                        onChange={val => onChange(val, field.slug)}
+                        options={field.options || []}
+                        placeholder={field.placeholder}
+                        label={field.name}
+                        required={field.required}
+                        value={value}
+                        readOnly={field.readOnly}
+                        requestService={field.requestService}
+                        requestCancelService={field.requestCancelService}
+                        draggable={!onlyValue}
+                        onlyValue={onlyValue}
+                        autoFocus={autoFocus}
+                        onBlur={onBlur}
+                        onKeyDown={onKeyDown}
+                    />
+                </Wrapper>
+            );
         case FIELD_TYPE.UUID:
-            return <div {...cls('field', [field.slug, filedType], className)} data-id={field.slug}>
-                {field.requestService ? (
+            return (
+                <Wrapper
+                    field={field}
+                    onlyValue={onlyValue}
+                    className={className}
+                >
+                    {field.requestService ? (
+                        <AsyncCreatableSelect
+                            placeholder={field.placeholder}
+                            label={field.name}
+                            options={field.options || []}
+                            selected={value}
+                            fieldKey={field.slug}
+                            readOnly={field.readOnly}
+                            onChange={val => onChange(val, field.slug)}
+                            requestService={field.requestService}
+                            requestCancelService={field.requestCancelService}
+                            depended={field.depended}
+                            isDisabled={field.readOnly}
+                            required={field.required}
+                            draggable={!onlyValue}
+                            canCreate={false}
+                            autoFocus={autoFocus}
+                            onBlur={onBlur}
+                            onlyValue={onlyValue}
+                            onKeyDown={onKeyDown}
+                        />
+                    ) : (
+                        <Select
+                            placeholder={field.placeholder}
+                            label={field.name}
+                            options={field.options || []}
+                            selected={value}
+                            readOnly={field.readOnly}
+                            disabled={field.disabled}
+                            required={field.required}
+                            onChange={val => onChange(val, field.slug)}
+                            draggable={!onlyValue}
+                            autoFocus={autoFocus}
+                            onBlur={onBlur}
+                            onKeyDown={onKeyDown}
+                        />
+                    )}
+                </Wrapper>
+            );
+        case FIELD_TYPE.UUID_EXT:
+            return (
+                <Wrapper
+                    field={field}
+                    onlyValue={onlyValue}
+                    className={className}
+                >
                     <AsyncCreatableSelect
                         placeholder={field.placeholder}
                         label={field.name}
@@ -58,128 +115,160 @@ const ProjectCreateField = ({field, value, onChange, className, isHidden}) => {
                         fieldKey={field.slug}
                         readOnly={field.readOnly}
                         onChange={val => onChange(val, field.slug)}
+                        onBlur={onBlur}
                         requestService={field.requestService}
                         requestCancelService={field.requestCancelService}
                         depended={field.depended}
                         isDisabled={field.readOnly}
                         required={field.required}
-                        draggable
-                        canCreate={false}
+                        editable={field.editable}
+                        draggable={!onlyValue}
+                        onlyValue={onlyValue}
+                        autoFocus={autoFocus}
+                        canCreate
+                        onKeyDown={onKeyDown}
                     />
-                ) : (
+                </Wrapper>
+            );
+        case FIELD_TYPE.SELECT:
+            return (
+                <Wrapper
+                    field={field}
+                    onlyValue={onlyValue}
+                    className={className}
+                >
                     <Select
                         placeholder={field.placeholder}
                         label={field.name}
                         options={field.options || []}
                         selected={value}
                         readOnly={field.readOnly}
-                        disabled={field.disabled}
-                        required={field.required}
                         onChange={val => onChange(val, field.slug)}
-                        draggable
+                        required={field.required}
+                        draggable={!onlyValue}
+                        autoFocus={autoFocus}
+                        onBlur={onBlur}
+                        onKeyDown={onKeyDown}
                     />
-                )}
-            </div>;
-        case FIELD_TYPE.UUID_EXT:
-            return <div {...cls('field', [field.slug, filedType], className)} data-id={field.slug}>
-                <AsyncCreatableSelect
-                    placeholder={field.placeholder}
-                    label={field.name}
-                    options={field.options || []}
-                    selected={value}
-                    fieldKey={field.slug}
-                    readOnly={field.readOnly}
-                    onChange={val => onChange(val, field.slug)}
-                    requestService={field.requestService}
-                    requestCancelService={field.requestCancelService}
-                    depended={field.depended}
-                    isDisabled={field.readOnly}
-                    required={field.required}
-                    editable={field.editable}
-                    draggable
-                    canCreate
-                />
-            </div>;
-        case FIELD_TYPE.SELECT:
-            return <div {...cls('field', [field.slug, filedType], className)} data-id={field.slug}>
-                <Select
-                    placeholder={field.placeholder}
-                    label={field.name}
-                    options={field.options || []}
-                    selected={value}
-                    readOnly={field.readOnly}
-                    onChange={val => onChange(val, field.slug)}
-                    required={field.required}
-                    draggable
-                />
-            </div>;
+                </Wrapper>
+            );
         case FIELD_TYPE.URL:
-            return <div {...cls('field', [field.slug, filedType], className)} data-id={field.slug}>
-                <InputLink
-                    label={field.name}
-                    readOnly={field.readOnly}
-                    onChange={val => onChange(val, field.slug)}
-                    value={value || ''}
-                    required={field.required}
-                    draggable
-                />
-            </div>;
+            return (
+                <Wrapper
+                    field={field}
+                    onlyValue={onlyValue}
+                    className={className}
+                >
+                    <InputLink
+                        label={field.name}
+                        readOnly={field.readOnly}
+                        onChange={val => onChange(val, field.slug)}
+                        value={value || ''}
+                        required={field.required}
+                        draggable={!onlyValue}
+                        autoFocus={autoFocus}
+                        onKeyDown={onKeyDown}
+                    />
+                </Wrapper>
+            );
         case FIELD_TYPE.FLOAT:
         case FIELD_TYPE.INT:
-            return <div {...cls('field', [field.slug, filedType], className)} data-id={field.slug}>
-                <InputNumber
-                    label={field.name}
-                    readOnly={field.readOnly}
-                    onChange={val => onChange(val, field.slug)}
-                    value={value || ''}
-                    required={field.required}
-                    draggable
-                />
-            </div>;
+            return (
+                <Wrapper
+                    field={field}
+                    onlyValue={onlyValue}
+                    className={className}
+                >
+                    <InputNumber
+                        label={field.name}
+                        readOnly={field.readOnly}
+                        onChange={val => onChange(val, field.slug)}
+                        value={value || ''}
+                        required={field.required}
+                        draggable={!onlyValue}
+                        autoFocus={autoFocus}
+                        onKeyDown={onKeyDown}
+                    />
+                </Wrapper>
+            );
         case FIELD_TYPE.DATETIME:
-            return <div {...cls('field', [field.slug, filedType], className)} data-id={field.slug}>
-                <InputDateTimePicker
-                    label={field.name}
-                    readOnly={field.readOnly}
-                    value={value || ''}
-                    onChange={val => onChange(val, field.slug)}
-                    required={field.required}
-                    draggable
-                />
-            </div>;
+            return (
+                <Wrapper
+                    field={field}
+                    onlyValue={onlyValue}
+                    className={className}
+                >
+                    <InputDateTimePicker
+                        label={field.name}
+                        readOnly={field.readOnly}
+                        value={value || ''}
+                        onChange={val => onChange(val, field.slug)}
+                        required={field.required}
+                        draggable={!onlyValue}
+                        autoFocus={autoFocus}
+                        onKeyDown={onKeyDown}
+                    />
+                </Wrapper>
+            );
         case FIELD_TYPE.DATE:
-            return <div {...cls('field', [field.slug, filedType], className)} data-id={field.slug}>
-                <InputDatePicker
-                    label={field.name}
-                    readOnly={field.readOnly}
-                    value={value || ''}
-                    onChange={val => onChange(val, field.slug)}
-                    required={field.required}
-                    draggable
-                />
-            </div>;
+            return (
+                <Wrapper
+                    field={field}
+                    onlyValue={onlyValue}
+                    className={className}
+                >
+                    <InputDatePicker
+                        label={field.name}
+                        readOnly={field.readOnly}
+                        value={value || ''}
+                        onChange={val => onChange(val, field.slug)}
+                        required={field.required}
+                        draggable={!onlyValue}
+                        autoFocus={autoFocus}
+                        onKeyDown={onKeyDown}
+                    />
+                </Wrapper>
+            );
         case FIELD_TYPE.TIME:
-            return <div {...cls('field', [field.slug, filedType], className)} data-id={field.slug}>
-                <InputTime
-                    label={field.name}
-                    readOnly={field.readOnly}
-                    value={value}
-                    required={field.required}
-                    draggable
-                />
-            </div>;
+            return (
+                <Wrapper
+                    field={field}
+                    onlyValue={onlyValue}
+                    className={className}
+                >
+                    <InputTime
+                        label={field.name}
+                        readOnly={field.readOnly}
+                        value={value}
+                        required={field.required}
+                        draggable={!onlyValue}
+                        autoFocus={autoFocus}
+                        onKeyDown={onKeyDown}
+                    />
+                </Wrapper>
+            );
         case FIELD_TYPE.TEXT:
         default:
-            return <div {...cls('field', [field.slug, filedType], className)} data-id={field.slug}>
-                <InputText
-                    label={field.name}
-                    readOnly={field.readOnly}
-                    value={value || ''}
-                    onChange={val => onChange(val, field.slug)}
-                    required={field.required}
-                    draggable
-                />
-            </div>;
+            return (
+                <Wrapper
+                    field={field}
+                    onlyValue={onlyValue}
+                    className={className}
+                >
+                    <InputText
+                        label={field.name}
+                        readOnly={field.readOnly}
+                        value={value || ''}
+                        onChange={val => onChange(val, field.slug)}
+                        onBlur={onBlur}
+                        required={field.required}
+                        onlyValue={onlyValue}
+                        draggable={!onlyValue}
+                        autoFocus={autoFocus}
+                        onKeyDown={onKeyDown}
+                    />
+                </Wrapper>
+            );
     }
 };
 
@@ -191,3 +280,15 @@ ProjectCreateField.propTypes = {
 };
 
 export default ProjectCreateField;
+
+const Wrapper = ({ children, field, onlyValue, className }) => {
+    const filedType = field.type.key;
+    return (
+        <div
+            {...cls('field', [field.slug, filedType, onlyValue && 'only-value'], className)}
+            data-id={field.slug}
+        >
+            {children}
+        </div>
+    );
+};

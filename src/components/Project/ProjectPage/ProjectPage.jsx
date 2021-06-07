@@ -33,6 +33,7 @@ import Breadcrumbs from '../../Shared/Breadcrumbs';
 import ArchiveModal from '../../Archive/ArchiveModal';
 import AccessProject from '../../Shared/AccessProject';
 import { connect } from 'react-redux';
+import { FaEye, FaEdit } from 'react-icons/fa';
 
 const cls = new Bem('project-page');
 const defaultPagination = { page: 1, pageCount: 1, perPage: 50 };
@@ -82,7 +83,8 @@ class ProjectPage extends Component {
             showTransferModal: false,
             showArchiveModal: false,
             userType,
-            inProgress: true
+            inProgress: true,
+            isEditMode: false
         };
     }
 
@@ -333,6 +335,21 @@ class ProjectPage extends Component {
         this.setState({ showArchiveModal: true, selectedArticleId: articleId });
     }
 
+    handleChangeArticle = ({ value, prop, needSave }, articleIndex) => {
+        this.setState(state => {
+            state.articles[articleIndex][prop] = value;
+            return state;
+        }, () => {
+            if (needSave) {
+                this.saveArticle(articleIndex, prop);
+            }
+        });
+    }
+
+    handleChangeTableMode = (isEditMode) => {
+        this.setState({ isEditMode });
+    }
+
     getArticleColors = () => {
         ArticleService.color.get(this.projectId).then(response => {
             if (response.data) {
@@ -525,11 +542,51 @@ class ProjectPage extends Component {
         history.replace(location);
     };
 
-    onGetArticleMenu = (article) => {
+    saveArticle = (articleIndex, prop) => {
+        const { userType, articles } = this.state;
+        const article = articles[articleIndex];
+
+        if (article && article[prop]) {
+            const form = {
+                [prop]: article[prop],
+                project_id: this.projectId
+            };
+
+            this.setState({ saveArticleProgress: true }, () => {
+                ArticleService
+                    .update(form, article.id, userType.id)
+                    .finally(() => {
+                        this.setState({ saveArticleProgress: false });
+                    });
+            });
+        }
+    };
+
+    onGetArticleMenu = (article, articleKey) => {
+        const { filters, pagination } = this.state;
+
         const menuItems = [{
             title: 'Изменить',
             link: `/project/${this.projectId}/article/${article.id}`
         }];
+
+        const sp = new URLSearchParams();
+        const currentPage = this.searchParams.get('page') || pagination.page;
+        const sortString = filters.sort.type &&
+            `${filters.sort.dir === SORT_DIR.ASC ? '-' : ''}${filters.sort.type}`;
+        let link = `/project/${this.projectId}/article/${article.id}?`;
+
+        sp.set('search', filters.search);
+        sp.set('sort', sortString || '');
+        sp.set('position', articleKey);
+        sp.set('page', currentPage);
+
+        link += sp.toString();
+
+        menuItems.unshift({
+            title: 'Открыть',
+            link
+        });
 
         if (isProjectAccess([ PROJECT_PERMISSION.ACCESS_ARCHIVE ])) {
             menuItems.push({
@@ -580,7 +637,9 @@ class ProjectPage extends Component {
             userType,
             selectedStatus,
             selectedArticleId,
-            inProgress
+            saveArticleProgress,
+            inProgress,
+            isEditMode
         } = this.state;
         const countSelected = isAllArticlesSelected
             ? pagination.totalCount
@@ -732,36 +791,48 @@ class ProjectPage extends Component {
                         placeholder='Статус'
                     />
 
-                    <DropDownButton
-                        {...cls('article-add-btn')}
-                        buttonText='Добавить'
-                        dropDownItems={this.addMenuItems}
-                        dropDownRight
-                    />
+
+                    {saveArticleProgress ? (
+                        <div { ...cls('article-load-wrapper') }>
+                            <Loader
+                                radius={10}
+                                strokeWidth={3}
+                            />
+                        </div>
+                    ) : (
+                        <DropDownButton
+                            {...cls('article-add-btn')}
+                            buttonText='Добавить'
+                            dropDownItems={this.addMenuItems}
+                            dropDownRight
+                        />
+                    )}
                 </section>
 
                 <div {...cls('project-table-wrapper')}>
                     <ProjectTable
-                        onChangeSelected={this.handleChangeSelected}
-                        onSelectedAll={this.handleSelectAll}
-                        onChangeColumns={this.handleChangeColumns}
-                        onChangeSort={this.handleChangeSort}
-                        onDeleteArticle={this.handleDeleteArticle}
-                        onArchivingArticle={this.handleArchivingArticle}
-                        onChangeFilter={this.handleChangeFilter}
-                        onUpdateParent={() => this.getArticles()}
-                        getArticleMenu={this.onGetArticleMenu}
+                        page={currentPage}
+                        isAllSelected={isAllArticlesSelected}
                         sort={filters.sort}
                         search={filters.search}
-                        page={currentPage}
-                        selectedIds={(this.state.selectedArticles[pagination.page] || []).map(({ id }) => id)}
-                        isAllSelected={isAllArticlesSelected}
                         projectId={this.projectId}
+                        selectedIds={(this.state.selectedArticles[pagination.page] || []).map(({ id }) => id)}
                         articles={articles}
                         pagination={pagination}
                         fields={fields}
                         userType={userType}
                         currentUserId={this.props.profile.id}
+                        onChangeSelected={this.handleChangeSelected}
+                        onSelectedAll={this.handleSelectAll}
+                        onChangeColumns={this.handleChangeColumns}
+                        onChangeSort={this.handleChangeSort}
+                        onChangeArticle={this.handleChangeArticle}
+                        onDeleteArticle={this.handleDeleteArticle}
+                        onArchivingArticle={this.handleArchivingArticle}
+                        onChangeFilter={this.handleChangeFilter}
+                        onUpdateParent={() => this.getArticles()}
+                        getArticleMenu={this.onGetArticleMenu}
+                        onChangeTableMode={this.handleChangeTableMode}
                     />
 
                     <div {...cls('footer')}>
@@ -770,6 +841,11 @@ class ProjectPage extends Component {
                             pageCount={pagination.pageCount}
                             onPageChange={this.handleChangePage}
                         />
+
+                        <span { ...cls('table-mode') }>
+                            {isEditMode ? <FaEdit /> : <FaEye />}
+                            Режим {isEditMode ? 'редактирования' : 'просмотра'}
+                        </span>
 
                         <span {...cls('articles-count')}>
                             Всего {Plural(

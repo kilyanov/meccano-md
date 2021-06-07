@@ -15,6 +15,10 @@ $namespace: '.input-tags';
     }
   }
 
+  &--onlyValue {
+    margin-bottom: 0;
+  }
+
   &__label {
     &--error {
       color: $errorColor;

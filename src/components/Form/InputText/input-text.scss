@@ -52,6 +52,10 @@ $namespace: '.input-text';
     }
   }
 
+  &--onlyValue {
+    margin-bottom: 0;
+  }
+
   &:placeholder-shown {
     color: $fontGrey;
     opacity: 1;
