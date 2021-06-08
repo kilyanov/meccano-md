@@ -1,0 +1,30 @@
+name: Deploy_stage
+
+on:
+  push:
+    branches: [dev]
+  pull_request:
+    branches: [dev]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [14.x]
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node-version }}
+      # Setup key
+      - run: set -eu
+      - run: mkdir "$HOME/.ssh"
+      - run: echo "${{ secrets.key }}" > "$HOME/.ssh/key"
+      - run: chmod 600 "$HOME/.ssh/key"
+      # Build
+      - run: npm ci
+      - run: npm run build
+      # Deploy
+      - run: cd web && rsync -e "ssh -i $HOME/.ssh/key -o StrictHostKeyChecking=no -p${{ secrets.STAGING_PORT }}" --archive --compress --delete . ${{ secrets.STAGING_USER }}@${{ secrets.STAGING_HOST }}:${{ secrets.STAGING_PATH }}/_tmp
+      - run: ssh -i $HOME/.ssh/key -o StrictHostKeyChecking=no -p${{ secrets.STAGING_PORT }} ${{ secrets.STAGING_USER }}@${{ secrets.STAGING_HOST }} "php ${{ secrets.STAGING_PATH }}/deploy.php"
