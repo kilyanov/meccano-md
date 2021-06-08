@@ -25,7 +25,7 @@ export default class InputNumber extends Component {
     };
 
     render() {
-        const {className, label, value, readOnly, draggable, required} = this.props;
+        const {className, label, value, readOnly, draggable, required, onKeyDown} = this.props;
         const {error} = this.state;
         const isFocused = this.inputRef === document.activeElement;
         const isError = error;
@@ -51,6 +51,7 @@ export default class InputNumber extends Component {
                         pattern='[0-9]*'
                         readOnly={readOnly}
                         onChange={this.handleChange}
+                        onKeyDown={onKeyDown}
                         value={value || ''}
                         data-error={error}
                         ref={ref => this.inputRef = ref}

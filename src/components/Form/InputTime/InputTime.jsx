@@ -262,7 +262,7 @@ export default class InputTime extends React.Component {
     };
 
     render() {
-        const {isOpen, time, error, focused, value, readOnly} = this.state;
+        const {isOpen, time, error, focused, value, readOnly, onKeyPress} = this.state;
         const {
             autoFocus,
             placeholder,
@@ -272,7 +272,8 @@ export default class InputTime extends React.Component {
             disabled,
             required,
             validateErrorMessage,
-            draggable
+            draggable,
+            onKeyDown
         } = this.props;
         const isFocused = this.inputRef === document.activeElement;
         const isError = error; // && !isFocused
@@ -310,6 +311,7 @@ export default class InputTime extends React.Component {
                         // onKeyDown={this.handleInputKeyDown}
                         onChange={this.handleChangeInput}
                         onBlur={this.handleBlurInput}
+                        onKeyDown={onKeyDown}
                     />
 
                     {(isError && !isEmpty) && (
@@ -371,6 +373,7 @@ export default class InputTime extends React.Component {
                                             tabIndex='-1'
                                             onClick={this.handleChange.bind(null, minute, 'minute')}
                                             onKeyDown={this.handleListItemKeyDown}
+                                            onKeyPress={onKeyPress}
                                         >
                                             {minute}
                                         </li>

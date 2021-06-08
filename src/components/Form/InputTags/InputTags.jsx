@@ -17,7 +17,9 @@ class InputTags extends Component {
         readOnly: PropTypes.bool,
         draggable: PropTypes.bool,
         options: PropTypes.array,
-        disabled: PropTypes.bool
+        disabled: PropTypes.bool,
+        autoFocus: PropTypes.bool,
+        onBlur: PropTypes.func
     };
 
     state = {
@@ -59,26 +61,47 @@ class InputTags extends Component {
     };
 
     render() {
-        const { label, theme, onChange, value, draggable, readOnly, disabled, required } = this.props;
+        const {
+            label,
+            theme,
+            onChange,
+            value,
+            draggable,
+            readOnly,
+            disabled,
+            required,
+            autoFocus,
+            onBlur,
+            onKeyDown,
+            onlyValue
+        } = this.props;
         const { defaultOptions } = this.state;
         const isDarkTheme = theme === THEME_TYPE.DARK;
 
         return (
-            <div {...cls('', { succeed: !!this.props.value.length })}>
-                {label && (
-                    <label {...cls('label', { error: required && !this.props.value.length }, { 'drag-handle': draggable, required })}>
+            <div {...cls('', { succeed: !!this.props.value.length, onlyValue })}>
+                {(label && !onlyValue) && (
+                    <label
+                        {...cls(
+                            'label',
+                            { error: required && !this.props.value.length },
+                            { 'drag-handle': draggable, required }
+                        )}
+                    >
                         <span {...cls('label-text', '', { 'drag-handle': draggable })}>{label}</span>
                     </label>
                 )}
 
                 <Select
-                    {...cls('field')}
+                    autoFocus={autoFocus}
                     placeholder={'Начните вводить текст...'}
                     isMulti
                     isSearchable
                     onChange={onChange}
                     isDisabled={readOnly || disabled}
                     value={value}
+                    onBlur={onBlur && onBlur}
+                    onKeyDown={onKeyDown}
                     defaultOptions={defaultOptions}
                     loadingMessage={() => 'Загрузка...'}
                     noOptionsMessage={() => 'Нет элементов'}

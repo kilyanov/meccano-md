@@ -1,0 +1,17 @@
+.editable-cell {
+  &__wrap {
+    max-width: 100%;
+    width: 100%;
+  }
+
+  &__text {
+    display: inline-block;
+    white-space: nowrap;
+    max-width: 100%;
+    overflow: hidden;
+
+    &:focus {
+      font-weight: 500;
+    }
+  }
+}

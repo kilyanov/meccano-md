@@ -95,7 +95,7 @@ $namespace: '.article-create-page';
       justify-content: center;
     }
   }
-  
+
   &__view-button-icon {
     display: flex;
     height: 24px;
@@ -170,6 +170,14 @@ $namespace: '.article-create-page';
     &--textarea,
     &--annotation {
       margin-bottom: 20px;
+    }
+
+    &--only-value {
+      position: relative;
+      width: 100%;
+      margin: 0;
+      padding: 0;
+      z-index: 1;
     }
   }
 

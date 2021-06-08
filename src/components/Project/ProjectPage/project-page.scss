@@ -69,4 +69,25 @@
     overflow: hidden;
     // overflow-x: hidden;
   }
+
+  &__article-load-wrapper {
+    position: relative;
+    width: 128px;
+    height: 40px;
+    //margin-left: auto;
+    //margin-right: 20px;
+  }
+
+  &__table-mode {
+    display: inline-flex;
+    align-items: center;
+    margin-left: auto;
+    margin-right: 20px;
+    font-size: 12px;
+    color: $infoColor;
+
+    & svg {
+      margin-right: 4px;
+    }
+  }
 }
