@@ -55,7 +55,7 @@ class ProjectTable extends Component {
     state = {
         filters: {},
         showColumnSettingsModal: false,
-        editableMode: false,
+        editableMode: false
     };
 
     componentDidMount() {
@@ -110,7 +110,7 @@ class ProjectTable extends Component {
         let newSelected = [ ...selectedIds ];
 
         if (newSelected.includes(articleId)) {
-            isSelected = false
+            isSelected = false;
             newSelected = newSelected.filter(id => id !== articleId);
         } else {
             isSelected = true;
