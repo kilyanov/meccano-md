@@ -183,12 +183,14 @@ const ProjectCreateField = ({
                     <InputNumber
                         label={field.name}
                         readOnly={field.readOnly}
-                        onChange={val => onChange(val, field.slug)}
+                        onChange={val => onChange(+val, field.slug)}
                         value={value || ''}
+                        onlyValue={onlyValue}
                         required={field.required}
                         draggable={!onlyValue}
                         autoFocus={autoFocus}
                         onKeyDown={onKeyDown}
+                        onBlur={onBlur}
                     />
                 </Wrapper>
             );
