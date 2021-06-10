@@ -9,11 +9,15 @@ const CheckBox = ({
     disabled = false,
     required = false,
     onChange = () => {},
+    onLabelClick = () => {},
     className,
     children
 }) => (
     <div {...cls('', {disabled, checked}, className)}>
-        <label {...cls('label', { required })} title={required ? 'Обязательное поле' : ''}>
+        <label
+            {...cls('label', { required })} title={required ? 'Обязательное поле' : ''}
+            onClick={onLabelClick}
+        >
             <span {...cls('box')} />
 
             <input
@@ -22,7 +26,7 @@ const CheckBox = ({
                 checked={checked}
                 required={required}
                 name={name}
-                onChange={() => onChange(!checked)}
+                onChange={(event) => onChange(!checked, event)}
             />
 
             <div {...cls('data')}>
