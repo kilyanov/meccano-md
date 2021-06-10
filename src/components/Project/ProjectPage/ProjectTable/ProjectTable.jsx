@@ -55,18 +55,25 @@ class ProjectTable extends Component {
     state = {
         filters: {},
         showColumnSettingsModal: false,
-        editableMode: false
+        editableMode: false,
     };
 
     componentDidMount() {
         document.addEventListener('mousemove', this.handleMouseMove);
         document.addEventListener('mouseup', this.handleMouseUp);
+        document.addEventListener('mousedown', this.handleDocumentKeyPress);
     }
 
     componentDidUpdate = () => {
         this.syncColumnWidth();
         this.focusHelper = new FocusHelper();
     };
+
+    componentWillUnmount() {
+        document.removeEventListener('mousemove', this.handleMouseMove);
+        document.removeEventListener('mouseup', this.handleMouseUp);
+        document.removeEventListener('mousedown', this.handleDocumentKeyPress);
+    }
 
     handleSelectAllArticles = (checked) => {
         this.props.onSelectedAll({ articleIds: this.props.articles.map(({ id }) => id), checked });
@@ -96,15 +103,36 @@ class ProjectTable extends Component {
         this.bodyRef.scrollTop = 0;
     };
 
-    handleSelectArticle = (articleId) => {
-        const { selectedIds } = this.props;
+    handleSelectArticle = (articleId, event, articleIndex) => {
+        const { articles, selectedIds } = this.props;
+        let isSelected;
 
         let newSelected = [ ...selectedIds ];
 
         if (newSelected.includes(articleId)) {
+            isSelected = false
             newSelected = newSelected.filter(id => id !== articleId);
         } else {
+            isSelected = true;
             newSelected.push(articleId);
+        }
+
+        if (this.pressedShiftKey && this.lastSelectedArticleIndex) {
+            const startIndex = this.lastSelectedArticleIndex < articleIndex
+                ? this.lastSelectedArticleIndex
+                : articleIndex;
+            const endIndex = this.lastSelectedArticleIndex > articleIndex
+                ? this.lastSelectedArticleIndex
+                : articleIndex;
+            const processArticles = articles.slice(startIndex, endIndex).map(({ id }) => id);
+
+            if (isSelected) {
+                newSelected = [ ...newSelected, ...processArticles ];
+            } else {
+                newSelected = newSelected.filter(id => !processArticles.includes(id));
+            }
+        } else {
+            this.lastSelectedArticleIndex = articleIndex;
         }
 
         this.props.onChangeSelected({ articleIds: newSelected });
@@ -169,6 +197,10 @@ class ProjectTable extends Component {
     handleChangeArticle = (values, articleKey, article) => {
         this.props.onChangeArticle(values, articleKey, article);
         this.focusHelper.focusNext(values.ref);
+    }
+
+    handleDocumentKeyPress = (event) => {
+        this.pressedShiftKey = event.shiftKey;
     }
 
     getSettingMenu = () => {
@@ -333,7 +365,7 @@ class ProjectTable extends Component {
         );
     };
 
-    renderArticle = (article, articleKey) => {
+    renderArticle = (article, articleIndex) => {
         const {
             selectedIds,
             projectId,
@@ -353,11 +385,11 @@ class ProjectTable extends Component {
             ? `/archive/${archiveId}/article/${article.id}?`
             : `/project/${projectId}/article/${article.id}?`;
         let color = '';
-        const menuItems = this.props.getArticleMenu(article, articleKey);
+        const menuItems = this.props.getArticleMenu(article, articleIndex);
 
         sp.set('search', search);
         sp.set('sort', sortString || '');
-        sp.set('position', articleKey);
+        sp.set('position', articleIndex);
         sp.set('page', page);
 
         url += sp.toString();
@@ -378,7 +410,7 @@ class ProjectTable extends Component {
         return (
             <article
                 {...cls('row', { last: lastViewedArticleId && lastViewedArticleId === article.id })}
-                key={`${article.id}-${articleKey}`}
+                key={`${article.id}-${articleIndex}`}
                 style={{
                     backgroundColor: color && color.color
                         ? color.color
@@ -388,7 +420,7 @@ class ProjectTable extends Component {
                 <div {...cls('cell', 'check')}>
                     <CheckBox
                         checked={selectedIds.includes(article.id) || this.props.isAllSelected}
-                        onChange={() => this.handleSelectArticle(article.id)}
+                        onChange={(event) => this.handleSelectArticle(article.id, event, articleIndex)}
                     />
                 </div>
 
@@ -452,7 +484,7 @@ class ProjectTable extends Component {
                                     article={article}
                                     columnValue={columnValue}
                                     onChange={values =>
-                                        this.handleChangeArticle(values, articleKey, article)
+                                        this.handleChangeArticle(values, articleIndex, article)
                                     }
                                 />
                             ) }
