@@ -25,6 +25,9 @@ import { PROJECT_PERMISSION, KEY_CODE, EVENTS, STORAGE_KEY } from "@const";
 import TinyMCE from "../../Form/TinyMCE/TinyMCE";
 import CreateLocationModal from "./CreateLocationModal";
 import Breadcrumbs from '../../Shared/Breadcrumbs';
+import Drawer from '../../Shared/Drawer/Drawer';
+import Reprints from '../../Article/Reprints/Reprints';
+import ReprintsIcon from "../../Shared/SvgIcons/ReprintsIcon";
 
 const cls = new Bem('archive-create-page');
 const defaultTimeZone = 'Europe/Moscow';
@@ -90,7 +93,10 @@ class ArchiveArticlePage extends Component {
             textIsChanged: false,
             annotationIsChanged: false,
             timeZone: defaultTimeZone,
-            inProgress: true
+            inProgress: true,
+            showDrawer: false,
+            loadedSources: [],
+            loadedCities: []
         };
     }
 
@@ -136,6 +142,26 @@ class ArchiveArticlePage extends Component {
         if (this.props.profile) {
             this.setState({ timeZone: this.props.profile.timeZone });
         }
+
+        SourceService.get().then(({ data }) => {
+            const sources = data.map(el => {
+                return {
+                    label: el.name,
+                    value: el.id
+                };
+            });
+            this.setState({ loadedSources: sources});
+        });
+
+        LocationService.city.get().then(({ data }) => {
+            const cities = data.map(el => {
+                return {
+                    label: el.name,
+                    value: el.id
+                };
+            });
+            this.setState({ loadedCities: cities});
+        });
     }
 
     componentDidUpdate(prevProps, prevState) {
@@ -181,6 +207,38 @@ class ArchiveArticlePage extends Component {
 
         this.setState(newState);
     };
+
+    handleShowDrawer = () => {
+        this.setState({ showDrawer: true });
+    };
+
+    handleCloseDrawer = () => {
+        this.setState({ showDrawer: false });
+    };
+
+    handleCreateArticleFromReprint = ({ title, url, sourceId, cityId, date }) => {
+        const form = {
+            projectId: this.state.projectId,
+            title,
+            url,
+            date,
+            source_id: sourceId,
+            city_id: cityId
+        };
+
+        ArticleService.create({
+            ...form, projectId: this.state.projectId
+        }, null, this.state.userTypeId)
+            .then(({data}) => {
+                OperatedNotification.success({
+                    title: 'Создание статьи',
+                    message: 'Статья из перепечатки успешно создана',
+                    submitButtonText: '↗ Перейти к статье',
+                    timeOut: 10000,
+                    onSubmit: () => window.open(`/project/${this.state.projectId}/article/${data.id}`, '_blank')
+                });
+            });
+    }
 
     handleChangeViewType = (key) => {
         this.setState({ viewType: key });
@@ -349,7 +407,7 @@ class ArchiveArticlePage extends Component {
         const searchParams = location.search && new URLSearchParams(location.search);
         const requestForm = {
             expand: 'project.projectFields,project.sections,' +
-                'project.users,source,complete_monitor,complete_analytic,complete_client,archive',
+                'project.users,source,complete_monitor,complete_analytic,complete_client,archive,reprints',
             user_type: userTypeId
         };
 
@@ -724,6 +782,17 @@ class ArchiveArticlePage extends Component {
                         )}
                     </div>
 
+                    <button
+                        {...cls('drawer-button')}
+                        onClick={this.handleShowDrawer}
+                        title='Перепечатки'
+                    >
+                        <ReprintsIcon />
+                        {!!this.state.form.reprints?.length &&
+                        <span {...cls('reprint-counter')}>{ this.state.form.reprints.length }</span>
+                        }
+                    </button>
+
                     {/*
                     <button
                         {...cls('view-button')}
@@ -817,6 +886,30 @@ class ArchiveArticlePage extends Component {
                     )}
                 </Form>
 
+                <Drawer
+                    title="Перепечатки"
+                    position="right"
+                    closeOnEsc
+                    closeOnOverlay
+                    closeOnButton
+                    isOpen={this.state.showDrawer}
+                    onClose={this.handleCloseDrawer}
+                >
+                    <Reprints
+                        isReadOnly
+                        reprints={this.state.form.reprints}
+                        loadedSources={this.state.loadedSources || []}
+                        loadedCities={this.state.loadedCities || []}
+                        SourceService={SourceService}
+                        LocationService={LocationService}
+                        ArticleService={ArticleService}
+                        onCreateArticleFromReprint={this.handleCreateArticleFromReprint}
+                        currentProject={this.props.currentProject}
+                        currentArticle={this.props.currentArticle}
+                        userTypeId={this.state.userTypeId}
+                    />
+                </Drawer>
+
                 {showViewSettings && (
                     <ArticleViewSettings
                         onClose={() => this.setState({ showViewSettings: false })}
@@ -844,6 +937,7 @@ function mapStateToProps(state) {
     return {
         userTypes: state.userTypes,
         currentProject: state.currentProject,
+        currentArticle: state.currentArticle,
         profile: state.profile,
         roles
     };

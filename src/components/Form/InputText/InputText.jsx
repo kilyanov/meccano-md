@@ -22,6 +22,7 @@ export default class InputText extends Component {
         ]).isRequired,
         onChange: PropTypes.func.isRequired,
         onClick: PropTypes.func,
+        onBlur: PropTypes.func,
         onEnter: PropTypes.func,
         disabled: PropTypes.bool,
         draggable: PropTypes.bool,
@@ -35,6 +36,7 @@ export default class InputText extends Component {
         readOnly: PropTypes.bool,
         children: PropTypes.node,
         error: PropTypes.bool,
+        onlyValue: PropTypes.bool
     };
 
     static defaultProps = {
@@ -98,6 +100,7 @@ export default class InputText extends Component {
         if (event.keyCode === KEY_CODE.enter) {
             this.props.onEnter(this.getValue());
         }
+        this.props.onKeyDown(event);
     };
 
     getValue = () => {
@@ -185,7 +188,9 @@ export default class InputText extends Component {
             readOnly,
             draggable,
             validateErrorMessage,
-            children
+            children,
+            onlyValue,
+            onBlur
         } = this.props;
         const {error} = this.state;
         const isFocused = this.inputRef === document.activeElement;
@@ -205,7 +210,8 @@ export default class InputText extends Component {
                     succeed: isSucceed,
                     empty: isEmpty,
                     link: isLink,
-                    readOnly
+                    readOnly,
+                    onlyValue
                 }, {
                     validated: isValidated,
                     error: isError,
@@ -213,7 +219,9 @@ export default class InputText extends Component {
                 })}
             >
                 <label {...cls('label', { error: required && !value })}>
-                    {label && <span {...cls('label-text', '', { 'drag-handle': draggable })} title={label}>{label}</span>}
+                    {(label && !onlyValue) && (
+                        <span {...cls('label-text', '', { 'drag-handle': draggable })} title={label}>{label}</span>
+                    )}
 
                     <input
                         {...cls("field")}
@@ -228,6 +236,7 @@ export default class InputText extends Component {
                         onChange={this.handleChange}
                         onKeyDown={this.handleKeyDown}
                         onSubmit={() => this.validate()}
+                        onBlur={onBlur}
                         onClick={onClick}
                         data-error={isError || (required && !value)}
                         ref={node => this.inputRef = node}

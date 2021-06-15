@@ -10,7 +10,7 @@ import './reprint.scss';
 
 const cls = new Bem('reprint');
 
-function Reprint({ 
+function Reprint({
     index,
     id,
     title,
@@ -27,7 +27,8 @@ function Reprint({
     SourceService,
     LocationService,
     isSelectable,
-    onCreateSource
+    onCreateSource,
+    isReadOnly
 }) {
     const [isShownAllFields, setShownAllFields] = useState(false);
     const [isSelectedReprint, setIsSelectedReprint] = useState(false);
@@ -36,7 +37,7 @@ function Reprint({
     const dropDownMenuItems = [
         {
             title: 'Создать статью',
-            onClick: () => onCreateArticleFromReprint({ 
+            onClick: () => onCreateArticleFromReprint({
                 title,
                 url,
                 sourceId,
@@ -44,13 +45,16 @@ function Reprint({
                 date,
                 index
             })
-        },
-        {
+        }
+    ];
+
+    if (!isReadOnly) {
+        dropDownMenuItems.push({
             danger: true,
             title: 'Удалить',
             onClick: () => onDeleteReprint(index)
-        }
-    ];
+        });
+    }
 
     const handleShowAllFields = () => {
         setShownAllFields(!isShownAllFields);
@@ -77,10 +81,10 @@ function Reprint({
     );
 
     const handleFieldChangeOnSelect = ({ index: reprintIndex, name, select }) => {
-        onFieldChange({ 
+        onFieldChange({
             index: reprintIndex,
-            name, 
-            value: select?.value || null 
+            name,
+            value: select?.value || null
         });
     };
 
@@ -105,15 +109,17 @@ function Reprint({
                     required
                     validateType="notEmpty"
                     {...cls('field', 'type-title')}
+                    readOnly={isReadOnly}
                 />
                 {dropDown}
                 {isShownAllFields &&
                     <>
                         <InputText
+                            {...cls('field')}
                             value={url || ''}
                             onChange={value => onFieldChange({ index, name: 'url', value })}
                             validateType="link"
-                            {...cls('field')}
+                            readOnly={isReadOnly}
                         />
                         <AsyncCreateableSelect
                             placeholder={'СМИ (Источник)'}
@@ -125,6 +131,7 @@ function Reprint({
                             requestService={SourceService.get}
                             loadedOptions={loadedSources || []}
                             onCreateOption={(value) => onCreateSource({ index, value })}
+                            readOnly={isReadOnly}
                         />
                         <AsyncCreateableSelect
                             placeholder={'Город'}
@@ -133,6 +140,7 @@ function Reprint({
                             {...cls('field', 'half-size')}
                             requestService={LocationService.city.get}
                             loadedOptions={loadedCities || []}
+                            readOnly={isReadOnly}
                         />
                         <InputDateTimePicker
                             value={date || null}
@@ -140,7 +148,8 @@ function Reprint({
                             readOnly={false}
                             required
                             {...cls('field', 'half-size')}
-                        />   
+                            readOnly={isReadOnly}
+                        />
                     </>
                 }
                 <button
@@ -170,7 +179,8 @@ Reprint.propTypes = {
     loadedCities: PropTypes.array,
     SourceService: PropTypes.object,
     LocationService: PropTypes.object,
-    isSelectable: PropTypes.bool
+    isSelectable: PropTypes.bool,
+    isReadOnly: PropTypes.bool
 };
 
 export default Reprint;

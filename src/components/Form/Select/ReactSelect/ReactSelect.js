@@ -7,6 +7,7 @@ import { ReactSelectStyles } from "@const/ReactSelectStyles";
 const cls = new Bem('select');
 
 export default function ReactSelect({
+    autoFocus,
     className,
     selected,
     readOnly,
@@ -16,7 +17,10 @@ export default function ReactSelect({
     label,
     required,
     placeholder,
-    isMulti
+    isMulti,
+    onBlur,
+    onKeyDown,
+    onlyValue
 }) {
     const theme = useSelector(state => state.theme);
     const isDarkTheme = theme === THEME_TYPE.DARK;
@@ -26,7 +30,7 @@ export default function ReactSelect({
 
     return (
         <div {...cls('', { succeed: !!selectedValue }, className)}>
-            {label && (
+            {(label && !onlyValue) && (
                 <label
                     title={required ? 'Обязательное поле' : ''}
                     {...cls(
@@ -40,6 +44,9 @@ export default function ReactSelect({
             )}
 
             <Select
+                { ...cls('field', { onlyValue }) }
+                autoFocus={autoFocus}
+                onBlur={onBlur && onBlur}
                 placeholder={placeholder || 'Выберите...'}
                 label={label}
                 options={options || []}
@@ -47,6 +54,7 @@ export default function ReactSelect({
                 isMulti={isMulti}
                 isDisabled={readOnly}
                 onChange={onChange}
+                onKeyDown={onKeyDown}
                 styles={ReactSelectStyles(isDarkTheme)}
                 isClearable
                 classNamePrefix='select'

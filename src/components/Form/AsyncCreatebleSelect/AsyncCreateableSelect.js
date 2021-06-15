@@ -43,8 +43,10 @@ class AsyncCreatableSelect extends Component {
                 requestService({ 'query[id]': selected }).then(response => {
                     if (response && response.data && response.data.length) {
                         const { name, id } = response.data[0];
-
-                        this.setState({ currentOption: { label: name, value: id }, inProgress: false });
+                        this.setState({
+                            currentOption: { label: name, value: id },
+                            inProgress: false
+                        });
                     }
                 });
             }
@@ -70,7 +72,6 @@ class AsyncCreatableSelect extends Component {
                         requestService({ 'query[id]': selected }).then(response => {
                             if (response && response.data && response.data.length) {
                                 const { name, id } = response.data[0];
-
                                 this.setState({ currentOption: { label: name, value: id }, inProgress: false });
                             }
                         });
@@ -90,6 +91,7 @@ class AsyncCreatableSelect extends Component {
     };
 
     handleBlur = () => {
+        this.props.onBlur();
         if (!this.state.currentOption) {
             this.getOptions();
         }
@@ -137,6 +139,7 @@ class AsyncCreatableSelect extends Component {
     render() {
         const { loadedOptions, currentOption, isError } = this.state;
         const {
+            autoFocus,
             className,
             readOnly,
             disabled,
@@ -146,10 +149,14 @@ class AsyncCreatableSelect extends Component {
             label,
             draggable,
             theme,
-            canCreate = true
+            canCreate = true,
+            onlyValue,
+            onKeyDown,
+            onCreateOption = () => {}
         } = this.props;
         const isDarkTheme = theme === THEME_TYPE.DARK;
         const selectProps = {
+            autoFocus,
             cacheOptions: true,
             defaultOptions: loadedOptions,
             loadOptions: _.debounce(this.getOptions, 1000),
@@ -161,6 +168,7 @@ class AsyncCreatableSelect extends Component {
             },
             inputValue: this.state.inputValue,
             onBlur: this.handleBlur,
+            onKeyDown,
             value: currentOption,
             formatCreateLabel: (inputValue) => `Создать "${inputValue.trim()}"`,
             menuPosition,
@@ -177,7 +185,7 @@ class AsyncCreatableSelect extends Component {
                 return selectOption.every((item) => item.label !== inputValue && inputValue.length);
             },
             onCreateOption: (value) => {
-                this.props.onCreateOption(value);
+                onCreateOption(value);
                 this.handleSelect({
                     label: value.trim(),
                     value: value.trim(),
@@ -192,7 +200,8 @@ class AsyncCreatableSelect extends Component {
                     error: isError,
                     disabled,
                     validated: required,
-                    succeed: !!currentOption && !!currentOption.value
+                    succeed: !!currentOption && !!currentOption.value,
+                    onlyValue
                 }, { [className]: !!className })}
             >
                 {(this.props.editable && !!currentOption?.label) && (
@@ -224,7 +233,11 @@ class AsyncCreatableSelect extends Component {
                     {...cls('label', { required: required && (!currentOption || !currentOption.value) })}
                     title={required ? 'Обязательное поле' : ''}
                 >
-                    {label && <span {...cls('label-text', '', { 'drag-handle': draggable })}>{label}</span>}
+                    {(label && !onlyValue) && (
+                        <span {...cls('label-text', '', { 'drag-handle': draggable })}>
+                            {label}
+                        </span>
+                    )}
 
                     {canCreate
                         ? <AsyncCreatable ref={ref => this.selectRef = ref} {...selectProps} className='CREATE' />
