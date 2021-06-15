@@ -22,6 +22,7 @@ import Select from "react-select";
 import ProjectUsers from "./ProjectUsers/ProjectUsers";
 import Access from "../../Shared/Access/Access";
 import { PROJECT_PERMISSION } from "@const";
+import ProjectAnalytics from './ProjectAnalytics/ProjectAnalytics';
 
 const cls = new Bem('project-create-page');
 const STEP_DESCRIPTION = {
@@ -446,12 +447,15 @@ class ProjectCreatePage extends Component {
                         )}
 
                         {(this.project && step === 2) && (
-                            <ProjectSections
-                                projectId={this.projectId}
-                                classes={cls}
-                                sections={sections}
-                                onChange={this.handleChangeSections}
-                            />
+                            <>
+                                <ProjectAnalytics />
+                                <ProjectSections
+                                    projectId={this.projectId}
+                                    classes={cls}
+                                    sections={sections}
+                                    onChange={this.handleChangeSections}
+                                />
+                            </>
                         )}
 
                         {(this.project && step === 3) && (

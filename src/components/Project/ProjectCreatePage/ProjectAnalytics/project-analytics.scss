@@ -1,0 +1,48 @@
+@import '../../../../assets/styles/variables';
+$namespace: '.project-analytics';
+
+#{$namespace} {
+  padding: 40px 16px;
+  position: relative;
+  z-index: 1;
+  background-color: $white;
+  display: flex;
+  gap: 32px;
+  width: 100%;
+
+  &__objects {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+    gap: 8px;
+    width: 150px;
+  }
+
+  &__object-item {
+    width: 100%;
+  }
+
+  &__object-button {
+    width: 100%;
+    text-align: left;
+    padding: 0 16px;
+  }
+
+  &__object-settings {
+    flex-grow: 1;
+  }
+}
+
+/* Dark Theme */
+
+// .app--dark #{$namespace} {
+
+// }
+
+// @media (max-width: 1024px) {
+//   #{$namespace} {
+//   }
+// }
