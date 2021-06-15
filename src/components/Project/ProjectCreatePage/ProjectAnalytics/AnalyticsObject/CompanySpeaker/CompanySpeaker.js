@@ -12,13 +12,17 @@ function CompanySpeaker(props) {
         companySpeakersIndex,
         objects,
         speakerService,
+        quoteLevelService,
+        quoteTypeService,
         onChangeCompanySpeaker
     } = props;
 
-    const [speaker, setSpeaker] = useState('');
+    const [speaker, setSpeaker] = useState(null);
+    const [quoteLevel, setQuoteLevel] = useState(null);
+    const [quoteType, setQuoteType] = useState(null);
 
     useEffect(() => {
-        if (companySpeaker?.id) {
+        if (companySpeaker?.speaker) {
             setSpeaker(companySpeaker.speaker);
         }
     }, [companySpeaker]);
@@ -70,7 +74,6 @@ function CompanySpeaker(props) {
                 selected={speaker}
                 editable
                 required
-                options={[]}
                 requestService={filterSpeakerService.get}
                 onChange={handleChangeCompanySpeaker}
                 onCreateOption={() => {}}
@@ -80,6 +83,26 @@ function CompanySpeaker(props) {
                     <li {...cls('speaker-in-item')} key={index}> { object } </li>
                 ))}
             </ul>
+            <AsyncCreateableSelect
+                {...cls('select')}
+                placeholder="Уровень"
+                selected={quoteLevel}
+                editable
+                required
+                requestService={quoteLevelService.get}
+                onChange={(evt) => setQuoteLevel(evt.value || null)}
+                onCreateOption={() => {}}
+            />
+            <AsyncCreateableSelect
+                {...cls('select')}
+                placeholder="Тип цитат"
+                selected={quoteType}
+                editable
+                required
+                requestService={quoteTypeService.get}
+                onChange={(evt) => setQuoteType(evt.value || null)}
+                onCreateOption={() => {}}
+            />
         </div>
     );
 }

@@ -1,14 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import AnalyticsObject from './AnalyticsObject/AnalyticsObject';
-import './project-analytics.scss';
-import { mockObjects, mockTones, mockSpeakers } from './mockData';
 import Button from '../../../Shared/Button/Button';
+import {
+    objectService,
+    toneService,
+    speakerService,
+    quoteLevelService,
+    quoteTypeService
+} from './mockServices';
+import './project-analytics.scss';
 
 const cls = new Bem('project-analytics');
-
-// Моковые сервисы, удалить как будет Api для новых сущностей
-const mockToneService = { get: () => Promise.resolve({ data: mockTones }) };
-const mockSpeakerService = { get: () => Promise.resolve({ data: mockSpeakers }) };
 
 function ProjectAnalytics(props) {
     const {} = props;
@@ -18,7 +20,8 @@ function ProjectAnalytics(props) {
     const [activeObject, setActiveObject] = useState({});
 
     useEffect(() => {
-        setObject(mockObjects);
+        objectService.get()
+            .then(({ data }) => setObject(data));
     }, []);
 
     useEffect(() => {
@@ -45,8 +48,10 @@ function ProjectAnalytics(props) {
             </ul>
             <AnalyticsObject
                 {...cls('object-settings')}
-                toneService={ mockToneService }
-                speakerService={mockSpeakerService}
+                toneService={ toneService }
+                speakerService={speakerService}
+                quoteLevelService={quoteLevelService}
+                quoteTypeService={quoteTypeService}
                 object={ activeObject }
                 objects={ objects }
             />

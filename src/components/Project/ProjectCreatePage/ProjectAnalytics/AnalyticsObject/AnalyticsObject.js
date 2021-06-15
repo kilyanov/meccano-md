@@ -14,12 +14,14 @@ function AnalyticsObject(props) {
         object,
         objects,
         toneService,
-        speakerService
+        speakerService,
+        quoteLevelService,
+        quoteTypeService
     } = props;
 
     const [objectName, setObjectName] = useState('');
     const [objectSearchQuery, setObjectSearchQuery] = useState('');
-    const [objectTone, setObjectTone] = useState('');
+    const [objectTone, setObjectTone] = useState(null);
     const [companySpeakers, setCompanySpeakers] = useState([]);
 
     useEffect(() => {
@@ -53,7 +55,6 @@ function AnalyticsObject(props) {
     };
 
     const isAllowedAddCompanySpeakers = companySpeakers.length === 0 || !!companySpeakers[companySpeakers.length - 1]?.speaker;
-    console.log('redner AnalyticsObject', 'addAllow:', companySpeakers, isAllowedAddCompanySpeakers);
 
     return (
         <section {...cls('', '', mix)}>
@@ -89,15 +90,22 @@ function AnalyticsObject(props) {
                 />
             </div>
             <div {...cls('company-speakers')}>
-                <p {...cls('company-speakers-label')}>Спикеры компании</p>
+                <div {...cls('company-speakers-labels')}>
+                    <span {...cls('company-speakers-label')}>Спикеры компании</span>
+                    <span {...cls('company-speakers-label')}>Представитель</span>
+                    <span {...cls('company-speakers-label')}>Уровень</span>
+                    <span {...cls('company-speakers-label')}>Тип цитат</span>
+                </div>
                 <ul {...cls('company-speakers-list')}>
                     {companySpeakers.map((companySpeaker, index) => (
-                        <li key={companySpeaker.id || index} {...cls('company-speakers-item')}>
+                        <li key={companySpeaker.speaker || index} {...cls('company-speakers-item')}>
                             <CompanySpeaker
                                 companySpeaker={companySpeaker}
                                 companySpeakers={companySpeakers}
                                 companySpeakersIndex={index}
                                 speakerService={speakerService}
+                                quoteLevelService={quoteLevelService}
+                                quoteTypeService={quoteTypeService}
                                 objects={objects}
                                 onChangeCompanySpeaker={handleChangeCompanySpeakers}
                             />

@@ -15,11 +15,14 @@ $namespace: '.analytics-object';
     margin: 48px 0 0;
   }
 
-  &__company-speakers-label {
+  &__company-speakers-labels {
     font-weight: 500;
     font-size: 15px;
     line-height: 24px;
     margin: 0 0 8px;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
   }
 
   &__company-speakers-list {

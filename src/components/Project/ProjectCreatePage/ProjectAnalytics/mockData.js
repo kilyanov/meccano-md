@@ -5,11 +5,11 @@ export const mockObjects = [
         objectTone: 'to2',
         companySpeakers: [
             {
-                id: 'os1',
+                // id: 'os1',
                 speaker: 'sp3'
             },
             {
-                id: 'os2',
+                // id: 'os2',
                 speaker: 'sp1'
             }
         ]
@@ -20,8 +20,8 @@ export const mockObjects = [
         objectTone: 'to1',
         companySpeakers: [
             {
-                id: 'os3',
-                speaker: 'sp2'
+                // id: 'os3',
+                speaker: 'sp1'
             }
         ]
     }
@@ -52,3 +52,26 @@ export const mockSpeakers = [
         name: 'Найк Адидасов'
     }
 ];
+
+export const mockQuoteLevels = [
+    {
+        id: 'ql1',
+        name: 'Топ-менеджмент'
+    },
+    {
+        id: 'ql2',
+        name: 'Федеральный'
+    }
+];
+
+export const mockQuoteTypes = [
+    {
+        id: 'qt1',
+        name: 'Прямая речь'
+    },
+    {
+        id: 'qt2',
+        name: 'Косвенные цитаты'
+    }
+];
+
