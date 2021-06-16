@@ -32,6 +32,7 @@ $namespace: '.project-create-page';
         display: flex;
         align-items: center;
         cursor: pointer;
+        width: max-content;
     }
 
     &__title-edit-icon {

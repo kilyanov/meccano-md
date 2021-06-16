@@ -2,6 +2,7 @@ export const mockObjects = [
     {
         id: '1',
         name: 'Яндекс',
+        objectSearchQuery: 'yandex',
         objectTone: 'to2',
         companySpeakers: [
             {
@@ -17,6 +18,7 @@ export const mockObjects = [
     {
         id: '2',
         name: 'Сбер',
+        objectSearchQuery: 'sber',
         objectTone: 'to1',
         companySpeakers: [
             {

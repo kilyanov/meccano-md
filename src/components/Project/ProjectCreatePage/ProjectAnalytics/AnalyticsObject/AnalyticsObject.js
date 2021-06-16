@@ -16,7 +16,11 @@ function AnalyticsObject(props) {
         toneService,
         speakerService,
         quoteLevelService,
-        quoteTypeService
+        quoteTypeService,
+        onEdit,
+        onSaveObject,
+        onResetObject,
+        onDeleteObject
     } = props;
 
     const [objectName, setObjectName] = useState('');
@@ -24,15 +28,23 @@ function AnalyticsObject(props) {
     const [objectTone, setObjectTone] = useState(null);
     const [companySpeakers, setCompanySpeakers] = useState([]);
 
-    useEffect(() => {
+    const resetObject = () => {
         if (object?.id) {
             setObjectName(object.name);
+            setObjectSearchQuery(object.objectSearchQuery);
             setObjectTone(object.objectTone);
-            setCompanySpeakers(object.companySpeakers);
+            setCompanySpeakers(_.cloneDeep(object.companySpeakers));
+        } else {
+            setObjectName('');
+            setObjectSearchQuery('');
+            setObjectTone(null);
+            setCompanySpeakers([]);
         }
-    }, [object]);
+    };
 
-    if (!object?.id) {
+    useEffect(resetObject, [object]);
+
+    if (!object?.name) {
         return (
             <section {...cls('', '', mix)}>
                 Выберете объект или создайте новый
@@ -42,6 +54,7 @@ function AnalyticsObject(props) {
 
     const handleAddCompanySpeaker = () => {
         setCompanySpeakers([...companySpeakers, {}]);
+        onEdit();
     };
 
     const handleChangeCompanySpeakers = (evt, index) => {
@@ -52,13 +65,42 @@ function AnalyticsObject(props) {
             updatedCompanySpeakers[index].speaker = evt.value;
         }
         setCompanySpeakers(updatedCompanySpeakers);
+        onEdit();
+    };
+
+    const handleSaveObject = () => {
+        onSaveObject({
+            id: object?.id,
+            name: objectName,
+            objectSearchQuery,
+            objectTone,
+            companySpeakers
+        });
+    };
+
+    const handleResetObject = () => {
+        resetObject();
+        if (onResetObject) {
+            onResetObject();
+        }
+    };
+
+    const handleDeleteObject = () => {
+        onDeleteObject(object?.id);
     };
 
     const isAllowedAddCompanySpeakers = companySpeakers.length === 0 || !!companySpeakers[companySpeakers.length - 1]?.speaker;
 
     return (
         <section {...cls('', '', mix)}>
-            <h3 {...cls('title')}>Настройка объекта {object.name}</h3>
+            <div {...cls('header')}>
+                <h3 {...cls('header-title')}>Настройка объекта {object.name}</h3>
+                <div {...cls('header-buttons')}>
+                    <Button {...cls('save-button')} style="success" onClick={handleSaveObject}>Сохранить</Button>
+                    <Button {...cls('save-button')} style="info" onClick={handleResetObject}>Сбросить</Button>
+                    <Button {...cls('save-button')} style="error" onClick={handleDeleteObject}>Удалить</Button>
+                </div>
+            </div>
             <div {...cls('general')}>
                 <InputText
                     {...cls('input')}

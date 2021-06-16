@@ -355,7 +355,6 @@ class ProjectCreatePage extends Component {
     };
 
     isMonitor = (id) => {
-        console.log(id, this.props.userTypes);
         const monitor = this.props.userTypes.find((user) => user.id === id);
         if (monitor?.slug === MONITOR_SLUG) {
             return true;

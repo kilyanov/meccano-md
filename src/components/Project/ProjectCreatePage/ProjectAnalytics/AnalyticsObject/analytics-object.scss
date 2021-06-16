@@ -5,8 +5,22 @@ $namespace: '.analytics-object';
   overflow-y: scroll;
   padding: 40px 20px;
 
-  &__title {
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+
+  &__header-title {
     margin: 0;
+  }
+
+  &__header-buttons {
+    display: flex;
+    align-items: center;
+    gap: 16px;
   }
 
   &__general {
