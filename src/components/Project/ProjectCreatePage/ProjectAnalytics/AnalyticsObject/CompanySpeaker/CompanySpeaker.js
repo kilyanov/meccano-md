@@ -90,7 +90,7 @@ function CompanySpeaker(props) {
                 editable
                 required
                 requestService={quoteLevelService.get}
-                onChange={(evt) => setQuoteLevel(evt.value || null)}
+                onChange={(evt) => setQuoteLevel(evt?.value || null)}
                 onCreateOption={() => {}}
             />
             <AsyncCreateableSelect
@@ -100,7 +100,7 @@ function CompanySpeaker(props) {
                 editable
                 required
                 requestService={quoteTypeService.get}
-                onChange={(evt) => setQuoteType(evt.value || null)}
+                onChange={(evt) => setQuoteType(evt?.value || null)}
                 onCreateOption={() => {}}
             />
         </div>

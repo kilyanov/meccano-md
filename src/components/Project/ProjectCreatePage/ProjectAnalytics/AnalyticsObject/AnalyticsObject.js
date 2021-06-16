@@ -85,7 +85,7 @@ function AnalyticsObject(props) {
                     editable
                     required
                     requestService={toneService.get}
-                    onChange={(evt) => setObjectTone(evt.value || null)}
+                    onChange={(evt) => setObjectTone(evt?.value || null)}
                     onCreateOption={() => {}}
                 />
             </div>

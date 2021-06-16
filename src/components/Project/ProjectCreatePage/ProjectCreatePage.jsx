@@ -32,6 +32,8 @@ const STEP_DESCRIPTION = {
     4: 'Настройка пользователей'
 };
 
+const MONITOR_SLUG = 'monitor';
+
 class ProjectCreatePage extends Component {
     static contextTypes = {
         router: PropTypes.object
@@ -352,6 +354,15 @@ class ProjectCreatePage extends Component {
         return !!foundSections;
     };
 
+    isMonitor = (id) => {
+        console.log(id, this.props.userTypes);
+        const monitor = this.props.userTypes.find((user) => user.id === id);
+        if (monitor?.slug === MONITOR_SLUG) {
+            return true;
+        }
+        return false;
+    }
+
     projectId = this.props.match.params.id;
 
     project = null;
@@ -422,7 +433,7 @@ class ProjectCreatePage extends Component {
                                     </div>
                             )}
 
-                            {(!!userTypes.length && step === 1) && (
+                            {(!!userTypes.length && step === 1 || step === 2) && (
                                 <Select
                                     {...cls('viewer-select')}
                                     options={userTypes}
@@ -446,16 +457,17 @@ class ProjectCreatePage extends Component {
                             />
                         )}
 
-                        {(this.project && step === 2) && (
-                            <>
-                                <ProjectAnalytics />
-                                <ProjectSections
-                                    projectId={this.projectId}
-                                    classes={cls}
-                                    sections={sections}
-                                    onChange={this.handleChangeSections}
-                                />
-                            </>
+                        {(this.project && step === 2 && this.isMonitor(selectedUserType?.value)) && (
+                            <ProjectAnalytics />
+                        )}
+
+                        {(this.project && step === 2 && !this.isMonitor(selectedUserType?.value)) && (
+                            <ProjectSections
+                                projectId={this.projectId}
+                                classes={cls}
+                                sections={sections}
+                                onChange={this.handleChangeSections}
+                            />
                         )}
 
                         {(this.project && step === 3) && (

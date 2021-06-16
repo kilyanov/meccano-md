@@ -2,6 +2,8 @@
 $namespace: '.analytics-object';
 
 #{$namespace} {
+  overflow-y: scroll;
+  padding: 40px 20px;
 
   &__title {
     margin: 0;
