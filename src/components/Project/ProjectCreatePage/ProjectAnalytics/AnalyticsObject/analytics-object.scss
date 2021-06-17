@@ -27,11 +27,11 @@ $namespace: '.analytics-object';
     margin: 48px 0 0;
   }
 
-  &__company-speakers {
+  &__speakers {
     margin: 48px 0 0;
   }
 
-  &__company-speakers-labels {
+  &__speakers-labels {
     font-weight: 500;
     font-size: 15px;
     line-height: 24px;
@@ -41,18 +41,18 @@ $namespace: '.analytics-object';
     gap: 20px;
   }
 
-  &__company-speakers-list {
+  &__speakers-list {
     list-style: none;
     margin: 0;
     padding: 0;
   }
 
-  &__company-speakers-item {
+  &__peakers-item {
     margin: 0;
     padding: 0;
   }
 
-  &__add-company-speaker-button {
+  &__add-speaker-button {
     height: 40px;
     width: 40px;
     display: flex;

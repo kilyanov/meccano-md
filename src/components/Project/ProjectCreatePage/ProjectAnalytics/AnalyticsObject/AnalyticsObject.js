@@ -3,6 +3,7 @@ import InputText from '../../../../Form/InputText/InputText';
 import Button from '../../../../Shared/Button/Button';
 import AsyncCreateableSelect from '../../../../Form/AsyncCreatebleSelect/AsyncCreateableSelect';
 import CompanySpeaker from './CompanySpeaker/CompanySpeaker';
+import OutsideSpeaker from './OutsideSpeaker/OutsideSpeaker';
 import PlusIcon from '../../../../Shared/SvgIcons/PlusIcon';
 import './analytics-object.scss';
 
@@ -27,6 +28,7 @@ function AnalyticsObject(props) {
     const [objectSearchQuery, setObjectSearchQuery] = useState('');
     const [objectTone, setObjectTone] = useState(null);
     const [companySpeakers, setCompanySpeakers] = useState([]);
+    const [outsideSpeakers, setOutsideSpeakers] = useState([]);
 
     const resetObject = () => {
         if (object?.id) {
@@ -34,11 +36,13 @@ function AnalyticsObject(props) {
             setObjectSearchQuery(object.objectSearchQuery);
             setObjectTone(object.objectTone);
             setCompanySpeakers(_.cloneDeep(object.companySpeakers));
+            setOutsideSpeakers(_.cloneDeep(object.outsideSpeakers));
         } else {
             setObjectName('');
             setObjectSearchQuery('');
             setObjectTone(null);
             setCompanySpeakers([]);
+            setOutsideSpeakers([]);
         }
     };
 
@@ -95,6 +99,7 @@ function AnalyticsObject(props) {
     };
 
     const isAllowedAddCompanySpeakers = companySpeakers.length === 0 || !!companySpeakers[companySpeakers.length - 1]?.speaker;
+    const isAllowedAddOutsideSpeakers = outsideSpeakers.length === 0 || !!outsideSpeakers[outsideSpeakers.length - 1]?.speaker;
 
     return (
         <section {...cls('', '', mix)}>
@@ -136,16 +141,16 @@ function AnalyticsObject(props) {
                     onCreateOption={() => {}}
                 />
             </div>
-            <div {...cls('company-speakers')}>
-                <div {...cls('company-speakers-labels')}>
-                    <span {...cls('company-speakers-label')}>Спикеры компании</span>
-                    <span {...cls('company-speakers-label')}>Представитель</span>
-                    <span {...cls('company-speakers-label')}>Уровень</span>
-                    <span {...cls('company-speakers-label')}>Тип цитат</span>
+            <div {...cls('speakers')}>
+                <div {...cls('speakers-labels')}>
+                    <span {...cls('speakers-label')}>Спикеры компании</span>
+                    <span {...cls('speakers-label')}>Представитель</span>
+                    <span {...cls('speakers-label')}>Уровень</span>
+                    <span {...cls('speakers-label')}>Тип цитат</span>
                 </div>
-                <ul {...cls('company-speakers-list')}>
+                <ul {...cls('speakers-list')}>
                     {companySpeakers.map((companySpeaker, index) => (
-                        <li key={companySpeaker.speaker || index} {...cls('company-speakers-item')}>
+                        <li key={companySpeaker.speaker || index} {...cls('speakers-item')}>
                             <CompanySpeaker
                                 companySpeaker={companySpeaker}
                                 companySpeakers={companySpeakers}
@@ -162,11 +167,44 @@ function AnalyticsObject(props) {
                     ))}
                 </ul>
                 <Button
-                    {...cls('add-company-speaker-button')}
+                    {...cls('add-speaker-button')}
                     style="success"
                     title="Добавить спикера"
                     onClick={handleAddCompanySpeaker}
                     disabled={!isAllowedAddCompanySpeakers}
+                >
+                    <PlusIcon />
+                </Button>
+            </div>
+            <div {...cls('speakers')}>
+                <div {...cls('speakers-labels')}>
+                    <span {...cls('speakers-label')}>Спикеры компании</span>
+                    <span {...cls('speakers-label')}>Уровень</span>
+                    <span {...cls('speakers-label')}>Тип цитат</span>
+                </div>
+                <ul {...cls('speakers-list')}>
+                    {companySpeakers.map((outsideSpeaker, index) => (
+                        <li key={outsideSpeaker.speaker || index} {...cls('speakers-item')}>
+                            <OutsideSpeaker
+                                outsideSpeaker={outsideSpeaker}
+                                outsideSpeakers={outsideSpeakers}
+                                outsideSpeakersIndex={index}
+                                speakerService={speakerService}
+                                quoteLevelService={quoteLevelService}
+                                quoteTypeService={quoteTypeService}
+                                // TODO: Разобраться, поля спикера принадлежат спикеру или объекту
+                                onEditOutsideSpeaker={onEditObject}
+                                onChangeOutsideSpeaker={handleChangeCompanySpeakers}
+                            />
+                        </li>
+                    ))}
+                </ul>
+                <Button
+                    {...cls('add-speaker-button')}
+                    style="success"
+                    title="Добавить спикера"
+                    onClick={handleAddCompanySpeaker}
+                    disabled={!isAllowedAddOutsideSpeakers}
                 >
                     <PlusIcon />
                 </Button>

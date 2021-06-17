@@ -8,6 +8,9 @@ export const mockObjects = [
             // TODO: Понять, поля остальные спикера хранятся тут, в спикере или в статье
             { speaker: 'sp1' },
             { speaker: 'sp3' }
+        ],
+        outsideSpeakers: [
+            { speaker: 'sp2' }
         ]
     },
     {
@@ -17,7 +20,8 @@ export const mockObjects = [
         objectTone: 'to1',
         companySpeakers: [
             { speaker: 'sp1' }
-        ]
+        ],
+        outsideSpeakers: []
     }
 ];
 
