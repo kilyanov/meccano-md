@@ -6,7 +6,8 @@ import {
     toneService,
     speakerService,
     quoteLevelService,
-    quoteTypeService
+    quoteTypeService,
+    quoteCategoryService
 } from './mockServices';
 import './project-analytics.scss';
 import PlusIcon from '../../../Shared/SvgIcons/PlusIcon';
@@ -41,7 +42,8 @@ function ProjectAnalytics(props) {
             name: 'Новый объект',
             objectSearchTone: null,
             objectTone: '',
-            companySpeakers: []
+            companySpeakers: [],
+            outsideSpeakers: []
         }]);
         setActiveObjectId(null);
     };
@@ -112,6 +114,7 @@ function ProjectAnalytics(props) {
                 speakerService={speakerService}
                 quoteLevelService={quoteLevelService}
                 quoteTypeService={quoteTypeService}
+                quoteCategoryService={quoteCategoryService}
                 object={ activeObject }
                 objects={ objects }
                 onEditObject={handleEditObject}

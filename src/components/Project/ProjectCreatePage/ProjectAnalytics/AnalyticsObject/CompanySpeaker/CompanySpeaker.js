@@ -43,8 +43,6 @@ function CompanySpeaker(props) {
         const iSspeakerInIgnoreWarning = JSON.parse(localStorage.getItem(SPEAKERS_IGNORE_WARNING_LOCAL_STORAGE_KEY))
             ?.includes(companySpeaker?.speaker);
 
-        console.log(iSspeakerInIgnoreWarning);
-
         if (speakerInList.length > 1 && !iSspeakerInIgnoreWarning) {
             setWarningMessage('Данный спикер представляет несколько компаний!');
         } else {

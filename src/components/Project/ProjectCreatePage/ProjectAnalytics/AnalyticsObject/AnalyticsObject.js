@@ -18,6 +18,7 @@ function AnalyticsObject(props) {
         speakerService,
         quoteLevelService,
         quoteTypeService,
+        quoteCategoryService,
         onEditObject,
         onSaveObject,
         onResetObject,
@@ -77,13 +78,30 @@ function AnalyticsObject(props) {
         onEditObject();
     };
 
+    const handleAddOutsideSpeaker = () => {
+        setOutsideSpeakers([...outsideSpeakers, {}]);
+        onEditObject();
+    };
+
+    const handleChangeOutsideSpeakers = (evt, index) => {
+        const updatedOutsideSpeakers = [...outsideSpeakers];
+        if (evt === null) {
+            updatedOutsideSpeakers.splice(index, 1);
+        } else {
+            updatedOutsideSpeakers[index].speaker = evt.value;
+        }
+        setOutsideSpeakers(updatedOutsideSpeakers);
+        onEditObject();
+    };
+
     const handleSaveObject = () => {
         onSaveObject({
             id: object?.id,
             name: objectName,
             objectSearchQuery,
             objectTone,
-            companySpeakers
+            companySpeakers,
+            outsideSpeakers
         });
     };
 
@@ -134,7 +152,6 @@ function AnalyticsObject(props) {
                     label="Тональность объекта"
                     placeholder="Выберете тональность объекта"
                     selected={objectTone}
-                    editable
                     required
                     requestService={toneService.get}
                     onChange={(evt) => handleEditObject(evt?.value || null, setObjectTone)}
@@ -144,9 +161,13 @@ function AnalyticsObject(props) {
             <div {...cls('speakers')}>
                 <div {...cls('speakers-labels')}>
                     <span {...cls('speakers-label')}>Спикеры компании</span>
-                    <span {...cls('speakers-label')}>Представитель</span>
-                    <span {...cls('speakers-label')}>Уровень</span>
-                    <span {...cls('speakers-label')}>Тип цитат</span>
+                    {companySpeakers.length !== 0 && (
+                        <>
+                            <span {...cls('speakers-label')}>Представитель</span>
+                            <span {...cls('speakers-label')}>Уровень</span>
+                            <span {...cls('speakers-label')}>Тип цитат</span>
+                        </>
+                    )}
                 </div>
                 <ul {...cls('speakers-list')}>
                     {companySpeakers.map((companySpeaker, index) => (
@@ -178,23 +199,25 @@ function AnalyticsObject(props) {
             </div>
             <div {...cls('speakers')}>
                 <div {...cls('speakers-labels')}>
-                    <span {...cls('speakers-label')}>Спикеры компании</span>
-                    <span {...cls('speakers-label')}>Уровень</span>
-                    <span {...cls('speakers-label')}>Тип цитат</span>
+                    <span {...cls('speakers-label')}>Сторонние спикеры</span>
+                    {outsideSpeakers.length !== 0 && (
+                        <>
+                            <span {...cls('speakers-label')}>Категория</span>
+                        </>
+                    )}
                 </div>
                 <ul {...cls('speakers-list')}>
-                    {companySpeakers.map((outsideSpeaker, index) => (
+                    {outsideSpeakers.map((outsideSpeaker, index) => (
                         <li key={outsideSpeaker.speaker || index} {...cls('speakers-item')}>
                             <OutsideSpeaker
                                 outsideSpeaker={outsideSpeaker}
                                 outsideSpeakers={outsideSpeakers}
                                 outsideSpeakersIndex={index}
                                 speakerService={speakerService}
-                                quoteLevelService={quoteLevelService}
-                                quoteTypeService={quoteTypeService}
+                                quoteCategoryService={quoteCategoryService}
                                 // TODO: Разобраться, поля спикера принадлежат спикеру или объекту
                                 onEditOutsideSpeaker={onEditObject}
-                                onChangeOutsideSpeaker={handleChangeCompanySpeakers}
+                                onChangeOutsideSpeaker={handleChangeOutsideSpeakers}
                             />
                         </li>
                     ))}
@@ -203,7 +226,7 @@ function AnalyticsObject(props) {
                     {...cls('add-speaker-button')}
                     style="success"
                     title="Добавить спикера"
-                    onClick={handleAddCompanySpeaker}
+                    onClick={handleAddOutsideSpeaker}
                     disabled={!isAllowedAddOutsideSpeakers}
                 >
                     <PlusIcon />

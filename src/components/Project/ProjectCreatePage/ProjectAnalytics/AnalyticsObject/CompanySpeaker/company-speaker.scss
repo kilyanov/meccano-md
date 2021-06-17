@@ -12,12 +12,13 @@ $namespace: '.company-speaker';
 
   &__speaker-in-list {
     list-style: none;
-    margin: 0;
-    padding: 0 0 20px;
+    margin: 0 0 20px;
+    padding: 0 10px;
     display: flex;
     align-items: center;
     flex-wrap: wrap;
     gap: 4px;
+    border: 1px solid #ccc;
   }
 
   &__speaker-in-item {

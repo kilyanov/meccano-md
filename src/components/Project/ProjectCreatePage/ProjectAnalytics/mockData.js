@@ -73,3 +73,14 @@ export const mockQuoteTypes = [
     }
 ];
 
+export const mockCategories = [
+    {
+        id: 'ca1',
+        name: 'Бизнес'
+    },
+    {
+        id: 'ca2',
+        name: 'Власть'
+    }
+];
+

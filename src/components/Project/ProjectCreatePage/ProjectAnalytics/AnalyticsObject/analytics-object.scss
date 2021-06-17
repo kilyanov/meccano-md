@@ -25,6 +25,9 @@ $namespace: '.analytics-object';
 
   &__general {
     margin: 48px 0 0;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
   }
 
   &__speakers {
