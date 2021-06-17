@@ -14,6 +14,7 @@ function CompanySpeaker(props) {
         speakerService,
         quoteLevelService,
         quoteTypeService,
+        onEditCompanySpeaker,
         onChangeCompanySpeaker
     } = props;
 
@@ -61,6 +62,11 @@ function CompanySpeaker(props) {
         }
     };
 
+    const handleEditCompanySpeaker = (value, setter) => {
+        setter(value);
+        onEditCompanySpeaker();
+    };
+
     const handleChangeCompanySpeaker = (evt) => {
         setSpeaker(evt?.value || null);
         onChangeCompanySpeaker(evt, companySpeakersIndex);
@@ -90,7 +96,7 @@ function CompanySpeaker(props) {
                 editable
                 required
                 requestService={quoteLevelService.get}
-                onChange={(evt) => setQuoteLevel(evt?.value || null)}
+                onChange={(evt) => handleEditCompanySpeaker(evt?.value || null, setQuoteLevel)}
                 onCreateOption={() => {}}
             />
             <AsyncCreateableSelect
@@ -100,7 +106,7 @@ function CompanySpeaker(props) {
                 editable
                 required
                 requestService={quoteTypeService.get}
-                onChange={(evt) => setQuoteType(evt?.value || null)}
+                onChange={(evt) => handleEditCompanySpeaker(evt?.value || null, setQuoteType)}
                 onCreateOption={() => {}}
             />
         </div>

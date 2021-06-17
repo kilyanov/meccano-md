@@ -17,7 +17,7 @@ function AnalyticsObject(props) {
         speakerService,
         quoteLevelService,
         quoteTypeService,
-        onEdit,
+        onEditObject,
         onSaveObject,
         onResetObject,
         onDeleteObject
@@ -52,9 +52,14 @@ function AnalyticsObject(props) {
         );
     }
 
+    const handleEditObject = (value, setter) => {
+        setter(value);
+        onEditObject();
+    };
+
     const handleAddCompanySpeaker = () => {
         setCompanySpeakers([...companySpeakers, {}]);
-        onEdit();
+        onEditObject();
     };
 
     const handleChangeCompanySpeakers = (evt, index) => {
@@ -65,7 +70,7 @@ function AnalyticsObject(props) {
             updatedCompanySpeakers[index].speaker = evt.value;
         }
         setCompanySpeakers(updatedCompanySpeakers);
-        onEdit();
+        onEditObject();
     };
 
     const handleSaveObject = () => {
@@ -109,7 +114,7 @@ function AnalyticsObject(props) {
                     value={objectName}
                     validateType="notEmpty"
                     required
-                    onChange={(value) => setObjectName(value)}
+                    onChange={(value) => handleEditObject(value, setObjectName)}
                 />
                 <InputText
                     {...cls('input')}
@@ -117,7 +122,7 @@ function AnalyticsObject(props) {
                     placeholder="Введите поисковый запрос объекта"
                     value={objectSearchQuery}
                     validateType="notEmpty"
-                    onChange={(value) => setObjectSearchQuery(value)}
+                    onChange={(value) => handleEditObject(value, setObjectSearchQuery)}
                 />
                 <AsyncCreateableSelect
                     {...cls('select')}
@@ -127,7 +132,7 @@ function AnalyticsObject(props) {
                     editable
                     required
                     requestService={toneService.get}
-                    onChange={(evt) => setObjectTone(evt?.value || null)}
+                    onChange={(evt) => handleEditObject(evt?.value || null, setObjectTone)}
                     onCreateOption={() => {}}
                 />
             </div>
@@ -149,6 +154,8 @@ function AnalyticsObject(props) {
                                 quoteLevelService={quoteLevelService}
                                 quoteTypeService={quoteTypeService}
                                 objects={objects}
+                                // TODO: Разобраться, поля спикера принадлежат спикеру или объекту
+                                onEditCompanySpeaker={onEditObject}
                                 onChangeCompanySpeaker={handleChangeCompanySpeakers}
                             />
                         </li>

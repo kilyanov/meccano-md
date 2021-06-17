@@ -113,7 +113,7 @@ function ProjectAnalytics(props) {
                 quoteTypeService={quoteTypeService}
                 object={ activeObject }
                 objects={ objects }
-                onEdit={handleEditObject}
+                onEditObject={handleEditObject}
                 onSaveObject={handleSaveObject}
                 onResetObject={handleResetObjects}
                 onDeleteObject={handleDeleteObject}
