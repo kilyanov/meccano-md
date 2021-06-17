@@ -7,6 +7,10 @@ $namespace: '.select';
     max-width: 100%;
     margin-bottom: 20px;
 
+    &--onlyValue {
+        margin-bottom: 0;
+    }
+
     &--succeed {
         #{$namespace}__label-text {
             font-weight: 500;

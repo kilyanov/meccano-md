@@ -6,6 +6,10 @@ $namespace: '.input-number';
   position: relative;
   margin-bottom: 20px;
 
+  &--onlyValue {
+    margin: 0;
+  }
+
   &--succeed {
     #{$namespace}__label-text {
       font-weight: 500;

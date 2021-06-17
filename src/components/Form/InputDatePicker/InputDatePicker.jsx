@@ -28,7 +28,7 @@ export default class InputDatePicker extends Component {
         isDisabledTabbing: true
     }
 
-    handleEnableTabbing = (e) => {
+    handleEnableTabbing = () => {
         if (this.state.isDisabledTabbing) {
             this.setState({ isDisabledTabbing: false });
         }
@@ -41,7 +41,17 @@ export default class InputDatePicker extends Component {
     }
 
     render() {
-        const { className, clearable, label, format, readOnly, disabled, draggable, value } = this.props;
+        const {
+            className,
+            clearable,
+            label,
+            format,
+            readOnly,
+            disabled,
+            draggable,
+            value,
+            onKeyDown
+        } = this.props;
         const { isDisabledTabbing } = this.state;
 
         return (
@@ -62,6 +72,7 @@ export default class InputDatePicker extends Component {
                         format={format}
                         disableCalendar={isDisabledTabbing}
                         onCalendarClose={this.handleDisableTabbing}
+                        onKeyDown={onKeyDown}
                     />
                 </label>
             </div>

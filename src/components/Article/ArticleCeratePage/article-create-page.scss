@@ -171,6 +171,14 @@ $namespace: '.article-create-page';
     &--annotation {
       margin-bottom: 20px;
     }
+
+    &--only-value {
+      position: relative;
+      width: 100%;
+      margin: 0;
+      padding: 0;
+      z-index: 1;
+    }
   }
 
   &__location-button {

@@ -15,6 +15,8 @@ import SortArrow from './ProjectTableHeader/ProjectTableHeaderSortArrow';
 import ProjectTableColorModal from "./ProjectTableColorModal/ProjectTableColorModal";
 import { StorageService } from "@services";
 import ArticleMovementHistory from "../../../Article/ArticleMovementHistory/ArticleMovementHistory";
+import ProjectTableEditableCell from './ProjectTableEditableCell/ProjectTableEditableCell';
+import FocusHelper from './FocusHelper';
 
 const cls = new Bem('project-table');
 const headerClasses = new Bem('project-table-header');
@@ -52,17 +54,26 @@ class ProjectTable extends Component {
 
     state = {
         filters: {},
-        showColumnSettingsModal: false
+        showColumnSettingsModal: false,
+        editableMode: false
     };
 
     componentDidMount() {
         document.addEventListener('mousemove', this.handleMouseMove);
         document.addEventListener('mouseup', this.handleMouseUp);
+        document.addEventListener('mousedown', this.handleDocumentKeyPress);
     }
 
     componentDidUpdate = () => {
         this.syncColumnWidth();
+        this.focusHelper = new FocusHelper();
     };
+
+    componentWillUnmount() {
+        document.removeEventListener('mousemove', this.handleMouseMove);
+        document.removeEventListener('mouseup', this.handleMouseUp);
+        document.removeEventListener('mousedown', this.handleDocumentKeyPress);
+    }
 
     handleSelectAllArticles = (checked) => {
         this.props.onSelectedAll({ articleIds: this.props.articles.map(({ id }) => id), checked });
@@ -92,15 +103,36 @@ class ProjectTable extends Component {
         this.bodyRef.scrollTop = 0;
     };
 
-    handleSelectArticle = (articleId) => {
-        const { selectedIds } = this.props;
+    handleSelectArticle = (articleId, event, articleIndex) => {
+        const { articles, selectedIds } = this.props;
+        let isSelected;
 
         let newSelected = [ ...selectedIds ];
 
         if (newSelected.includes(articleId)) {
+            isSelected = false;
             newSelected = newSelected.filter(id => id !== articleId);
         } else {
+            isSelected = true;
             newSelected.push(articleId);
+        }
+
+        if (this.pressedShiftKey && this.lastSelectedArticleIndex) {
+            const startIndex = this.lastSelectedArticleIndex < articleIndex
+                ? this.lastSelectedArticleIndex
+                : articleIndex;
+            const endIndex = this.lastSelectedArticleIndex > articleIndex
+                ? this.lastSelectedArticleIndex
+                : articleIndex;
+            const processArticles = articles.slice(startIndex, endIndex).map(({ id }) => id);
+
+            if (isSelected) {
+                newSelected = [ ...newSelected, ...processArticles ];
+            } else {
+                newSelected = newSelected.filter(id => !processArticles.includes(id));
+            }
+        } else {
+            this.lastSelectedArticleIndex = articleIndex;
         }
 
         this.props.onChangeSelected({ articleIds: newSelected });
@@ -162,17 +194,36 @@ class ProjectTable extends Component {
         this.columnKey = null;
     };
 
+    handleChangeArticle = (values, articleKey, article) => {
+        this.props.onChangeArticle(values, articleKey, article);
+        this.focusHelper.focusNext(values.ref);
+    }
+
+    handleDocumentKeyPress = (event) => {
+        this.pressedShiftKey = event.shiftKey;
+    }
+
     getSettingMenu = () => {
         const { currentProject } = this.props;
-        const settingsMenu = [ {
-            id: 'set-columns',
-            title: 'Параметры таблицы',
-            onClick: this.handleClickColumnSettings
-        }, {
-            id: 'edit-mode',
-            title: 'Режим редактирования',
-            onClick: () => console.log('Функционал еще не написан))')
-        } ];
+        const { editableMode } = this.state;
+        const settingsMenu = [
+            {
+                id: 'set-columns',
+                title: 'Параметры таблицы',
+                onClick: this.handleClickColumnSettings
+            },
+            {
+                id: 'edit-mode',
+                title: editableMode ? 'Режим просмотра' : 'Режим редактирования',
+                onClick: () => {
+                    this.setState(state => {
+                        state.editableMode = !state.editableMode;
+                        this.props.onChangeTableMode(state.editableMode);
+                        return state;
+                    });
+                }
+            }
+        ];
 
         if (currentProject && currentProject.userProject) {
             const isProjectManager = currentProject.userProject.access_project_manager;
@@ -314,24 +365,37 @@ class ProjectTable extends Component {
         );
     };
 
-    renderArticle = (article, articleKey) => {
-        const { selectedIds, projectId, fields, search, sort, profile, page, archiveId, userType } = this.props;
+    renderArticle = (article, articleIndex) => {
+        const {
+            selectedIds,
+            projectId,
+            fields,
+            search,
+            sort,
+            profile,
+            page,
+            archiveId,
+            userType
+        } = this.props;
+        const { editableMode } = this.state;
         const lastViewedArticleId = StorageService.get(STORAGE_KEY.LAST_VIEWED_ARTICLE);
         const sortString = sort.type && `${sort.dir === SORT_DIR.ASC ? '-' : ''}${sort.type}`;
         const sp = new URLSearchParams();
-        let url = archiveId ? `/archive/${archiveId}/article/${article.id}?` : `/project/${projectId}/article/${article.id}?`;
+        let url = archiveId
+            ? `/archive/${archiveId}/article/${article.id}?`
+            : `/project/${projectId}/article/${article.id}?`;
         let color = '';
-        const menuItems = this.props.getArticleMenu(article);
+        const menuItems = this.props.getArticleMenu(article, articleIndex);
 
         sp.set('search', search);
         sp.set('sort', sortString || '');
-        sp.set('position', articleKey);
+        sp.set('position', articleIndex);
         sp.set('page', page);
 
         url += sp.toString();
 
         // Подсветка ответственных (кому передана статья)еку
-        if (article.user && article.user.id !== profile.id && this.props.articleColors) {
+        if (article.user && article.user.id !== profile?.id && this.props.articleColors) {
             color = this.props.articleColors.find(({ type }) => type === 'responsible');
         }
 
@@ -346,7 +410,7 @@ class ProjectTable extends Component {
         return (
             <article
                 {...cls('row', { last: lastViewedArticleId && lastViewedArticleId === article.id })}
-                key={`${article.id}-${articleKey}`}
+                key={`${article.id}-${articleIndex}`}
                 style={{
                     backgroundColor: color && color.color
                         ? color.color
@@ -356,7 +420,7 @@ class ProjectTable extends Component {
                 <div {...cls('cell', 'check')}>
                     <CheckBox
                         checked={selectedIds.includes(article.id) || this.props.isAllSelected}
-                        onChange={() => this.handleSelectArticle(article.id)}
+                        onChange={(event) => this.handleSelectArticle(article.id, event, articleIndex)}
                     />
                 </div>
 
@@ -367,7 +431,7 @@ class ProjectTable extends Component {
 
                     let columnValue = _.get(article, relation, article[key]);
 
-                    if (currentField && currentField.type && currentField.type.key) {
+                    if (currentField?.type?.key) {
                         switch (currentField.type.key) {
                             case FIELD_TYPE.ARRAY:
                                 columnValue = (columnValue || []).map(c => c.name).join(', ');
@@ -390,14 +454,15 @@ class ProjectTable extends Component {
                     }
 
                     const lastMoving = article.usersManagers?.[article.usersManagers.length - 1];
+                    const Wrapper = editableMode ? 'div' : Link;
 
                     return (
-                        <Link
+                        <Wrapper
                             to={url}
                             key={key}
                             {...cls('cell', key)}
                         >
-                            { isUserId ? (
+                            { isUserId && (
                                 <ArticleMovementHistory
                                     articleId={ article.id }
                                     usersManagers={article.usersManagers}
@@ -411,10 +476,23 @@ class ProjectTable extends Component {
                                             : columnValue && <span>кому <b>{columnValue}</b></span>
                                     }
                                 </ArticleMovementHistory>
-                            ) : (
-                                <span {...cls('cell-text')}>{ columnValue }</span>
                             ) }
-                        </Link>
+
+                            { (!isUserId && editableMode) && (
+                                <ProjectTableEditableCell
+                                    field={currentField}
+                                    article={article}
+                                    columnValue={columnValue}
+                                    onChange={values =>
+                                        this.handleChangeArticle(values, articleIndex, article)
+                                    }
+                                />
+                            ) }
+
+                            {(!isUserId && !editableMode) && (
+                                <span {...cls('cell-text')}>{ columnValue }</span>
+                            )}
+                        </Wrapper>
                     );
                 })}
 
@@ -492,12 +570,10 @@ function getUserName(user) {
         : user.email;
 }
 
-function mapStateToProps(store) {
-    return {
-        articleColors: store.articleColors,
-        currentProject: store.currentProject,
-        profile: store.profile
-    };
-}
+const mapStateToProps = (state) => ({
+    articleColors: state.articleColors,
+    currentProject: state.currentProject,
+    profile: state.profile
+});
 
 export default connect(mapStateToProps)(ProjectTable);

@@ -2,7 +2,16 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import InputText from '../InputText/InputText';
 
-const InputLink = ({label, value, onChange, className, readOnly, draggable, required}) => (
+const InputLink = ({
+    label,
+    value,
+    onChange,
+    onKeyDown,
+    className,
+    readOnly,
+    draggable,
+    required
+}) => (
     <InputText
         className={className}
         label={label}
@@ -11,7 +20,8 @@ const InputLink = ({label, value, onChange, className, readOnly, draggable, requ
         validateType='link'
         validateErrorMessage='Неверный адрес ссылки'
         value={value || ''}
-        onChange={val => onChange(val)}
+        onChange={onChange}
+        onKeyDown={onKeyDown}
         draggable={draggable}
     />
 );
