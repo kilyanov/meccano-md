@@ -84,3 +84,17 @@ export const mockCategories = [
     }
 ];
 
+export const mockAnalyticParameterTypes = [
+    {
+        id: 'pt1',
+        name: 'Одиночный выбор'
+    },
+    {
+        id: 'pt2',
+        name: 'Множественный выбор'
+    },
+    {
+        id: 'pt3',
+        name: 'Ручной ввод'
+    }
+];

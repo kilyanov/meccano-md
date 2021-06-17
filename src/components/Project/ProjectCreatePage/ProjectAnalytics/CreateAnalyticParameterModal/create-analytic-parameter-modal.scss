@@ -1,0 +1,26 @@
+@import '../../../../../assets/styles/variables';
+$namespace: '.create-analytic-parameter-modal';
+
+#{$namespace} {
+  overflow-y: scroll;
+  padding: 40px 20px;
+
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+}
+
+/* Dark Theme */
+
+// .app--dark #{$namespace} {
+
+// }
+
+// @media (max-width: 1024px) {
+//   #{$namespace} {
+//   }
+// }

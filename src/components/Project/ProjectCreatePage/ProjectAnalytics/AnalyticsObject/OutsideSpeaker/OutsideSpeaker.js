@@ -11,7 +11,7 @@ function OutsideSpeaker(props) {
         outsideSpeakers,
         outsideSpeakersIndex,
         speakerService,
-        quoteCategoryService,
+        categoryService,
         onEditOutsideSpeaker,
         onChangeOutsideSpeaker
     } = props;
@@ -83,7 +83,7 @@ function OutsideSpeaker(props) {
                     selected={category}
                     editable
                     required
-                    requestService={quoteCategoryService.get}
+                    requestService={categoryService.get}
                     onChange={(evt) => handleEditOutsideSpeaker(evt?.value || null, setCategory)}
                     onCreateOption={() => {}}
                 />

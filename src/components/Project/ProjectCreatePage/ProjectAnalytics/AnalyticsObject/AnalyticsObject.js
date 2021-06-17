@@ -4,8 +4,10 @@ import Button from '../../../../Shared/Button/Button';
 import AsyncCreateableSelect from '../../../../Form/AsyncCreatebleSelect/AsyncCreateableSelect';
 import CompanySpeaker from './CompanySpeaker/CompanySpeaker';
 import OutsideSpeaker from './OutsideSpeaker/OutsideSpeaker';
+import CreateAnalyticParameterModal from '../CreateAnalyticParameterModal/CreateAnalyticParameterModal';
 import PlusIcon from '../../../../Shared/SvgIcons/PlusIcon';
 import './analytics-object.scss';
+
 
 const cls = new Bem('analytics-object');
 
@@ -18,7 +20,7 @@ function AnalyticsObject(props) {
         speakerService,
         quoteLevelService,
         quoteTypeService,
-        quoteCategoryService,
+        categoryService,
         onEditObject,
         onSaveObject,
         onResetObject,
@@ -30,6 +32,7 @@ function AnalyticsObject(props) {
     const [objectTone, setObjectTone] = useState(null);
     const [companySpeakers, setCompanySpeakers] = useState([]);
     const [outsideSpeakers, setOutsideSpeakers] = useState([]);
+    const [isCreateParameterModalOpen, setIsCreateParameterModalOpen] = useState(false);
 
     const resetObject = () => {
         if (object?.id) {
@@ -125,8 +128,8 @@ function AnalyticsObject(props) {
                 <h3 {...cls('header-title')}>Настройка объекта {object.name}</h3>
                 <div {...cls('header-buttons')}>
                     <Button {...cls('save-button')} style="success" onClick={handleSaveObject}>Сохранить</Button>
-                    <Button {...cls('save-button')} style="info" onClick={handleResetObject}>Сбросить</Button>
-                    <Button {...cls('save-button')} style="error" onClick={handleDeleteObject}>Удалить</Button>
+                    <Button {...cls('reset-button')} style="info" onClick={handleResetObject}>Сбросить</Button>
+                    <Button {...cls('delete-button')} style="error" onClick={handleDeleteObject}>Удалить</Button>
                 </div>
             </div>
             <div {...cls('general')}>
@@ -214,7 +217,7 @@ function AnalyticsObject(props) {
                                 outsideSpeakers={outsideSpeakers}
                                 outsideSpeakersIndex={index}
                                 speakerService={speakerService}
-                                quoteCategoryService={quoteCategoryService}
+                                categoryService={categoryService}
                                 // TODO: Разобраться, поля спикера принадлежат спикеру или объекту
                                 onEditOutsideSpeaker={onEditObject}
                                 onChangeOutsideSpeaker={handleChangeOutsideSpeakers}
@@ -232,6 +235,20 @@ function AnalyticsObject(props) {
                     <PlusIcon />
                 </Button>
             </div>
+            <div {...cls('custom-parameters')}>
+                <Button
+                    {...cls('create-parameter-button')}
+                    style="inline"
+                    onClick={() => setIsCreateParameterModalOpen(true)}
+                >
+                    + Создать новый параметр
+                </Button>
+            </div>
+            {isCreateParameterModalOpen && (
+                <CreateAnalyticParameterModal
+                    onClose={() => setIsCreateParameterModalOpen(false)}
+                />
+            )}
         </section>
     );
 }

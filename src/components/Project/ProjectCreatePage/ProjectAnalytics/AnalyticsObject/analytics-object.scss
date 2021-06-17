@@ -70,6 +70,16 @@ $namespace: '.analytics-object';
     }
   }
 
+  &__custom-parameters {
+    margin: 48px 0 0;
+  }
+
+  &__create-parameter-button {
+    border-bottom: 2px dashed $linkColor;
+    border-radius: 0;
+    color: $linkColor;
+  }
+
 }
 
 /* Dark Theme */

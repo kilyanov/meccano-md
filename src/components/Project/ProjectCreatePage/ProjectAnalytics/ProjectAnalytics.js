@@ -7,7 +7,7 @@ import {
     speakerService,
     quoteLevelService,
     quoteTypeService,
-    quoteCategoryService
+    categoryService
 } from './mockServices';
 import './project-analytics.scss';
 import PlusIcon from '../../../Shared/SvgIcons/PlusIcon';
@@ -114,7 +114,7 @@ function ProjectAnalytics(props) {
                 speakerService={speakerService}
                 quoteLevelService={quoteLevelService}
                 quoteTypeService={quoteTypeService}
-                quoteCategoryService={quoteCategoryService}
+                categoryService={categoryService}
                 object={ activeObject }
                 objects={ objects }
                 onEditObject={handleEditObject}
