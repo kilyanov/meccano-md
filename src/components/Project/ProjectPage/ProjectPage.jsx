@@ -89,10 +89,12 @@ class ProjectPage extends Component {
     }
 
     componentDidMount() {
-        this.getProject(this.projectId).then(this.getArticles);
-        this.getArticleColors();
-        EventEmitter.on(EVENTS.USER.CHANGE_TYPE, this.handleChangeUserType);
-        this.props.onSetAppProgress({ inProgress: true, withBlockedOverlay: true });
+        this.searchParamsToFilters(() => {
+            this.getProject(this.projectId).then(this.getArticles);
+            this.getArticleColors();
+            EventEmitter.on(EVENTS.USER.CHANGE_TYPE, this.handleChangeUserType);
+            this.props.onSetAppProgress({ inProgress: true, withBlockedOverlay: true });
+        });
     }
 
     componentDidUpdate(prevProps) {
@@ -395,10 +397,13 @@ class ProjectPage extends Component {
 
             switch (filterKey) {
                 case 'sort':
-                    if (!filter.type) break;
+                    if (!filter.type) {
+                        this.searchParams.delete('sort');
+                        break;
+                    }
 
                     form.sort = filter.type &&
-                        `${filter.dir === SORT_DIR.ASC ? '-' : ''}${currentField.relation || filter.type}`;
+                        `${filter.dir === SORT_DIR.ASC ? '-' : ''}${currentField?.relation || filter.type}`;
                     this.searchParams.set('sort', `${filter.dir === SORT_DIR.ASC ? '-' : ''}${filter.type}`);
                     break;
                 case 'search':
@@ -602,6 +607,29 @@ class ProjectPage extends Component {
 
         return menuItems;
     };
+
+    searchParamsToFilters = (callback) => {
+        this.setState(state => {
+            for (const key of this.searchParams.keys()) {
+                const value = this.searchParams.get(key);
+
+                switch (key) {
+                    case 'page':
+                        break;
+                    case 'sort':
+                        state.filters.sort = {
+                            dir: value.startsWith('-') ? SORT_DIR.ASC : SORT_DIR.DESC,
+                            type: value.startsWith('-') ? value.substr(1, value.length) : value
+                        };
+                        break;
+                    default:
+                        state.filters[key] = value;
+                }
+            }
+
+            return state;
+        }, callback && callback);
+    }
 
     queueMessage = { id: 'articles', text: 'Загрузка статей...' };
 
@@ -810,8 +838,7 @@ class ProjectPage extends Component {
                     <ProjectTable
                         page={currentPage}
                         isAllSelected={isAllArticlesSelected}
-                        sort={filters.sort}
-                        search={filters.search}
+                        filters={filters}
                         projectId={this.projectId}
                         selectedIds={(this.state.selectedArticles[pagination.page] || []).map(({ id }) => id)}
                         articles={articles}
