@@ -114,9 +114,10 @@ export default class InputFile extends Component {
                     disabled={disabled}
                     onClick={() => this.inputFile.click()}
                 />
-
-                <div {...cls('file-list')}>{files.map(this.renderFile)}</div>
-
+                {files.length
+                    ? (<div {...cls('file-list')}>{files.map(this.renderFile)}</div>)
+                    : (<div {...cls('file-list')}>{this.props.files.map(this.renderFile)}</div>)
+                }
                 <input
                     {...cls('field')}
                     ref={node => this.inputFile = node}
