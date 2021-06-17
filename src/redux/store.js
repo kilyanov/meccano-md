@@ -1,10 +1,14 @@
 import {applyMiddleware, compose, createStore} from 'redux';
 import requestMiddleware from './middleware/request';
 import reducers from './reducers';
-import {THEME_TYPE} from '../constants/ThemeType';
+import {THEME_TYPE} from '../constants';
 
 // const logger = createLogger();
 export const initialState = {
+    appProgress: {
+        inProgress: false,
+        withBlockedOverlay: false
+    },
     documents: [],
     projects: [],
     currentProject: null,

@@ -265,6 +265,8 @@ class ProjectTable extends Component {
         });
     };
 
+    _debouncedUpdateParent = _.debounce(this.props.onUpdateParent, 700)
+
     renderHeader = () => {
         const { articles, selectedIds, sort, fields, projectId } = this.props;
         const projectColumns = getColumnsFromFields(fields);
@@ -330,12 +332,8 @@ class ProjectTable extends Component {
                         onKeyDown={({ keyCode, target: { value } }) => {
                             if (keyCode === KEY_CODE.enter) {
                                 this.props.onChangeFilter(currentField.slug, value);
-                                setTimeout(() => this.props.onUpdateParent(), 0);
+                                this._debouncedUpdateParent();
                             }
-                        }}
-                        onBlur={({ target: { value } }) => {
-                            this.props.onChangeFilter(currentField.slug, value);
-                            setTimeout(() => this.props.onUpdateParent(), 0);
                         }}
                     />;
                 break;
@@ -345,15 +343,9 @@ class ProjectTable extends Component {
                         {...headerClasses('cell-filter-field')}
                         placeholder='Поиск...'
                         type="search"
-                        onKeyDown={({ keyCode, target: { value } }) => {
-                            if (keyCode === KEY_CODE.enter) {
-                                this.props.onChangeFilter(currentField.slug, clearValue(value));
-                                setTimeout(() => this.props.onUpdateParent(), 0);
-                            }
-                        }}
-                        onBlur={({ target: { value } }) => {
+                        onChange={({ target: { value } }) => {
                             this.props.onChangeFilter(currentField.slug, clearValue(value));
-                            setTimeout(() => this.props.onUpdateParent(), 0);
+                            this._debouncedUpdateParent();
                         }}
                     />;
         }

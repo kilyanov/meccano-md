@@ -34,6 +34,7 @@ import ArchiveModal from '../../Archive/ArchiveModal';
 import AccessProject from '../../Shared/AccessProject';
 import { connect } from 'react-redux';
 import { FaEye, FaEdit } from 'react-icons/fa';
+import { setAppProgress } from '../../../redux/actions';
 
 const cls = new Bem('project-page');
 const defaultPagination = { page: 1, pageCount: 1, perPage: 50 };
@@ -83,7 +84,6 @@ class ProjectPage extends Component {
             showTransferModal: false,
             showArchiveModal: false,
             userType,
-            inProgress: true,
             isEditMode: false
         };
     }
@@ -92,11 +92,13 @@ class ProjectPage extends Component {
         this.getProject(this.projectId).then(this.getArticles);
         this.getArticleColors();
         EventEmitter.on(EVENTS.USER.CHANGE_TYPE, this.handleChangeUserType);
+        this.props.onSetAppProgress({ inProgress: true, withBlockedOverlay: true });
     }
 
     componentDidUpdate(prevProps) {
         if (prevProps.match.params.id !== this.props.match.params.id) {
             this.projectId = this.props.match.params.id;
+            this.props.onSetAppProgress({ inProgress: true, withBlockedOverlay: true });
             this.setState({
                 articles: [],
                 activeArticle: null,
@@ -109,8 +111,7 @@ class ProjectPage extends Component {
                 showArticleModal: false,
                 showUploadArticlesModal: false,
                 showImportArticlesModal: false,
-                showTransferModal: false,
-                inProgress: true
+                showTransferModal: false
             }, () => {
                 this.getProject(this.projectId).then(this.getArticles);
                 this.getArticleColors();
@@ -156,8 +157,8 @@ class ProjectPage extends Component {
     }
 
     handleChangeColumns = () => {
+        this.props.onSetAppProgress({ inProgress: true, withBlockedOverlay: true });
         this.setState(state => {
-            state.inProgress = true;
             state.pagination.perPage = StorageService.get(STORAGE_KEY.TABLE_PER_PAGE) || 50;
             return state;
         }, this.getArticles);
@@ -174,17 +175,15 @@ class ProjectPage extends Component {
                 submitText: 'Удалить',
                 danger: true
             }).then(() => {
-                this.setState({ inProgress: true }, () => {
-                    ArticleService.delete({ articleIds: [ articleId ] }, project.id)
-                        .then(() => {
-                            NotificationManager.success('Статья была успешно удалена', 'Удаление статьи');
-                            this.setState({
-                                articles: this.state.articles.filter(({ id }) => id !== articleId),
-                                inProgress: false
-                            }, this.getTotalCountArticles);
-                        })
-                        .catch(() => this.setState({ inProgress: false }));
-                });
+                this.props.onSetAppProgress({ inProgress: true, withBlockedOverlay: true });
+                ArticleService.delete({ articleIds: [ articleId ] }, project.id)
+                    .then(() => {
+                        NotificationManager.success('Статья была успешно удалена', 'Удаление статьи');
+                        this.setState({
+                            articles: this.state.articles.filter(({ id }) => id !== articleId)
+                        }, this.getTotalCountArticles);
+                    })
+                    .finally(() => this.props.onSetAppProgress({ inProgress: false }));
             });
         }
     };
@@ -205,27 +204,26 @@ class ProjectPage extends Component {
                 submitText: 'Удалить',
                 style: 'danger'
             }).then(() => {
-                this.setState({ inProgress: true }, () => {
-                    ArticleService
-                        .delete(isAllArticlesSelected
-                            ? { all: true }
-                            : { articleIds: selectedArticlesIds }, project.id
-                        )
-                        .then(() => {
-                            pagination.page = 1;
-                            NotificationManager.success('Выбранные статьи успешно удалены', 'Удаление');
+                this.props.onSetAppProgress({ inProgress: true, withBlockedOverlay: true });
+                ArticleService
+                    .delete(isAllArticlesSelected
+                        ? { all: true }
+                        : { articleIds: selectedArticlesIds }, project.id
+                    )
+                    .then(() => {
+                        pagination.page = 1;
+                        NotificationManager.success('Выбранные статьи успешно удалены', 'Удаление');
 
-                            this.setState({
-                                pagination,
-                                articles: isAllArticlesSelected
-                                    ? []
-                                    : articles.filter(({ id }) => !selectedArticlesIds.includes(id)),
-                                selectedArticles: {},
-                                isAllArticlesSelected: false
-                            }, this.getArticles);
-                        })
-                        .catch(() => this.setState({ inProgress: false }));
-                });
+                        this.setState({
+                            pagination,
+                            articles: isAllArticlesSelected
+                                ? []
+                                : articles.filter(({ id }) => !selectedArticlesIds.includes(id)),
+                            selectedArticles: {},
+                            isAllArticlesSelected: false
+                        }, this.getArticles);
+                    })
+                    .finally(() => this.props.onSetAppProgress({ inProgress: false }));
             });
         }
     };
@@ -252,19 +250,22 @@ class ProjectPage extends Component {
         newState.filters.sort = sort;
         newState.pagination = defaultPagination;
         newState.articles = [];
-        newState.inProgress = true;
 
+        this.props.onSetAppProgress({
+            inProgress: true,
+            withBlockedOverlay: true
+        });
         this.setState(newState, this.getArticles);
     };
 
     handleImportArticlesSubmit = () => {
         if (!this.isMounted) return;
 
+        this.props.onSetAppProgress({ inProgress: true, withBlockedOverlay: true });
         this.setState({
             pagination: defaultPagination,
             filters: defaultFilters,
-            articles: [],
-            inProgress: true
+            articles: []
         }, this.getArticles);
     };
 
@@ -283,7 +284,7 @@ class ProjectPage extends Component {
 
     handleChangeUserType = (userType) => {
         this.setState({ userType }, () => {
-            if (!this.state.articles || !this.state.articles.length && !this.state.inProgress) {
+            if (!this.state.articles || !this.state.articles.length && !this.props.appProgress.inProgress) {
                 this.getArticles();
             }
         });
@@ -302,23 +303,21 @@ class ProjectPage extends Component {
                 }
             };
 
-            this.setState({ inProgress: true }, () => {
-                ProjectService
-                    .updateMany(form, this.projectId)
-                    .then(() => {
-                        this.handleClearSelected(true);
-                        this.getArticles();
-                    })
-                    .catch(() => this.setState({ inProgress: false }));
-            });
+            ProjectService
+                .updateMany(form, this.projectId)
+                .then(() => {
+                    this.handleClearSelected(true);
+                    this.getArticles();
+                })
+                .finally(() => this.props.onSetAppProgress({ inProgress: false }));
         }
     };
 
     handleChangePage = ({ selected }) => {
         this.searchParams.set('page', (selected + 1).toString());
+        this.props.onSetAppProgress({ inProgress: true, withBlockedOverlay: true });
         this.setState(state => {
             state.pagination.page = selected + 1;
-            state.inProgress = true;
             return state;
         }, this.getArticles);
     };
@@ -359,14 +358,15 @@ class ProjectPage extends Component {
     };
 
     getArticles = () => {
-        const { pagination, filters, userType, selectedStatus, inProgress } = this.state;
+        const { onSetAppProgress, appProgress } = this.props;
+        const { pagination, filters, userType, selectedStatus } = this.state;
         const selectedColumns = getColumnsFromStorage(this.projectId);
         const fields = this.getFields();
         const statusValues = (selectedStatus || []).map(({ value }) => value);
 
         if (!userType) return;
-        if (!inProgress) {
-            this.setState({ inProgress: true });
+        if (!appProgress.inProgress) {
+            onSetAppProgress({ inProgress: true });
         }
 
         const form = {
@@ -457,11 +457,10 @@ class ProjectPage extends Component {
 
                 this.setState({
                     articles: response.data,
-                    pagination: responsePagination,
-                    inProgress: false
+                    pagination: responsePagination
                 });
             })
-            .catch(() => this.setState({ inProgress: false }));
+            .finally(() => onSetAppProgress({ inProgress: false }));
     };
 
     getProject = (projectId) => {
@@ -552,13 +551,12 @@ class ProjectPage extends Component {
                 project_id: this.projectId
             };
 
-            this.setState({ saveArticleProgress: true }, () => {
-                ArticleService
-                    .update(form, article.id, userType.id)
-                    .finally(() => {
-                        this.setState({ saveArticleProgress: false });
-                    });
-            });
+            this.props.onSetAppProgress({ inProgress: true });
+            ArticleService
+                .update(form, article.id, userType.id)
+                .finally(() => {
+                    this.props.onSetAppProgress({ inProgress: false });
+                });
         }
     };
 
@@ -638,7 +636,6 @@ class ProjectPage extends Component {
             selectedStatus,
             selectedArticleId,
             saveArticleProgress,
-            inProgress,
             isEditMode
         } = this.state;
         const countSelected = isAllArticlesSelected
@@ -918,8 +915,6 @@ class ProjectPage extends Component {
 
                 <PromiseDialogModal ref={node => this.promiseDialogModal = node}/>
 
-                {inProgress && <Loader fixed/>}
-
                 {pagination.inProgress && <RightLoader/>}
             </Page>
         );
@@ -928,8 +923,15 @@ class ProjectPage extends Component {
 
 function mapStateToProps(state) {
     return {
-        profile: state.profile
+        profile: state.profile,
+        appProgress: state.appProgress
     };
 }
 
-export default connect(mapStateToProps)(ProjectPage);
+function mapDispatchToProps(dispatch) {
+    return {
+        onSetAppProgress: (value) => dispatch(setAppProgress(value))
+    };
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(ProjectPage);
