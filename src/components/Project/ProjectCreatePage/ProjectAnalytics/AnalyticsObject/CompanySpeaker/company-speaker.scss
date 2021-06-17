@@ -2,9 +2,13 @@
 $namespace: '.company-speaker';
 
 #{$namespace} {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 20px;
+  position: relative;
+
+  &__fields {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+  }
 
   &__speaker-in-list {
     list-style: none;
@@ -23,6 +27,27 @@ $namespace: '.company-speaker';
     border-radius: 4px;
     color: $white;
     background-color: $greenColor;
+
+    &--warning {
+      background-color: $lightRed;
+    }
+  }
+
+  &__warning {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+  }
+
+  &__warning-message {
+    margin: 0 8px 0 0;
+    font-size: 13px;
+    color: $lightRed;
+  }
+
+  &__warning-reset-button {
+    font-size: 13px;
+    text-decoration: underline;
   }
 }
 

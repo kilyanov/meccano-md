@@ -5,14 +5,9 @@ export const mockObjects = [
         objectSearchQuery: 'yandex',
         objectTone: 'to2',
         companySpeakers: [
-            {
-                // id: 'os1',
-                speaker: 'sp3'
-            },
-            {
-                // id: 'os2',
-                speaker: 'sp1'
-            }
+            // TODO: Понять, поля остальные спикера хранятся тут, в спикере или в статье
+            { speaker: 'sp1' },
+            { speaker: 'sp3' }
         ]
     },
     {
@@ -21,10 +16,7 @@ export const mockObjects = [
         objectSearchQuery: 'sber',
         objectTone: 'to1',
         companySpeakers: [
-            {
-                // id: 'os3',
-                speaker: 'sp1'
-            }
+            { speaker: 'sp1' }
         ]
     }
 ];

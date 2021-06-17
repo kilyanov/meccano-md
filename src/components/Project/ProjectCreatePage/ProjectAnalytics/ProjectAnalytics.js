@@ -57,6 +57,7 @@ function ProjectAnalytics(props) {
         const updatedObjects = [... objects];
         updatedObjects[objectIndex] = object;
         setObjects(updatedObjects);
+        setIsEditMode(false);
     };
 
     const handleResetObjects = () => {
