@@ -27,8 +27,7 @@ class ProjectTable extends Component {
         articles: PropTypes.array,
         selectedIds: PropTypes.array,
         onChangeSelected: PropTypes.func,
-        sort: PropTypes.object,
-        search: PropTypes.string,
+        filter: PropTypes.object,
         onChangeSort: PropTypes.func,
         onChangeColumns: PropTypes.func.isRequired,
         onDeleteArticle: PropTypes.func,
@@ -84,7 +83,7 @@ class ProjectTable extends Component {
             return;
         }
 
-        let { sort } = this.props;
+        let { filters: { sort } } = this.props;
 
         if (sort.type === sortType) {
             if (sort.dir === SORT_DIR.ASC) {
@@ -268,7 +267,8 @@ class ProjectTable extends Component {
     _debouncedUpdateParent = _.debounce(this.props.onUpdateParent, 700)
 
     renderHeader = () => {
-        const { articles, selectedIds, sort, fields, projectId } = this.props;
+        const { articles, selectedIds, filters, fields, projectId } = this.props;
+        const { sort } = filters;
         const projectColumns = getColumnsFromFields(fields);
 
         this.selectedColumns = getColumnsFromStorage(projectId, projectColumns);
@@ -319,6 +319,7 @@ class ProjectTable extends Component {
     };
 
     renderFilter = (fieldType, currentField) => {
+        const { filters } = this.props;
         if (!fieldType || !fieldType.key) return;
         let field;
         const clearValue = (val) => val.trim().toLowerCase();
@@ -329,10 +330,11 @@ class ProjectTable extends Component {
                     <input
                         {...headerClasses('cell-filter-field')}
                         type="date"
+                        defaultValue={ filters[currentField.slug] || '' }
                         onKeyDown={({ keyCode, target: { value } }) => {
                             if (keyCode === KEY_CODE.enter) {
                                 this.props.onChangeFilter(currentField.slug, value);
-                                this._debouncedUpdateParent();
+                                setTimeout(this.props.onUpdateParent, 0);
                             }
                         }}
                     />;
@@ -343,6 +345,7 @@ class ProjectTable extends Component {
                         {...headerClasses('cell-filter-field')}
                         placeholder='Поиск...'
                         type="search"
+                        defaultValue={ filters[currentField.slug] || '' }
                         onChange={({ target: { value } }) => {
                             this.props.onChangeFilter(currentField.slug, clearValue(value));
                             this._debouncedUpdateParent();
@@ -362,13 +365,13 @@ class ProjectTable extends Component {
             selectedIds,
             projectId,
             fields,
-            search,
-            sort,
+            filters,
             profile,
             page,
             archiveId,
             userType
         } = this.props;
+        const { search, sort } = filters;
         const { editableMode } = this.state;
         const lastViewedArticleId = StorageService.get(STORAGE_KEY.LAST_VIEWED_ARTICLE);
         const sortString = sort.type && `${sort.dir === SORT_DIR.ASC ? '-' : ''}${sort.type}`;
