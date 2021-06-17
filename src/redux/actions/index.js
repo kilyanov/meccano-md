@@ -10,3 +10,4 @@ export * from './articleColors';
 export * from './currentProject';
 export * from './currentArticle';
 export * from './currentArchive';
+export * from './appProgress';

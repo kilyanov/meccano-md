@@ -14,8 +14,10 @@ import { initialState } from "../store";
 import { currentArticle } from './currentArticle';
 import { currentArchive } from './currentArchive';
 import { StorageService } from "../../services";
+import { appProgress } from './appProgress';
 
 const appReducer = combineReducers({
+    appProgress,
     profile,
     roles,
     notificationsPanel,

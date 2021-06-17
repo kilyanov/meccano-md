@@ -126,6 +126,20 @@ $namespace: '.top-bar';
     fill: #fff;
     transition: fill .3s;
   }
+
+  &__app-loader {
+    position: absolute;
+    top: 100%;
+  }
+
+  &__app-overlay {
+    position: fixed;
+    top: 90px;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(255, 255, 255, .5);
+  }
 }
 
 /* Dark Theme */

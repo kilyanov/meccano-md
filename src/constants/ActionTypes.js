@@ -1,4 +1,7 @@
 export const ACTION_TYPE = {
+    APP: {
+        IN_PROGRESS: 'APP_IN_PROGRESS'
+    },
     REQUEST: 'REQUEST',
     PROFILE: {
         PROFILE_LOADING: 'PROFILE_LOADING',
@@ -24,7 +27,7 @@ export const ACTION_TYPE = {
     SETTINGS_MENU: {
         OPEN: 'SETTINGS_MENU_OPEN',
         CLOSE: 'SETTINGS_MENU_CLOSE',
-        TOGGLE: 'SETTINGS_MENU_TOGGLE',
+        TOGGLE: 'SETTINGS_MENU_TOGGLE'
     },
     THEME: {
         SWITCH: 'THEME_SWITCH'
