@@ -75,7 +75,10 @@ class ProjectTable extends Component {
     }
 
     handleSelectAllArticles = (checked) => {
-        this.props.onSelectedAll({ articleIds: this.props.articles.map(({ id }) => id), checked });
+        this.props.onSelectedAll({
+            articleIds: this.props.articles.map(({ id }) => id),
+            checked
+        });
     };
 
     handleChangeSort = (event, sortType) => {
@@ -102,8 +105,8 @@ class ProjectTable extends Component {
         this.bodyRef.scrollTop = 0;
     };
 
-    handleSelectArticle = (articleId, event, articleIndex) => {
-        const { articles, selectedIds } = this.props;
+    handleSelectArticle = (articleId, event, currentArticleIndex) => {
+        const { selectedIds } = this.props;
         let isSelected;
 
         let newSelected = [ ...selectedIds ];
@@ -116,22 +119,20 @@ class ProjectTable extends Component {
             newSelected.push(articleId);
         }
 
-        if (this.pressedShiftKey && this.lastSelectedArticleIndex) {
-            const startIndex = this.lastSelectedArticleIndex < articleIndex
-                ? this.lastSelectedArticleIndex
-                : articleIndex;
-            const endIndex = this.lastSelectedArticleIndex > articleIndex
-                ? this.lastSelectedArticleIndex
-                : articleIndex;
-            const processArticles = articles.slice(startIndex, endIndex).map(({ id }) => id);
+        if (!this.pressedShiftKey && isSelected) {
+            this.startIndex = currentArticleIndex;
+            this.endIndex = null;
+        }
 
-            if (isSelected) {
-                newSelected = [ ...newSelected, ...processArticles ];
+        if (this.pressedShiftKey) {
+            if (this.endIndex === null) {
+                this.endIndex = currentArticleIndex;
+                newSelected = this.selectRange(true, newSelected);
             } else {
-                newSelected = newSelected.filter(id => !processArticles.includes(id));
+                newSelected = this.selectRange(false, newSelected);
+                this.endIndex = currentArticleIndex;
+                newSelected = this.selectRange(true, newSelected);
             }
-        } else {
-            this.lastSelectedArticleIndex = articleIndex;
         }
 
         this.props.onChangeSelected({ articleIds: newSelected });
@@ -238,6 +239,32 @@ class ProjectTable extends Component {
 
         return settingsMenu;
     };
+
+    selectRange = (checked, selected) => {
+        const { articles } = this.props;
+        let newSelected = [ ...selected ];
+
+        const sIndex = this.startIndex < this.endIndex
+            ? this.startIndex + 1
+            : this.endIndex;
+        const eIndex = this.startIndex < this.endIndex
+            ? this.endIndex + 1
+            : this.startIndex;
+
+        const processArticles = articles.slice(sIndex, eIndex).map(({ id }) => id);
+
+        if (checked) {
+            newSelected = [ ...newSelected, ...processArticles ];
+        } else {
+            newSelected = newSelected.filter(id => !processArticles.includes(id));
+        }
+
+        return newSelected;
+    }
+
+    startIndex = null
+
+    endIndex = null
 
     articleDropDown = {};
 
