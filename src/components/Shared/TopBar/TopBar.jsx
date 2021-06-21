@@ -6,20 +6,24 @@ import Logo from '../Logo/Logo';
 import DocsButton from './DocsButton/DocsButton';
 import ProjectsButton from "./ProjectsButton";
 import ProfileButton from "./ProfileButton/ProfileButton";
-import { clearCurrentProject } from "../../../redux/actions/currentProject";
+import { clearCurrentProject } from "../../../redux/actions";
 import store from "../../../redux/store";
 import ArchiveButton from "./ArchiveButton";
-import { PROJECT_PERMISSION } from "../../../constants/ProjectPermissions";
+import { PROJECT_PERMISSION } from "../../../constants";
 import { clearCurrentArticle, clearCurrentArchive } from '../../../redux/actions';
 import AccessProject from '../AccessProject';
+import { useSelector } from 'react-redux';
+import LinearLoader from '../LinearLoader/LinearLoader';
+import Portal from '../Portal/Portal';
 
 const cls = new Bem('top-bar');
 const TopBar = ({ isStatic, className }) => {
+    const appProgress = useSelector(state => state.appProgress);
     const handleClickLogo = () => {
         store.dispatch(clearCurrentProject());
         store.dispatch(clearCurrentArticle());
         store.dispatch(clearCurrentArchive());
-    }
+    };
 
     return (
         <section {...cls('', { static: isStatic }, className)}>
@@ -37,6 +41,16 @@ const TopBar = ({ isStatic, className }) => {
 
                 <ProfileButton {...cls('button')} />
             </div>
+
+            { appProgress.inProgress && (
+                <LinearLoader { ...cls('app-loader') } />
+            ) }
+
+            { appProgress.withBlockedOverlay && (
+                <Portal>
+                    <div { ...cls('app-overlay') } />
+                </Portal>
+            ) }
         </section>
     );
 };
