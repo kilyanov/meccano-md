@@ -116,7 +116,7 @@ export default class InputFile extends Component {
                 />
                 {files.length
                     ? (<div {...cls('file-list')}>{files.map(this.renderFile)}</div>)
-                    : (<div {...cls('file-list')}>{this.props.files.map(this.renderFile)}</div>)
+                    : (<div {...cls('file-list')}>{this.props?.files?.map(this.renderFile)}</div>)
                 }
                 <input
                     {...cls('field')}
