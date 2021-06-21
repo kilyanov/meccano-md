@@ -100,7 +100,9 @@ export default class InputText extends Component {
         if (event.keyCode === KEY_CODE.enter) {
             this.props.onEnter(this.getValue());
         }
-        this.props.onKeyDown(event);
+        if (this.props.onKeyDown) {
+            this.props.onKeyDown(event);
+        }
     };
 
     getValue = () => {
