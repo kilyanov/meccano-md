@@ -91,7 +91,9 @@ class AsyncCreatableSelect extends Component {
     };
 
     handleBlur = () => {
-        this.props.onBlur();
+        if (this.props.onBlur) {
+            this.props.onBlur();
+        }
         if (!this.state.currentOption) {
             this.getOptions();
         }
