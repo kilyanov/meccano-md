@@ -8,6 +8,7 @@ import Loader from "../Shared/Loader/Loader";
 import Access from "../Shared/Access/Access";
 import {PERMISSION} from "../../constants/Permissions";
 import PromiseDialogModal from "../Shared/PromiseDialogModal/PromiseDialogModal";
+import ProjectPagination from '../Project/ProjectPage/ProjectTable/ProjectPagination/ProjectPagintaion';
 import './users-page.scss';
 
 const classes = new Bem('users-page');
@@ -17,7 +18,9 @@ export default class UsersPage extends Component {
         users: [],
         openUserModal: false,
         selectedUser: null,
-        inProgress: true
+        inProgress: true,
+        paginationPage: 1,
+        paginationPageCount: 1
     };
 
     componentDidMount() {
@@ -56,17 +59,24 @@ export default class UsersPage extends Component {
             .then(this.getUsers);
     };
 
-    getUsers = () => {
-        UserService.get().then(response => {
+    handlePageChange = ({ selected = 0 }) => {
+        this.getUsers({
+            page: selected + 1
+        });
+    }
+
+    getUsers = (options) => {
+        UserService.get(options).then(response => {
             this.setState({
                 users: response.data,
-                inProgress: false
+                inProgress: false,
+                paginationPageCount: response.headers['x-pagination-page-count'] || 1
             });
         });
     };
 
     render() {
-        const {users, openUserModal, selectedUser, inProgress} = this.state;
+        const {users, openUserModal, selectedUser, inProgress, paginationPage, paginationPageCount} = this.state;
 
         return (
             <Access
@@ -101,6 +111,14 @@ export default class UsersPage extends Component {
                             selectedUser={selectedUser}
                         />
                     )}
+
+                    <div {...classes('pagination')}>
+                        <ProjectPagination
+                            page={paginationPage}
+                            pageCount={paginationPageCount}
+                            onPageChange={this.handlePageChange}
+                        />
+                    </div>
 
                     <PromiseDialogModal ref={ref => this.promiseModal = ref}/>
 
