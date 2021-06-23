@@ -10,6 +10,7 @@ import CheckBox from "../../../../Form/CheckBox/CheckBox";
 import { PROJECT_USER_PERMISSIONS, PROJECT_USER_TRANSMIT } from "../consts";
 import { ReactSelectStyles } from "../../../../../constants/ReactSelectStyles";
 import { THEME_TYPE } from "../../../../../constants";
+import AsyncCreateableSelect from '../../../../Form/AsyncCreatebleSelect/AsyncCreateableSelect';
 
 const cls = new Bem('project-user-modal');
 const defaulForm = {
@@ -159,6 +160,28 @@ class ProjectUserModal extends Component {
 
     isEdit = this.props.projectUser && !_.isEmpty(this.props.projectUser);
 
+    mapUserService = (req) => {
+        let query = {};
+        if ('query[name]' in req) {
+            query = {
+                'query[username]': req['query[name]']
+            };
+        }
+        return new Promise((resolve, reject) => {
+            UserService.get(query)
+                .then((res) => {
+                    const mapUserData = res?.data?.map((user) => {
+                        return {
+                            id: user.id,
+                            name: user.username
+                        };
+                    });
+                    resolve({ data: mapUserData });
+                })
+                .catch(reject);
+        });
+    }
+
     render() {
         const { theme } = this.props;
         const { users, userTypes, form, inProgress } = this.state;
@@ -173,16 +196,18 @@ class ProjectUserModal extends Component {
             >
                 <section {...cls('field')}>
                     <span {...cls('label')}>Пользователь:</span>
-                    <Select
-                        value={form.user_id}
+                    <AsyncCreateableSelect
+                        selected={form.user_id?.value || null}
+                        canCreate={false}
                         placeholder='Выберите пользователя'
                         classNamePrefix='select'
                         options={users}
-                        onChange={value => this.handleChangeForm('user_id', value)}
+                        onChange={select => this.handleChangeForm('user_id', select || null)}
                         isSearchable
                         isClearable
                         isDisabled={this.isEdit || inProgress}
                         menuPosition='fixed'
+                        requestService={this.mapUserService}
                         styles={ReactSelectStyles(isDarkTheme)}
                     />
                 </section>
