@@ -34,14 +34,12 @@ $namespace: '.analytics-object';
     margin: 48px 0 0;
   }
 
-  &__speakers-labels {
+  &__speakers-label {
+    display: block;
     font-weight: 500;
     font-size: 15px;
     line-height: 24px;
     margin: 0 0 8px;
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 20px;
   }
 
   &__speakers-list {
@@ -55,29 +53,19 @@ $namespace: '.analytics-object';
     padding: 0;
   }
 
-  &__add-speaker-button {
-    height: 40px;
-    width: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 0px;
-
-    & svg {
-      height: 24px;
-      width: 24px;
-      filter: brightness(2);
-    }
-  }
-
   &__custom-parameters {
     margin: 48px 0 0;
   }
 
-  &__create-parameter-button {
+  &__add-speaker-button {
     border-bottom: 2px dashed $linkColor;
     border-radius: 0;
     color: $linkColor;
+
+    &:disabled {
+      opacity: 0.25;
+      background-color: transparent;
+    }
   }
 
 }

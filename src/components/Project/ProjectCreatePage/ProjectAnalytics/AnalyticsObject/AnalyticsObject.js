@@ -1,11 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import InputText from '../../../../Form/InputText/InputText';
 import Button from '../../../../Shared/Button/Button';
-import AsyncCreateableSelect from '../../../../Form/AsyncCreatebleSelect/AsyncCreateableSelect';
 import CompanySpeaker from './CompanySpeaker/CompanySpeaker';
 import OutsideSpeaker from './OutsideSpeaker/OutsideSpeaker';
-import CreateAnalyticParameterModal from '../CreateAnalyticParameterModal/CreateAnalyticParameterModal';
-import PlusIcon from '../../../../Shared/SvgIcons/PlusIcon';
 import './analytics-object.scss';
 
 
@@ -16,7 +13,6 @@ function AnalyticsObject(props) {
         className: mix = '',
         object,
         objects,
-        toneService,
         speakerService,
         quoteLevelService,
         quoteTypeService,
@@ -28,23 +24,16 @@ function AnalyticsObject(props) {
     } = props;
 
     const [objectName, setObjectName] = useState('');
-    const [objectSearchQuery, setObjectSearchQuery] = useState('');
-    const [objectTone, setObjectTone] = useState(null);
     const [companySpeakers, setCompanySpeakers] = useState([]);
     const [outsideSpeakers, setOutsideSpeakers] = useState([]);
-    const [isCreateParameterModalOpen, setIsCreateParameterModalOpen] = useState(false);
 
     const resetObject = () => {
         if (object?.id) {
             setObjectName(object.name);
-            setObjectSearchQuery(object.objectSearchQuery);
-            setObjectTone(object.objectTone);
             setCompanySpeakers(_.cloneDeep(object.companySpeakers));
             setOutsideSpeakers(_.cloneDeep(object.outsideSpeakers));
         } else {
             setObjectName('');
-            setObjectSearchQuery('');
-            setObjectTone(null);
             setCompanySpeakers([]);
             setOutsideSpeakers([]);
         }
@@ -66,7 +55,7 @@ function AnalyticsObject(props) {
     };
 
     const handleAddCompanySpeaker = () => {
-        setCompanySpeakers([...companySpeakers, {}]);
+        setCompanySpeakers([...companySpeakers, null]);
         onEditObject();
     };
 
@@ -75,14 +64,14 @@ function AnalyticsObject(props) {
         if (evt === null) {
             updatedCompanySpeakers.splice(index, 1);
         } else {
-            updatedCompanySpeakers[index].speaker = evt.value;
+            updatedCompanySpeakers[index] = evt.value;
         }
         setCompanySpeakers(updatedCompanySpeakers);
         onEditObject();
     };
 
     const handleAddOutsideSpeaker = () => {
-        setOutsideSpeakers([...outsideSpeakers, {}]);
+        setOutsideSpeakers([...outsideSpeakers, null]);
         onEditObject();
     };
 
@@ -91,7 +80,7 @@ function AnalyticsObject(props) {
         if (evt === null) {
             updatedOutsideSpeakers.splice(index, 1);
         } else {
-            updatedOutsideSpeakers[index].speaker = evt.value;
+            updatedOutsideSpeakers[index] = evt.value;
         }
         setOutsideSpeakers(updatedOutsideSpeakers);
         onEditObject();
@@ -101,8 +90,6 @@ function AnalyticsObject(props) {
         onSaveObject({
             id: object?.id,
             name: objectName,
-            objectSearchQuery,
-            objectTone,
             companySpeakers,
             outsideSpeakers
         });
@@ -119,8 +106,8 @@ function AnalyticsObject(props) {
         onDeleteObject(object?.id);
     };
 
-    const isAllowedAddCompanySpeakers = companySpeakers.length === 0 || !!companySpeakers[companySpeakers.length - 1]?.speaker;
-    const isAllowedAddOutsideSpeakers = outsideSpeakers.length === 0 || !!outsideSpeakers[outsideSpeakers.length - 1]?.speaker;
+    const isAllowedAddCompanySpeakers = companySpeakers.length === 0 || !!companySpeakers[companySpeakers.length - 1];
+    const isAllowedAddOutsideSpeakers = outsideSpeakers.length === 0 || !!outsideSpeakers[outsideSpeakers.length - 1];
 
     return (
         <section {...cls('', '', mix)}>
@@ -142,39 +129,12 @@ function AnalyticsObject(props) {
                     required
                     onChange={(value) => handleEditObject(value, setObjectName)}
                 />
-                <InputText
-                    {...cls('input')}
-                    label="Поисковый запрос объекта"
-                    placeholder="Введите поисковый запрос объекта"
-                    value={objectSearchQuery}
-                    validateType="notEmpty"
-                    onChange={(value) => handleEditObject(value, setObjectSearchQuery)}
-                />
-                <AsyncCreateableSelect
-                    {...cls('select')}
-                    label="Тональность объекта"
-                    placeholder="Выберете тональность объекта"
-                    selected={objectTone}
-                    required
-                    requestService={toneService.get}
-                    onChange={(evt) => handleEditObject(evt?.value || null, setObjectTone)}
-                    onCreateOption={() => {}}
-                />
             </div>
             <div {...cls('speakers')}>
-                <div {...cls('speakers-labels')}>
-                    <span {...cls('speakers-label')}>Спикеры компании</span>
-                    {companySpeakers.length !== 0 && (
-                        <>
-                            <span {...cls('speakers-label')}>Представитель</span>
-                            <span {...cls('speakers-label')}>Уровень</span>
-                            <span {...cls('speakers-label')}>Тип цитат</span>
-                        </>
-                    )}
-                </div>
+                <span {...cls('speakers-label')}>Спикеры компании</span>
                 <ul {...cls('speakers-list')}>
                     {companySpeakers.map((companySpeaker, index) => (
-                        <li key={companySpeaker.speaker || index} {...cls('speakers-item')}>
+                        <li key={companySpeaker || index} {...cls('speakers-item')}>
                             <CompanySpeaker
                                 companySpeaker={companySpeaker}
                                 companySpeakers={companySpeakers}
@@ -183,8 +143,6 @@ function AnalyticsObject(props) {
                                 quoteLevelService={quoteLevelService}
                                 quoteTypeService={quoteTypeService}
                                 objects={objects}
-                                // TODO: Разобраться, поля спикера принадлежат спикеру или объекту
-                                onEditCompanySpeaker={onEditObject}
                                 onChangeCompanySpeaker={handleChangeCompanySpeakers}
                             />
                         </li>
@@ -192,34 +150,24 @@ function AnalyticsObject(props) {
                 </ul>
                 <Button
                     {...cls('add-speaker-button')}
-                    style="success"
-                    title="Добавить спикера"
+                    style="inline"
                     onClick={handleAddCompanySpeaker}
                     disabled={!isAllowedAddCompanySpeakers}
                 >
-                    <PlusIcon />
+                    + Добавить спикера
                 </Button>
             </div>
             <div {...cls('speakers')}>
-                <div {...cls('speakers-labels')}>
-                    <span {...cls('speakers-label')}>Сторонние спикеры</span>
-                    {outsideSpeakers.length !== 0 && (
-                        <>
-                            <span {...cls('speakers-label')}>Категория</span>
-                        </>
-                    )}
-                </div>
+                <span {...cls('speakers-label')}>Сторонние спикеры</span>
                 <ul {...cls('speakers-list')}>
                     {outsideSpeakers.map((outsideSpeaker, index) => (
-                        <li key={outsideSpeaker.speaker || index} {...cls('speakers-item')}>
+                        <li key={outsideSpeaker || index} {...cls('speakers-item')}>
                             <OutsideSpeaker
                                 outsideSpeaker={outsideSpeaker}
                                 outsideSpeakers={outsideSpeakers}
                                 outsideSpeakersIndex={index}
                                 speakerService={speakerService}
                                 categoryService={categoryService}
-                                // TODO: Разобраться, поля спикера принадлежат спикеру или объекту
-                                onEditOutsideSpeaker={onEditObject}
                                 onChangeOutsideSpeaker={handleChangeOutsideSpeakers}
                             />
                         </li>
@@ -227,28 +175,13 @@ function AnalyticsObject(props) {
                 </ul>
                 <Button
                     {...cls('add-speaker-button')}
-                    style="success"
-                    title="Добавить спикера"
+                    style="inline"
                     onClick={handleAddOutsideSpeaker}
                     disabled={!isAllowedAddOutsideSpeakers}
                 >
-                    <PlusIcon />
+                    + Добавить спикера
                 </Button>
             </div>
-            <div {...cls('custom-parameters')}>
-                <Button
-                    {...cls('create-parameter-button')}
-                    style="inline"
-                    onClick={() => setIsCreateParameterModalOpen(true)}
-                >
-                    + Создать новый параметр
-                </Button>
-            </div>
-            {isCreateParameterModalOpen && (
-                <CreateAnalyticParameterModal
-                    onClose={() => setIsCreateParameterModalOpen(false)}
-                />
-            )}
         </section>
     );
 }

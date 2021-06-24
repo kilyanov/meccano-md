@@ -2,24 +2,21 @@ export const mockObjects = [
     {
         id: '1',
         name: 'Яндекс',
-        objectSearchQuery: 'yandex',
-        objectTone: 'to2',
+        keywords: [],
         companySpeakers: [
-            // TODO: Понять, поля остальные спикера хранятся тут, в спикере или в статье
-            { speaker: 'sp1' },
-            { speaker: 'sp3' }
+            'sp1',
+            'sp3'
         ],
         outsideSpeakers: [
-            { speaker: 'sp2' }
+            'sp2'
         ]
     },
     {
         id: '2',
         name: 'Сбер',
-        objectSearchQuery: 'sber',
-        objectTone: 'to1',
+        keywords: [],
         companySpeakers: [
-            { speaker: 'sp1' }
+            'sp1'
         ],
         outsideSpeakers: []
     }

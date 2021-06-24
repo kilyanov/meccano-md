@@ -15,41 +15,35 @@ function CompanySpeaker(props) {
         companySpeakersIndex,
         objects,
         speakerService,
-        quoteLevelService,
-        quoteTypeService,
-        onEditCompanySpeaker,
         onChangeCompanySpeaker
     } = props;
 
     const [speaker, setSpeaker] = useState(null);
-    const [quoteLevel, setQuoteLevel] = useState(null);
-    const [quoteType, setQuoteType] = useState(null);
     const [speakerIn, setSpeakerIn] = useState([]);
     const [warningMessage, setWarningMessage] = useState('');
 
     useEffect(() => {
-        if (companySpeaker?.speaker) {
-            setSpeaker(companySpeaker.speaker);
+        if (companySpeaker) {
+            setSpeaker(companySpeaker);
         }
 
         const speakerInList = objects
             .filter((object) => {
-                return object.companySpeakers.find((cs) => cs.speaker === companySpeaker.speaker);
+                return object.companySpeakers.find((cs) => cs === companySpeaker);
             })
             .map((object) => object.name);
 
         setSpeakerIn(speakerInList);
 
-        const iSspeakerInIgnoreWarning = JSON.parse(localStorage.getItem(SPEAKERS_IGNORE_WARNING_LOCAL_STORAGE_KEY))
-            ?.includes(companySpeaker?.speaker);
+        const isSpeakerInIgnoreWarning = JSON.parse(localStorage.getItem(SPEAKERS_IGNORE_WARNING_LOCAL_STORAGE_KEY))
+            ?.includes(companySpeaker);
 
-        if (speakerInList.length > 1 && !iSspeakerInIgnoreWarning) {
-            setWarningMessage('Данный спикер представляет несколько компаний!');
+        if (speakerInList.length > 1 && !isSpeakerInIgnoreWarning) {
+            setWarningMessage(`Данный спикер представляет несколько компаний!`);
         } else {
             setWarningMessage('');
         }
     }, [companySpeaker]);
-
 
     if (!companySpeakers.length) {
         return (
@@ -59,29 +53,22 @@ function CompanySpeaker(props) {
         );
     }
 
-    const filterSpeakerService = {
-        get: (req) => {
-            return new Promise((resolve, reject) => {
-                speakerService.get(req)
-                    .then((res) => {
-                        const filteredRes = res.data.filter((d) => {
-                            if (companySpeaker.speaker === d.id) {
-                                return true;
-                            }
-                            return !companySpeakers.find((cs) => {
-                                return cs.speaker === d.id;
-                            });
+    const filterSpeakerService = (req) => {
+        return new Promise((resolve, reject) => {
+            speakerService.get(req)
+                .then((res) => {
+                    const filteredRes = res.data.filter((d) => {
+                        if (companySpeaker === d.id) {
+                            return true;
+                        }
+                        return !companySpeakers.find((cs) => {
+                            return cs === d.id;
                         });
-                        resolve({ data: filteredRes });
-                    })
-                    .catch(reject);
-            });
-        }
-    };
-
-    const handleEditCompanySpeaker = (value, setter) => {
-        setter(value);
-        onEditCompanySpeaker();
+                    });
+                    resolve({ data: filteredRes });
+                })
+                .catch(reject);
+        });
     };
 
     const handleChangeCompanySpeaker = (evt) => {
@@ -114,39 +101,14 @@ function CompanySpeaker(props) {
                     selected={speaker}
                     editable
                     required
-                    requestService={filterSpeakerService.get}
+                    requestService={filterSpeakerService}
                     onChange={handleChangeCompanySpeaker}
-                    onCreateOption={() => {}}
-                />
-                <ul {...cls('speaker-in-list')}>
-                    {speakerIn.map((object, index) => (
-                        <li {...cls('speaker-in-item', {warning: warningMessage})} key={index}> { object } </li>
-                    ))}
-                </ul>
-                <AsyncCreateableSelect
-                    {...cls('select')}
-                    placeholder="Уровень"
-                    selected={quoteLevel}
-                    editable
-                    required
-                    requestService={quoteLevelService.get}
-                    onChange={(evt) => handleEditCompanySpeaker(evt?.value || null, setQuoteLevel)}
-                    onCreateOption={() => {}}
-                />
-                <AsyncCreateableSelect
-                    {...cls('select')}
-                    placeholder="Тип цитат"
-                    selected={quoteType}
-                    editable
-                    required
-                    requestService={quoteTypeService.get}
-                    onChange={(evt) => handleEditCompanySpeaker(evt?.value || null, setQuoteType)}
                     onCreateOption={() => {}}
                 />
             </div>
             {warningMessage && (
                 <div {...cls('warning')}>
-                    <span {...cls('warning-message')}>{warningMessage}</span>
+                    <span {...cls('warning-message')}>{warningMessage} {speakerIn.join(', ')}</span>
                     <Button
                         {...cls('warning-reset-button')}
                         style="inline"
