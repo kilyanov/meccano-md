@@ -1,0 +1,18 @@
+@import '../../../assets/styles/variables';
+$namespace: '.sortable-virtual-list';
+
+#{$namespace} {
+  height: 200px;
+  overflow-y: auto;
+}
+
+/* Dark Theme */
+
+// .app--dark #{$namespace} {
+
+// }
+
+// @media (max-width: 1024px) {
+//   #{$namespace} {
+//   }
+// }

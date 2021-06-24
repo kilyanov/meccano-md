@@ -3,14 +3,18 @@ import InputText from '../../../../Form/InputText/InputText';
 import Button from '../../../../Shared/Button/Button';
 import CompanySpeaker from './CompanySpeaker/CompanySpeaker';
 import OutsideSpeaker from './OutsideSpeaker/OutsideSpeaker';
+import SortableVirtualList from '../../../../Shared/SortableVirtualList/SortableVirtualList';
+import { ProjectService } from '../../../../../services';
 import './analytics-object.scss';
-
+import ObjectKeyword from './ObjectKeyword/ObjectKeyword';
 
 const cls = new Bem('analytics-object');
 
 function AnalyticsObject(props) {
     const {
         className: mix = '',
+        // TODO: Передавать id проекта
+        projectId = 'bd78191f-0783-4ca1-ac8a-2ec9365b8b75',
         object,
         objects,
         speakerService,
@@ -26,6 +30,9 @@ function AnalyticsObject(props) {
     const [objectName, setObjectName] = useState('');
     const [companySpeakers, setCompanySpeakers] = useState([]);
     const [outsideSpeakers, setOutsideSpeakers] = useState([]);
+    const [keywords, setKeywords] = useState([]);
+    const [keywordsPagination, setKeywordsPagination] = useState({ page: 1, pageCount: 1 });
+    const [keywordSearch, setKeywordSearch] = useState('');
 
     const resetObject = () => {
         if (object?.id) {
@@ -39,7 +46,31 @@ function AnalyticsObject(props) {
         }
     };
 
+    const fetchItems = (isPagination, page) => {
+        ProjectService.wordSearch
+            .get({
+                'page': page + 1 || 1,
+                'per-page': 50,
+                'sort': 'position',
+                'query[name]': keywordSearch,
+                'query[project_id]': projectId
+            }, projectId)
+            .then((res) => {
+                const pagination = {
+                    pageCount: +_.get(res.headers, 'x-pagination-page-count'),
+                    page: +_.get(res.headers, 'x-pagination-current-page'),
+                    perPage: +_.get(res.headers, 'x-pagination-per-page'),
+                    totalCount: +_.get(res.headers, 'x-pagination-total-count')
+                };
+
+                setKeywords(isPagination ? keywords.concat(res.data) : res.data);
+                setKeywordsPagination(pagination);
+            })
+            .catch((error) => console.log(error));
+    };
+
     useEffect(resetObject, [object]);
+    useEffect(() => fetchItems(), []);
 
     if (!object?.name) {
         return (
@@ -106,6 +137,56 @@ function AnalyticsObject(props) {
         onDeleteObject(object?.id);
     };
 
+    const updateKeywordPosition = (keywordId, position, isFetchItems) => {
+        ProjectService.wordSearch
+            .update({ position }, projectId, keywordId)
+            .then(() => {
+                if (isFetchItems) {
+                    fetchItems();
+                }
+            })
+            .catch((error) => console.log(error));
+    };
+
+    const updateKeywordPositionToStart = (keyword, index) => {
+        const updatedKeywords = [...keywords];
+        updatedKeywords.splice(index, 1);
+        updatedKeywords.unshift(keyword);
+        setKeywords(updatedKeywords);
+        updateKeywordPosition(keyword.id, 1);
+    };
+
+    const updateKeywordPositionToEnd = (keyword, index) => {
+        const { page, pageCount } = keywordsPagination;
+
+        if (page < pageCount) {
+            updateKeywordPosition(keyword.id, -1, true);
+        } else {
+            const updatedKeywords = [...keywords];
+            updatedKeywords.splice(index, 1);
+            updatedKeywords.push(keyword);
+            setKeywords(updatedKeywords);
+            updateKeywordPosition(keyword.id, -1, false);
+        }
+    };
+
+    const handleSortKeywords = (sortedItems, sortable, evt) => {
+        const movedKeywordId = evt.item.dataset.id;
+        const movedKeywordIndex = sortedItems.findIndex(el => el.id === movedKeywordId);
+        const nextKeyword = keywords[movedKeywordIndex + 1] || null;
+        setKeywords(sortedItems);
+
+        if (nextKeyword) {
+            ProjectService.wordSearch
+                .get(null, projectId, nextKeyword.id)
+                .then(({ data }) => {
+                    updateKeywordPosition(movedKeywordId, data.position);
+                });
+        } else {
+            updateKeywordPosition(movedKeywordId, -1);
+        }
+    };
+
     const isAllowedAddCompanySpeakers = companySpeakers.length === 0 || !!companySpeakers[companySpeakers.length - 1];
     const isAllowedAddOutsideSpeakers = outsideSpeakers.length === 0 || !!outsideSpeakers[outsideSpeakers.length - 1];
 
@@ -128,6 +209,23 @@ function AnalyticsObject(props) {
                     validateType="notEmpty"
                     required
                     onChange={(value) => handleEditObject(value, setObjectName)}
+                />
+            </div>
+            <div {...cls('keywords')}>
+                <span {...cls('keywords-label')}>Ключевые слова</span>
+                <SortableVirtualList
+                    {...cls('keywords-list')}
+                    items={keywords}
+                    page={keywordsPagination.page}
+                    pageCount={keywordsPagination.pageCount}
+                    onSort={handleSortKeywords}
+                    onFetchMoreItems={fetchItems}
+                    Item={({ item }) => (
+                        <ObjectKeyword
+                            keyword={item.name}
+                            keywordId={item.id}
+                        />
+                    )}
                 />
             </div>
             <div {...cls('speakers')}>
