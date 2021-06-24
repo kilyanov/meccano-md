@@ -10,7 +10,6 @@ import {
     categoryService
 } from './mockServices';
 import './project-analytics.scss';
-import PlusIcon from '../../../Shared/SvgIcons/PlusIcon';
 
 const cls = new Bem('project-analytics');
 
@@ -100,12 +99,11 @@ function ProjectAnalytics(props) {
                 )}
                 <Button
                     {...cls('add-object-button')}
-                    style="success"
-                    title="Добавить объект"
+                    style="inline"
                     onClick={handleAddObject}
                     disabled={!isAllowedAddObject || isEditMode}
                 >
-                    <PlusIcon />
+                    + Создать объект
                 </Button>
             </div>
             <AnalyticsObject

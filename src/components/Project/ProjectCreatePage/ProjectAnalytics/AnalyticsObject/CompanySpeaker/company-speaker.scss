@@ -6,8 +6,12 @@ $namespace: '.company-speaker';
 
   &__fields {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(2, 1fr);
     gap: 20px;
+
+    @media (max-width: $device-sm) {
+      grid-template-columns: repeat(1, 1fr);
+    }
   }
 
   &__speaker-in-list {
@@ -35,9 +39,49 @@ $namespace: '.company-speaker';
   }
 
   &__warning {
-    position: absolute;
-    bottom: 0;
-    left: 0;
+    padding: 4px 12px;
+    display: flex;
+    align-items: center;
+    background-color: $white;
+    box-shadow: 0 3px 12px -3px rgba(0, 0, 0, 0.2);
+    transform: translateY(-10px);
+    position: relative;
+
+    @media (max-width: $device-sm) {
+      transform: translateY(-30px);
+    }
+
+    &::before {
+      content: '';
+      display: block;
+      position: absolute;
+      top: 50%;
+      left: -8px;
+      transform: translateY(-50%) rotate(45deg);
+      background-color: $white;
+      box-shadow: 0 3px 12px -3px rgba(0, 0, 0, 0.2);
+      width: 16px;
+      height: 16px;
+      z-index: -2;
+
+      @media (max-width: $device-sm) {
+        top: -8px;
+        left: 32px;
+        transform: translateY(0) rotate(45deg);
+      }
+    }
+
+    &::after {
+      content: '';
+      display: block;
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: $white;
+      z-index: -1;
+    }
   }
 
   &__warning-message {

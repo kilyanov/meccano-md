@@ -11,6 +11,7 @@ $namespace: '.project-analytics';
   height: 100%;
 
   &__objects {
+    flex-shrink: 0;
     padding: 40px 20px 40px;
     width: 210px;
     overflow-y: scroll;
@@ -40,17 +41,13 @@ $namespace: '.project-analytics';
   }
 
   &__add-object-button {
-    height: 40px;
-    width: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 0px;
+    border-bottom: 2px dashed $linkColor;
+    border-radius: 0;
+    color: $linkColor;
 
-    & svg {
-      height: 24px;
-      width: 24px;
-      filter: brightness(2);
+    &:disabled {
+      opacity: 0.25;
+      background-color: transparent;
     }
   }
 

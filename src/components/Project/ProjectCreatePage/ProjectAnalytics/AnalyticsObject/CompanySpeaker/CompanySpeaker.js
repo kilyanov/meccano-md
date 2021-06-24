@@ -39,7 +39,7 @@ function CompanySpeaker(props) {
             ?.includes(companySpeaker);
 
         if (speakerInList.length > 1 && !isSpeakerInIgnoreWarning) {
-            setWarningMessage(`Данный спикер представляет несколько компаний!`);
+            setWarningMessage('Данный спикер представляет несколько компаний!');
         } else {
             setWarningMessage('');
         }
@@ -105,19 +105,19 @@ function CompanySpeaker(props) {
                     onChange={handleChangeCompanySpeaker}
                     onCreateOption={() => {}}
                 />
+                {warningMessage && (
+                    <div {...cls('warning')}>
+                        <span {...cls('warning-message')}>{warningMessage} {speakerIn.join(', ')}</span>
+                        <Button
+                            {...cls('warning-reset-button')}
+                            style="inline"
+                            onClick={saveIgnoreWarningForSpeaker}
+                        >
+                            Ok
+                        </Button>
+                    </div>
+                )}
             </div>
-            {warningMessage && (
-                <div {...cls('warning')}>
-                    <span {...cls('warning-message')}>{warningMessage} {speakerIn.join(', ')}</span>
-                    <Button
-                        {...cls('warning-reset-button')}
-                        style="inline"
-                        onClick={saveIgnoreWarningForSpeaker}
-                    >
-                        Ok
-                    </Button>
-                </div>
-            )}
         </div>
     );
 }

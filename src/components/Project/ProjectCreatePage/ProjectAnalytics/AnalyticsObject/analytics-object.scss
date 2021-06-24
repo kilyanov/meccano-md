@@ -26,12 +26,18 @@ $namespace: '.analytics-object';
   &__general {
     margin: 48px 0 0;
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(2, 1fr);
     gap: 20px;
+    max-width: 768px;
+
+    @media (max-width: $device-sm) {
+      grid-template-columns: repeat(1, 1fr);
+    }
   }
 
   &__speakers {
     margin: 48px 0 0;
+    max-width: 768px;
   }
 
   &__speakers-label {
