@@ -11,7 +11,7 @@ $namespace: '.section-tree-list';
   transition: max-height .2s;
 
   &--opened {
-    max-height: 5000px;
+    max-height: 50000px;
   }
 
   &__item {
