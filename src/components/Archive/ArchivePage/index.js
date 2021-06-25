@@ -682,6 +682,7 @@ class ArchivePage extends Component {
                             onChangeFilter={this.handleChangeFilter}
                             onUpdateParent={() => this.getArticles()}
                             getArticleMenu={this.onGetArticleMenu}
+                            filters={filters}
                             sort={filters.sort}
                             search={filters.search}
                             page={currentPage}
