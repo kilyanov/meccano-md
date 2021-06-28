@@ -752,7 +752,10 @@ class ArticleCreatePage extends Component {
                         cancelButtonText: 'Сохранять',
                         closeOnClick: true,
                         onSubmit: () => resolve(),
-                        onCancel: () => this.handleSubmit()
+                        onCancel: () => {
+                            this.handleSubmit(false)
+                                .then(() => resolve());
+                        }
                     });
                 }
             } else {
