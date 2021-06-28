@@ -77,7 +77,7 @@ class ProjectPage extends Component {
             isAllArticlesSelected: false,
             pagination,
             project: null,
-            filters: defaultFilters,
+            filters: { ...defaultFilters },
             showArticleModal: false,
             showUploadArticlesModal: false,
             showImportArticlesModal: false,
@@ -109,7 +109,7 @@ class ProjectPage extends Component {
                 isAllArticlesSelected: false,
                 pagination: defaultPagination,
                 project: null,
-                filters: defaultFilters,
+                filters: { ...defaultFilters },
                 showArticleModal: false,
                 showUploadArticlesModal: false,
                 showImportArticlesModal: false,
@@ -140,7 +140,8 @@ class ProjectPage extends Component {
         }
 
         this.setState(state => {
-            state.selectedArticles[state.pagination.page] = state.articles.filter(({ id }) => articleIds.includes(id));
+            state.selectedArticles[state.pagination.page] = this.notFilteredArticles
+                .filter(({ id }) => articleIds.includes(id));
 
             return state;
         });
@@ -460,6 +461,13 @@ class ProjectPage extends Component {
                 QueueManager.remove(this.queueMessage.id);
                 this.setSearchParams();
 
+                // Save all articles for correct select articles
+                response.data.forEach(item => {
+                    if (!this.notFilteredArticles.find(({ id }) => id === item.id)) {
+                        this.notFilteredArticles.push(item);
+                    }
+                });
+
                 this.setState({
                     articles: response.data,
                     pagination: responsePagination
@@ -647,6 +655,8 @@ class ProjectPage extends Component {
     isMounted = true;
 
     searchParams = new URLSearchParams(this.props.location.search);
+
+    notFilteredArticles = []
 
     render() {
         const {
