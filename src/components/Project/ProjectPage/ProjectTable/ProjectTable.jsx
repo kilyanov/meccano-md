@@ -105,18 +105,15 @@ class ProjectTable extends Component {
         this.bodyRef.scrollTop = 0;
     };
 
-    handleSelectArticle = (articleId, event, currentArticleIndex) => {
+    handleSelectArticle = (articleId, isSelected, currentArticleIndex) => {
         const { selectedIds } = this.props;
-        let isSelected;
 
         let newSelected = [ ...selectedIds ];
 
-        if (newSelected.includes(articleId)) {
-            isSelected = false;
-            newSelected = newSelected.filter(id => id !== articleId);
-        } else {
-            isSelected = true;
+        if (isSelected) {
             newSelected.push(articleId);
+        } else {
+            newSelected = newSelected.filter(id => id !== articleId);
         }
 
         if (!this.pressedShiftKey && isSelected) {
