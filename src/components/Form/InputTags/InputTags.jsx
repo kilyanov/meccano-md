@@ -33,12 +33,14 @@ class InputTags extends Component {
 
     componentWillUnmount() {
         EventEmitter.off(EVENTS.FORM.ON_VALIDATE, this.validate);
+        this.isUnmounted = true;
     }
 
     getDefaultOptions = () => {
         if (!this.props.requestService) return;
 
         this.props.requestService().then(response => {
+            if (this.isUnmounted) return;
             const defaultOptions = response.data.map(({ id, name }) => ({ value: id, label: name }));
 
             this.setState({ defaultOptions });

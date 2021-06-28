@@ -7,5 +7,6 @@ export const STORAGE_KEY = {
     USER_TYPE: 'user_type',
     THEME: 'theme',
     LAST_VIEWED_ARTICLE: 'last-viewed-article',
-    TABLE_PER_PAGE: 'table-per-page'
+    TABLE_PER_PAGE: 'table-per-page',
+    AUTO_SAVE_ARTICLES: 'auto-sabe-articles'
 };

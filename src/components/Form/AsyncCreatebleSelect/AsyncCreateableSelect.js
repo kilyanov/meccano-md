@@ -41,6 +41,7 @@ class AsyncCreatableSelect extends Component {
 
             if (selected) {
                 requestService({ 'query[id]': selected }).then(response => {
+                    if (this.isUnmounted) return;
                     if (response && response.data && response.data.length) {
                         const { name, id } = response.data[0];
                         this.setState({
@@ -70,6 +71,7 @@ class AsyncCreatableSelect extends Component {
                 } else if (requestService && !inProgress) {
                     this.setState({ inProgress: true }, () => {
                         requestService({ 'query[id]': selected }).then(response => {
+                            if (this.isUnmounted) return;
                             if (response && response.data && response.data.length) {
                                 const { name, id } = response.data[0];
                                 this.setState({ currentOption: { label: name, value: id }, inProgress: false });
@@ -79,6 +81,10 @@ class AsyncCreatableSelect extends Component {
                 }
             }
         }
+    }
+
+    componentWillUnmount() {
+        this.isUnmounted = true;
     }
 
     handleSelect = (option) => {
@@ -116,6 +122,7 @@ class AsyncCreatableSelect extends Component {
         }
 
         return requestService(form).then(({ data }) => {
+            if (this.isUnmounted) return;
             const opt = data.map(option => ({
                 label: _.get(option, 'name'),
                 value: _.get(option, 'id')
