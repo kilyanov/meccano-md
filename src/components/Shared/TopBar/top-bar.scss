@@ -17,7 +17,7 @@ $namespace: '.top-bar';
   z-index: 5;
 
   &--static {
-    position: static;
+    position: relative;
     flex: none;
   }
 
@@ -139,6 +139,7 @@ $namespace: '.top-bar';
     right: 0;
     bottom: 0;
     background-color: rgba(255, 255, 255, .5);
+    z-index: 999;
   }
 }
 
