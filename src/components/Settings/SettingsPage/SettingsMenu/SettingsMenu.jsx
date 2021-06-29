@@ -70,10 +70,18 @@ const menu = [
         link: '/settings/authors'
     },
     {
-        id: 'system',
+        id: 'sys',
         icon: <SettingsIcon />,
         name: 'Система',
-        link: '/settings/system'
+        children: [{
+            id: 'system',
+            name: 'Общие',
+            link: '/settings/system'
+        }, {
+            id: 'logs',
+            name: 'Логирование',
+            link: '/settings/system/logs'
+        }]
     }
 ];
 

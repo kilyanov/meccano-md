@@ -23,10 +23,10 @@ import store from "../../../redux/store";
 import { clearArticleColors } from "../../../redux/actions";
 import { getColumnsFromStorage } from "../../Project/ProjectPage/ProjectTable/Columns";
 import ArticleTransferModal from "../../Article/ArticleTransferModal/ArticleTransferModal";
-import ProjectPagination from "../../Project/ProjectPage/ProjectTable/ProjectPagination/ProjectPagintaion";
+import Pagination from "../../Shared/Pagination";
 import ReactSelect from "../../Form/Select/ReactSelect/ReactSelect";
 import ArchiveCreateModal from "../ArchiveCreateModal";
-import { setCurrentProject } from "../../../redux/actions/currentProject";
+import { setCurrentProject } from "../../../redux/actions";
 import StorageIcon from "../../Shared/SvgIcons/StorageIcon";
 import { setCurrentArchive } from '../../../redux/actions';
 import Breadcrumbs from '../../Shared/Breadcrumbs';
@@ -265,10 +265,10 @@ class ArchivePage extends Component {
         });
     };
 
-    handleChangePage = ({ selected }) => {
-        this.searchParams.set('page', (selected + 1).toString());
+    handleChangePage = (currentPage) => {
+        this.searchParams.set('page', currentPage.toString());
         this.setState(state => {
-            state.pagination.page = selected + 1;
+            state.pagination.page = currentPage;
             state.inProgress = true;
             return state;
         }, this.getArticles);
@@ -696,7 +696,7 @@ class ArchivePage extends Component {
                         />
 
                         <div {...cls('footer')}>
-                            <ProjectPagination
+                            <Pagination
                                 page={currentPage}
                                 pageCount={pagination.pageCount}
                                 onPageChange={this.handleChangePage}

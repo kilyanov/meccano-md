@@ -26,6 +26,7 @@ import SettingsSystem from "../components/Settings/SettingsSystem/SettingsSystem
 import UsersPage from "../components/Users/UsersPage";
 import ArchivePage from "../components/Archive/ArchivePage";
 import ArchiveArticlePage from "../components/Archive/ArchiveArticlePage";
+import Logs from '../components/Settings/SettingsSystem/Logs/Logs';
 
 export default (
     <Router basename='/'>
@@ -123,6 +124,12 @@ export default (
                     permissions={[PERMISSION.viewSettings, PERMISSION.editSettings]}
                     component={SettingsAuthors}
                     path="/settings/authors"
+                />
+                <AuthRoute
+                    exact
+                    permissions={[PERMISSION.viewSettings, PERMISSION.editSettings]}
+                    component={Logs}
+                    path="/settings/system/logs"
                 />
 
                 <AuthRoute

@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { getColumnsFromStorage } from "../../../Project/ProjectPage/ProjectTable/Columns";
 import CheckBox from '../../../Form/CheckBox/CheckBox';
 import SearchFilter from '../../../Shared/SearchFilter/SearchFilter';
-import ProjectPagination from "../../../Project/ProjectPage/ProjectTable/ProjectPagination/ProjectPagintaion";
+import Pagination from "../../../Shared/Pagination";
 import './list-of-articles.scss';
 
 const cls = new Bem('list-of-articles');
@@ -23,7 +23,7 @@ function ListOfArticles({ project, currentArticleId, userTypeId, onSelectArticle
     }).toString();
 
     useEffect(() => {
-        ArticleService.getList({ 
+        ArticleService.getList({
             project: projectId,
             archive: '',
             user_type: userTypeId,
@@ -48,8 +48,8 @@ function ListOfArticles({ project, currentArticleId, userTypeId, onSelectArticle
         onSelectArticle(article.id);
     };
 
-    const handlePageChenge = ({ selected }) => {
-        setPaginationPage(selected + 1);
+    const handlePageChange = (currentPage) => {
+        setPaginationPage(currentPage);
     };
 
     return (
@@ -105,10 +105,10 @@ function ListOfArticles({ project, currentArticleId, userTypeId, onSelectArticle
                     </div>
                 ))}
             </div>
-            <ProjectPagination 
+            <Pagination
                 page={1}
-                pageCount={paginationPageCount} 
-                onPageChange={handlePageChenge}
+                pageCount={paginationPageCount}
+                onPageChange={handlePageChange}
             />
         </div>
     );
