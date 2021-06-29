@@ -6,9 +6,9 @@ import UserModal from "./UserModal/UserModal";
 import {UserService} from "../../services";
 import Loader from "../Shared/Loader/Loader";
 import Access from "../Shared/Access/Access";
-import {PERMISSION} from "../../constants/Permissions";
+import {PERMISSION} from "../../constants";
 import PromiseDialogModal from "../Shared/PromiseDialogModal/PromiseDialogModal";
-import ProjectPagination from '../Project/ProjectPage/ProjectTable/ProjectPagination/ProjectPagintaion';
+import Pagination from '../Shared/Pagination';
 import './users-page.scss';
 
 const classes = new Bem('users-page');
@@ -59,9 +59,9 @@ export default class UsersPage extends Component {
             .then(this.getUsers);
     };
 
-    handlePageChange = ({ selected = 0 }) => {
+    handlePageChange = (currentPage) => {
         this.getUsers({
-            page: selected + 1
+            page: currentPage
         });
     }
 
@@ -113,7 +113,7 @@ export default class UsersPage extends Component {
                     )}
 
                     <div {...classes('pagination')}>
-                        <ProjectPagination
+                        <Pagination
                             page={paginationPage}
                             pageCount={paginationPageCount}
                             onPageChange={this.handlePageChange}

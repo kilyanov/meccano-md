@@ -1,0 +1,64 @@
+@import "../../../../../assets/styles/variables";
+
+$namespace: '.log-message';
+
+#{$namespace} {
+  position: relative;
+  padding: 1rem 1rem;
+  margin-bottom: 1rem;
+  border: 1px solid transparent;
+  border-radius: .25rem;
+
+  &--info {
+    color: #084298;
+    background-color: #cfe2ff;
+    border-color: #b6d4fe;
+  }
+
+  &--error {
+    color: #842029;
+    background-color: #f8d7da;
+    border-color: #f5c2c7;
+  }
+
+  &--warning {
+    color: #664d03;
+    background-color: #fff3cd;
+    border-color: #ffecb5;
+  }
+
+  &--debug {
+    color: #41464b;
+    background-color: #e2e3e5;
+    border-color: #d3d6d8;
+  }
+
+  &--profile {
+    color: #055160;
+    background-color: #cff4fc;
+    border-color: #b6effb;
+  }
+
+
+  &__heading {
+    display: flex;
+    justify-content: space-between;
+  }
+
+  &__footer {
+    display: flex;
+    justify-content: space-between;
+  }
+
+  &__message {
+    color: $blackColor;
+    white-space: pre;
+    font-size: 12px;
+    line-height: 14px;
+  }
+
+  &__prefix {
+    font-size: 12px;
+    line-height: 12px;
+  }
+}
