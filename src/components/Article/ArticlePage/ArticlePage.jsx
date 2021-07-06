@@ -1,34 +1,41 @@
 import React, { Component } from 'react';
+
 import PropTypes from 'prop-types';
+
 import { connect } from 'react-redux';
-import Page from '../../Shared/Page/Page';
+
 import { ArticleService, LocationService, ProjectService, SourceService, StorageService } from '@services';
-import Form from '../../Form/Form/Form';
-import ArrowIcon from '../../Shared/SvgIcons/ArrowIcon';
-import Button from '../../Shared/Button/Button';
-import ArticleViewSettings from './ArticleViewSettings/ArticleViewSettings';
-import ProjectCreateField from '../../Project/ProjectCreatePage/ProjectCreatePageField/ProjectCreatePageField';
+
 import Sortable from 'react-sortablejs';
+
 import { isMobileScreen, isProjectAccess, isRolesAccess, OperatedNotification } from '@helpers/Tools';
+import { EventEmitter } from "@helpers";
+
 import { STORAGE_KEY } from '@const';
-import { EventEmitter } from "../../../helpers";
 import { EVENTS } from "@const";
-import store from "../../../redux/store";
+
+import store from "@redux/store";
 import { setCurrentProject } from "@redux/actions/currentProject";
 import { PROJECT_PERMISSION } from "@const/ProjectPermissions";
 import { KEY_CODE } from "@const";
+
 import CreateLocationModal from "./CreateLocationModal";
-import LocationIcon from "../../Shared/SvgIcons/LocationIcon";
-import ReprintsIcon from "../../Shared/SvgIcons/ReprintsIcon";
-import Breadcrumbs from '../../Shared/Breadcrumbs';
 import { setCurrentArticle, clearCurrentArticle, setAppProgress } from '../../../redux/actions';
-import AccessProject from '../../Shared/AccessProject';
+
+import ArticleViewSettings from './ArticleViewSettings';
+import ProjectCreateField from '../../Project/ProjectCreatePage/ProjectCreatePageField';
+import Form from '../../Form/Form';
+import Page from '../../Shared/Page/Page';
+import Breadcrumbs from '../../Shared/Breadcrumbs';
 import Drawer from '../../Shared/Drawer/Drawer';
 import Reprints from '../Reprints/Reprints';
+import ArticlePageHeader from './ArticlePageHeader';
 import TinyMCE from "@components/Form/TinyMCE/TinyMCE";
-import './article-create-page.scss';
 
-const cls = new Bem('article-create-page');
+import './article-page.scss';
+import { NotificationManager } from 'react-notifications';
+
+const cls = new Bem('article-page');
 const defaultTimeZone = 'Europe/Moscow';
 const toDateWithoutTimeZone = (date) => {
     if (!date) return new Date();
@@ -41,7 +48,7 @@ const sectionsSet = {
     'section_sub_id': 'sectionsThree'
 };
 
-class ArticleCreatePage extends Component {
+class ArticlePage extends Component {
     static propTypes = {
         country: PropTypes.array,
         city: PropTypes.array,
@@ -391,6 +398,25 @@ class ArticleCreatePage extends Component {
                 return state;
             }, this.handleSubmit);
         }
+    };
+
+    handleDeleteArticle = () => {
+        const { onSetAppProgress } = this.props;
+        const { articleId, projectId, articlesNavs } = this.state;
+
+        onSetAppProgress({ inProgress: true, withBlockedOverlay: true });
+
+        ArticleService.delete({ articleIds: [ articleId ] }, projectId)
+            .then(() => {
+                NotificationManager.success('Статья была успешно удалена', 'Удаление статьи');
+
+                if (+articlesNavs.current < +articlesNavs.total) {
+                    this.handleNextArticle();
+                } else if (+articlesNavs.current > 1) {
+                    this.handlePrevArticle();
+                }
+            })
+            .finally(() => onSetAppProgress({ inProgress: false }));
     };
 
     handleSubmit = (withUpdateArticle = true) => {
@@ -764,16 +790,6 @@ class ArticleCreatePage extends Component {
         });
     };
 
-    clearString = (value) => {
-        let newValue = value;
-
-        if (!_.isString(newValue)) {
-            newValue = '';
-        }
-
-        return newValue.replace(/<[^>]*>?/gm, '');
-    };
-
     articleId = this.props.match.params.articleId;
 
     unSortableFields = [ 'annotation', 'text', 'complete_monitor', 'complete_analytic', 'complete_client' ];
@@ -960,83 +976,24 @@ class ArticleCreatePage extends Component {
         return (
             <Page withBar staticBar {...cls()}>
                 <Breadcrumbs location={this.props.location} />
-                <section {...cls('header')}>
-                    <a
-                        {...cls('back-button')}
-                        onClick={this.handleClickBackButton}
-                    ><i>‹</i> Назад к проекту</a>
 
-                    <div {...cls('title-wrap')}>
-                        {articlesNavs.prev && (
-                            <button
-                                {...cls('title-button', 'left')}
-                                onClick={this.handlePrevArticle}
-                            ><ArrowIcon {...cls('title-arrow')}/></button>
-                        )}
-
-                        <h2 {...cls('title')}>
-                            {isUpdate ? 'Статья' : 'Новая статья'}
-                            {(articlesNavs.current && articlesNavs.total) &&
-                            ` ${articlesNavs.current} из ${articlesNavs.total}`}
-                        </h2>
-
-                        {articlesNavs.next && (
-                            <button
-                                {...cls('title-button', 'right')}
-                                onClick={this.handleNextArticle}
-                            ><ArrowIcon {...cls('title-arrow')}/></button>
-                        )}
-                    </div>
-
-                    <button
-                        {...cls('view-button')}
-                        onClick={this.handleShowViewSettings}
-                        title='Отображение статей'
-                    >
-                        <div {...cls('view-button-icon')}>
-                            <i/><i/><i/>
-                        </div>
-
-                        {/* <span>Отображение статей</span> */}
-                    </button>
-
-                    <button
-                        {...cls('location-button')}
-                        title='Добавить город'
-                        onClick={() => this.setState({ showLocationModal: true })}
-                    >
-                        <LocationIcon/>
-                    </button>
-
-                    {this.state.articleId &&
-                        <button
-                            {...cls('drawer-button')}
-                            onClick={this.handleShowDrawer}
-                            title='Перепечатки'
-                        >
-                            <ReprintsIcon />
-                            {!!this.state.form.reprints?.length &&
-                                <span {...cls('reprint-counter')}>{ this.state.form.reprints.length }</span>
-                            }
-                        </button>
-                    }
-
-                    <AccessProject permissions={[ PROJECT_PERMISSION.EDIT ]}>
-                        <Button
-                            {...cls('done-button')}
-                            text={userType && form[`complete_${userType.slug}`] ? 'Отменить завершение' : 'Завершить статью'}
-                            style={userType && form[`complete_${userType.slug}`] ? 'info' : 'success'}
-                            disabled={!userType}
-                            onClick={this.handleDoneArticle}
-                        />
-
-                        <Button
-                            {...cls('submit-button')}
-                            text={isUpdate ? 'Обновить' : 'Создать'}
-                            onClick={() => this.form.submit()}
-                        />
-                    </AccessProject>
-                </section>
+                <ArticlePageHeader
+                    articleTitle={form.title}
+                    articleId={this.articleId}
+                    onBackBtn={this.handleClickBackButton}
+                    articlesNavs={articlesNavs}
+                    onPrevArticle={this.handlePrevArticle}
+                    onNextArticle={this.handleNextArticle}
+                    onClickViewSettings={this.handleShowViewSettings}
+                    isUpdate={isUpdate}
+                    onAddCity={() => this.setState({ showLocationModal: true })}
+                    onShowReprints={this.handleShowDrawer}
+                    form={form}
+                    userType={userType}
+                    onSubmit={() => this.form.submit()}
+                    onDoneArticle={this.handleDoneArticle}
+                    onDeleteArticle={this.handleDeleteArticle}
+                />
 
                 {!appProgress.inProgress && (
                     <Form
@@ -1166,4 +1123,4 @@ function mapDispatchToProps(dispatch) {
     };
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(ArticleCreatePage);
+export default connect(mapStateToProps, mapDispatchToProps)(ArticlePage);

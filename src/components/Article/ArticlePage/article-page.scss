@@ -1,6 +1,7 @@
 @import "../../../assets/styles/variables";
 @import "../../../assets/styles/mixins";
-$namespace: '.article-create-page';
+
+$namespace: '.article-page';
 
 #{$namespace} {
   padding-bottom: 40px;
@@ -48,7 +49,7 @@ $namespace: '.article-create-page';
   }
 
   &__title {
-    margin: 0 30px;
+    margin: 0 1.5rem;
   }
 
   &__title-button {
@@ -100,7 +101,7 @@ $namespace: '.article-create-page';
     display: flex;
     height: 24px;
     width: 28px;
-    margin-right: 20px;
+    margin-right: 1rem;
     flex-direction: column;
     flex-wrap: wrap;
 
@@ -128,8 +129,12 @@ $namespace: '.article-create-page';
     }
   }
 
+  &__remove-button {
+    margin-right: .5rem;
+  }
+
   &__submit-button {
-    margin-left: 20px;
+    margin-left: 1rem;
     height: 48px;
     padding: 0 50px;
 
@@ -182,14 +187,14 @@ $namespace: '.article-create-page';
   }
 
   &__location-button {
-    margin-right: 20px;
+    margin-right: 1rem;
     border: none;
     background: none;
   }
 
   &__drawer-button {
     position: relative;
-    margin: 0 24px 0 0;
+    margin-right: 1rem;
     border: none;
     background: none;
   }

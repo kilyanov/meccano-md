@@ -184,7 +184,7 @@ class ArchivePage extends Component {
                 this.setState({ inProgress: true }, () => {
                     ArticleService
                         .delete(isAllArticlesSelected
-                            ? { all: true }
+                            ? { all: true, archiveId: this.archiveId }
                             : { articleIds: selectedArticlesIds }, project.id
                         )
                         .then(() => {
