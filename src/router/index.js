@@ -10,7 +10,7 @@ import DocumentsPage from '../components/Documents/DocumentsPage';
 import ProjectPage from '../components/Project/ProjectPage/ProjectPage';
 import ProjectCreatePage from '../components/Project/ProjectCreatePage/ProjectCreatePage';
 import NotFoundPage from '../components/Pages/NotFoundPage/NotFoundPage';
-import ArticleCreatePage from '../components/Article/ArticleCeratePage/ArticleCreatePage';
+import ArticlePage from '../components/Article/ArticlePage';
 import SettingsPage from '../components/Settings/SettingsPage/SettingsPage';
 import SettingsImport from '../components/Settings/SettingsTemplates/SettingsImport/SettingsImport';
 import SettingsExport from '../components/Settings/SettingsTemplates/SettingsExport/SettingsExport';
@@ -37,7 +37,7 @@ export default (
 
                 <AuthRoute exact component={ProjectPage} path="/project/:id"/>
                 <AuthRoute exact component={ArchivePage} path="/archive/:projectId/:id"/>
-                <AuthRoute exact component={ArticleCreatePage} path="/project/:projectId/article/:articleId?"/>
+                <AuthRoute exact component={ArticlePage} path="/project/:projectId/article/:articleId?"/>
                 <AuthRoute exact component={ArchiveArticlePage} path="/archive/:archiveId/article/:articleId?"/>
                 <AuthRoute
                     exact

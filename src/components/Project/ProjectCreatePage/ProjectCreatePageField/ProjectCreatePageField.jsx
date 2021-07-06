@@ -11,7 +11,7 @@ import InputDateTimePicker from "../../../Form/InputDateTimePicker/InputDatePick
 import AsyncCreatableSelect from "../../../Form/AsyncCreatebleSelect/AsyncCreateableSelect";
 import Select from '../../../Form/Select/ReactSelect/ReactSelect';
 
-const cls = new Bem('article-create-page');
+const cls = new Bem('article-page');
 
 const ProjectCreateField = ({
     field,
