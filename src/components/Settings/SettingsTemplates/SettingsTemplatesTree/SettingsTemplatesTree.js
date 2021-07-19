@@ -8,6 +8,7 @@ import FolderOpenIcon from "../../../Shared/SvgIcons/FolderOpenIcon";
 import DocumentIcon from "../../../Shared/SvgIcons/DocumentIcon";
 import DragDotsIcon from "../../../Shared/SvgIcons/DragDotsIcon";
 import PlusIcon from "../../../Shared/SvgIcons/PlusIcon";
+import CopuIcon from "../../../Shared/SvgIcons/CopyIcon";
 import './settings-template-tree.scss';
 
 const cls = new Bem('settings-template-tree');
@@ -17,6 +18,7 @@ export default function SettingsTemplatesTree({
     columnSettings,
     data,
     onEditItem,
+    onCopyItem,
     onClickItem = () => {},
     onDeleteItem,
     onSort,
@@ -47,6 +49,7 @@ export default function SettingsTemplatesTree({
                         columnSettings={columnSettings}
                         onSorting={onSort}
                         onEditItem={onEditItem}
+                        onCopyItem={onCopyItem}
                         onDeleteItem={onDeleteItem}
                         onClickItem={onClickItem}
                         onAddItemChild={onAddItemChild}
@@ -68,6 +71,7 @@ function List({
     editPermissions,
     onAddItemChild,
     onEditItem,
+    onCopyItem,
     onDeleteItem,
     onClickItem
 }) {
@@ -98,6 +102,7 @@ function List({
                     editPermissions={editPermissions}
                     onAddChild={onAddItemChild}
                     onEdit={onEditItem}
+                    onCopy={onCopyItem}
                     onDelete={onDeleteItem}
                     onClick={onClickItem}
                     onSortChildren={onSorting}
@@ -113,6 +118,7 @@ function ListItem({
     editPermissions,
     columnSettings,
     onAddChild,
+    onCopy,
     onEdit,
     onDelete,
     onSortChildren,
@@ -208,6 +214,13 @@ function ListItem({
                                 <PlusIcon />
                             </button>
                         )}
+                        <button
+                            {...cls('item-button', 'edit')}
+                            onClick={() => onCopy(item, parent)}
+                            title='Копировать'
+                        >
+                            <CopuIcon {...cls('item-icon', 'copy')}/>
+                        </button>
                         <button
                             {...cls('item-button', 'edit')}
                             onClick={() => onEdit(item)}

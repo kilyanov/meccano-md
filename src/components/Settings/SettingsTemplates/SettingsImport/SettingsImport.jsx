@@ -11,6 +11,8 @@ import SettingsCategoryModal from "../SettingsCategoryModal/SettingsCategoryModa
 import SettingsTemplatesTree from "../SettingsTemplatesTree/SettingsTemplatesTree";
 import Text from "../../../Shared/Text";
 import ButtonsModal from '../../../Shared/ButtonsModal/ButtonsModal';
+import { connect } from 'react-redux';
+import { setAppProgress } from '../../../../redux/actions';
 import './settings-import.scss';
 
 const columnSettings = {
@@ -26,7 +28,7 @@ const columnSettings = {
 
 const TYPE = 'import';
 
-export default class SettingsImport extends Component {
+class SettingsImport extends Component {
     state = {
         showItemModal: false,
         showCategoryModal: false,
@@ -175,6 +177,25 @@ export default class SettingsImport extends Component {
         });
     }
 
+    handleCopyItem = (item) => {
+        const { onSetAppProgress } = this.props;
+
+        onSetAppProgress(true);
+        TransferService.import
+            .get(item.id)
+            .then((response) => {
+                const newItem = response.data;
+
+                delete newItem.id;
+                delete newItem.name;
+
+                this.setState({
+                    selectedTemplate: newItem,
+                    showItemModal: true
+                }, () => onSetAppProgress(false));
+            });
+    }
+
     handleSort = (sorted, parent) => {
         const { categories, templates } = sorted.reduce((acc, curr) => {
             const item = JSON.parse(curr);
@@ -310,6 +331,7 @@ export default class SettingsImport extends Component {
                         onClickItem={this.handleClickItem}
                         onDeleteItem={this.handleDeleteItem}
                         onAddItemChild={this.handleAddChild}
+                        onCopyItem={this.handleCopyItem}
                         onSort={this.handleSort}
                     />
 
@@ -359,3 +381,17 @@ export default class SettingsImport extends Component {
         );
     }
 }
+
+function mapStateToProps(state) {
+    return {
+        appProgress: state.appProgress
+    };
+}
+
+function mapDispatchToProps(dispatch) {
+    return {
+        onSetAppProgress: (value) => dispatch(setAppProgress(value))
+    };
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(SettingsImport);
