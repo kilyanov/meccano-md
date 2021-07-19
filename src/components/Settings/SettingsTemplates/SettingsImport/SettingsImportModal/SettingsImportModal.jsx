@@ -61,7 +61,7 @@ export default class SettingsImportModal extends Component {
             .then(([typesResponse, importResponse]) => {
                 this.setState({
                     types: typesResponse.data.map(({ name }) => ({ name, value: name })),
-                    form: importResponse?.data || { ...this.defaultForm },
+                    form: importResponse?.data || item || { ...this.defaultForm },
                     inProgress: false
                 });
             })
