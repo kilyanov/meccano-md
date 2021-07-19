@@ -61,7 +61,7 @@ export default class SettingsImportModal extends Component {
             .then(([typesResponse, importResponse]) => {
                 this.setState({
                     types: typesResponse.data.map(({ name }) => ({ name, value: name })),
-                    form: importResponse.data,
+                    form: importResponse?.data || { ...this.defaultForm },
                     inProgress: false
                 });
             })
@@ -233,7 +233,7 @@ export default class SettingsImportModal extends Component {
     );
 
     render() {
-        const { onClose } = this.props;
+        const { onClose, item } = this.props;
         const { form, types, inProgress } = this.state;
         const selectedType = types.find(t => t?.value === form.type);
 
@@ -244,7 +244,7 @@ export default class SettingsImportModal extends Component {
                 onSubmit={() => this.form.submit()}
                 submitDisabled={!this.canEdit}
             >
-                {!form.name && (
+                {(item?.id && !form.name) && (
                     <span>Произошла ошибка при открытии файла!</span>
                 )}
                 <Form
