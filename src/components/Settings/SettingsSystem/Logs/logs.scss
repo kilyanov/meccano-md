@@ -1,0 +1,19 @@
+.logs {
+  &__total-count {
+    font-size: 12px;
+    font-weight: bold;
+  }
+
+  &__label {
+    display: block;
+    margin-bottom: .5rem;
+    font-size: 12px;
+    font-weight: bold;
+  }
+
+  &__footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+}

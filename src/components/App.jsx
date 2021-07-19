@@ -11,10 +11,10 @@ import OperatedNotification from './Shared/OperatedNotifiction/OperatedNotificat
 import QueueManager from './Shared/QueeManager/QueueManager';
 // import NotificationsPanel from './Shared/NotificationsPanel/NotificationsPanel';
 import store from '../redux/store';
-import { switchTheme } from '../redux/actions/theme';
+import { switchTheme } from '../redux/actions';
 import Notification from "../helpers/Notification";
 import { saveAs } from "file-saver";
-import { getDocuments } from "../redux/actions/document";
+import { getDocuments } from "../redux/actions";
 import { EVENTS, THEME_TYPE, STORAGE_KEY, DOCUMENT_STATUS } from "../constants";
 import moment from "moment-timezone";
 

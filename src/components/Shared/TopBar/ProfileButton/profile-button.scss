@@ -4,6 +4,7 @@ $namespace: '.profile-button';
 
 #{$namespace} {
     position: relative;
+    width: 300px;
     height: 100%;
     border-left: 1px solid $gray;
     border-right: 1px solid $gray;
@@ -93,6 +94,10 @@ $namespace: '.profile-button';
         &:hover {
             background-color: $shamrock;
             color: $white;
+
+            #{$namespace}__list-item-heading small {
+                color: #f3f3f3;
+            }
         }
 
         &--active {
@@ -101,13 +106,26 @@ $namespace: '.profile-button';
         }
     }
 
+    &__list-item-heading {
+        display: flex;
+        flex-direction: column;
+        margin-right: auto;
+
+        small {
+            margin-top: 4px;
+            white-space: pre-line;
+            line-height: 12px;
+            color: $fontGrey;
+        }
+    }
+
     &__list-item-active {
         margin-right: 10px;
         color: $emerald;
     }
 
-    &__switch-theme-button {
-        margin-left: auto;
+    &__switch-button {
+        margin-left: 10px;
     }
 }
 

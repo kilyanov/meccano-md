@@ -1,35 +1,41 @@
 import React, { Component } from 'react';
+
 import PropTypes from 'prop-types';
+
 import { connect } from 'react-redux';
-import Page from '../../Shared/Page/Page';
+
 import { ArticleService, LocationService, ProjectService, SourceService, StorageService } from '@services';
-import Form from '../../Form/Form/Form';
-import Loader from '../../Shared/Loader/Loader';
-import ArrowIcon from '../../Shared/SvgIcons/ArrowIcon';
-import Button from '../../Shared/Button/Button';
-import ArticleViewSettings from './ArticleViewSettings/ArticleViewSettings';
-import ProjectCreateField from '../../Project/ProjectCreatePage/ProjectCreatePageField/ProjectCreatePageField';
+
 import Sortable from 'react-sortablejs';
+
 import { isMobileScreen, isProjectAccess, isRolesAccess, OperatedNotification } from '@helpers/Tools';
+import { EventEmitter } from "@helpers";
+
 import { STORAGE_KEY } from '@const';
-import { EventEmitter } from "../../../helpers";
 import { EVENTS } from "@const";
-import store from "../../../redux/store";
+
+import store from "@redux/store";
 import { setCurrentProject } from "@redux/actions/currentProject";
 import { PROJECT_PERMISSION } from "@const/ProjectPermissions";
 import { KEY_CODE } from "@const";
+
 import CreateLocationModal from "./CreateLocationModal";
-import LocationIcon from "../../Shared/SvgIcons/LocationIcon";
-import ReprintsIcon from "../../Shared/SvgIcons/ReprintsIcon";
+import { setCurrentArticle, clearCurrentArticle, setAppProgress } from '../../../redux/actions';
+
+import ArticleViewSettings from './ArticleViewSettings';
+import ProjectCreateField from '../../Project/ProjectCreatePage/ProjectCreatePageField';
+import Form from '../../Form/Form';
+import Page from '../../Shared/Page/Page';
 import Breadcrumbs from '../../Shared/Breadcrumbs';
-import { setCurrentArticle, clearCurrentArticle } from '../../../redux/actions';
-import AccessProject from '../../Shared/AccessProject';
 import Drawer from '../../Shared/Drawer/Drawer';
 import Reprints from '../Reprints/Reprints';
+import ArticlePageHeader from './ArticlePageHeader';
 import TinyMCE from "@components/Form/TinyMCE/TinyMCE";
-import './article-create-page.scss';
 
-const cls = new Bem('article-create-page');
+import './article-page.scss';
+import { NotificationManager } from 'react-notifications';
+
+const cls = new Bem('article-page');
 const defaultTimeZone = 'Europe/Moscow';
 const toDateWithoutTimeZone = (date) => {
     if (!date) return new Date();
@@ -42,7 +48,7 @@ const sectionsSet = {
     'section_sub_id': 'sectionsThree'
 };
 
-class ArticleCreatePage extends Component {
+class ArticlePage extends Component {
     static propTypes = {
         country: PropTypes.array,
         city: PropTypes.array,
@@ -94,7 +100,6 @@ class ArticleCreatePage extends Component {
             textIsChanged: false,
             annotationIsChanged: false,
             timeZone: defaultTimeZone,
-            inProgress: true,
             loadedSources: [],
             loadedCities: [],
             sectionsTwo: [],
@@ -106,6 +111,11 @@ class ArticleCreatePage extends Component {
         this.setUserType();
         EventEmitter.on(EVENTS.USER.CHANGE_TYPE, this.setUserType);
         document.addEventListener('keydown', this.handleDocumentKeyDown);
+
+        this.props.onSetAppProgress({
+            inProgress: true,
+            withBlockedOverlay: true
+        });
 
         if (this.state.articleId) {
             StorageService.set(STORAGE_KEY.LAST_VIEWED_ARTICLE, this.state.articleId);
@@ -133,12 +143,16 @@ class ArticleCreatePage extends Component {
 
                         this.setState({
                             sections: project.sections,
-                            projectFields: projectFields && projectFields.data,
-                            inProgress: false
+                            projectFields: projectFields && projectFields.data
                         }); // , this.getAdditionalDataFields
                     }
                 })
-                .catch(() => this.setState({ inProgress: false }));
+                .finally(() => {
+                    this.props.onSetAppProgress({
+                        inProgress: false,
+                        withBlockedOverlay: false
+                    });
+                });
         }
 
         if (this.props.profile) {
@@ -386,7 +400,26 @@ class ArticleCreatePage extends Component {
         }
     };
 
-    handleSubmit = () => {
+    handleDeleteArticle = () => {
+        const { onSetAppProgress } = this.props;
+        const { articleId, projectId, articlesNavs } = this.state;
+
+        onSetAppProgress({ inProgress: true, withBlockedOverlay: true });
+
+        ArticleService.delete({ articleIds: [ articleId ] }, projectId)
+            .then(() => {
+                NotificationManager.success('Статья была успешно удалена', 'Удаление статьи');
+
+                if (+articlesNavs.current < +articlesNavs.total) {
+                    this.handleNextArticle();
+                } else if (+articlesNavs.current > 1) {
+                    this.handlePrevArticle();
+                }
+            })
+            .finally(() => onSetAppProgress({ inProgress: false }));
+    };
+
+    handleSubmit = (withUpdateArticle = true) => {
         const form = _.cloneDeep(this.state.form);
 
         const isUpdate = !!this.state.articleId;
@@ -452,25 +485,34 @@ class ArticleCreatePage extends Component {
 
         const submitForm = () => {
             return new Promise(resolve => {
-                this.setState({ inProgress: true }, () => {
-                    ArticleService[isUpdate ? 'update' : 'create'](form, form.id, this.state.userTypeId)
-                        .then(response => {
-                            OperatedNotification.success({
-                                title: `${isUpdate ? 'Обновление' : 'Создание'} статьи`,
-                                message: `Статья успешно ${isUpdate ? 'обновлена' : 'создана'}`,
-                                submitButtonText: '← Перейти ко всем статьям',
-                                timeOut: 10000,
-                                onSubmit: () => EventEmitter.emit(EVENTS.REDIRECT, `/project/${this.state.projectId}`)
-                            });
-                            this.setState({
-                                articleId: response.data.id,
-                                inProgress: false
-                            }, () => {
-                                this.getArticle();
-                                resolve();
-                            });
-                        }).catch(() => this.setState({ inProgress: false }, resolve));
+                this.props.onSetAppProgress({
+                    inProgress: true,
+                    withBlockedOverlay: true
                 });
+
+                ArticleService[isUpdate ? 'update' : 'create'](form, form.id, this.state.userTypeId)
+                    .then(response => {
+                        OperatedNotification.success({
+                            title: `${isUpdate ? 'Обновление' : 'Создание'} статьи`,
+                            message: `Статья успешно ${isUpdate ? 'обновлена' : 'создана'}`,
+                            submitButtonText: '← Перейти ко всем статьям',
+                            timeOut: 4000,
+                            onSubmit: () => EventEmitter.emit(EVENTS.REDIRECT, `/project/${this.state.projectId}`)
+                        });
+                        this.setState({ articleId: response.data.id }, () => {
+                            if (withUpdateArticle) {
+                                this.getArticle();
+                            }
+                            resolve();
+                        });
+                    })
+                    .finally(() => {
+                        this.props.onSetAppProgress({
+                            inProgress: false,
+                            withBlockedOverlay: false
+                        });
+                        resolve();
+                    });
             });
         };
 
@@ -529,66 +571,73 @@ class ArticleCreatePage extends Component {
             }
         }
 
-        this.setState({ inProgress: true }, () => {
-            ArticleService
-                .get(this.state.articleId, requestForm)
-                .then(response => {
-                    const newState = { ...this.state };
-                    const form = response.data;
-                    const sections = form.project.sections;
-                    const articlesNavs = {
-                        current: _.get(response.headers, 'x-current'),
-                        next: _.get(response.headers, 'x-next-article'),
-                        prev: _.get(response.headers, 'x-prev-article'),
-                        total: _.get(response.headers, 'x-total-count')
-                    };
-
-                    form.date = toDateWithoutTimeZone(form.date);
-                    form.createdAt = toDateWithoutTimeZone(form.createdAt);
-                    form.updatedAt = toDateWithoutTimeZone(form.updatedAt);
-                    form.authors = (form.authors || []).map(({ id, name }) => ({ label: name, value: id }));
-
-                    if (form.source && form.source.id) {
-                        form.source = { name: form.source.name, value: form.source.id };
-                    }
-
-                    [ 'section_main_id', 'section_sub_id', 'section_three_id' ].forEach(option => {
-                        if (form[option]) {
-                            const found = this.findSectionById(form[option], sections);
-
-                            if (found) {
-                                // form[option] = {name: found.name, value: found.id, ...found};
-                                newState[sectionsSet[option]] = found[sectionsSet[option]];
-                            }
-                        }
-                    });
-
-                    this.article = _.cloneDeep(form);
-                    const fields = form.project.projectFields.find(f => f.user_type_id === userTypeId);
-
-                    if (fields && fields.data) {
-                        fields.data = fields.data.sort((a, b) => a.order - b.order);
-                    }
-
-                    if (!this.props.currentProject) {
-                        this.props.setCurrentProject(form.project);
-                    }
-
-                    newState.articleId = form.id;
-                    newState.articlesNavs = articlesNavs;
-                    newState.projectFields = fields ? fields.data : [];
-                    newState.sections = sections.sort((a, b) => a.position - b.position);
-                    newState.form = form;
-                    newState.prevForm = _.cloneDeep(form);
-                    newState.textIsChanged = false;
-                    newState.annotationIsChanged = false;
-                    newState.inProgress = false;
-
-                    this.setState(newState);
-                    this.props.setCurrentArticle(this.article);
-                })
-                .catch(() => this.setState({ inProgress: false }));
+        this.props.onSetAppProgress({
+            inProgress: true,
+            withBlockedOverlay: true
         });
+
+        ArticleService
+            .get(this.state.articleId, requestForm)
+            .then(response => {
+                const newState = { ...this.state };
+                const form = response.data;
+                const sections = form.project.sections;
+                const articlesNavs = {
+                    current: _.get(response.headers, 'x-current'),
+                    next: _.get(response.headers, 'x-next-article'),
+                    prev: _.get(response.headers, 'x-prev-article'),
+                    total: _.get(response.headers, 'x-total-count')
+                };
+
+                form.date = toDateWithoutTimeZone(form.date);
+                form.createdAt = toDateWithoutTimeZone(form.createdAt);
+                form.updatedAt = toDateWithoutTimeZone(form.updatedAt);
+                form.authors = (form.authors || []).map(({ id, name }) => ({ label: name, value: id }));
+
+                if (form.source && form.source.id) {
+                    form.source = { name: form.source.name, value: form.source.id };
+                }
+
+                [ 'section_main_id', 'section_sub_id', 'section_three_id' ].forEach(option => {
+                    if (form[option]) {
+                        const found = this.findSectionById(form[option], sections);
+
+                        if (found) {
+                            // form[option] = {name: found.name, value: found.id, ...found};
+                            newState[sectionsSet[option]] = found[sectionsSet[option]];
+                        }
+                    }
+                });
+
+                this.article = _.cloneDeep(form);
+                const fields = form.project.projectFields.find(f => f.user_type_id === userTypeId);
+
+                if (fields && fields.data) {
+                    fields.data = fields.data.sort((a, b) => a.order - b.order);
+                }
+
+                if (!this.props.currentProject) {
+                    this.props.setCurrentProject(form.project);
+                }
+
+                newState.articleId = form.id;
+                newState.articlesNavs = articlesNavs;
+                newState.projectFields = fields ? fields.data : [];
+                newState.sections = sections.sort((a, b) => a.position - b.position);
+                newState.form = form;
+                newState.prevForm = _.cloneDeep(form);
+                newState.textIsChanged = false;
+                newState.annotationIsChanged = false;
+
+                this.setState(newState);
+                this.props.setCurrentArticle(this.article);
+            })
+            .finally(() => {
+                this.props.onSetAppProgress({
+                    inProgress: false,
+                    withBlockedOverlay: false
+                });
+            });
     };
 
     getDataSectionFields = () => {
@@ -680,6 +729,7 @@ class ArticleCreatePage extends Component {
 
     checkFormChanges = () => {
         const { prevForm, form, textIsChanged, annotationIsChanged } = this.state;
+        const autoSaveArticles = !!StorageService.get(STORAGE_KEY.AUTO_SAVE_ARTICLES);
 
         return new Promise((resolve) => {
             const prevFormClone = _.cloneDeep(prevForm);
@@ -716,29 +766,28 @@ class ArticleCreatePage extends Component {
             });
 
             if (!isEqual) {
-                return OperatedNotification.warning({
-                    title: 'Внимание',
-                    message: 'Есть несохраненные изменения.\nПродолжить без сохранения?',
-                    submitButtonText: 'Продолжить',
-                    cancelButtonText: 'Сохранять',
-                    closeOnClick: true,
-                    onSubmit: () => resolve(),
-                    onCancel: () => this.handleSubmit()
-                });
+                if (autoSaveArticles) {
+                    // save article
+                    this.handleSubmit(false)
+                        .then(() => resolve());
+                } else {
+                    return OperatedNotification.warning({
+                        title: 'Внимание',
+                        message: 'Есть несохраненные изменения.\nПродолжить без сохранения?',
+                        submitButtonText: 'Продолжить',
+                        cancelButtonText: 'Сохранять',
+                        closeOnClick: true,
+                        onSubmit: () => resolve(),
+                        onCancel: () => {
+                            this.handleSubmit(false)
+                                .then(() => resolve());
+                        }
+                    });
+                }
+            } else {
+                return resolve();
             }
-
-            return resolve();
         });
-    };
-
-    clearString = (value) => {
-        let newValue = value;
-
-        if (!_.isString(newValue)) {
-            newValue = '';
-        }
-
-        return newValue.replace(/<[^>]*>?/gm, '');
     };
 
     articleId = this.props.match.params.articleId;
@@ -862,7 +911,7 @@ class ArticleCreatePage extends Component {
     };
 
     render() {
-        const { roles } = this.props;
+        const { appProgress, roles } = this.props;
         const {
             articlesNavs,
             form,
@@ -870,8 +919,7 @@ class ArticleCreatePage extends Component {
             showLocationModal,
             viewType,
             projectFields,
-            userType,
-            inProgress
+            userType
         } = this.state;
         const isUpdate = !!this.state.articleId;
         const dataSectionFields = this.getDataSectionFields();
@@ -928,87 +976,26 @@ class ArticleCreatePage extends Component {
         return (
             <Page withBar staticBar {...cls()}>
                 <Breadcrumbs location={this.props.location} />
-                <section {...cls('header')}>
-                    <a
-                        {...cls('back-button')}
-                        onClick={this.handleClickBackButton}
-                    ><i>‹</i> Назад к проекту</a>
 
-                    <div {...cls('title-wrap')}>
-                        {articlesNavs.prev && (
-                            <button
-                                {...cls('title-button', 'left')}
-                                onClick={this.handlePrevArticle}
-                            ><ArrowIcon {...cls('title-arrow')}/></button>
-                        )}
+                <ArticlePageHeader
+                    articleTitle={form.title}
+                    articleId={this.articleId}
+                    onBackBtn={this.handleClickBackButton}
+                    articlesNavs={articlesNavs}
+                    onPrevArticle={this.handlePrevArticle}
+                    onNextArticle={this.handleNextArticle}
+                    onClickViewSettings={this.handleShowViewSettings}
+                    isUpdate={isUpdate}
+                    onAddCity={() => this.setState({ showLocationModal: true })}
+                    onShowReprints={this.handleShowDrawer}
+                    form={form}
+                    userType={userType}
+                    onSubmit={() => this.form.submit()}
+                    onDoneArticle={this.handleDoneArticle}
+                    onDeleteArticle={this.handleDeleteArticle}
+                />
 
-                        <h2 {...cls('title')}>
-                            {isUpdate ? 'Статья' : 'Новая статья'}
-                            {(articlesNavs.current && articlesNavs.total) &&
-                            ` ${articlesNavs.current} из ${articlesNavs.total}`}
-                        </h2>
-
-                        {articlesNavs.next && (
-                            <button
-                                {...cls('title-button', 'right')}
-                                onClick={this.handleNextArticle}
-                            ><ArrowIcon {...cls('title-arrow')}/></button>
-                        )}
-                    </div>
-
-                    <button
-                        {...cls('view-button')}
-                        onClick={this.handleShowViewSettings}
-                        title='Отображение статей'
-                    >
-                        <div {...cls('view-button-icon')}>
-                            <i/><i/><i/>
-                        </div>
-
-                        {/* <span>Отображение статей</span> */}
-                    </button>
-
-                    <button
-                        {...cls('location-button')}
-                        title='Добавить город'
-                        onClick={() => this.setState({ showLocationModal: true })}
-                    >
-                        <LocationIcon/>
-                    </button>
-
-                    {this.state.articleId &&
-                        <button
-                            {...cls('drawer-button')}
-                            onClick={this.handleShowDrawer}
-                            title='Перепечатки'
-                        >
-                            <ReprintsIcon />
-                            {!!this.state.form.reprints?.length &&
-                                <span {...cls('reprint-counter')}>{ this.state.form.reprints.length }</span>
-                            }
-                        </button>
-                    }
-
-                    <AccessProject permissions={[ PROJECT_PERMISSION.EDIT ]}>
-                        <Button
-                            {...cls('done-button')}
-                            text={userType && form[`complete_${userType.slug}`] ? 'Отменить завершение' : 'Завершить статью'}
-                            style={userType && form[`complete_${userType.slug}`] ? 'info' : 'success'}
-                            disabled={!userType}
-                            onClick={this.handleDoneArticle}
-                        />
-
-                        <Button
-                            {...cls('submit-button')}
-                            text={isUpdate ? 'Обновить' : 'Создать'}
-                            onClick={() => this.form.submit()}
-                        />
-                    </AccessProject>
-                </section>
-
-                {inProgress ? (
-                    <Loader />
-                ) : (
+                {!appProgress.inProgress && (
                     <Form
                         {...cls('form', '', 'container')}
                         onSubmit={this.handleSubmit}
@@ -1117,6 +1104,7 @@ function mapStateToProps(state) {
     state.roles.forEach(({ name }) => roles[name] = name);
 
     return {
+        appProgress: state.appProgress,
         userTypes: state.userTypes,
         currentProject: state.currentProject,
         currentArticle: state.currentArticle,
@@ -1130,8 +1118,9 @@ function mapDispatchToProps(dispatch) {
     return {
         setCurrentArticle: (value) => dispatch(setCurrentArticle(value)),
         clearCurrentArticle: () => dispatch(clearCurrentArticle()),
-        setCurrentProject: (value) => dispatch(setCurrentProject(value))
+        setCurrentProject: (value) => dispatch(setCurrentProject(value)),
+        onSetAppProgress: (value) => dispatch(setAppProgress(value))
     };
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(ArticleCreatePage);
+export default connect(mapStateToProps, mapDispatchToProps)(ArticlePage);

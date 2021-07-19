@@ -51,6 +51,11 @@ export const List = {
     },
     file: {
         download: '/file/download'
+    },
+    system: {
+        clearCache: '/system/clear-cache',
+        documents: '/system/documents',
+        logs: '/system/logs'
     }
 };
 

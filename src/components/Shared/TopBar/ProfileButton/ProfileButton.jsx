@@ -8,7 +8,7 @@ import {EventEmitter} from "../../../../helpers";
 import {STORAGE_KEY, EVENTS, THEME_TYPE} from "../../../../constants";
 import './profile-button.scss';
 import Switcher from "../../../Form/Switcher/Switcher";
-import {switchTheme} from "../../../../redux/actions/theme";
+import {switchTheme} from "../../../../redux/actions";
 
 const namespace = 'profile-button';
 const cls = new Bem(namespace);
@@ -18,6 +18,14 @@ class ProfileButton extends Component {
         profile: PropTypes.object
     };
 
+    constructor(props) {
+        super(props)
+
+        this.state = {
+            isOpen: false,
+            autoSaveArticles: !!StorageService.get(STORAGE_KEY.AUTO_SAVE_ARTICLES)
+        };
+    }
     state = {
         isOpen: false
     };
@@ -49,6 +57,20 @@ class ProfileButton extends Component {
         this.props.onSwitchTheme();
     };
 
+    handleSwitchAutoSave = () => {
+        this.setState(state => {
+            state.autoSaveArticles = !state.autoSaveArticles;
+
+            if (state.autoSaveArticles) {
+                StorageService.set(STORAGE_KEY.AUTO_SAVE_ARTICLES, 'true');
+            } else {
+                StorageService.remove(STORAGE_KEY.AUTO_SAVE_ARTICLES);
+            }
+
+            return state;
+        });
+    }
+
     getCurrentUserType = () => {
         const storageValue = StorageService.get(STORAGE_KEY.USER_TYPE);
         let userType = null;
@@ -62,7 +84,7 @@ class ProfileButton extends Component {
 
     render() {
         const {profile, userTypes, currentProject, theme} = this.props;
-        const {isOpen} = this.state;
+        const {autoSaveArticles, isOpen} = this.state;
         const storageUserType = this.getCurrentUserType();
         const projectUserTypes = _.get(currentProject, 'userProject.userProjectTypes', []);
         const userTypeMenu = [];
@@ -114,12 +136,27 @@ class ProfileButton extends Component {
                         })}
 
                         <li {...cls('list-item')}>
-                            Темная тема
+                            <div { ...cls('list-item-heading') }>
+                                Темная тема
+                            </div>
 
                             <Switcher
-                                {...cls('switch-theme-button')}
+                                {...cls('switch-button')}
                                 checked={theme === THEME_TYPE.DARK}
                                 onChange={this.handleSwitchTheme}
+                            />
+                        </li>
+
+                        <li {...cls('list-item')}>
+                            <div { ...cls('list-item-heading') }>
+                                Сохранять при переходе
+                                <small>Автоматически сохранять статьи при переходе на следующую/предыдущую статью</small>
+                            </div>
+
+                            <Switcher
+                                {...cls('switch-button')}
+                                checked={autoSaveArticles}
+                                onChange={this.handleSwitchAutoSave}
                             />
                         </li>
 

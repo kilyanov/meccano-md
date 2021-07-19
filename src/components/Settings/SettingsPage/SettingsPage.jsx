@@ -24,7 +24,8 @@ const SettingsPage = ({
     onAdd = () => {},
     onEndPage = () => {},
     onSearch,
-    searchQuery
+    searchQuery,
+    rightBlock = null
 }) => {
     const handleScroll = event => {
         const { target } = event;
@@ -73,6 +74,8 @@ const SettingsPage = ({
                                                 ))}
                                             </Access>
                                         )}
+
+                                        {rightBlock}
 
                                         {(withAddButton || dropDownButton) && (
                                             <Access permissions={[ PERMISSION.editSettings ]}>

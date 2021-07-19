@@ -26,7 +26,7 @@ import { setCurrentProject } from "@redux/actions/currentProject";
 import { clearArticleColors, setArticleColors } from "@redux/actions/articleColors";
 import { getColumnsFromStorage } from "./ProjectTable/Columns";
 import ArticleTransferModal from "../../Article/ArticleTransferModal/ArticleTransferModal";
-import ProjectPagination from "./ProjectTable/ProjectPagination/ProjectPagintaion";
+import Pagination from "../../Shared/Pagination";
 import ReactSelect from "../../Form/Select/ReactSelect/ReactSelect";
 import { PROJECT_PERMISSION } from "@const";
 import Breadcrumbs from '../../Shared/Breadcrumbs';
@@ -77,7 +77,7 @@ class ProjectPage extends Component {
             isAllArticlesSelected: false,
             pagination,
             project: null,
-            filters: defaultFilters,
+            filters: { ...defaultFilters },
             showArticleModal: false,
             showUploadArticlesModal: false,
             showImportArticlesModal: false,
@@ -109,7 +109,7 @@ class ProjectPage extends Component {
                 isAllArticlesSelected: false,
                 pagination: defaultPagination,
                 project: null,
-                filters: defaultFilters,
+                filters: { ...defaultFilters },
                 showArticleModal: false,
                 showUploadArticlesModal: false,
                 showImportArticlesModal: false,
@@ -140,7 +140,8 @@ class ProjectPage extends Component {
         }
 
         this.setState(state => {
-            state.selectedArticles[state.pagination.page] = state.articles.filter(({ id }) => articleIds.includes(id));
+            state.selectedArticles[state.pagination.page] = this.notFilteredArticles
+                .filter(({ id }) => articleIds.includes(id));
 
             return state;
         });
@@ -315,11 +316,11 @@ class ProjectPage extends Component {
         }
     };
 
-    handleChangePage = ({ selected }) => {
-        this.searchParams.set('page', (selected + 1).toString());
+    handleChangePage = (currentPage) => {
+        this.searchParams.set('page', currentPage.toString());
         this.props.onSetAppProgress({ inProgress: true, withBlockedOverlay: true });
         this.setState(state => {
-            state.pagination.page = selected + 1;
+            state.pagination.page = currentPage;
             return state;
         }, this.getArticles);
     };
@@ -459,6 +460,13 @@ class ProjectPage extends Component {
 
                 QueueManager.remove(this.queueMessage.id);
                 this.setSearchParams();
+
+                // Save all articles for correct select articles
+                response.data.forEach(item => {
+                    if (!this.notFilteredArticles.find(({ id }) => id === item.id)) {
+                        this.notFilteredArticles.push(item);
+                    }
+                });
 
                 this.setState({
                     articles: response.data,
@@ -647,6 +655,8 @@ class ProjectPage extends Component {
     isMounted = true;
 
     searchParams = new URLSearchParams(this.props.location.search);
+
+    notFilteredArticles = []
 
     render() {
         const {
@@ -860,7 +870,7 @@ class ProjectPage extends Component {
                     />
 
                     <div {...cls('footer')}>
-                        <ProjectPagination
+                        <Pagination
                             page={currentPage}
                             pageCount={pagination.pageCount}
                             onPageChange={this.handleChangePage}
