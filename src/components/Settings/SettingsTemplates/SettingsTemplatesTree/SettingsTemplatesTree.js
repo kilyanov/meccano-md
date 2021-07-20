@@ -247,6 +247,7 @@ function ListItem({
                     items={items}
                     onAddItemChild={onAddChild}
                     onEditItem={onEdit}
+                    onCopyItem={onCopy}
                     onDeleteItem={onDelete}
                     onSorting={onSortChildren}
                     onClickItem={onClick}
