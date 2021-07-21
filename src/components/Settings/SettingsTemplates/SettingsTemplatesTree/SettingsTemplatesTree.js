@@ -214,13 +214,15 @@ function ListItem({
                                 <PlusIcon />
                             </button>
                         )}
-                        <button
-                            {...cls('item-button', 'edit')}
-                            onClick={() => onCopy(item, parent)}
-                            title='Копировать'
-                        >
-                            <CopuIcon {...cls('item-icon', 'copy')}/>
-                        </button>
+                        {!isSection && (
+                            <button
+                                {...cls('item-button', 'edit')}
+                                onClick={() => onCopy(item, parent)}
+                                title='Копировать'
+                            >
+                                <CopuIcon {...cls('item-icon', 'copy')}/>
+                            </button>
+                        )}
                         <button
                             {...cls('item-button', 'edit')}
                             onClick={() => onEdit(item)}

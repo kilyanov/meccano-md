@@ -46,7 +46,7 @@ export default class SettingsExportModal extends Component {
             replace: ''
         };
         this.state = {
-            form: { ...this.defaultForm },
+            form: props.item && !props.item.id ? props.item : { ...this.defaultForm },
             inProgress: false
         };
     }
@@ -135,6 +135,7 @@ export default class SettingsExportModal extends Component {
     };
 
     handleSubmit = () => {
+        const { parent } = this.props;
         const form = _.pick(this.state.form, [ 'name', 'rules', 'replaces', 'projects', 'file', 'type' ]);
         const method = this.state.form.id ? 'update' : 'set';
 
@@ -147,6 +148,10 @@ export default class SettingsExportModal extends Component {
             form.projects = form.projects.map(({ value }) => value);
         } else {
             delete form.projects;
+        }
+
+        if (parent) {
+            form.section_id = parent.id;
         }
 
         const formData = objectToFormData(form, { indices: true });
@@ -247,13 +252,14 @@ export default class SettingsExportModal extends Component {
     );
 
     render() {
-        const { onClose } = this.props;
+        const { onClose, parent } = this.props;
         const { form, inProgress } = this.state;
         const fileName = form.file ? [ form.file ] : [];
 
         return (
             <ConfirmModal
                 title={form.id ? 'Изменить' : 'Добавить'}
+                subTitle={parent && `в категорию ${parent.name}`}
                 onClose={onClose}
                 onSubmit={() => this.form.submit()}
                 submitDisabled={!this.canEdit}
@@ -269,7 +275,7 @@ export default class SettingsExportModal extends Component {
                                 autoFocus
                                 required
                                 label='Название'
-                                value={form.name}
+                                value={form?.name || ''}
                                 onChange={val => this.handleChangeForm(val, 'name')}
                                 disabled={!this.canEdit}
                             />
