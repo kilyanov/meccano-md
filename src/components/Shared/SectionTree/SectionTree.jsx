@@ -1,17 +1,20 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import SectionTreeList from './SectionTreeList/SectionTreeList';
-import './section-tree.scss';
 import SectionTreeAddItem from './SectionTreeAddItem/SectionTreeAddItem';
 import PromiseDialogModal from '../PromiseDialogModal/PromiseDialogModal';
 import InlineButton from '../InlineButton/InlineButton';
+import SectionsImportModal from '../../Project/ProjectCreatePage/ProjectSections/SectionsImportModal';
+import './section-tree.scss';
 
 const cls = new Bem('section-tree');
 
 export default class SectionTree extends Component {
     static propTypes = {
+        projectId: PropTypes.string.isRequired,
         data: PropTypes.array.isRequired,
-        onChange: PropTypes.func.isRequired
+        onChange: PropTypes.func.isRequired,
+        onUpdate: PropTypes.func.isRequired,
     };
 
     state = {
@@ -144,7 +147,6 @@ export default class SectionTree extends Component {
     };
 
     handleSorting = (sorted, parent) => {
-        console.log('sorted', sorted, parent);
         const { data, copyData } = this.state;
         const sort = (items) => {
             return sorted.map((id, index) => {
@@ -222,13 +224,25 @@ export default class SectionTree extends Component {
     };
 
     render() {
-        const { showAddModal, selectedSection, isEdit } = this.state;
+        const { onUpdate, projectId } = this.props
+        const {
+            showAddModal,
+            selectedSection,
+            isEdit,
+            showImportModal
+        } = this.state;
 
         return (
             <section {...cls()}>
-                <InlineButton
-                    onClick={() => this.setState({ showAddModal: true })}
-                >+ Добавить корневой раздел</InlineButton>
+                <div { ...cls('buttons') }>
+                    <InlineButton
+                        onClick={() => this.setState({ showAddModal: true })}
+                    >+ Добавить корневой раздел</InlineButton>
+
+                    <InlineButton
+                        onClick={() => this.setState({ showImportModal: true })}
+                    >Импорт структуры</InlineButton>
+                </div>
 
                 <SectionTreeList
                     items={this.state.data}
@@ -244,6 +258,14 @@ export default class SectionTree extends Component {
                         item={isEdit ? selectedSection : null}
                         onClose={() => this.setState({ showAddModal: false })}
                         onSubmit={isEdit ? this.handleEditSection : this.handleAddSection}
+                    />
+                )}
+
+                {showImportModal && (
+                    <SectionsImportModal
+                        projectId={projectId}
+                        onClose={() => this.setState({ showImportModal: false })}
+                        onSubmit={onUpdate}
                     />
                 )}
 
