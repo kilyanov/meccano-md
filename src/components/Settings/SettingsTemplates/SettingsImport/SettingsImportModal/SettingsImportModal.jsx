@@ -19,7 +19,7 @@ export default class SettingsImportModal extends Component {
     static propTypes = {
         onClose: PropTypes.func.isRequired,
         onSubmit: PropTypes.func.isRequired,
-        item: PropTypes.object
+        item: PropTypes.object,
     };
 
     constructor(props) {
@@ -128,6 +128,7 @@ export default class SettingsImportModal extends Component {
     };
 
     handleSubmit = () => {
+        const { parent } = this.props
         const form = { ...this.state.form };
         const method = form.id ? 'update' : 'set';
 
@@ -149,6 +150,10 @@ export default class SettingsImportModal extends Component {
         if (!form.joins.length) return NotificationManager.error('Не заполнено "Объединение полей"', 'Ошибка');
         if (!form.joins.every(item => item.name && item.value)) {
             return NotificationManager.error('Не верно заполнены поля "Объединение полей"', ' Ошибка');
+        }
+
+        if (parent) {
+            form.section_id = parent.id;
         }
 
         this.setState({ inProgress: true }, () => {
@@ -233,13 +238,14 @@ export default class SettingsImportModal extends Component {
     );
 
     render() {
-        const { onClose, item } = this.props;
+        const { onClose, item, parent } = this.props;
         const { form, types, inProgress } = this.state;
         const selectedType = types.find(t => t?.value === form.type);
 
         return (
             <ConfirmModal
                 title={form.id ? 'Изменить' : 'Добавить'}
+                subTitle={parent && `в категорию ${parent.name}`}
                 onClose={onClose}
                 onSubmit={() => this.form.submit()}
                 submitDisabled={!this.canEdit}

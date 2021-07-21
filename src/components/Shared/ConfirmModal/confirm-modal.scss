@@ -65,6 +65,11 @@ $namespace: '.confirm-modal';
         margin: 0;
     }
 
+    &__sub-title {
+        font-size: 12px;
+        color: $fontGrey;
+    }
+
     &__body {
         padding: 0 40px;
         overflow-y: auto;
