@@ -24,7 +24,8 @@ export const ProjectService = {
     sections: {
         get: (project) => API.get(urlGenerator('sections')({project})),
         create: (project, form) => API.post(urlGenerator('sections')({project}), form),
-        update: (project, form) => API.put(urlGenerator('sections')({project}), form)
+        update: (project, form) => API.put(urlGenerator('sections')({project}), form),
+        import: (project, formData) => API.post(`${ApiList.project.sectionsImport}?project=${project}`, formData)
     },
     getSections: (project) => API.get(`${ApiList.project.sections}${ParseToRequest({project})}`),
     createSections: (project, form) => API.post(`${ApiList.project.sections}${ParseToRequest({project})}`, form),

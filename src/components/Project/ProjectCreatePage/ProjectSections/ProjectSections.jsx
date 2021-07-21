@@ -17,6 +17,14 @@ export default class ProjectSections extends Component {
     };
 
     componentDidMount() {
+        this._getSections()
+    }
+
+    handleChangeSections = (sections) => {
+        this.props.onChange(sections);
+    };
+
+    _getSections = () => {
         ProjectService
             .getSections(this.props.projectId)
             .then(response => {
@@ -26,21 +34,19 @@ export default class ProjectSections extends Component {
             });
     }
 
-    handleChangeSections = (sections) => {
-        this.props.onChange(sections);
-    };
-
     render() {
-        const {classes, sections} = this.props;
-        const {inProgress} = this.state;
+        const { classes, sections, projectId } = this.props;
+        const { inProgress } = this.state;
 
         return (
             <div {...classes('step', 'second', 'container')}>
                 <h3>Структура документа</h3>
 
                 <SectionTree
+                    projectId={projectId}
                     data={sections}
                     onChange={this.handleChangeSections}
+                    onUpdate={() => this._getSections()}
                 />
 
                 {inProgress && <Loader fixed />}
