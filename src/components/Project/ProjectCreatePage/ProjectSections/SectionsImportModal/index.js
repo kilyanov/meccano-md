@@ -34,9 +34,10 @@ export default function SectionsImportModal({
             .then(() => {
                 NotificationManager.success('Импорт успешно завершен', 'Импорт структуры');
                 onSubmit();
+                setInProgress(false);
                 onClose();
             })
-            .finally(() => {
+            .catch(() => {
                 setInProgress(false);
             });
     }, [file]);
