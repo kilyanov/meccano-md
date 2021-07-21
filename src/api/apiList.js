@@ -28,6 +28,7 @@ export const List = {
     project: {
         project: '/project',
         sections: '/project/section',
+        sectionsImport: '/project/section/import',
         fieldValue: '/project/field-value',
         wordSearch: '/project/word-search',
         importWordSearch: '/project/word-search/import',

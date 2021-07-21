@@ -25,7 +25,8 @@ export default class ConfirmModal extends PureComponent {
         closeOnEsc: PropTypes.bool,
         buttons: PropTypes.array,
         submitStyle: PropTypes.oneOf(['default', 'success', 'error', 'info', 'inline']),
-        width: PropTypes.oneOf(['wide', 'normal', 'small'])
+        width: PropTypes.oneOf(['wide', 'normal', 'small']),
+        subTitle: PropTypes.string
     };
 
     static defaultProps = {
@@ -65,7 +66,8 @@ export default class ConfirmModal extends PureComponent {
             submitDisabled,
             submitStyle,
             buttons,
-            width
+            width,
+            subTitle
         } = this.props;
 
         return ReactDOM.createPortal((
@@ -73,6 +75,7 @@ export default class ConfirmModal extends PureComponent {
                 <div {...cls('container')}>
                     <section {...cls('header')}>
                         <h2 {...cls('title')}>{title}</h2>
+                        <span { ...cls('sub-title') }>{subTitle}</span>
                         <button
                             onClick={onClose}
                             {...cls('close-button')}
