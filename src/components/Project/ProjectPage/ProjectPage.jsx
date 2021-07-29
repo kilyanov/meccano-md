@@ -84,7 +84,8 @@ class ProjectPage extends Component {
             showTransferModal: false,
             showArchiveModal: false,
             userType,
-            isEditMode: false
+            isEditMode: false,
+            comparedArticles: {}
         };
     }
 
@@ -95,6 +96,21 @@ class ProjectPage extends Component {
             EventEmitter.on(EVENTS.USER.CHANGE_TYPE, this.handleChangeUserType);
             this.props.onSetAppProgress({ inProgress: true, withBlockedOverlay: true });
         });
+        ProjectService.compare(this.projectId)
+            .then(({ data }) => {
+                // Наборы сравнений статей
+                const comparedArticles = data.map((set) => set?.compareArticles || []);
+                // Индексированный набор сравнений (индексом выступает id статьи)
+                const indexedComparedArticles = comparedArticles.reduce((acc, compare) => {
+                    compare.forEach(({ article_id: id }) => {
+                        // Исключая родительскую статью из набора
+                        acc[id] = compare.filter((article) => article?.article_id !== id);
+                    });
+                    return acc;
+                }, {});
+                this.setState({ comparedArticles: indexedComparedArticles });
+            })
+            .catch(console.error);
     }
 
     componentDidUpdate(prevProps) {
@@ -856,6 +872,7 @@ class ProjectPage extends Component {
                         fields={fields}
                         userType={userType}
                         currentUserId={this.props.profile.id}
+                        comparedArticles={this.state.comparedArticles}
                         onChangeSelected={this.handleChangeSelected}
                         onSelectedAll={this.handleSelectAll}
                         onChangeColumns={this.handleChangeColumns}

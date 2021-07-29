@@ -17,6 +17,8 @@ import { StorageService } from "@services";
 import ArticleMovementHistory from "../../../Article/ArticleMovementHistory/ArticleMovementHistory";
 import ProjectTableEditableCell from './ProjectTableEditableCell/ProjectTableEditableCell';
 import FocusHelper from './FocusHelper';
+import CompareIcon from '../../../Shared/SvgIcons/CompareIcon';
+import Tooltip from '../../../Shared/Tooltip/Tooltip';
 
 const cls = new Bem('project-table');
 const headerClasses = new Bem('project-table-header');
@@ -41,7 +43,8 @@ class ProjectTable extends Component {
         currentProject: PropTypes.object,
         onChangeFilter: PropTypes.func,
         getArticleMenu: PropTypes.func.isRequired,
-        currentUserId: PropTypes.string.isRequired
+        currentUserId: PropTypes.string,
+        comparedArticles: PropTypes.object
     };
 
     static defaultProps = {
@@ -64,6 +67,7 @@ class ProjectTable extends Component {
     }
 
     componentDidUpdate = () => {
+        console.log(this.props.comparedArticles);
         this.syncColumnWidth();
         this.focusHelper = new FocusHelper();
     };
@@ -307,6 +311,10 @@ class ProjectTable extends Component {
                     />
                 </div>
 
+                <div {...headerClasses('cell', 'compare')}>
+                    <CompareIcon {...headerClasses('compare-icon')} />
+                </div>
+
                 {this.selectedColumns.map(({ key, width }) => {
                     const active = sort.type === key;
                     const currentField = fields.find(({ slug }) => slug === key);
@@ -441,6 +449,20 @@ class ProjectTable extends Component {
                         checked={selectedIds.includes(article.id) || this.props.isAllSelected}
                         onChange={(event) => this.handleSelectArticle(article.id, event, articleIndex)}
                     />
+                </div>
+
+                <div {...cls('cell', 'compare')}>
+                    {!!this.props.comparedArticles?.[article.id] && (
+                        <Tooltip
+                            {...cls('compare-tooltip')}
+                            isOpen
+                            target={(<CompareIcon {...cls('compare-icon')} />)}
+                            content={(<div {...cls('compare-info')}>
+                                Найдены дубликаты: {this.props.comparedArticles?.[article.id].length}
+                            </div>)}
+                            position="right"
+                        />
+                    )}
                 </div>
 
                 {this.selectedColumns.map(({ key }) => {
