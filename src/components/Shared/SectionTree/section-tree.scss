@@ -1,4 +1,8 @@
 .section-tree {
   max-height: 95%;
   overflow-y: auto;
+
+  &__buttons > * + * {
+    margin-left: 10px;
+  }
 }

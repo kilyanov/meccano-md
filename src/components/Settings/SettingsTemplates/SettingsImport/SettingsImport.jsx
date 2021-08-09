@@ -45,22 +45,7 @@ class SettingsImport extends Component {
     };
 
     componentDidMount() {
-        this.setState({ inProgress: true }, () => {
-            TransferService.section
-                .get(TYPE)
-                .then(response => {
-                    if (response?.data) {
-                        this.data = response.data;
-                        this.setState({ inProgress: false });
-                    }
-                })
-                .catch(e => {
-                    if (e?.data?.message) {
-                        this.setState({ error: e.data.message });
-                    }
-                })
-                .finally(() => this.setState({ inProgress: false }));
-        });
+        this._getTemplates();
     }
 
     componentDidUpdate = () => {
@@ -133,7 +118,7 @@ class SettingsImport extends Component {
         this.setState({
             selectedCategory: null,
             hasChanges: true
-        });
+        }, this._getTemplates);
     };
 
     handleSubmitCategory = (name) => {
@@ -177,20 +162,37 @@ class SettingsImport extends Component {
         });
     }
 
-    handleCopyItem = (item) => {
+    handleCopyItem = (item, parent) => {
         const { onSetAppProgress } = this.props;
 
         onSetAppProgress(true);
         TransferService.import
             .get(item.id)
             .then((response) => {
-                const newItem = response.data;
+                const form = response.data;
 
-                delete newItem.id;
-                delete newItem.name;
+                delete form.id;
+                delete form.name;
+
+                form.rules = form.rules.map(i => {
+                    delete i.id;
+                    delete i.createdAt;
+                    delete i.updatedAt;
+
+                    return i;
+                });
+
+                form.joins = form.joins.map(i => {
+                    delete i.id;
+                    delete i.createdAt;
+                    delete i.updatedAt;
+
+                    return i;
+                });
 
                 this.setState({
-                    selectedTemplate: newItem,
+                    selectedCategory: parent,
+                    selectedTemplate: form,
                     showItemModal: true
                 }, () => onSetAppProgress(false));
             });
@@ -286,6 +288,25 @@ class SettingsImport extends Component {
         return item.hasOwnProperty('children') || item.hasOwnProperty(TYPE);
     }
 
+    _getTemplates = () => {
+        this.setState({ inProgress: true }, () => {
+            TransferService.section
+                .get(TYPE)
+                .then(response => {
+                    if (response?.data) {
+                        this.data = response.data;
+                        this.setState({ inProgress: false });
+                    }
+                })
+                .catch(e => {
+                    if (e?.data?.message) {
+                        this.setState({ error: e.data.message });
+                    }
+                })
+                .finally(() => this.setState({ inProgress: false }));
+        });
+    }
+
     data = {};
 
     moved = [];
@@ -338,6 +359,7 @@ class SettingsImport extends Component {
                     {showItemModal && (
                         <SettingsImportModal
                             item={selectedTemplate}
+                            parent={selectedCategory}
                             onClose={() => this.setState({ selectedTemplate: null, showItemModal: false })}
                             onSubmit={this.handleSubmitItem}
                         />

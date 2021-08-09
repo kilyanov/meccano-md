@@ -194,7 +194,12 @@ export default function TinyMCE({
                         'bullist numlist outdent indent | removeformat | code help',
                     code_dialog_height: 200,
                     code_dialog_width: 300,
-                    contextmenu: 'TCopyPlugin TPastePlugin'
+                    contextmenu: 'TCopyPlugin TPastePlugin',
+                    // spellchecker_url: '/spellchecker',
+                    // spellchecker_languages: 'Russian=ru,English=en',
+                    // spellchecker_wordchar_pattern: /[^\s,\.]+/g,
+                    // spellchecker_language: 'ru_RU',
+                    browser_spellcheck: true
                 }}
                 onEditorChange={handleEditorChange}
                 onChange={handleChange}

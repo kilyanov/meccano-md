@@ -11,6 +11,8 @@ import SettingsCategoryModal from "../SettingsCategoryModal/SettingsCategoryModa
 import SettingsTemplatesTree from "../SettingsTemplatesTree/SettingsTemplatesTree";
 import Text from "../../../Shared/Text";
 import ButtonsModal from '../../../Shared/ButtonsModal/ButtonsModal';
+import { setAppProgress } from '../../../../redux/actions';
+import { connect } from 'react-redux';
 import './settings-export.scss';
 
 const columnSettings = {
@@ -26,7 +28,7 @@ const columnSettings = {
 
 const TYPE = 'export';
 
-export default class SettingsExport extends Component {
+class SettingsExport extends Component {
     state = {
         showItemModal: false,
         showCategoryModal: false,
@@ -43,22 +45,7 @@ export default class SettingsExport extends Component {
     };
 
     componentDidMount() {
-        this.setState({ inProgress: true }, () => {
-            TransferService.section
-                .get(TYPE)
-                .then(response => {
-                    if (response?.data) {
-                        this.data = response.data;
-                        this.setState({ inProgress: false });
-                    }
-                })
-                .catch(e => {
-                    if (e?.data?.message) {
-                        this.setState({ error: e.data.message });
-                    }
-                })
-                .finally(() => this.setState({ inProgress: false }));
-        });
+        this._getTemplates();
     }
 
     componentDidUpdate = () => {
@@ -131,7 +118,7 @@ export default class SettingsExport extends Component {
         this.setState({
             selectedCategory: null,
             hasChanges: true
-        });
+        }, this._getTemplates);
     };
 
     handleSubmitCategory = (name) => {
@@ -173,6 +160,45 @@ export default class SettingsExport extends Component {
             showButtonsModal: true,
             selectedCategory: parent
         });
+    }
+
+    handleCopyItem = (item, parent) => {
+        const { onSetAppProgress } = this.props;
+
+        onSetAppProgress(true);
+        TransferService.export
+            .get(item.id)
+            .then((response) => {
+                const form = response.data;
+
+                form.projects = form.projects
+                    .map(({ id, name }) => ({ label: name, value: id }));
+
+                form.rules = form.rules.map(i => {
+                    delete i.id;
+                    delete i.createdAt;
+                    delete i.updatedAt;
+
+                    return i;
+                });
+
+                form.replaces = form.replaces.map(i => {
+                    delete i.id;
+                    delete i.createdAt;
+                    delete i.updatedAt;
+
+                    return i;
+                });
+
+                delete form.id;
+                delete form.name;
+
+                this.setState({
+                    selectedCategory: parent,
+                    selectedTemplate: form,
+                    showItemModal: true
+                }, () => onSetAppProgress(false));
+            });
     }
 
     handleSort = (sorted, parent) => {
@@ -265,6 +291,25 @@ export default class SettingsExport extends Component {
         return item.hasOwnProperty('children') || item.hasOwnProperty(TYPE);
     }
 
+    _getTemplates = () => {
+        this.setState({ inProgress: true }, () => {
+            TransferService.section
+                .get(TYPE)
+                .then(response => {
+                    if (response?.data) {
+                        this.data = response.data;
+                        this.setState({ inProgress: false });
+                    }
+                })
+                .catch(e => {
+                    if (e?.data?.message) {
+                        this.setState({ error: e.data.message });
+                    }
+                })
+                .finally(() => this.setState({ inProgress: false }));
+        });
+    }
+
     data = {};
 
     moved = [];
@@ -310,12 +355,14 @@ export default class SettingsExport extends Component {
                         onClickItem={this.handleClickItem}
                         onDeleteItem={this.handleDeleteItem}
                         onAddItemChild={this.handleAddChild}
+                        onCopyItem={this.handleCopyItem}
                         onSort={this.handleSort}
                     />
 
                     {showItemModal && (
                         <SettingsExportModal
                             item={selectedTemplate}
+                            parent={selectedCategory}
                             onClose={() => this.setState({ selectedTemplate: null, showItemModal: false })}
                             onSubmit={this.handleSubmitItem}
                         />
@@ -359,3 +406,17 @@ export default class SettingsExport extends Component {
         );
     }
 }
+
+function mapStateToProps(state) {
+    return {
+        appProgress: state.appProgress
+    };
+}
+
+function mapDispatchToProps(dispatch) {
+    return {
+        onSetAppProgress: (value) => dispatch(setAppProgress(value))
+    };
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(SettingsExport);
