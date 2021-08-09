@@ -202,23 +202,44 @@ class SettingsExport extends Component {
     }
 
     handleSort = (sorted, parent) => {
-        const { categories, templates } = sorted.reduce((acc, curr) => {
-            const item = JSON.parse(curr);
-            const source = this.isCategory(item) ? acc.categories : acc.templates;
+        const source = parent || this.data;
 
-            source.push({ ...item, lft: source.length });
-            return acc;
-        }, { categories: [], templates: [] });
+        let allTemplates = source[TYPE] || [];
+        let allChildren = source.children || [];
 
         if (parent) {
             parent.open = true;
         }
 
-        const source = parent || this.data;
+        if (this.lastParent) {
+            if (this.lastParent[TYPE] && this.lastParent[TYPE].length) {
+                allTemplates = [ ...allTemplates, ...this.lastParent[TYPE] ];
+            }
 
+            if (this.lastParent.children && this.lastParent.children.length) {
+                allChildren = [ ...allChildren, ...this.lastParent.children ];
+            }
+        }
+
+        const templates = [];
+        const children = [];
+
+        sorted.forEach(key => {
+            const template = allTemplates.filter(Boolean).find(({ id }) => id === key);
+            const child = allChildren.filter(Boolean).find(({ id }) => id === key);
+
+            if (template) {
+                templates.push(template);
+            }
+
+            if (child) {
+                children.push(child);
+            }
+        });
+
+        this.lastParent = _.cloneDeep(source);
         source[TYPE] = templates;
-        source.children = categories;
-
+        source.children = children;
         this.setState({ hasChanges: true });
     }
 
