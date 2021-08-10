@@ -8,7 +8,6 @@ import StarIcon from '../../Shared/SvgIcons/StarIcon';
 import SearchFilter from '../../Shared/SearchFilter/SearchFilter';
 import ProjectTable from './ProjectTable/ProjectTable';
 import PromiseDialogModal from '../../Shared/PromiseDialogModal/PromiseDialogModal';
-import ArticleCreateModal from '../../Article/ArticleCreateModal/ArticleCreateModal';
 import ArticlesExportModal from '../../Article/ArticlesExportModal/ArticlesExportModal';
 import { ArticleService, ProjectService, StorageService } from '@services';
 import { NotificationManager } from 'react-notifications';
@@ -78,7 +77,6 @@ class ProjectPage extends Component {
             pagination,
             project: null,
             filters: { ...defaultFilters },
-            showArticleModal: false,
             showUploadArticlesModal: false,
             showImportArticlesModal: false,
             showTransferModal: false,
@@ -110,7 +108,6 @@ class ProjectPage extends Component {
                 pagination: defaultPagination,
                 project: null,
                 filters: { ...defaultFilters },
-                showArticleModal: false,
                 showUploadArticlesModal: false,
                 showImportArticlesModal: false,
                 showTransferModal: false
@@ -229,22 +226,6 @@ class ProjectPage extends Component {
                     .finally(() => this.props.onSetAppProgress({ inProgress: false }));
             });
         }
-    };
-
-    handleCreateArticle = (article) => {
-        const { articles } = this.state;
-
-        articles.unshift(article);
-
-        this.setState({ articles });
-    };
-
-    handleUpdateArticle = (newArticle) => {
-        this.setState({
-            articles: this.state.articles.map(article =>
-                (article.id === newArticle.id) ? newArticle : article
-            )
-        });
     };
 
     handleChangeSort = (sort) => {
@@ -660,11 +641,9 @@ class ProjectPage extends Component {
 
     render() {
         const {
-            activeArticle,
             isAllArticlesSelected,
             filters,
             project,
-            showArticleModal,
             pagination,
             showUploadArticlesModal,
             showImportArticlesModal,
@@ -855,7 +834,7 @@ class ProjectPage extends Component {
                         pagination={pagination}
                         fields={fields}
                         userType={userType}
-                        currentUserId={this.props.profile.id}
+                        currentUserId={this.props.profile.id || ''}
                         onChangeSelected={this.handleChangeSelected}
                         onSelectedAll={this.handleSelectAll}
                         onChangeColumns={this.handleChangeColumns}
@@ -890,16 +869,6 @@ class ProjectPage extends Component {
                         </span>
                     </div>
                 </div>
-
-                {showArticleModal && (
-                    <ArticleCreateModal
-                        article={activeArticle || {}}
-                        projectId={this.projectId}
-                        onClose={() => this.setState({ activeArticle: null, showArticleModal: false })}
-                        onAddArticle={this.handleCreateArticle}
-                        onUpdateArticle={this.handleUpdateArticle}
-                    />
-                )}
 
                 {showUploadArticlesModal && (
                     <ArticlesExportModal

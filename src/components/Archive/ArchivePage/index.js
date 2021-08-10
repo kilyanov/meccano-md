@@ -7,7 +7,6 @@ import TrashIcon from '../../Shared/SvgIcons/TrashIcon';
 import SearchFilter from '../../Shared/SearchFilter/SearchFilter';
 import ProjectTable from '../../Project/ProjectPage/ProjectTable/ProjectTable';
 import PromiseDialogModal from '../../Shared/PromiseDialogModal/PromiseDialogModal';
-import ArticleCreateModal from '../../Article/ArticleCreateModal/ArticleCreateModal';
 import ArticlesExportModal from '../../Article/ArticlesExportModal/ArticlesExportModal';
 import { ArchiveService, ArticleService, ProjectService, StorageService } from '../../../services';
 import { NotificationManager } from 'react-notifications';
@@ -83,7 +82,6 @@ class ArchivePage extends Component {
                 pagination: { ...defaultPagination },
                 archive: null,
                 filters: { ...defaultFilters },
-                showArticleModal: false,
                 showUploadArticlesModal: false,
                 showImportArticlesModal: false,
                 showTransferModal: false,
@@ -533,10 +531,8 @@ class ArchivePage extends Component {
         const {
             archive,
             project,
-            activeArticle,
             isAllArticlesSelected,
             filters,
-            showArticleModal,
             pagination,
             showUploadArticlesModal,
             showImportArticlesModal,
@@ -708,16 +704,6 @@ class ArchivePage extends Component {
                             </span>
                         </div>
                     </div>
-
-                    {showArticleModal && (
-                        <ArticleCreateModal
-                            article={activeArticle || {}}
-                            projectId={this.projectId}
-                            onClose={() => this.setState({ activeArticle: null, showArticleModal: false })}
-                            onAddArticle={this.handleCreateArticle}
-                            onUpdateArticle={this.handleUpdateArticle}
-                        />
-                    )}
 
                     {showUploadArticlesModal && (
                         <ArticlesExportModal

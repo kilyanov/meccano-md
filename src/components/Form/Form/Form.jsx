@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import {EventEmitter} from '../../../helpers';
-import {EVENTS} from '../../../constants/Events';
+import {EVENTS} from '../../../constants';
 
 export default class Form extends Component {
     static propTypes = {
