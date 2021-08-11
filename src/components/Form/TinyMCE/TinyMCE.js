@@ -51,9 +51,9 @@ export default function TinyMCE({
     const theme = useSelector(state => state.theme);
     const isDarkTheme = theme === 'dark';
     const editorRef = useRef(null);
-    const editorInstance = editorRef?.current?.editor;
 
     const handleCopyToLocalBuffer = useCallback(() => {
+        const editorInstance = editorRef?.current?.editor;
         const selection = editorInstance?.selection?.getSel();
         let node = editorInstance?.getContent(); // get all content
 
@@ -67,9 +67,10 @@ export default function TinyMCE({
         onChange();
         NotificationManager
             .success(`${!selection?.isCollapsed ? 'Выделенный текст' : 'Текст'} успешно скопирован`, 'Скопировано!');
-    }, [ editorInstance ]);
+    }, [ editorRef.current ]);
 
     const handlePasteFromLocalBuffer = () => {
+        const editorInstance = editorRef?.current?.editor;
         const data = StorageService.get('clipboard');
 
         try {
@@ -85,6 +86,7 @@ export default function TinyMCE({
     };
 
     const copyToGeneralBuffer = useCallback(() => {
+        const editorInstance = editorRef?.current?.editor;
         const selection = editorInstance?.selection?.getSel();
         let node = editorInstance?.getContent(); // get all content
 
@@ -101,11 +103,12 @@ export default function TinyMCE({
                 );
             })
             .catch(() => {
-                NotificationManager.error('При копировании конетна произошла ошибка', 'Ошибка');
+                NotificationManager.error('При копировании контента произошла ошибка', 'Ошибка');
             });
-    }, [ editorInstance ]);
+    }, [ editorRef.current ]);
 
     const pasteFromGeneralBuffer = useCallback(() => {
+        const editorInstance = editorRef?.current?.editor;
         getFromClipboard()
             .then((text) => {
                 if (!text?.length) return;
@@ -116,7 +119,7 @@ export default function TinyMCE({
             .catch(() => {
                 NotificationManager.error('Произошла ошибка при попытке чтения буфера обмена', 'Ошибка');
             });
-    }, [ editorInstance ]);
+    }, [ editorRef.current ]);
 
     const handleChange = (e) => {
         if (e?.type === 'change' && e?.originalEvent) {
@@ -128,15 +131,15 @@ export default function TinyMCE({
         onEditorChange(value);
     };
 
-    if (editorInstance) {
-        editorInstance.ui.registry.addMenuItem('TCopyPlugin', {
+    if (editorRef.current?.editor) {
+        editorRef.current.editor.ui.registry.addMenuItem('TCopyPlugin', {
             type: 'item',
             text: 'Копировать',
             context: 'div',
             icon: 'copy',
             onAction: copyToGeneralBuffer
         });
-        editorInstance.ui.registry.addMenuItem('TPastePlugin', {
+        editorRef.current.editor.ui.registry.addMenuItem('TPastePlugin', {
             type: 'item',
             text: 'Вставить',
             context: 'div',
