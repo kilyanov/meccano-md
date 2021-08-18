@@ -29,11 +29,14 @@ $namespace: '.project-table';
     }
 
     &:hover {
-      padding-right: 62px;
       background-color: $gray-three;
 
       .project-table__menu-button {
         display: flex;
+      }
+
+      :nth-last-child(2) {
+        padding-right: 62px;
       }
     }
 
