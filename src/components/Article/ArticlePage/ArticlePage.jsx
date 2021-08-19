@@ -80,8 +80,6 @@ class ArticlePage extends Component {
             annotation: '',
             text: ''
         };
-        const storageUserType = StorageService.get(STORAGE_KEY.USER_TYPE);
-        const userType = storageUserType ? JSON.parse(storageUserType) : null;
 
         this.state = {
             articleId: props.match.params.articleId,
@@ -93,8 +91,6 @@ class ArticlePage extends Component {
             form: _.clone(this.defaultForm),
             selectedMedia: {},
             viewType: StorageService.get(STORAGE_KEY.ARTICLE_VIEW_TYPE) || 1,
-            userTypeId: userType && userType.id || null,
-            userType: userType || null,
             showDrawer: false,
             showViewSettings: false,
             textIsChanged: false,
@@ -108,8 +104,6 @@ class ArticlePage extends Component {
     }
 
     componentDidMount() {
-        this.setUserType();
-        EventEmitter.on(EVENTS.USER.CHANGE_TYPE, this.setUserType);
         document.addEventListener('keydown', this.handleDocumentKeyDown);
 
         this.props.onSetAppProgress({
@@ -120,14 +114,14 @@ class ArticlePage extends Component {
         if (this.state.articleId) {
             StorageService.set(STORAGE_KEY.LAST_VIEWED_ARTICLE, this.state.articleId);
 
-            if (this.state.userTypeId) {
+            if (this.props.userType) {
                 this.getArticle();
             }
         } else {
             ProjectService
                 .get({ expand: 'projectFields,sections,users' }, this.state.projectId)
                 .then(response => {
-                    const { userTypeId } = this.state;
+                    const { userType } = this.props;
                     const project = response.data;
 
                     if (!this.props.currentProject) {
@@ -135,7 +129,7 @@ class ArticlePage extends Component {
                     }
 
                     if (project && project.projectFields) {
-                        const projectFields = project.projectFields.find(f => f.user_type_id === userTypeId);
+                        const projectFields = project.projectFields.find(f => f.user_type_id === userType.id);
 
                         if (projectFields && projectFields.data) {
                             projectFields.data = projectFields.data.sort((a, b) => a.order - b.order);
@@ -180,16 +174,12 @@ class ArticlePage extends Component {
         });
     }
 
-    componentDidUpdate(prevProps, prevState) {
+    componentDidUpdate(prevProps) {
         if (prevProps.match.params.articleId !== this.props.match.params.articleId) {
             this.setState({ articleId: this.props.match.params.articleId }, this.getArticle);
         }
 
-        if (!_.isEqual(prevProps.userTypes, this.props.userTypes)) {
-            this.setUserType();
-        }
-
-        if (prevState.userTypeId !== this.state.userTypeId) {
+        if (prevProps.userType.id !== this.props.userType.id) {
             this.getArticle();
         }
 
@@ -199,7 +189,6 @@ class ArticlePage extends Component {
     }
 
     componentWillUnmount() {
-        EventEmitter.off(EVENTS.USER.CHANGE_TYPE, this.setUserType);
         document.removeEventListener('keydown', this.handleDocumentKeyDown);
         this.props.clearCurrentArticle();
     }
@@ -266,6 +255,7 @@ class ArticlePage extends Component {
     }
 
     handleCreateArticleFromReprint = ({ title, url, sourceId, cityId, date, index }) => {
+        const { userType } = this.props;
         const form = {
             projectId: this.state.projectId,
             title,
@@ -275,9 +265,11 @@ class ArticlePage extends Component {
             city_id: cityId
         };
 
-        ArticleService.create({
-            ...form, projectId: this.state.projectId
-        }, null, this.state.userTypeId)
+        ArticleService.create(
+            { ...form, projectId: this.state.projectId },
+            null,
+            userType.id
+        )
             .then(({data}) => {
                 this.handleDeleteReprint(index);
                 this.handleSaveReprintsOnly();
@@ -292,14 +284,16 @@ class ArticlePage extends Component {
     }
 
     handleSaveReprintsOnly = () => {
+        const { userType } = this.props;
         const form = {};
+
         form.reprints = this.state.form.reprints;
-        ArticleService.update(form, this.state.form.id, this.state.userTypeId)
+        ArticleService.update(form, this.state.form.id, userType.id)
             .then(() => {
                 ArticleService.get(this.state.articleId, {
                     project: this.state.projectId,
                     archive: '',
-                    user_type: this.state.userTypeId,
+                    user_type: userType.id,
                     expand: 'reprints'
                 })
                     .then(({data}) => {
@@ -390,7 +384,7 @@ class ArticlePage extends Component {
     };
 
     handleDoneArticle = () => {
-        const { userType } = this.state;
+        const { userType } = this.props;
 
         if (userType) {
             this.setState(state => {
@@ -485,12 +479,13 @@ class ArticlePage extends Component {
 
         const submitForm = () => {
             return new Promise(resolve => {
+                const { userType } = this.props;
                 this.props.onSetAppProgress({
                     inProgress: true,
                     withBlockedOverlay: true
                 });
 
-                ArticleService[isUpdate ? 'update' : 'create'](form, form.id, this.state.userTypeId)
+                ArticleService[isUpdate ? 'update' : 'create'](form, form.id, userType.id)
                     .then(response => {
                         OperatedNotification.success({
                             title: `${isUpdate ? 'Обновление' : 'Создание'} статьи`,
@@ -554,16 +549,17 @@ class ArticlePage extends Component {
     };
 
     getArticle = () => {
-        const { location } = this.props;
-        const { userTypeId } = this.state;
+        const { location, userType } = this.props;
+
+        if (!userType.id) return;
+
         const searchParams = location.search && new URLSearchParams(location.search);
         const requestForm = {
             expand: 'project.projectFields,project.sections,reprints,' +
                 'project.users,source,complete_monitor,complete_analytic,complete_client',
-            user_type: userTypeId
+            user_type: userType.id
         };
 
-        if (!userTypeId) return;
 
         if (searchParams) {
             for (const item of searchParams.entries()) {
@@ -610,7 +606,7 @@ class ArticlePage extends Component {
                 });
 
                 this.article = _.cloneDeep(form);
-                const fields = form.project.projectFields.find(f => f.user_type_id === userTypeId);
+                const fields = form.project.projectFields.find(f => f.user_type_id === userType.id);
 
                 if (fields && fields.data) {
                     fields.data = fields.data.sort((a, b) => a.order - b.order);
@@ -651,15 +647,6 @@ class ArticlePage extends Component {
         return dataSectionFields
             .filter(({ slug }) => slug !== 'user_id')
             .sort((a, b) => a.order - b.order);
-    };
-
-    setUserType = () => {
-        const storageValue = StorageService.get(STORAGE_KEY.USER_TYPE);
-        const userType = storageValue && JSON.parse(storageValue);
-
-        if (!userType) return;
-
-        this.setState({ userTypeId: userType.id, userType });
     };
 
     createSource = (name, cb) => {
@@ -713,7 +700,8 @@ class ArticlePage extends Component {
     };
 
     saveFieldsSort = () => {
-        const { projectFields, userTypeId, roles } = this.state;
+        const { userType } = this.props;
+        const { projectFields, roles } = this.state;
         const readOnly = !isProjectAccess([ PROJECT_PERMISSION.EDIT ]) && !isRolesAccess(roles?.admin);
 
         if (readOnly) return;
@@ -722,7 +710,7 @@ class ArticlePage extends Component {
         ProjectService.put(this.state.projectId, {
             projectFields: [ {
                 data: projectFields,
-                user_type_id: userTypeId
+                user_type_id: userType.id
             } ]
         });
     };
@@ -911,15 +899,14 @@ class ArticlePage extends Component {
     };
 
     render() {
-        const { appProgress, roles } = this.props;
+        const { appProgress, roles, userType } = this.props;
         const {
             articlesNavs,
             form,
             showViewSettings,
             showLocationModal,
             viewType,
-            projectFields,
-            userType
+            projectFields
         } = this.state;
         const isUpdate = !!this.state.articleId;
         const dataSectionFields = this.getDataSectionFields();
@@ -1077,7 +1064,7 @@ class ArticlePage extends Component {
                         onSaveReprintsOnly={this.handleSaveReprintsOnly}
                         currentProject={this.props.currentProject}
                         currentArticle={this.props.currentArticle}
-                        userTypeId={this.state.userTypeId}
+                        userTypeId={this.props.userType.id}
                     />
                 </Drawer>
 
@@ -1106,6 +1093,7 @@ function mapStateToProps(state) {
     return {
         appProgress: state.appProgress,
         userTypes: state.userTypes,
+        userType: state.userType,
         currentProject: state.currentProject,
         currentArticle: state.currentArticle,
         currentArchive: state.currentArchive,

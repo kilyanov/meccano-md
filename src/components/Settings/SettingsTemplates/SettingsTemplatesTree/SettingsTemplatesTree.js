@@ -45,6 +45,7 @@ export default function SettingsTemplatesTree({
                 <div {...cls('body')}>
                     <List
                         items={items}
+                        parentPath=''
                         editPermissions={editPermissions}
                         columnSettings={columnSettings}
                         onSorting={onSort}
@@ -66,6 +67,7 @@ function List({
     opened = true,
     onSorting,
     parent,
+    parentPath,
     items,
     columnSettings,
     editPermissions,
@@ -81,7 +83,7 @@ function List({
         <Sortable
             {...cls('list', { opened })}
             tag='ul'
-            onChange={sorted => onSorting(sorted, parent)}
+            onChange={sorted => onSorting(sorted, parent, parentPath)}
             options={{
                 group: 'nested',
                 animation: 150,
@@ -91,29 +93,38 @@ function List({
                 swapThreshold: 0.65
             }}
         >
-            {sortedItems.map((item, itemIndex) => (
-                <ListItem
-                    parent={parent}
-                    open={!item.hasOwnProperty('open') ? false : item.open}
-                    item={item}
-                    key={itemIndex}
-                    cls={cls}
-                    columnSettings={columnSettings}
-                    editPermissions={editPermissions}
-                    onAddChild={onAddItemChild}
-                    onEdit={onEditItem}
-                    onCopy={onCopyItem}
-                    onDelete={onDeleteItem}
-                    onClick={onClickItem}
-                    onSortChildren={onSorting}
-                />
-            ))}
+            {sortedItems.map((item, itemIndex) => {
+                const isSection = item.hasOwnProperty('children')
+                        || item.hasOwnProperty('import')
+                        || item.hasOwnProperty('export');
+                return (
+                    <ListItem
+                        isSection={isSection}
+                        parent={parent}
+                        parentPath={`${parentPath ? `${parentPath}.` : ''}${isSection ? 'children' : `export`}[${itemIndex}]`}
+                        open={!item.hasOwnProperty('open') ? false : item.open}
+                        item={item}
+                        key={itemIndex}
+                        cls={cls}
+                        columnSettings={columnSettings}
+                        editPermissions={editPermissions}
+                        onAddChild={onAddItemChild}
+                        onEdit={onEditItem}
+                        onCopy={onCopyItem}
+                        onDelete={onDeleteItem}
+                        onClick={onClickItem}
+                        onSortChildren={onSorting}
+                    />
+                );
+            })}
         </Sortable>
     );
 }
 
 function ListItem({
+    isSection,
     parent,
+    parentPath,
     item,
     editPermissions,
     columnSettings,
@@ -125,11 +136,6 @@ function ListItem({
     onClick
 }) {
     const [open, setOpen] = useState(!!item.open);
-    const isSection = useMemo(() => {
-        return item.hasOwnProperty('children')
-            || item.hasOwnProperty('import')
-            || item.hasOwnProperty('export');
-    }, [item]);
     const items = getItems(item);
 
     const handleClick = useCallback(() => {
@@ -152,7 +158,8 @@ function ListItem({
     return (
         <li
             { ...cls('item') }
-            data-id={JSON.stringify(item)} // item.id || item.name}
+            data-path={parentPath}
+            data-id={item.id} // JSON.stringify(item) item.id || item.name}
         >
             <div
                 { ...cls('item-name') }
@@ -245,6 +252,7 @@ function ListItem({
                 <List
                     opened={open}
                     parent={item}
+                    parentPath={parentPath}
                     columnSettings={columnSettings}
                     items={items}
                     onAddItemChild={onAddChild}

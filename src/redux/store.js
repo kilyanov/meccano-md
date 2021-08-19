@@ -15,7 +15,6 @@ export const initialState = {
     articleColors: [],
     profile: {},
     roles: [],
-    userTypes: [],
     notificationsPanel: {
         projects: [],
         documents: [],

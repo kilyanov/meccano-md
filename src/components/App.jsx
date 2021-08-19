@@ -11,11 +11,11 @@ import OperatedNotification from './Shared/OperatedNotifiction/OperatedNotificat
 import QueueManager from './Shared/QueeManager/QueueManager';
 // import NotificationsPanel from './Shared/NotificationsPanel/NotificationsPanel';
 import store from '../redux/store';
-import { switchTheme } from '../redux/actions';
+import { setUserType, switchTheme } from '../redux/actions';
 import Notification from "../helpers/Notification";
 import { saveAs } from "file-saver";
 import { getDocuments } from "../redux/actions";
-import { EVENTS, THEME_TYPE, STORAGE_KEY, DOCUMENT_STATUS } from "../constants";
+import { EVENTS, THEME_TYPE, DOCUMENT_STATUS } from "../constants";
 import moment from "moment-timezone";
 
 const cls = new Bem('app');
@@ -60,7 +60,7 @@ export default class App extends Component {
             InitScrollbar(this.bodyRef);
         }
 
-        const storeState = this.getCurrentStateFromStore();
+        const storeState = store.getState();
 
         if (storeState.theme) {
             this.setState({ theme: storeState.theme });
@@ -102,13 +102,6 @@ export default class App extends Component {
         });
     };
 
-    getCurrentStateFromStore = () => {
-        return {
-            theme: store.getState().theme,
-            profile: store.getState().profile
-        };
-    };
-
     getDocumentsForUser = () => {
         const { profile } = this.state;
 
@@ -143,7 +136,7 @@ export default class App extends Component {
     };
 
     updateStateFromStore = () => {
-        const currentState = this.getCurrentStateFromStore();
+        const currentState = store.getState();
 
         if (this.state.theme !== currentState.theme) {
             this.setState({ theme: currentState.theme });
@@ -156,7 +149,7 @@ export default class App extends Component {
 
                 // До появления сокетов обновление делаем раз в 30 сек
                 setInterval(() => {
-                    const { profile } = this.getCurrentStateFromStore();
+                    const { profile } = store.getState();
 
                     if (profile && profile.id) {
                         store.dispatch(getDocuments(profile.id));
@@ -164,18 +157,10 @@ export default class App extends Component {
                 }, 30000);
 
                 if (currentState.profile.types && currentState.profile.types.length) {
-                    let storageUserType = StorageService.get('user_type');
+                    const { userType } = currentState;
 
-                    // Удаляем старую айди типа пользователя для ее замены на объект типа пользователя
-                    try {
-                        JSON.parse(storageUserType);
-                    } catch (e) {
-                        storageUserType = null;
-                    }
-
-                    if (!storageUserType || !currentState.profile.types.find(({ id }) => id === storageUserType)) {
-                        StorageService.set(STORAGE_KEY.USER_TYPE, JSON.stringify(currentState.profile.types[0]));
-                        EventEmitter.emit(EVENTS.USER.CHANGE_TYPE, currentState.profile.types[0]);
+                    if (!userType || !currentState.profile.types.find(({ id }) => id === userType)) {
+                        store.dispatch(setUserType(currentState.profile.types[0]));
                     }
                 }
                 // this.getDocumentsForUser();

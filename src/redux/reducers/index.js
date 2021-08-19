@@ -6,7 +6,8 @@ import { theme } from './theme';
 import { settingsMenu } from './settingsMenu';
 import { projects } from './project';
 import { documents } from './document';
-import { userTypes } from './userType';
+import { userTypes } from './userTypes';
+import { userType } from './userType';
 import { currentProject } from './currentProject';
 import { articleColors } from './articleColors';
 import { ACTION_TYPE, STORAGE_KEY } from "../../constants";
@@ -26,6 +27,7 @@ const appReducer = combineReducers({
     projects,
     documents,
     userTypes,
+    userType,
     currentProject,
     currentArticle,
     currentArchive,
