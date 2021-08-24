@@ -29,11 +29,14 @@ $namespace: '.project-table';
     }
 
     &:hover {
-      padding-right: 62px;
       background-color: $gray-three;
 
       .project-table__menu-button {
         display: flex;
+      }
+
+      :nth-last-child(2) {
+        padding-right: 62px;
       }
     }
 
@@ -51,6 +54,7 @@ $namespace: '.project-table';
     border-top: 1px solid $gray;
     color: #333;
     text-decoration: none;
+    min-width: 0;
 
     &--check {
       flex: 0 0 $checkboxSection;
