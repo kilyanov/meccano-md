@@ -280,11 +280,11 @@ class ProjectTable extends Component {
     selectedColumns = [];
 
     syncColumnWidth = () => {
-        this.selectedColumns.forEach(({ key }) => {
+        this.selectedColumns.forEach(({ key, width }) => {
             const headerColumn = document.querySelector(`.project-table-header__cell--${key}`);
             const bodyColumns = document.querySelectorAll(`.project-table__cell--${key}`);
 
-            if (headerColumn && bodyColumns) {
+            if (headerColumn && bodyColumns && width) {
                 bodyColumns.forEach(column => {
                     column.style.maxWidth = `${headerColumn.offsetWidth}px`;
                     column.style.minWidth = `${headerColumn.offsetWidth}px`;
