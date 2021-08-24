@@ -3,6 +3,7 @@ import {connect} from 'react-redux';
 import PropTypes from 'prop-types';
 import TopBar from '../TopBar/TopBar';
 import './page.scss';
+import { Box, Typography } from '@material-ui/core';
 
 const cls = new Bem('page');
 
@@ -34,7 +35,11 @@ class Page extends Component {
                         [className]: !!className
                     })}
                 >
-                    {title && <h1 {...cls('title')}>{title}</h1>}
+                    {title && (
+                        <Box mb={2}>
+                            <Typography variant='h1' {...cls('title')}>{title}</Typography>
+                        </Box>
+                    )}
                     {children}
                 </div>
             </div>

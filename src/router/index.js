@@ -27,6 +27,7 @@ import UsersPage from "../components/Users/UsersPage";
 import ArchivePage from "../components/Archive/ArchivePage";
 import ArchiveArticlePage from "../components/Archive/ArchiveArticlePage";
 import Logs from '../components/Settings/SettingsSystem/Logs/Logs';
+import ProjectSort from '../components/Project/ProjectSort';
 
 export default (
     <Router basename='/'>
@@ -36,6 +37,7 @@ export default (
                 <AuthRoute exact component={HomePage} path="/"/>
 
                 <AuthRoute exact component={ProjectPage} path="/project/:id"/>
+                <AuthRoute exact component={ProjectSort} path="/project/:id/sort"/>
                 <AuthRoute exact component={ArchivePage} path="/archive/:projectId/:id"/>
                 <AuthRoute exact component={ArticlePage} path="/project/:projectId/article/:articleId?"/>
                 <AuthRoute exact component={ArchiveArticlePage} path="/archive/:archiveId/article/:articleId?"/>
