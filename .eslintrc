@@ -172,14 +172,7 @@
             2,
             "1tbs"
         ],
-        "camelcase": [
-            2,
-            {
-                "properties": "never",
-                "ignoreDestructuring": true,
-                "allow": ["^UNSAFE_"]
-            }
-        ],
+        "camelcase": "off",
         "comma-spacing": [
             2,
             {
