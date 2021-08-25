@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import Page from '../../Shared/Page/Page';
 import { useParams } from 'react-router-dom';
 import { ArticleService, ProjectService } from '../../../services';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { setAppProgress } from '../../../redux/actions';
 import ProjectSortTable from './ProjectSortTable';
 import Fab from '@material-ui/core/Fab';
@@ -17,6 +17,7 @@ const ProjectSort = () => {
     const [needSave, setNeedSave] = useState(false);
     const [saveInProgress, setSaveInProgress] = useState(false);
 
+    const userType = useSelector(state => state.userType);
     const dispatch = useDispatch();
 
     const classes = projectSortStyles();
@@ -50,8 +51,12 @@ const ProjectSort = () => {
     const handleSave = useCallback(() => {
         setSaveInProgress(true);
 
+        if (!userType?.id) {
+            return;
+        }
+
         ArticleService
-            .updateMany({ articles }, projectId)
+            .updateMany({ articles }, projectId, userType.id)
             .finally(() => {
                 setSaveInProgress(false);
                 setNeedSave(false);
