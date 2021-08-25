@@ -1,0 +1,11 @@
+.project-compare-page {
+
+  &__columns {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* Dark Theme */
+
+// .app--dark #{$namespace} {}
