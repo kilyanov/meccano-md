@@ -14,24 +14,36 @@ function ProjectComparePage() {
     const { id: projectId } = useParams();
     const location = useLocation();
 
-    const [comparedArticles, setComparedArticles] = useState(new Map());
+    const [comparedArticles, setComparedArticles] = useState({});
 
     useEffect(() => {
         ProjectService.compare(projectId, { expand: EXPANDED_REQUEST_FIELDS })
             .then(({ data }) => {
-                const mappedComparedArticles = data.reduce((acc, compared) => {
-                    compared.compareArticles.forEach((article) => {
-                        const a = article;
-                        const c = compared.compareArticles.filter((el) => el?.article_id !== article.article_id);
+                const indexedComparedArticles = data.reduce((acc, pair) => {
+                    pair.compareArticles.forEach((article) => {
+                        const originalArticleId = article.article_id;
 
-                        acc.set(
-                            Object.assign(a, { fields: compared.compareColumns }),
-                            Object.assign(c, { fields: compared.compareColumns })
-                        );
+                        const result = {
+                            article: {
+                                ...article,
+                                // Совпавшие в статье поля
+                                fields: pair.compareColumns.map((field) => ({ filed_compare: field.filed_compare }))
+                            },
+                            compared: pair.compareArticles
+                                // Исключаем исходную статью
+                                .filter((a) => a?.article_id !== originalArticleId)
+                                // Подставляем информацию о совпавших полях
+                                .map((a) => ({ ...a, fields: pair.compareColumns }))
+                        };
+
+                        // Если такая статья впервые
+                        if (!acc[originalArticleId]) acc[originalArticleId] = result;
+                        // Если есть ещё совпадения с исходной статьёй
+                        else acc[originalArticleId].push(result);
                     });
                     return acc;
-                }, new Map());
-                setComparedArticles(mappedComparedArticles);
+                }, {});
+                setComparedArticles(indexedComparedArticles);
             })
             .catch(console.error);
     }, []);
@@ -40,13 +52,13 @@ function ProjectComparePage() {
         <Page {...cls()} withBar>
             <Breadcrumbs location={location} />
 
-            {Array.from(comparedArticles).map(([article, compared]) => (
-                <div key={article.article_id} {...cls('columns')}>
+            {Object.entries(comparedArticles).map(([article, compared]) => (
+                <div key={article} {...cls('columns')}>
                     <div>
-                        <pre>{JSON.stringify(article, null, 2)}</pre>
+                        <pre>{JSON.stringify(compared.article, null, 2)}</pre>
                     </div>
                     <div>
-                        <pre>{JSON.stringify(compared, null, 2)}</pre>
+                        <pre>{JSON.stringify(compared.compared, null, 2)}</pre>
                     </div>
                 </div>
             ))}
