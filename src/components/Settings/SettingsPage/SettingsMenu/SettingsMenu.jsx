@@ -1,12 +1,6 @@
-import React, { useState } from 'react';
-// import './settings-menu.scss';
-// import VerticalMenu from '../../../Shared/VerticalMenu/VerticalMenu';
-// import ImportExportIcon from '../../../Shared/SvgIcons/ImportExportIcon';
-// import EarthIcon from '../../../Shared/SvgIcons/EarthIcon';
-// import LoudSpeaker from '../../../Shared/SvgIcons/LoudSpeaker';
-// import AuthorIcon from '../../../Shared/SvgIcons/AuthorsIcon';
-// import SettingsIcon from '../../../Shared/SvgIcons/SettingsIcon';
-import { Collapse, List, ListItem, ListItemIcon, ListItemText, makeStyles } from '@material-ui/core';
+import React, { useMemo, useState } from 'react';
+
+import { Collapse, List, ListItem, ListItemIcon, ListItemText, makeStyles, useTheme } from '@material-ui/core';
 import Access from '../../../Shared/Access/Access';
 import ExpandLess from '@material-ui/icons/ExpandLess';
 import ExpandMore from '@material-ui/icons/ExpandMore';
@@ -19,107 +13,11 @@ import SettingsIcon from '@material-ui/icons/Settings';
 import { useHistory } from 'react-router-dom';
 
 
-// const cls = new Bem('settings-menu');
-const menu = [
-    {
-        id: 'io',
-        icon: <ImportContacts />, // <ImportExportIcon />,
-        name: 'Шаблоны',
-        children: [{
-            id: 'import',
-            name: 'Импорт',
-            link: '/settings/templates/import'
-        }, {
-            id: 'export',
-            name: 'Экспорт',
-            link: '/settings/templates/export'
-        }]
-    },
-    {
-        id: 'location',
-        icon: <LocationOn />, // <EarthIcon />,
-        name: 'Местоположение',
-        children: [{
-            id: 'country',
-            name: 'Страна',
-            link: '/settings/location/country'
-        }, {
-            id: 'federal',
-            name: 'Федеральный округ',
-            link: '/settings/location/federal'
-        }, {
-            id: 'region',
-            name: 'Регион',
-            link: '/settings/location/region'
-        }, {
-            id: 'city',
-            name: 'Город',
-            link: '/settings/location/city'
-        }]
-    },
-    {
-        id: 'source',
-        icon: <AccountTreeIcon/>, // <LoudSpeaker />,
-        name: 'Источники',
-        children: [{
-            id: 'type',
-            name: 'Тип источников',
-            link: '/settings/source/type'
-        }, {
-            id: 'category',
-            name: 'Вид источников',
-            link: '/settings/source/category'
-        }, {
-            id: 'list',
-            name: 'Список',
-            link: '/settings/source/list'
-        }]
-    },
-    {
-        id: 'authors',
-        icon: <RecordVoiceOverIcon />, // <AuthorIcon />,
-        name: 'Авторы',
-        link: '/settings/authors'
-    },
-    {
-        id: 'users',
-        icon: <GroupIcon />, // <AuthorIcon />,
-        name: 'Пользователи',
-        link: '/settings/users'
-    },
-    {
-        id: 'sys',
-        icon: <SettingsIcon />,
-        name: 'Система',
-        children: [{
-            id: 'system',
-            name: 'Общие',
-            link: '/settings/system'
-        }, {
-            id: 'logs',
-            name: 'Логирование',
-            link: '/settings/system/logs'
-        }]
-    }
-];
-
 export const getActive = () => {
     const href = location.href;
 
     return href.substring(href.lastIndexOf('/') + 1);
 };
-
-// const SettingsMenuOld = ({onClick}) => {
-//     return (
-//         <VerticalMenu
-//             {...cls()}
-//             activeId={getActive()}
-//             list={menu}
-//             onClick={() => onClick(getActive())}
-//             replaceHistory
-//         />
-//     );
-// };
 
 const settingsMenuStyles = makeStyles(({ spacing }) => ({
     nested: {
@@ -131,6 +29,91 @@ const SettingsMenu = () => {
     const [, setUpdater] = useState(false);
     const history = useHistory();
     const classes = settingsMenuStyles();
+    const { palette } = useTheme();
+    const iconColor = palette.success.light;
+
+    const menu = useMemo(() => ([
+        {
+            id: 'io',
+            icon: <ImportContacts style={{ color: iconColor }} />, // <ImportExportIcon />,
+            name: 'Шаблоны',
+            children: [{
+                id: 'import',
+                name: 'Импорт',
+                link: '/settings/templates/import'
+            }, {
+                id: 'export',
+                name: 'Экспорт',
+                link: '/settings/templates/export'
+            }]
+        },
+        {
+            id: 'location',
+            icon: <LocationOn style={{ color: iconColor }} />, // <EarthIcon />,
+            name: 'Местоположение',
+            children: [{
+                id: 'country',
+                name: 'Страна',
+                link: '/settings/location/country'
+            }, {
+                id: 'federal',
+                name: 'Федеральный округ',
+                link: '/settings/location/federal'
+            }, {
+                id: 'region',
+                name: 'Регион',
+                link: '/settings/location/region'
+            }, {
+                id: 'city',
+                name: 'Город',
+                link: '/settings/location/city'
+            }]
+        },
+        {
+            id: 'source',
+            icon: <AccountTreeIcon style={{ color: iconColor }}/>, // <LoudSpeaker />,
+            name: 'Источники',
+            children: [{
+                id: 'type',
+                name: 'Тип источников',
+                link: '/settings/source/type'
+            }, {
+                id: 'category',
+                name: 'Вид источников',
+                link: '/settings/source/category'
+            }, {
+                id: 'list',
+                name: 'Список',
+                link: '/settings/source/list'
+            }]
+        },
+        {
+            id: 'authors',
+            icon: <RecordVoiceOverIcon style={{ color: iconColor }} />, // <AuthorIcon />,
+            name: 'Авторы',
+            link: '/settings/authors'
+        },
+        {
+            id: 'users',
+            icon: <GroupIcon style={{ color: iconColor }} />, // <AuthorIcon />,
+            name: 'Пользователи',
+            link: '/settings/users'
+        },
+        {
+            id: 'sys',
+            icon: <SettingsIcon style={{ color: iconColor }} />,
+            name: 'Система',
+            children: [{
+                id: 'system',
+                name: 'Общие',
+                link: '/settings/system'
+            }, {
+                id: 'logs',
+                name: 'Логирование',
+                link: '/settings/system/logs'
+            }]
+        }
+    ]), [iconColor]);
 
     return (
         <List
@@ -153,7 +136,9 @@ const SettingsMenu = () => {
                             setUpdater(s => !s);
                         }}
                     >
-                        <ListItemIcon>{item.icon}</ListItemIcon>
+                        <ListItemIcon>
+                            {item.icon}
+                        </ListItemIcon>
                         <ListItemText primary={item.name} />
                         {!!item.children?.length && (
                             <>
