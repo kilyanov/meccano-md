@@ -16,7 +16,7 @@ import { KEY_CODE, EVENTS } from "@const";
 import { OperatedNotification } from '@helpers/Tools';
 import ProjectKeyWords from './ProjectKeyWords/ProjectKeyWords';
 import { EventEmitter } from "../../../helpers";
-import { deleteProject, updateProject } from "../../../redux/actions/project";
+import { deleteProject, updateProject } from "../../../redux/actions";
 import store from "../../../redux/store";
 import Select from "react-select";
 import ProjectUsers from "./ProjectUsers/ProjectUsers";

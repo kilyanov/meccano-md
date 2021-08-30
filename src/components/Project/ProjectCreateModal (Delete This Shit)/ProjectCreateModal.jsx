@@ -4,13 +4,13 @@ import ConfirmModal from '../../Shared/ConfirmModal/ConfirmModal';
 import InputText from '../../Form/InputText/InputText';
 import './project-create-modal.scss';
 import Form from '../../Form/Form/Form';
-import {ProjectService} from '../../../services/ProjectService';
+import {ProjectService} from '../../../services';
 import {NotificationManager} from 'react-notifications';
 import Loader from '../../Shared/Loader/Loader';
 import {EventEmitter} from "../../../helpers";
-import {EVENTS} from "../../../constants/Events";
+import {EVENTS} from "../../../constants";
 import store from "../../../redux/store";
-import {addProject} from "../../../redux/actions/project";
+import {addProject} from "../../../redux/actions";
 
 const cls = new Bem('project-create-modal');
 
