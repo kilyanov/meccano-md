@@ -1,0 +1,53 @@
+@import "../../../../assets/styles/variables";
+
+.user {
+    display: flex;
+    padding: 10px 0;
+    border-bottom: 1px solid #ccc;
+
+    &__title {
+        display: inline-block;
+        margin-bottom: 0;
+    }
+
+    &__subtitle {
+        margin-left: 10px;
+        font-size: 12px;
+        color: $fontGrey;
+    }
+
+    &__image {
+        flex: 0 0 100px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    &__icon {
+        width: 60px;
+        height: 60px;
+        fill: $shamrock;
+    }
+
+    &__data-item {
+        margin-bottom: 5px;
+
+        &--small {
+            font-size: 12px;
+            color: $fontGrey;
+        }
+    }
+
+    &__buttons {
+        display: flex;
+        flex-direction: column;
+        flex: 0 0 10%;
+        align-items: center;
+        justify-content: center;
+        margin-left: auto;
+    }
+
+    &__button + &__button {
+        margin-top: 10px;
+    }
+}

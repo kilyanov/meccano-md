@@ -1,5 +1,4 @@
-import {ACTION_TYPE} from "../../../constants/ActionTypes";
-import {THEME_TYPE} from '../../../constants/ThemeType';
+import { ACTION_TYPE, THEME_TYPE } from "../../../constants";
 
 export function theme(state = {}, action) {
     switch (action.type) {
