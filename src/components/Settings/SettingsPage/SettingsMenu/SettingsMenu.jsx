@@ -1,17 +1,29 @@
-import React from 'react';
-import './settings-menu.scss';
-import VerticalMenu from '../../../Shared/VerticalMenu/VerticalMenu';
-import ImportExportIcon from '../../../Shared/SvgIcons/ImportExportIcon';
-import EarthIcon from '../../../Shared/SvgIcons/EarthIcon';
-import LoudSpeaker from '../../../Shared/SvgIcons/LoudSpeaker';
-import AuthorIcon from '../../../Shared/SvgIcons/AuthorsIcon';
-import SettingsIcon from "../../../Shared/SvgIcons/SettingsIcon";
+import React, { useState } from 'react';
+// import './settings-menu.scss';
+// import VerticalMenu from '../../../Shared/VerticalMenu/VerticalMenu';
+// import ImportExportIcon from '../../../Shared/SvgIcons/ImportExportIcon';
+// import EarthIcon from '../../../Shared/SvgIcons/EarthIcon';
+// import LoudSpeaker from '../../../Shared/SvgIcons/LoudSpeaker';
+// import AuthorIcon from '../../../Shared/SvgIcons/AuthorsIcon';
+// import SettingsIcon from '../../../Shared/SvgIcons/SettingsIcon';
+import { Collapse, List, ListItem, ListItemIcon, ListItemText, makeStyles } from '@material-ui/core';
+import Access from '../../../Shared/Access/Access';
+import ExpandLess from '@material-ui/icons/ExpandLess';
+import ExpandMore from '@material-ui/icons/ExpandMore';
+import ImportContacts from '@material-ui/icons/ImportContacts';
+import LocationOn from '@material-ui/icons/LocationOn';
+import AccountTreeIcon from '@material-ui/icons/AccountTree';
+import RecordVoiceOverIcon from '@material-ui/icons/RecordVoiceOver';
+import GroupIcon from '@material-ui/icons/Group';
+import SettingsIcon from '@material-ui/icons/Settings';
+import { useHistory } from 'react-router-dom';
 
-const cls = new Bem('settings-menu');
+
+// const cls = new Bem('settings-menu');
 const menu = [
     {
         id: 'io',
-        icon: <ImportExportIcon />,
+        icon: <ImportContacts />, // <ImportExportIcon />,
         name: 'Шаблоны',
         children: [{
             id: 'import',
@@ -25,7 +37,7 @@ const menu = [
     },
     {
         id: 'location',
-        icon: <EarthIcon />,
+        icon: <LocationOn />, // <EarthIcon />,
         name: 'Местоположение',
         children: [{
             id: 'country',
@@ -47,7 +59,7 @@ const menu = [
     },
     {
         id: 'source',
-        icon: <LoudSpeaker />,
+        icon: <AccountTreeIcon/>, // <LoudSpeaker />,
         name: 'Источники',
         children: [{
             id: 'type',
@@ -65,9 +77,15 @@ const menu = [
     },
     {
         id: 'authors',
-        icon: <AuthorIcon />,
+        icon: <RecordVoiceOverIcon />, // <AuthorIcon />,
         name: 'Авторы',
         link: '/settings/authors'
+    },
+    {
+        id: 'users',
+        icon: <GroupIcon />, // <AuthorIcon />,
+        name: 'Пользователи',
+        link: '/settings/users'
     },
     {
         id: 'sys',
@@ -91,15 +109,86 @@ export const getActive = () => {
     return href.substring(href.lastIndexOf('/') + 1);
 };
 
-const SettingsMenu = ({onClick}) => {
+// const SettingsMenuOld = ({onClick}) => {
+//     return (
+//         <VerticalMenu
+//             {...cls()}
+//             activeId={getActive()}
+//             list={menu}
+//             onClick={() => onClick(getActive())}
+//             replaceHistory
+//         />
+//     );
+// };
+
+const settingsMenuStyles = makeStyles(({ spacing }) => ({
+    nested: {
+        paddingLeft: spacing(4)
+    }
+}));
+
+const SettingsMenu = () => {
+    const [, setUpdater] = useState(false);
+    const history = useHistory();
+    const classes = settingsMenuStyles();
+
     return (
-        <VerticalMenu
-            {...cls()}
-            activeId={getActive()}
-            list={menu}
-            onClick={() => onClick(getActive())}
-            replaceHistory
-        />
+        <List
+            component='nav'
+        >
+            {menu.map(item => (
+                <Access
+                    permissions={item.permissions}
+                    key={item.id}
+                >
+                    <ListItem
+                        button
+                        key={item.id}
+                        onClick={() => {
+                            if (item.link) {
+                                return history.push(item.link);
+                            }
+
+                            item.open = !item.open;
+                            setUpdater(s => !s);
+                        }}
+                    >
+                        <ListItemIcon>{item.icon}</ListItemIcon>
+                        <ListItemText primary={item.name} />
+                        {!!item.children?.length && (
+                            <>
+                                {item.open ? <ExpandLess /> : <ExpandMore />}
+                            </>
+                        )}
+                    </ListItem>
+                    {!!item.children?.length && (
+                        <Collapse
+                            in={item.open}
+                            timeout='auto'
+                            unmountOnExit
+                        >
+                            <List
+                                component='div'
+
+                            >
+                                {item.children.map(child => (
+                                    <ListItem
+                                        key={child.id}
+                                        className={classes.nested}
+                                        button
+                                        onClick={() => {
+                                            history.push(child.link);
+                                        }}
+                                    >
+                                        <ListItemText primary={child.name} />
+                                    </ListItem>
+                                ))}
+                            </List>
+                        </Collapse>
+                    )}
+                </Access>
+            ))}
+        </List>
     );
 };
 
