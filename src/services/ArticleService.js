@@ -13,6 +13,7 @@ export const ArticleService = {
     delete: (form, projectId) => API.delete(urlGenerator('article')({project: projectId}), {data: form}),
     create: (form, _, userTypeId) => API.post(urlGenerator('article')({project: form.projectId, user_type: userTypeId}), form),
     update: (form, id, userTypeId) => API.put(urlGenerator('article')(id, {user_type: userTypeId}), form),
+    updateMany: (form, projectId, userTypeId) => API.put(`/article/many?project=${projectId}&user_type=${userTypeId}`, form),
 
     /* Data fields */
     types: (form) => {
@@ -40,6 +41,6 @@ export const ArticleService = {
         get: (project) => API.get(urlGenerator('color')({project})),
         create: (project, form) => API.post(urlGenerator('color')({project}), form),
         update: (project, form, id) => API.put(urlGenerator('color')(id, {project}), form),
-        delete: (id) => API.put(urlGenerator('color')({id})),
+        delete: (id) => API.put(urlGenerator('color')({id}))
     }
 };

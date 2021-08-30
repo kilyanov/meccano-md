@@ -362,6 +362,10 @@ class ProjectPage extends Component {
         this.setState({ isEditMode });
     }
 
+    handleClickSortMode = () => {
+        this.props.history.push(`/project/${this.projectId}/sort`);
+    }
+
     getArticleColors = () => {
         ArticleService.color.get(this.projectId).then(response => {
             if (response.data) {
@@ -881,6 +885,7 @@ class ProjectPage extends Component {
                         onUpdateParent={() => this.getArticles()}
                         getArticleMenu={this.onGetArticleMenu}
                         onChangeTableMode={this.handleChangeTableMode}
+                        onClickSortMode={this.handleClickSortMode}
                     />
 
                     <div {...cls('footer')}>

@@ -5,7 +5,7 @@
 *, *:before, *:after {
     box-sizing: inherit;
     outline: 0;
-    -webkit-backface-visibility: hidden;
+    //-webkit-backface-visibility: hidden;
     -webkit-tap-highlight-color: transparent;
 }
 
