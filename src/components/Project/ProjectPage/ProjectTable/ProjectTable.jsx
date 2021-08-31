@@ -205,7 +205,7 @@ class ProjectTable extends Component {
     }
 
     getSettingMenu = () => {
-        const { currentProject, onClickSortMode } = this.props;
+        const { currentProject, onClickSortMode, onClickCompareMode } = this.props;
         const { editableMode } = this.state;
         const settingsMenu = [
             {
@@ -228,6 +228,11 @@ class ProjectTable extends Component {
                 id: 'sort-mode',
                 title: 'Режим сортировки',
                 onClick: onClickSortMode
+            },
+            {
+                id: 'compare-mode',
+                title: 'Режим сравнения',
+                onClick: onClickCompareMode
             }
         ];
 

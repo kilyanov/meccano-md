@@ -366,6 +366,10 @@ class ProjectPage extends Component {
         this.props.history.push(`/project/${this.projectId}/sort`);
     }
 
+    handleClickCompareMode = () => {
+        this.props.history.push(`/project/${this.projectId}/compare`);
+    }
+
     getArticleColors = () => {
         ArticleService.color.get(this.projectId).then(response => {
             if (response.data) {
@@ -886,6 +890,7 @@ class ProjectPage extends Component {
                         getArticleMenu={this.onGetArticleMenu}
                         onChangeTableMode={this.handleChangeTableMode}
                         onClickSortMode={this.handleClickSortMode}
+                        onClickCompareMode={this.handleClickCompareMode}
                     />
 
                     <div {...cls('footer')}>
