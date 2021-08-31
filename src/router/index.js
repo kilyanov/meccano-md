@@ -5,7 +5,7 @@ import {PERMISSION} from '../constants';
 
 import App from '../components/App';
 import HomePage from '../components/Pages/HomePage/HomePage';
-import LoginPage from '../components/Pages/LoginPage/LoginPage';
+// import LoginPage from '../components/Pages/LoginPage/LoginPage';
 import DocumentsPage from '../components/Documents/DocumentsPage';
 import ProjectPage from '../components/Project/ProjectPage/ProjectPage';
 import ProjectCreatePage from '../components/Project/ProjectCreatePage/ProjectCreatePage';
@@ -25,17 +25,17 @@ import SettingsSourceCategory from '../components/Settings/SettingsSource/Settin
 import SettingsAuthors from '../components/Settings/SettingsAuthors/SettingsAuthors';
 import SettingsUsers from '../components/Settings/SettingsUsers/SettingsUsers';
 import SettingsSystem from '../components/Settings/SettingsSystem/SettingsSystem';
-import UsersPage from '../components/Users/UsersPage';
 import ArchivePage from '../components/Archive/ArchivePage';
 import ArchiveArticlePage from '../components/Archive/ArchiveArticlePage';
 import Logs from '../components/Settings/SettingsSystem/Logs/Logs';
 import ProjectSort from '../components/Project/ProjectSort';
+import Login from '../components/Pages/Login';
 
 export default (
     <Router basename='/'>
         <App>
             <Switch>
-                <Route exact component={LoginPage} path='/login'/>
+                <Route exact component={Login} path='/login'/>
                 <AuthRoute exact component={HomePage} path='/'/>
 
                 <AuthRoute exact component={ProjectPage} path='/project/:id'/>
@@ -140,13 +140,6 @@ export default (
                     permissions={[PERMISSION.viewUsers, PERMISSION.editUsers]}
                     component={Logs}
                     path='/settings/system/logs'
-                />
-
-                <AuthRoute
-                    exact
-                    permissions={[PERMISSION.viewUsers, PERMISSION.editUsers]}
-                    component={UsersPage}
-                    path='/users'
                 />
 
                 <AuthRoute component={NotFoundPage}/>
