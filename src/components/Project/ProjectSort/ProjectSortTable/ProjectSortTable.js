@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { ArticleService } from '../../../../services';
 import { useParams } from 'react-router-dom';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 import {
     Box,
@@ -10,18 +10,21 @@ import {
     ListItemIcon,
     ListItemText,
     ListSubheader,
-    CircularProgress
+    Typography
 } from '@material-ui/core';
 import FolderIcon from '@material-ui/icons/Folder';
 import DescriptionIcon from '@material-ui/icons/Description';
 import { projectSortTableStyles } from './styles';
 import Sortable from 'react-sortablejs';
+import { setAppProgress } from '../../../../redux/actions';
 
 
 const ProjectSortTable = ({ sections, onChange }) => {
-    const { id: projectId } = useParams();
+    const { projectId } = useParams();
 
     const userType = useSelector(state => state.userType);
+
+    const dispatch = useDispatch();
 
     const classes = projectSortTableStyles();
 
@@ -29,13 +32,13 @@ const ProjectSortTable = ({ sections, onChange }) => {
     const [activeSectionSub, setActiveSectionSub] = useState(undefined);
     const [activeSectionThree, setActiveSectionThree] = useState(undefined);
 
-    const [articlesInProgress, setArticlesInProgress] = useState(false);
+    const [needRequest, setNeedRequest] = useState(false);
 
     const [state, setState] = useState({
         sectionsOne: [],
-        sectionsTwo: [],
-        sectionsThree: [],
-        articles: []
+        sectionsTwo: null,
+        sectionsThree: null,
+        articles: null
     });
 
     const [positionImports, setPositionImports] = useState([]);
@@ -43,9 +46,9 @@ const ProjectSortTable = ({ sections, onChange }) => {
     useEffect(() => {
         setState({
             sectionsOne: sections,
-            sectionsTwo: [],
-            sectionsThree: [],
-            articles: []
+            sectionsTwo: null,
+            sectionsThree: null,
+            articles: null
         });
     }, [sections]);
 
@@ -60,11 +63,11 @@ const ProjectSortTable = ({ sections, onChange }) => {
             ['filter[section_three_id]']: activeSectionThree?.id
         };
 
-        if (activeSectionThree === undefined) {
+        if (!needRequest) {
             return;
         }
 
-        setArticlesInProgress(true);
+        dispatch(setAppProgress({ inProgress: true }));
 
         ArticleService
             .get(null, form)
@@ -75,11 +78,15 @@ const ProjectSortTable = ({ sections, onChange }) => {
                 }));
                 setPositionImports(response.data.map(({ position_import }) => position_import));
             })
-            .finally(() => setArticlesInProgress(false));
-    }, [activeSectionMain, activeSectionSub, activeSectionThree]);
+            .finally(() => {
+                dispatch(setAppProgress({ inProgress: false }));
+                setNeedRequest(false);
+            });
+    }, [activeSectionMain, activeSectionSub, activeSectionThree, needRequest]);
 
     const handleSectionClick = useCallback((section, key) => {
         const emptySection = { id: 'null', name: 'Без раздела' };
+        const isLastSection = section.id === 'null' || (!section.sectionsTwo?.length && !section.sectionsThree?.length);
 
         onChange([]);
 
@@ -88,12 +95,12 @@ const ProjectSortTable = ({ sections, onChange }) => {
             case 'sectionsOne':
                 setState(s => ({
                     ...s,
-                    sectionsTwo: section.id === 'null' ? section.sectionsTwo : [
+                    sectionsTwo: isLastSection ? null : [
                         { ...emptySection, sectionsThree: [ { ...emptySection } ] },
                         ...section.sectionsTwo
                     ],
-                    sectionsThree: [],
-                    articles: []
+                    sectionsThree: null,
+                    articles: null
                 }));
                 setActiveSectionMain(section);
                 setActiveSectionSub(undefined);
@@ -102,11 +109,11 @@ const ProjectSortTable = ({ sections, onChange }) => {
             case 'sectionsTwo':
                 setState(s => ({
                     ...s,
-                    sectionsThree: section.id === 'null' ? section.sectionsThree : [
+                    sectionsThree: isLastSection ? null : [
                         { ...emptySection },
                         ...section.sectionsThree
                     ],
-                    articles: []
+                    articles: null
                 }));
                 setActiveSectionSub(section);
                 setActiveSectionThree(undefined);
@@ -114,6 +121,10 @@ const ProjectSortTable = ({ sections, onChange }) => {
             case 'sectionsThree':
                 setActiveSectionThree(section);
                 break;
+        }
+
+        if (isLastSection) {
+            setNeedRequest(true);
         }
     }, []);
 
@@ -143,57 +154,67 @@ const ProjectSortTable = ({ sections, onChange }) => {
 
     return (
         <Box display='flex'>
-            {COLS.map((column, columnIndex) => {
-                const isArticleColumn = column.key === 'articles';
-                return (
-                    <List
-                        key={columnIndex}
-                        className={classes.list}
-                        subheader={
-                            <ListSubheader component='div'>
-                                {column.title}
-                                {isArticleColumn && articlesInProgress && (
-                                    <Box component='span' marginLeft={1}>
-                                        <CircularProgress size={14} />
-                                    </Box>
-                                )}
-                            </ListSubheader>
-                        }
-                    >
-                        <Sortable
+            {COLS
+                .filter(({ key }) => !!state[key])
+                .map((column, columnIndex) => {
+                    const isArticleColumn = column.key === 'articles';
+                    return (
+                        <List
                             key={columnIndex}
-                            options={{
-                                animation: 150,
-                                disabled: !isArticleColumn
-                            }}
-                            onChange={sorted => handleSort(sorted)}
+                            className={classes.list}
+                            subheader={<ListSubheader component='div'>{column.title}</ListSubheader>}
                         >
-                            {state[column.key].map((item) => (
-                                <ListItem
-                                    key={item.id}
-                                    data-id={item.id}
-                                    button
-                                    onClick={() => {
-                                        if (!isArticleColumn) {
-                                            handleSectionClick(item, column.key);
-                                        }
+                            {!!state[column.key].length ? (
+                                <Sortable
+                                    key={columnIndex}
+                                    options={{
+                                        animation: 150,
+                                        disabled: !isArticleColumn
                                     }}
+                                    onChange={sorted => handleSort(sorted)}
                                 >
-                                    <ListItemIcon>
-                                        {isArticleColumn
-                                            ? <DescriptionIcon />
-                                            : <FolderIcon />
-                                        }
-                                    </ListItemIcon>
-                                    <ListItemText >
-                                        {isArticleColumn ? item.title : item.name}
-                                    </ListItemText>
+                                    {state[column.key].map((item) => {
+                                        const activeSection = column.key === 'sectionsOne'
+                                            ? activeSectionMain
+                                            : column.key === 'sectionsTwo'
+                                                ? activeSectionSub
+                                                : activeSectionThree;
+
+                                        return (
+                                            <ListItem
+                                                key={item.id}
+                                                data-id={item.id}
+                                                selected={item.id === activeSection?.id}
+                                                button
+                                                onClick={() => {
+                                                    if (!isArticleColumn) {
+                                                        handleSectionClick(item, column.key);
+                                                    }
+                                                }}
+                                            >
+                                                <ListItemIcon>
+                                                    {isArticleColumn
+                                                        ? <DescriptionIcon />
+                                                        : <FolderIcon />
+                                                    }
+                                                </ListItemIcon>
+                                                <ListItemText >
+                                                    {isArticleColumn ? item.title : item.name}
+                                                </ListItemText>
+                                            </ListItem>
+                                        );
+                                    })}
+                                </Sortable>
+                            ) : (
+                                <ListItem>
+                                    <Typography variant='body2' color='textPrimary'>
+                                        Нет статей
+                                    </Typography>
                                 </ListItem>
-                            ))}
-                        </Sortable>
-                    </List>
-                );
-            })}
+                            )}
+                        </List>
+                    );
+                })}
         </Box>
     );
 };

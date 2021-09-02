@@ -38,9 +38,9 @@ export default (
                 <Route exact component={Login} path='/login'/>
                 <AuthRoute exact component={HomePage} path='/'/>
 
-                <AuthRoute exact component={ProjectPage} path='/project/:id'/>
-                <AuthRoute exact component={ProjectSort} path='/project/:id/sort'/>
-                <AuthRoute exact component={ArchivePage} path='/archive/:projectId/:id'/>
+                <AuthRoute exact component={ProjectPage} path='/project/:projectId'/>
+                <AuthRoute exact component={ProjectSort} path='/project/:projectId/sort'/>
+                <AuthRoute exact component={ArchivePage} path='/archive/:projectId/:archiveId'/>
                 <AuthRoute exact component={ArticlePage} path='/project/:projectId/article/:articleId?'/>
                 <AuthRoute exact component={ArchiveArticlePage} path='/archive/:archiveId/article/:articleId?'/>
                 <AuthRoute
