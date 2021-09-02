@@ -10,7 +10,7 @@ import SaveIcon from '@material-ui/icons/Save';
 import { projectSortStyles } from './styles';
 
 const ProjectSort = () => {
-    const { id: projectId } = useParams();
+    const { projectId } = useParams();
 
     const [sections, setSections] = useState([]);
     const [articles, setArticles] = useState([]);
@@ -49,6 +49,7 @@ const ProjectSort = () => {
     }, [needSave]);
 
     const handleSave = useCallback(() => {
+        dispatch(setAppProgress({ inProgress: true }));
         setSaveInProgress(true);
 
         if (!userType?.id) {
@@ -60,8 +61,9 @@ const ProjectSort = () => {
             .finally(() => {
                 setSaveInProgress(false);
                 setNeedSave(false);
+                dispatch(setAppProgress({ inProgress: false }));
             });
-    }, [articles]);
+    }, [articles, projectId, userType]);
 
 
     if (!projectId) {
@@ -72,25 +74,25 @@ const ProjectSort = () => {
         <Page
             title='Сортировка статей'
             withBar
+            withBackButton
+            withBreadCrumbs
         >
             <ProjectSortTable
                 sections={sections}
                 onChange={handleSChange}
             />
 
-            {needSave && (
-                <Fab
-                    className={classes.fab}
-                    variant='extended'
-                    size='large'
-                    color='primary'
-                    onClick={handleSave}
-                    disabled={saveInProgress}
-                >
-                    <SaveIcon className={classes.extendedIcon} />
-                    Сохранить
-                </Fab>
-            )}
+            <Fab
+                className={classes.fab}
+                variant='extended'
+                size='large'
+                color='primary'
+                onClick={handleSave}
+                disabled={!needSave || saveInProgress}
+            >
+                <SaveIcon className={classes.extendedIcon} />
+                Сохранить
+            </Fab>
         </Page>
     );
 };

@@ -14,11 +14,10 @@ import { NotificationManager } from 'react-notifications';
 import ArticlesImportModal from '../../Article/ArticlesImportModal/ArticlesImportModal';
 import Page from '../../Shared/Page/Page';
 import Loader from '../../Shared/Loader/Loader';
-import { EVENTS, SORT_DIR, STORAGE_KEY, PROJECT_PERMISSION } from '../../../constants';
+import { SORT_DIR, STORAGE_KEY, PROJECT_PERMISSION } from '../../../constants';
 import RightLoader from '../../Shared/Loader/RightLoader/RightLoader';
 import { Plural } from '../../../helpers/Tools';
 import InlineButton from '../../Shared/InlineButton/InlineButton';
-import { EventEmitter } from "../../../helpers";
 import store from "../../../redux/store";
 import { clearArticleColors } from "../../../redux/actions";
 import { getColumnsFromStorage } from "../../Project/ProjectPage/ProjectTable/Columns";
@@ -41,16 +40,6 @@ class ArchivePage extends Component {
     constructor(props) {
         super(props);
 
-        const pagination = { ...defaultPagination };
-        const storageUserType = StorageService.get(STORAGE_KEY.USER_TYPE);
-        let userType = null;
-
-        pagination.perPage = StorageService.get(STORAGE_KEY.TABLE_PER_PAGE) || 50;
-
-        if (storageUserType) {
-            userType = JSON.parse(storageUserType);
-        }
-
         this.state = {
             archive: null,
             project: null,
@@ -59,8 +48,7 @@ class ArchivePage extends Component {
             selectedItemIds: [],
             selectedArticles: {},
             isAllArticlesSelected: false,
-            pagination,
-            userType,
+            pagination: { ...defaultPagination },
             filters: { ...defaultFilters },
             inProgress: true
         };
@@ -72,8 +60,8 @@ class ArchivePage extends Component {
     }
 
     componentDidUpdate(prevProps) {
-        if (prevProps.match.params.id !== this.props.match.params.id) {
-            this.archiveId = this.props.match.params.id;
+        if (prevProps.match.params.archiveId !== this.props.match.params.archiveId) {
+            this.archiveId = this.props.match.params.archiveId;
             this.setState({
                 articles: [],
                 activeArticle: null,
@@ -94,7 +82,6 @@ class ArchivePage extends Component {
 
     componentWillUnmount() {
         this.isMounted = false;
-        EventEmitter.off(EVENTS.USER.CHANGE_TYPE, this.handleChangeUserType);
         this.props.clearArticleColors();
     }
 
@@ -292,7 +279,8 @@ class ArchivePage extends Component {
     }
 
     getArticles = () => {
-        const { pagination, filters, userType, inProgress } = this.state;
+        const { userType } = this.props;
+        const { pagination, filters, inProgress } = this.state;
         const selectedColumns = getColumnsFromStorage(this.projectId);
         const fields = this.getFields();
 
@@ -413,7 +401,8 @@ class ArchivePage extends Component {
     };
 
     getFields = () => {
-        const { project, userType } = this.state;
+        const { userType } = this.props;
+        const { project } = this.state;
 
         if (!project || !project.projectFields || !project.projectFields.length || !userType) {
             return [];
@@ -441,7 +430,8 @@ class ArchivePage extends Component {
     };
 
     getTotalCountArticles = () => {
-        const { pagination, userType } = this.state;
+        const { userType } = this.props;
+        const { pagination } = this.state;
         const form = {
             // project: this.projectId,
             user_type: userType && userType.id || '',
@@ -522,7 +512,7 @@ class ArchivePage extends Component {
 
     projectId = this.props.match.params.projectId;
 
-    archiveId = this.props.match.params.id;
+    archiveId = this.props.match.params.archiveId;
 
     isMounted = true;
 
@@ -778,7 +768,8 @@ class ArchivePage extends Component {
 
 function mapStateToProps(state) {
     return {
-        profile: state.profile
+        profile: state.profile,
+        userType: state.userType
     };
 }
 
