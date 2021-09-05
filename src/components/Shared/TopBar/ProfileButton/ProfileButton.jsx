@@ -5,9 +5,11 @@ import ProfileIcon from "../../SvgIcons/ProfileIcon";
 import ArrowIcon from "../../SvgIcons/ArrowIcon";
 import {AuthService, StorageService} from "../../../../services";
 import {STORAGE_KEY, THEME_TYPE} from "../../../../constants";
-import './profile-button.scss';
 import Switcher from "../../../Form/Switcher/Switcher";
 import { setUserType, switchTheme } from "../../../../redux/actions";
+import { withRouter } from 'react-router-dom';
+
+import './profile-button.scss';
 
 const namespace = 'profile-button';
 const cls = new Bem(namespace);
@@ -152,6 +154,13 @@ class ProfileButton extends Component {
                         </li>
 
                         <li
+                            { ...cls('list-item') }
+                            onClick={() => this.props.history.push('/settings')}
+                        >
+                            Настройки
+                        </li>
+
+                        <li
                             {...cls('list-item')}
                             onClick={() => AuthService.logOut()}
                         >
@@ -181,4 +190,4 @@ function mapDispatchToProps(dispatch) {
     };
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(ProfileButton);
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(ProfileButton));

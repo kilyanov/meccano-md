@@ -1,16 +1,16 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
-import {UserService} from "../../../services";
-import ConfirmModal from "../../Shared/ConfirmModal/ConfirmModal";
-import Form from "../../Form/Form/Form";
-import InputText from "../../Form/InputText/InputText";
-import Loader from "../../Shared/Loader/Loader";
+import {UserService} from "../../../../services";
+import ConfirmModal from "../../../Shared/ConfirmModal/ConfirmModal";
+import Form from "../../../Form/Form/Form";
+import InputText from "../../../Form/InputText/InputText";
+import Loader from "../../../Shared/Loader/Loader";
 import {connect} from 'react-redux';
 import {NotificationManager} from "react-notifications";
-import Select from "../../Form/Select/Select";
+import Select from "../../../Form/Select/Select";
 import {slugify} from 'transliteration';
-import { isAccess } from "../../../helpers/Tools";
-import { PERMISSION } from "../../../constants";
+import { isAccess } from "../../../../helpers/Tools";
+import { PERMISSION } from "../../../../constants";
 
 const classes = new Bem('user-modal');
 

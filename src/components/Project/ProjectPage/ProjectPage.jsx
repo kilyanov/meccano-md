@@ -107,8 +107,8 @@ class ProjectPage extends Component {
     }
 
     componentDidUpdate(prevProps) {
-        if (prevProps.match.params.id !== this.props.match.params.id) {
-            this.projectId = this.props.match.params.id;
+        if (prevProps.match.params.projectId !== this.props.match.params.projectId) {
+            this.projectId = this.props.match.params.projectId;
             this.props.onSetAppProgress({ inProgress: true, withBlockedOverlay: true });
             this.setState(_.cloneDeep(this.defaultState), () => {
                 this.getProject(this.projectId).then(this.getArticles);
@@ -662,7 +662,7 @@ class ProjectPage extends Component {
 
     queueMessage = { id: 'articles', text: 'Загрузка статей...' };
 
-    projectId = this.props.match.params.id;
+    projectId = this.props.match.params.projectId;
 
     addMenuItems = [ {
         title: 'Добавить новую',
