@@ -35,7 +35,7 @@ $namespace: '.project-table';
         display: flex;
       }
 
-      :nth-last-child(2) {
+      & :nth-last-child(2):not(.tooltip__target) {
         padding-right: 62px;
       }
     }

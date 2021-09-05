@@ -8,7 +8,8 @@ import HomePage from '../components/Pages/HomePage/HomePage';
 import LoginPage from '../components/Pages/LoginPage/LoginPage';
 import DocumentsPage from '../components/Documents/DocumentsPage';
 import ProjectPage from '../components/Project/ProjectPage/ProjectPage';
-import ProjectCompare from '../components/Project/ProjectCompare/ProjectCompare';
+import ProjectComparison from '../components/Project/ProjectComparison/ProjectComparison';
+import PairComparison from "../components/Project/PairComparison/PairComparison";
 import ProjectCreatePage from '../components/Project/ProjectCreatePage/ProjectCreatePage';
 import NotFoundPage from '../components/Pages/NotFoundPage/NotFoundPage';
 import ArticlePage from '../components/Article/ArticlePage';
@@ -39,7 +40,14 @@ export default (
 
                 <AuthRoute exact component={ProjectPage} path="/project/:id"/>
                 <AuthRoute exact component={ProjectSort} path="/project/:id/sort"/>
-                <AuthRoute exact component={ProjectCompare} path="/project/:id/compare"/>
+                <AuthRoute exact component={ProjectComparison} path="/project/:projectId/compare"/>
+
+                <AuthRoute
+                    exact
+                    component={PairComparison}
+                    path="/project/:projectId/compare/:firstArticleId/:secondArticleId"
+                />
+
                 <AuthRoute exact component={ArchivePage} path="/archive/:projectId/:id"/>
                 <AuthRoute exact component={ArticlePage} path="/project/:projectId/article/:articleId?"/>
                 <AuthRoute exact component={ArchiveArticlePage} path="/archive/:archiveId/article/:articleId?"/>

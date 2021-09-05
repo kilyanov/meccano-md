@@ -1,6 +1,6 @@
 import {makeStyles} from "@material-ui/core";
 
-export const useProjectCompareStyles = makeStyles((theme) => {
+export const useProjectComparisonStyles = makeStyles((theme) => {
     return {
         label: {
             marginBottom: theme.spacing(1)

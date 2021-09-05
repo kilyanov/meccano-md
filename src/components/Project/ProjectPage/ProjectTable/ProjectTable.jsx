@@ -67,7 +67,6 @@ class ProjectTable extends Component {
     }
 
     componentDidUpdate = () => {
-        console.log(this.props.comparedArticles);
         this.syncColumnWidth();
         this.focusHelper = new FocusHelper();
     };
@@ -468,7 +467,9 @@ class ProjectTable extends Component {
                             isOpen
                             target={(<CompareIcon {...cls('compare-icon')} />)}
                             content={(<div {...cls('compare-info')}>
-                                Найдены дубликаты: {this.props.comparedArticles?.[article.id].length}
+                                <Link to={`/project/${projectId}/compare/`}>
+                                    Найдены дубликаты: {this.props.comparedArticles?.[article.id].length}
+                                </Link>
                             </div>)}
                             position="right"
                         />

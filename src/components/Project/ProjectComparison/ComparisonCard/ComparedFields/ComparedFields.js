@@ -1,14 +1,13 @@
-import React from 'react';
-import {Box, Chip, LinearProgress, Typography} from '@material-ui/core';
+import React, { useCallback } from 'react';
+import { Box, LinearProgress, Typography } from '@material-ui/core';
 import { useComparedFieldsStyles } from './styles';
 
-const FIELD_NAME = {
-    'text': 'Текст',
-    'annotation': 'Аннотация'
-};
-
-function ComparedFields({ comparedFields }) {
+function ComparedFields({ comparedFields, projectFields }) {
     const classes = useComparedFieldsStyles();
+
+    const getFieldLabel = useCallback((slug) => {
+        return projectFields.find((field) => field.slug === slug)?.name || '';
+    }, [projectFields]);
 
     return (
         <Box className={classes.root} >
@@ -20,13 +19,12 @@ function ComparedFields({ comparedFields }) {
                         className={classes.field}
                         key={field.filed_compare}
                     >
-                        <Chip
+                        <Typography
                             className={classes.fieldName}
                             color="primary"
-                            size="small"
-                            variant="outlined"
-                            label={FIELD_NAME[field.filed_compare] || field.filed_compare}
-                        />
+                        >
+                            {getFieldLabel(field.filed_compare) || field.filed_compare}
+                        </Typography>
                         {hasResultCompare && (
                             <>
                                 <LinearProgress
