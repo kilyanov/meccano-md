@@ -10,7 +10,7 @@ import TransferService from '../../../services/TransferService';
 import {OperatedNotification, QueueManager} from '../../../helpers/Tools';
 import {NotificationManager} from 'react-notifications';
 import {EventEmitter} from "../../../helpers";
-import {EVENTS} from "../../../constants/Events";
+import {EVENTS} from "../../../constants";
 
 const cls = new Bem('articles-import-modal');
 
@@ -33,7 +33,7 @@ export default class ArticlesImportModal extends Component {
 
     componentDidMount() {
         TransferService.import
-            .get()
+            .get('', { 'per-page': 50 })
             .then(response => {
                 this.setState({
                     types: response.data,
@@ -67,11 +67,12 @@ export default class ArticlesImportModal extends Component {
 
         if (form.files) {
             this.setState({inProgress: true}, () => {
-                form.files.forEach((file) => {
-                    const formData = new FormData();
+                const formData = new FormData();
 
-                    formData.append('file', file);
-                    formData.append('import', form.typeId);
+                formData.append('import', form.typeId);
+
+                form.files.forEach((file) => {
+                    formData.append('file[]', file);
 
                     setTimeout(() => {
                         if (this.state.inProgress) {
@@ -79,29 +80,29 @@ export default class ArticlesImportModal extends Component {
                             this.props.onClose();
                         }
                     }, 2000);
+                });
 
-                    ProjectService.importArticles(this.props.projectId, formData).then(() => {
-                        QueueManager.remove(loadingMessage.id);
+                ProjectService.importArticles(this.props.projectId, formData).then(() => {
+                    QueueManager.remove(loadingMessage.id);
 
-                        if (this.isMounted) {
-                            NotificationManager.success('Импорт успешно завершен', 'Импорт статей');
-                            this.setState({inProgress: false});
-                        } else {
-                            OperatedNotification.success({
-                                title: 'Импорт статей',
-                                message: 'Импорт успешно завершен',
-                                submitButtonText: 'Перейти к проекту →',
-                                cancelButtonText: 'Закрыть',
-                                onSubmit: () => EventEmitter.emit(EVENTS.REDIRECT, `/project/${this.props.projectId}`)
-                            });
-                        }
+                    if (this.isMounted) {
+                        NotificationManager.success('Импорт успешно завершен', 'Импорт статей');
+                        this.setState({inProgress: false});
+                    } else {
+                        OperatedNotification.success({
+                            title: 'Импорт статей',
+                            message: 'Импорт успешно завершен',
+                            submitButtonText: 'Перейти к проекту →',
+                            cancelButtonText: 'Закрыть',
+                            onSubmit: () => EventEmitter.emit(EVENTS.REDIRECT, `/project/${this.props.projectId}`)
+                        });
+                    }
 
-                        this.props.onSubmit();
-                        this.props.onClose();
-                    }).catch(() => {
-                        QueueManager.remove(loadingMessage.id);
-                        if (this.isMounted) this.setState({inProgress: false});
-                    });
+                    this.props.onSubmit();
+                    this.props.onClose();
+                }).catch(() => {
+                    QueueManager.remove(loadingMessage.id);
+                    if (this.isMounted) this.setState({inProgress: false});
                 });
             });
         }
@@ -123,9 +124,10 @@ export default class ArticlesImportModal extends Component {
                 submitText='Импорт'
                 submitDisabled={!form.service && (!form.files.length || !form.typeId)}
             >
+                <h3 {...cls('section-title')}>Импорт из файла:</h3>
+
                 <div {...cls('row', '', 'row')}>
-                    <div {...cls('col', '', 'col-md-4')}>
-                        <h3 {...cls('section-title')}>Импорт из файла:</h3>
+                    <div {...cls('col', '', 'col-md-6')}>
 
                         {types.map(type => (
                             <RadioButton
@@ -139,14 +141,19 @@ export default class ArticlesImportModal extends Component {
                             />
                         ))}
 
-                        <div style={{visibility: form.typeId && selectedType ? 'visible' : 'hidden'}}>
+                    </div>
+
+                    <div { ...cls('col', '', ['col-md-6']) }>
+                        {(form.typeId && selectedType) && (
                             <InputFile
                                 {...cls('input-file')}
                                 onChange={this.handleChangeFiles}
                                 accept={selectedType.fileTypes}
+                                multiple
                             />
-                        </div>
+                        )}
                     </div>
+
                     <div {...cls('col', '', ['col-md-8', 'd-none'])}>
                         <h3 {...cls('section-title')}>Импорт из сервиса:</h3>
 
