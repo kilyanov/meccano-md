@@ -124,13 +124,27 @@ class ProjectCreatePage extends Component {
     };
 
     handleEndEditTitle = () => {
-        const newState = { ...this.state };
+        const wasBeenChanged = this.state.project.name !== this.state.editTitleValue;
 
-        newState.project.name = newState.editTitleValue;
-        newState.editTitleValue = '';
-        newState.isEditTitle = false;
+        this.setState((state) => {
+            state.project.name = state.editTitleValue;
+            state.editTitleValue = '';
+            state.isEditTitle = false;
 
-        this.setState(newState);
+            return state;
+        }, () => {
+            const { projectId, project } = this.state;
+
+            if (wasBeenChanged) {
+                ProjectService
+                    .put(projectId, { name: project.name })
+                    .then(response => {
+                        store.dispatch(updateProject(response.data));
+                        NotificationManager.success('Проект был успешно переименован', 'Обновление проекта');
+                    })
+                    .catch((e) => console.log(e));
+            }
+        });
     };
 
     handleInputKeyDown = (event) => {
