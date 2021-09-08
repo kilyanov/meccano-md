@@ -124,10 +124,20 @@ export default class SettingsExportModal extends Component {
         this.setState(newState);
     };
 
-    handleEndSort = (sortedKeys) => {
+    handleEndSortRules = (sortedKeys) => {
         this.setState(state => {
             state.form.rules = sortedKeys
                 .map(key => state.form.rules.find(({ id }) => id === key))
+                .filter(item => !!item);
+
+            return state;
+        });
+    };
+
+    handleEndSortReplaces = (sortedKeys) => {
+        this.setState(state => {
+            state.form.replaces = sortedKeys
+                .map(key => state.form.replaces.find(({ id }) => id === key))
                 .filter(item => !!item);
 
             return state;
@@ -142,7 +152,7 @@ export default class SettingsExportModal extends Component {
         if (_.get(form.file, 'id')) delete form.file;
 
         form.rules = form.rules.map(({ id, selector, element }, index) => ({ id, selector, element, position: index }));
-        form.replaces = form.replaces.map(({ id, search, replace }) => ({ id, search, replace }));
+        form.replaces = form.replaces.map(({ id, search, replace }, index) => ({ id, search, replace, position: index }));
 
         if (form.projects && form.projects.length) {
             form.projects = form.projects.map(({ value }) => value);
@@ -323,7 +333,7 @@ export default class SettingsExportModal extends Component {
                             {...cls('list', 'left')}
                             options={{ animation: 150, disabled: !this.canEdit }}
                             disabled={!this.canEdit}
-                            onChange={this.handleEndSort}
+                            onChange={this.handleEndSortRules}
                         >
                             {form.rules.map(this.renderRule)}
                         </Sortable>
@@ -334,7 +344,14 @@ export default class SettingsExportModal extends Component {
                     <section {...cls('joins')}>
                         <h3 {...cls('title')}>Список замен</h3>
 
-                        {form.replaces.map(this.renderReplace)}
+                        <Sortable
+                            {...cls('list', 'left')}
+                            options={{ animation: 150, disabled: !this.canEdit }}
+                            disabled={!this.canEdit}
+                            onChange={this.handleEndSortReplaces}
+                        >
+                            {form.replaces.map(this.renderReplace)}
+                        </Sortable>
 
                         <InlineButton onClick={this.handleAddReplace} disabled={!this.canEdit}>+ Добавить</InlineButton>
                     </section>
