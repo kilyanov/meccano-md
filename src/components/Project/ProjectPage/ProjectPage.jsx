@@ -76,7 +76,8 @@ class ProjectPage extends Component {
             showImportArticlesModal: false,
             showTransferModal: false,
             showArchiveModal: false,
-            isEditMode: false
+            isEditMode: false,
+            comparedArticles: {}
         };
 
         this.state = _.cloneDeep(this.defaultState);
@@ -88,6 +89,21 @@ class ProjectPage extends Component {
             this.getArticleColors();
             this.props.onSetAppProgress({ inProgress: true, withBlockedOverlay: true });
         });
+        ProjectService.compare(this.projectId)
+            .then(({ data }) => {
+                // Наборы сравнений статей
+                const comparedArticles = data.map((set) => set?.compareArticles || []);
+                // Индексированный набор сравнений (индексом выступает id статьи)
+                const indexedComparedArticles = comparedArticles.reduce((acc, compare) => {
+                    compare.forEach(({ article_id: id }) => {
+                        // Исключая родительскую статью из набора
+                        acc[id] = compare.filter((article) => article?.article_id !== id);
+                    });
+                    return acc;
+                }, {});
+                this.setState({ comparedArticles: indexedComparedArticles });
+            })
+            .catch(console.error);
     }
 
     componentDidUpdate(prevProps) {
@@ -348,6 +364,10 @@ class ProjectPage extends Component {
 
     handleClickSortMode = () => {
         this.props.history.push(`/project/${this.projectId}/sort`);
+    }
+
+    handleClickCompareMode = () => {
+        this.props.history.push(`/project/${this.projectId}/compare`);
     }
 
     getArticleColors = () => {
@@ -857,6 +877,7 @@ class ProjectPage extends Component {
                         fields={fields}
                         userType={userType}
                         currentUserId={this.props.profile.id}
+                        comparedArticles={this.state.comparedArticles}
                         onChangeSelected={this.handleChangeSelected}
                         onSelectedAll={this.handleSelectAll}
                         onChangeColumns={this.handleChangeColumns}
@@ -869,6 +890,7 @@ class ProjectPage extends Component {
                         getArticleMenu={this.onGetArticleMenu}
                         onChangeTableMode={this.handleChangeTableMode}
                         onClickSortMode={this.handleClickSortMode}
+                        onClickCompareMode={this.handleClickCompareMode}
                     />
 
                     <div {...cls('footer')}>

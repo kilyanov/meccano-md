@@ -50,5 +50,6 @@ export const ProjectService = {
         update: (form, id) =>  API.put(urlGenerator('field')(id), form),
         delete: (form, projectId) => API.delete(urlGenerator('field')(projectId), {data: form})
     },
-    updateMany: (form, projectId) => API.put(`${ApiList.project.project}/${projectId}/update-many`, form)
+    updateMany: (form, projectId) => API.put(`${ApiList.project.project}/${projectId}/update-many`, form),
+    compare: (projectId, form, id = '') => API.get(`/project/${projectId}/compare${id ? `/${id}` : ''}`, { params: form })
 };
