@@ -49,6 +49,9 @@ export const ACTION_TYPE = {
         DELETE: 'DOCUMENT_ADD'
     },
     USER: {
+        TYPE: {
+            SET: 'USER_TYPE_SET'
+        },
         TYPES: {
             LOADING: 'USER_TYPES_LOADING',
             LOADED: 'USER_TYPES_LOADED',

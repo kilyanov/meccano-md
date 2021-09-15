@@ -1,0 +1,80 @@
+@import "../../../assets/styles/variables";
+$namespace: '.tooltip';
+
+#{$namespace} {
+  position: relative;
+
+  &__origin {
+    position: absolute;
+    width: 0;
+    height: 0;
+    top: auto;
+    left: auto;
+
+    &--position-right {
+      top: 50%;
+      right: 0;
+    }
+  }
+
+  &__content {
+    display: flex;
+    padding: 4px 12px;
+    align-items: center;
+    background-color: $white;
+    box-shadow: 0 3px 12px -3px rgba(0, 0, 0, 0.2);
+    transform: translateY(-50%) translateX(12px);
+    position: absolute;
+    width: max-content;
+    font-size: 14px;
+    visibility: hidden;
+    transition: .15s;
+    opacity: 0;
+    pointer-events: none;
+
+    &--is-show {
+      visibility: visible;
+      pointer-events: auto;
+      opacity: 1;
+    }
+
+    &::before {
+      content: '';
+      display: block;
+      position: absolute;
+      top: 50%;
+      left: -8px;
+      transform: translateY(-50%) rotate(45deg);
+      background-color: $white;
+      box-shadow: 0 3px 12px -3px rgba(0, 0, 0, 0.2);
+      width: 16px;
+      height: 16px;
+      z-index: -2;
+    }
+
+    &::after {
+      content: '';
+      display: block;
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 100%;
+      background-color: $white;
+      z-index: -1;
+    }
+  }
+}
+
+/* Dark Theme */
+
+.app--dark #{$namespace} {}
+
+@keyframes tooltip-show {
+  from {}
+  to {}
+}
+
+@keyframes tooltip-hide {
+  from {}
+  to {}
+}

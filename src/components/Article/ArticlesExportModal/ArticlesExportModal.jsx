@@ -34,7 +34,10 @@ export default class ArticlesExportModal extends Component {
 
     componentDidMount() {
         TransferService.export
-            .get('', {project: this.props.projectId})
+            .get('', {
+                project: this.props.projectId,
+                'per-page': 100
+            })
             .then(response => {
                 this.setState({
                     templates: _.groupBy(response.data, 'type'),
@@ -97,10 +100,12 @@ export default class ArticlesExportModal extends Component {
                             });
                         }
 
-                        if (this.isMount) this.setState({inProgress: false}, () => {
-                            this.props.onUpdateParent();
-                            this.props.onClose();
-                        });
+                        if (this.isMount) {
+                            this.setState({inProgress: false}, () => {
+                                this.props.onUpdateParent();
+                                this.props.onClose();
+                            });
+                        }
                     })
                     .catch(() => {
                         if (this.isMount) this.setState({inProgress: false});

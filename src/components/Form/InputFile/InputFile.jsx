@@ -18,7 +18,8 @@ export default class InputFile extends Component {
         files: PropTypes.array,
         onChange: PropTypes.func.isRequired,
         validateErrorMessage: PropTypes.string,
-        disabled: PropTypes.bool
+        disabled: PropTypes.bool,
+        multiple: PropTypes.bool
     };
 
     static defaultProps = {
@@ -97,7 +98,7 @@ export default class InputFile extends Component {
     );
 
     render() {
-        const { accept, className, required, validateErrorMessage, disabled } = this.props;
+        const { accept, className, required, validateErrorMessage, disabled, multiple } = this.props;
         const { files, error } = this.state;
         const acceptMIME = accept instanceof Array ? accept.join(', ') : accept;
 
@@ -123,6 +124,7 @@ export default class InputFile extends Component {
                     ref={node => this.inputFile = node}
                     type="file"
                     accept={acceptMIME}
+                    multiple={multiple}
                     disabled={disabled}
                     onChange={this.handleChange}
                 />

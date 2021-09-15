@@ -16,11 +16,10 @@ import DropDownButton from '../../Shared/DropDownButton/DropDownButton';
 import ArticlesImportModal from '../../Article/ArticlesImportModal/ArticlesImportModal';
 import Page from '../../Shared/Page/Page';
 import Loader from '../../Shared/Loader/Loader';
-import { EVENTS, SORT_DIR, STORAGE_KEY } from '@const';
+import { SORT_DIR, STORAGE_KEY } from '@const';
 import RightLoader from '../../Shared/Loader/RightLoader/RightLoader';
 import { isProjectAccess, Plural, QueueManager } from '@helpers/Tools';
 import InlineButton from '../../Shared/InlineButton/InlineButton';
-import { EventEmitter } from "../../../helpers";
 import store from "../../../redux/store";
 import { setCurrentProject } from "@redux/actions/currentProject";
 import { clearArticleColors, setArticleColors } from "@redux/actions/articleColors";
@@ -37,7 +36,11 @@ import { FaEye, FaEdit } from 'react-icons/fa';
 import { setAppProgress } from '../../../redux/actions';
 
 const cls = new Bem('project-page');
-const defaultPagination = { page: 1, pageCount: 1, perPage: 50 };
+const defaultPagination = {
+    page: 1,
+    pageCount: 1,
+    perPage: StorageService.get(STORAGE_KEY.TABLE_PER_PAGE) || 50
+};
 const defaultSort = { type: null, dir: null };
 const defaultFilters = { search: '', sort: defaultSort };
 const statusOptions = [
@@ -59,71 +62,86 @@ class ProjectPage extends Component {
     constructor(props) {
         super(props);
 
-        const pagination = { ...defaultPagination };
-        const storageUserType = StorageService.get(STORAGE_KEY.USER_TYPE);
-        let userType = null;
-
-        pagination.perPage = StorageService.get(STORAGE_KEY.TABLE_PER_PAGE) || 50;
-
-        if (storageUserType) {
-            userType = JSON.parse(storageUserType);
-        }
-
-        this.state = {
+        this.defaultState = {
             articles: [],
             activeArticle: null,
             selectedArticles: {},
             selectedStatus: [],
             isAllArticlesSelected: false,
-            pagination,
             project: null,
+            pagination: { ...defaultPagination },
             filters: { ...defaultFilters },
             showArticleModal: false,
             showUploadArticlesModal: false,
             showImportArticlesModal: false,
             showTransferModal: false,
             showArchiveModal: false,
-            userType,
-            isEditMode: false
+            isEditMode: false,
+            comparedArticles: {}
         };
+
+        this.state = _.cloneDeep(this.defaultState);
     }
 
     componentDidMount() {
         this.searchParamsToFilters(() => {
             this.getProject(this.projectId).then(this.getArticles);
             this.getArticleColors();
-            EventEmitter.on(EVENTS.USER.CHANGE_TYPE, this.handleChangeUserType);
             this.props.onSetAppProgress({ inProgress: true, withBlockedOverlay: true });
         });
+        ProjectService.compare(this.projectId)
+            .then(({ data }) => {
+                // Наборы сравнений статей
+                const comparedArticles = data.map((set) => set?.compareArticles || []);
+                // Индексированный набор сравнений (индексом выступает id статьи)
+                const indexedComparedArticles = comparedArticles.reduce((acc, compare) => {
+                    compare.forEach(({ article_id: id }) => {
+                        // Исключая родительскую статью из набора
+                        acc[id] = compare.filter((article) => article?.article_id !== id);
+                    });
+                    return acc;
+                }, {});
+                this.setState({ comparedArticles: indexedComparedArticles });
+            })
+            .catch(console.error);
     }
 
     componentDidUpdate(prevProps) {
-        if (prevProps.match.params.id !== this.props.match.params.id) {
-            this.projectId = this.props.match.params.id;
+        if (prevProps.match.params.projectId !== this.props.match.params.projectId) {
+            this.projectId = this.props.match.params.projectId;
             this.props.onSetAppProgress({ inProgress: true, withBlockedOverlay: true });
-            this.setState({
-                articles: [],
-                activeArticle: null,
-                selectedArticles: {},
-                selectedStatus: [],
-                isAllArticlesSelected: false,
-                pagination: defaultPagination,
-                project: null,
-                filters: { ...defaultFilters },
-                showArticleModal: false,
-                showUploadArticlesModal: false,
-                showImportArticlesModal: false,
-                showTransferModal: false
-            }, () => {
+            this.setState(_.cloneDeep(this.defaultState), () => {
                 this.getProject(this.projectId).then(this.getArticles);
                 this.getArticleColors();
             });
+        }
+
+        if (
+            (prevProps.userType && this.props.userType) &&
+            (prevProps.userType.id !== this.props.userType.id)
+        ) {
+            this.searchParams.set('page', '1');
+            this.setState((state) => {
+                state.articles = [];
+                state.activeArticle = null;
+                state.selectedArticles = [];
+                state.pagination.page = 1;
+                state.isAllArticlesSelected = false;
+                state.filters = { ...defaultFilters };
+                state.showArticleModal = false;
+                state.showUploadArticlesModal = false;
+                state.showImportArticlesModal = false;
+                state.showTransferModal = false;
+                state.showArchiveModal = false;
+                state.isEditMode = false;
+
+                return state;
+            }, this.getArticles);
         }
     }
 
     componentWillUnmount() {
         this.isMounted = false;
-        EventEmitter.off(EVENTS.USER.CHANGE_TYPE, this.handleChangeUserType);
         store.dispatch(clearArticleColors());
     }
 
@@ -285,16 +303,8 @@ class ProjectPage extends Component {
         });
     };
 
-    handleChangeUserType = (userType) => {
-        this.setState({ userType }, () => {
-            if (!this.state.articles || !this.state.articles.length && !this.props.appProgress.inProgress) {
-                this.getArticles();
-            }
-        });
-    };
-
     handleCompleteArticles = (isComplete = true) => {
-        const { userType } = this.state;
+        const { userType } = this.props;
         const selectedArticles = this.getAllSelectedArticles();
         const selectedArticleIds = selectedArticles.map(({ id }) => id);
 
@@ -352,6 +362,14 @@ class ProjectPage extends Component {
         this.setState({ isEditMode });
     }
 
+    handleClickSortMode = () => {
+        this.props.history.push(`/project/${this.projectId}/sort`);
+    }
+
+    handleClickCompareMode = () => {
+        this.props.history.push(`/project/${this.projectId}/compare`);
+    }
+
     getArticleColors = () => {
         ArticleService.color.get(this.projectId).then(response => {
             if (response.data) {
@@ -361,8 +379,8 @@ class ProjectPage extends Component {
     };
 
     getArticles = () => {
-        const { onSetAppProgress, appProgress } = this.props;
-        const { pagination, filters, userType, selectedStatus } = this.state;
+        const { onSetAppProgress, appProgress, userType } = this.props;
+        const { pagination, filters, selectedStatus } = this.state;
         const selectedColumns = getColumnsFromStorage(this.projectId);
         const fields = this.getFields();
         const statusValues = (selectedStatus || []).map(({ value }) => value);
@@ -375,7 +393,7 @@ class ProjectPage extends Component {
         const form = {
             project: this.projectId,
             user_type: userType && userType.id || '',
-            page: this.searchParams.get('page'),
+            page: pagination.page,
             'per-page': pagination.perPage || 30,
             expand: fields
                 .filter(({ slug }) => selectedColumns.find(({ key }) => key === slug))
@@ -484,7 +502,8 @@ class ProjectPage extends Component {
     };
 
     getFields = () => {
-        const { project, userType } = this.state;
+        const { userType } = this.props;
+        const { project } = this.state;
 
         if (!project || !project.projectFields || !project.projectFields.length || !userType) {
             return [];
@@ -555,7 +574,8 @@ class ProjectPage extends Component {
     };
 
     saveArticle = (articleIndex, prop) => {
-        const { userType, articles } = this.state;
+        const { userType } = this.props;
+        const { articles } = this.state;
         const article = articles[articleIndex];
 
         if (article && article[prop]) {
@@ -623,6 +643,7 @@ class ProjectPage extends Component {
 
                 switch (key) {
                     case 'page':
+                        state.pagination.page = +value;
                         break;
                     case 'sort':
                         state.filters.sort = {
@@ -641,7 +662,7 @@ class ProjectPage extends Component {
 
     queueMessage = { id: 'articles', text: 'Загрузка статей...' };
 
-    projectId = this.props.match.params.id;
+    projectId = this.props.match.params.projectId;
 
     addMenuItems = [ {
         title: 'Добавить новую',
@@ -670,12 +691,12 @@ class ProjectPage extends Component {
             showImportArticlesModal,
             showTransferModal,
             showArchiveModal,
-            userType,
             selectedStatus,
             selectedArticleId,
             saveArticleProgress,
             isEditMode
         } = this.state;
+        const { userType } = this.props;
         const countSelected = isAllArticlesSelected
             ? pagination.totalCount
             : this.getCountSelectedArticles();
@@ -689,7 +710,7 @@ class ProjectPage extends Component {
                 return article;
             });
         const fields = this.getFields();
-        const currentPage = this.searchParams.get('page') || pagination.page;
+        const currentPage = pagination.page;
 
         return (
             <Page {...cls()} withBar>
@@ -856,6 +877,7 @@ class ProjectPage extends Component {
                         fields={fields}
                         userType={userType}
                         currentUserId={this.props.profile.id}
+                        comparedArticles={this.state.comparedArticles}
                         onChangeSelected={this.handleChangeSelected}
                         onSelectedAll={this.handleSelectAll}
                         onChangeColumns={this.handleChangeColumns}
@@ -867,6 +889,8 @@ class ProjectPage extends Component {
                         onUpdateParent={() => this.getArticles()}
                         getArticleMenu={this.onGetArticleMenu}
                         onChangeTableMode={this.handleChangeTableMode}
+                        onClickSortMode={this.handleClickSortMode}
+                        onClickCompareMode={this.handleClickCompareMode}
                     />
 
                     <div {...cls('footer')}>
@@ -961,7 +985,8 @@ class ProjectPage extends Component {
 function mapStateToProps(state) {
     return {
         profile: state.profile,
-        appProgress: state.appProgress
+        appProgress: state.appProgress,
+        userType: state.userType
     };
 }
 

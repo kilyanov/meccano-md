@@ -50,6 +50,15 @@ $namespace: '.project-table-header';
       }
     }
 
+    &--compare {
+      flex: 0 0 $compareSection;
+      padding: 0;
+      border: none;
+      align-items: center;
+      justify-content: center;
+      width: min-content;
+    }
+
     &--date {
       flex: 0 0 $dateSection;
       border-left: none;
@@ -58,6 +67,11 @@ $namespace: '.project-table-header';
     &--source {
       flex: 0 0 $sourceSection;
     }
+  }
+
+  &__compare-icon {
+    width: 20px;
+    height: 20px;
   }
 
   &__cell-name {
@@ -80,6 +94,8 @@ $namespace: '.project-table-header';
     width: 10px;
     margin-left: auto;
     cursor: col-resize;
+    flex-shrink: 0;
+    z-index: 1;
   }
 
   &__cell-filter {

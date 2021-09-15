@@ -17,6 +17,9 @@ import { StorageService } from "@services";
 import ArticleMovementHistory from "../../../Article/ArticleMovementHistory/ArticleMovementHistory";
 import ProjectTableEditableCell from './ProjectTableEditableCell/ProjectTableEditableCell';
 import FocusHelper from './FocusHelper';
+// MECCANO-63
+// import CompareIcon from '../../../Shared/SvgIcons/CompareIcon';
+// import Tooltip from '../../../Shared/Tooltip/Tooltip';
 
 const cls = new Bem('project-table');
 const headerClasses = new Bem('project-table-header');
@@ -41,7 +44,8 @@ class ProjectTable extends Component {
         currentProject: PropTypes.object,
         onChangeFilter: PropTypes.func,
         getArticleMenu: PropTypes.func.isRequired,
-        currentUserId: PropTypes.string.isRequired
+        currentUserId: PropTypes.string,
+        comparedArticles: PropTypes.object
     };
 
     static defaultProps = {
@@ -201,7 +205,7 @@ class ProjectTable extends Component {
     }
 
     getSettingMenu = () => {
-        const { currentProject } = this.props;
+        const { currentProject, onClickSortMode } = this.props; // MECCANO-63 onClickCompareMode
         const { editableMode } = this.state;
         const settingsMenu = [
             {
@@ -219,7 +223,18 @@ class ProjectTable extends Component {
                         return state;
                     });
                 }
+            },
+            {
+                id: 'sort-mode',
+                title: 'Режим сортировки',
+                onClick: onClickSortMode
             }
+            // MECCANO-63
+            // {
+            //     id: 'compare-mode',
+            //     title: 'Режим сравнения',
+            //     onClick: onClickCompareMode
+            // }
         ];
 
         if (currentProject && currentProject.userProject) {
@@ -275,11 +290,11 @@ class ProjectTable extends Component {
     selectedColumns = [];
 
     syncColumnWidth = () => {
-        this.selectedColumns.forEach(({ key }) => {
+        this.selectedColumns.forEach(({ key, width }) => {
             const headerColumn = document.querySelector(`.project-table-header__cell--${key}`);
             const bodyColumns = document.querySelectorAll(`.project-table__cell--${key}`);
 
-            if (headerColumn && bodyColumns) {
+            if (headerColumn && bodyColumns && width) {
                 bodyColumns.forEach(column => {
                     column.style.maxWidth = `${headerColumn.offsetWidth}px`;
                     column.style.minWidth = `${headerColumn.offsetWidth}px`;
@@ -306,6 +321,12 @@ class ProjectTable extends Component {
                         checked={articles.length && selectedIds.length === articles.length || this.props.isAllSelected}
                     />
                 </div>
+
+                {/* MECCANO-63
+                    <div {...headerClasses('cell', 'compare')}>
+                    <CompareIcon {...headerClasses('compare-icon')} />
+                </div>
+                */}
 
                 {this.selectedColumns.map(({ key, width }) => {
                     const active = sort.type === key;
@@ -442,6 +463,24 @@ class ProjectTable extends Component {
                         onChange={(event) => this.handleSelectArticle(article.id, event, articleIndex)}
                     />
                 </div>
+
+                {/* MECCANO-63
+                    <div {...cls('cell', 'compare')}>
+                        {!!this.props.comparedArticles?.[article.id] && (
+                            <Tooltip
+                                {...cls('compare-tooltip')}
+                                isOpen
+                                target={(<CompareIcon {...cls('compare-icon')} />)}
+                                content={(<div {...cls('compare-info')}>
+                                    <Link to={`/project/${projectId}/compare/`}>
+                                        Найдены дубликаты: {this.props.comparedArticles?.[article.id].length}
+                                    </Link>
+                                </div>)}
+                                position="right"
+                            />
+                        )}
+                    </div>
+                */}
 
                 {this.selectedColumns.map(({ key }) => {
                     const currentField = fields.find(({ slug }) => slug === key);

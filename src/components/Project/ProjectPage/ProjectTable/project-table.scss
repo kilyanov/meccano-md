@@ -29,11 +29,14 @@ $namespace: '.project-table';
     }
 
     &:hover {
-      padding-right: 62px;
       background-color: $gray-three;
 
       .project-table__menu-button {
         display: flex;
+      }
+
+      & :nth-last-child(2):not(.tooltip__target) {
+        padding-right: 62px;
       }
     }
 
@@ -51,6 +54,7 @@ $namespace: '.project-table';
     border-top: 1px solid $gray;
     color: #333;
     text-decoration: none;
+    min-width: 0;
 
     &--check {
       flex: 0 0 $checkboxSection;
@@ -67,6 +71,16 @@ $namespace: '.project-table';
       }
     }
 
+    &--compare {
+      flex: 0 0 $compareSection;
+      padding: 0;
+      border: none !important;
+      align-items: center;
+      justify-content: center;
+      width: min-content;
+      position: relative;
+    }
+
     &--date {
       flex: 0 0 $dateSection;
     }
@@ -74,6 +88,15 @@ $namespace: '.project-table';
     &--source {
       flex: 0 0 $sourceSection;
     }
+  }
+
+  &__compare-icon {
+    width: 20px;
+    height: 20px;
+  }
+
+  &__compare-tooltip {
+    //left: $compareSection;
   }
 
   &__cell-text {

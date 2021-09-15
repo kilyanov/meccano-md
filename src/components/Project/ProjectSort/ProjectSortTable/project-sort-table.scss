@@ -1,0 +1,21 @@
+@import "../../../../assets/styles/variables";
+
+.project-sort-table {
+  &__head {
+    //display: flex;
+  }
+
+  &__body {
+    //display: flex;
+  }
+
+  &__column {
+    //width: 300px;
+    //padding: 16px;
+    //border: 1px solid $gray;
+  }
+
+  &__cell {
+    border-right: 1px solid $gray;
+  }
+}

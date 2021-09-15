@@ -16,7 +16,7 @@ import { KEY_CODE, EVENTS } from "@const";
 import { OperatedNotification } from '@helpers/Tools';
 import ProjectKeyWords from './ProjectKeyWords/ProjectKeyWords';
 import { EventEmitter } from "../../../helpers";
-import { deleteProject, updateProject } from "../../../redux/actions/project";
+import { deleteProject, updateProject } from "../../../redux/actions";
 import store from "../../../redux/store";
 import Select from "react-select";
 import ProjectUsers from "./ProjectUsers/ProjectUsers";
@@ -124,13 +124,27 @@ class ProjectCreatePage extends Component {
     };
 
     handleEndEditTitle = () => {
-        const newState = { ...this.state };
+        const wasBeenChanged = this.state.project.name !== this.state.editTitleValue;
 
-        newState.project.name = newState.editTitleValue;
-        newState.editTitleValue = '';
-        newState.isEditTitle = false;
+        this.setState((state) => {
+            state.project.name = state.editTitleValue;
+            state.editTitleValue = '';
+            state.isEditTitle = false;
 
-        this.setState(newState);
+            return state;
+        }, () => {
+            const { projectId, project } = this.state;
+
+            if (wasBeenChanged) {
+                ProjectService
+                    .put(projectId, { name: project.name })
+                    .then(response => {
+                        store.dispatch(updateProject(response.data));
+                        NotificationManager.success('Проект был успешно переименован', 'Обновление проекта');
+                    })
+                    .catch((e) => console.log(e));
+            }
+        });
     };
 
     handleInputKeyDown = (event) => {

@@ -5,6 +5,7 @@ export * from './theme';
 export * from './settingsMenu';
 export * from './project';
 export * from './document';
+export * from './userTypes';
 export * from './userType';
 export * from './articleColors';
 export * from './currentProject';

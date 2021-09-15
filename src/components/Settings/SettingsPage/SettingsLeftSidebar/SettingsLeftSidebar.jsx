@@ -2,17 +2,17 @@ import React, {Component} from 'react';
 import {connect} from 'react-redux';
 import SettingsMenu from '../SettingsMenu/SettingsMenu';
 import store from '../../../../redux/store';
-import {closeSettingsMenu} from '../../../../redux/actions/settingsMenu';
+import {closeSettingsMenu} from '../../../../redux/actions';
 import {isMobileScreen} from '../../../../helpers/Tools';
 import './left-sidebar.scss';
 
 const cls = new Bem('left-sidebar');
 class SettingsLeftSidebar extends Component {
     componentDidMount() {
-        store.dispatch(closeSettingsMenu())
+        store.dispatch(closeSettingsMenu());
     }
 
-    render(){
+    render() {
         const {settingsMenu = {open: false}} = this.props;
         const isOpen = isMobileScreen() && settingsMenu.open;
 

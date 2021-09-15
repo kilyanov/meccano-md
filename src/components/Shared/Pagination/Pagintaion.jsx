@@ -7,6 +7,7 @@ const Pagination = ({ page, pageCount, onPageChange }) => {
         <ReactPaginate
             pageCount={pageCount}
             initialPage={page - 1}
+            forcePage={page - 1}
             onPageChange={({ selected }) => onPageChange(selected + 1)}
             previousLabel='<'
             nextLabel='>'
