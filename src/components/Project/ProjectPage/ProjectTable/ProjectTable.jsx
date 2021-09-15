@@ -17,8 +17,9 @@ import { StorageService } from "@services";
 import ArticleMovementHistory from "../../../Article/ArticleMovementHistory/ArticleMovementHistory";
 import ProjectTableEditableCell from './ProjectTableEditableCell/ProjectTableEditableCell';
 import FocusHelper from './FocusHelper';
-import CompareIcon from '../../../Shared/SvgIcons/CompareIcon';
-import Tooltip from '../../../Shared/Tooltip/Tooltip';
+// MECCANO-63
+// import CompareIcon from '../../../Shared/SvgIcons/CompareIcon';
+// import Tooltip from '../../../Shared/Tooltip/Tooltip';
 
 const cls = new Bem('project-table');
 const headerClasses = new Bem('project-table-header');
@@ -204,7 +205,7 @@ class ProjectTable extends Component {
     }
 
     getSettingMenu = () => {
-        const { currentProject, onClickSortMode, onClickCompareMode } = this.props;
+        const { currentProject, onClickSortMode } = this.props; // MECCANO-63 onClickCompareMode
         const { editableMode } = this.state;
         const settingsMenu = [
             {
@@ -227,12 +228,13 @@ class ProjectTable extends Component {
                 id: 'sort-mode',
                 title: 'Режим сортировки',
                 onClick: onClickSortMode
-            },
-            {
-                id: 'compare-mode',
-                title: 'Режим сравнения',
-                onClick: onClickCompareMode
             }
+            // MECCANO-63
+            // {
+            //     id: 'compare-mode',
+            //     title: 'Режим сравнения',
+            //     onClick: onClickCompareMode
+            // }
         ];
 
         if (currentProject && currentProject.userProject) {
@@ -320,9 +322,11 @@ class ProjectTable extends Component {
                     />
                 </div>
 
-                <div {...headerClasses('cell', 'compare')}>
+                {/* MECCANO-63
+                    <div {...headerClasses('cell', 'compare')}>
                     <CompareIcon {...headerClasses('compare-icon')} />
                 </div>
+                */}
 
                 {this.selectedColumns.map(({ key, width }) => {
                     const active = sort.type === key;
@@ -460,21 +464,23 @@ class ProjectTable extends Component {
                     />
                 </div>
 
-                <div {...cls('cell', 'compare')}>
-                    {!!this.props.comparedArticles?.[article.id] && (
-                        <Tooltip
-                            {...cls('compare-tooltip')}
-                            isOpen
-                            target={(<CompareIcon {...cls('compare-icon')} />)}
-                            content={(<div {...cls('compare-info')}>
-                                <Link to={`/project/${projectId}/compare/`}>
-                                    Найдены дубликаты: {this.props.comparedArticles?.[article.id].length}
-                                </Link>
-                            </div>)}
-                            position="right"
-                        />
-                    )}
-                </div>
+                {/* MECCANO-63
+                    <div {...cls('cell', 'compare')}>
+                        {!!this.props.comparedArticles?.[article.id] && (
+                            <Tooltip
+                                {...cls('compare-tooltip')}
+                                isOpen
+                                target={(<CompareIcon {...cls('compare-icon')} />)}
+                                content={(<div {...cls('compare-info')}>
+                                    <Link to={`/project/${projectId}/compare/`}>
+                                        Найдены дубликаты: {this.props.comparedArticles?.[article.id].length}
+                                    </Link>
+                                </div>)}
+                                position="right"
+                            />
+                        )}
+                    </div>
+                */}
 
                 {this.selectedColumns.map(({ key }) => {
                     const currentField = fields.find(({ slug }) => slug === key);
